@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.9.34714.143
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StellarBillingSystem", "StellarBillingSystem\StellarBillingSystem.csproj", "{9B8D56F5-4949-41F2-ACBC-6A0F5539983D}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{9B8D56F5-4949-41F2-ACBC-6A0F5539983D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9B8D56F5-4949-41F2-ACBC-6A0F5539983D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9B8D56F5-4949-41F2-ACBC-6A0F5539983D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9B8D56F5-4949-41F2-ACBC-6A0F5539983D}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {089425A7-4BA8-44DF-8733-630B65E0824E}
+	EndGlobalSection
+EndGlobal
