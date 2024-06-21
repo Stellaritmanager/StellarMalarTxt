@@ -1,0 +1,246 @@
+﻿ @model BilingSysytemModel
+
+@{
+    ViewData["Title"] = "CustomerBilling";
+    Layout = "~/Views/Shared/_ContentNavbarLayout.cshtml";
+}
+
+
+<form asp-controller="StellarBilling">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <div class="row">
+        <div class="col-md-12 col-lg-1">
+        </div>
+        <div class="col-md-12 col-lg-10">
+            <div class="card">
+                <div class="card-body " style="background-color:#8c62c9">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <div class="container">
+                            <h2 class="centered text-white" style="font-family:'Lucida Bright'">CustomerBilling</h2>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <br />
+
+    <div class="row" style="height:8%">
+    </div>
+
+    <div class="row">
+        <div class="col-md-12 col-lg-1">
+        </div>
+        <div class="col-md-12 col-lg-3">
+            <div class="card">
+                <div class="card-body " style="background-image: linear-gradient(to right, #FFFFFF 0%, #FFFFFF 51%, #ece5f6 100%);">
+
+
+                    <div class="form-floating form-floating-outline mb-4">
+                        <input asp-for="BillID" class="form-control" placeholder="BillID" required />
+                        <label asp-for="BillID" class="control-label"></label>
+
+                        <span asp-validation-for="BillID" class="text-danger"></span>
+                    </div>
+                    <div class="form-floating form-floating-outline mb-4">
+                        <input asp-for="CustomerName" class="form-control" placeholder="CustomerName" />
+                        <label asp-for="CustomerName" class="control-label"></label>
+
+                        <span asp-validation-for="CustomerName" class="text-danger"></span>
+                    </div>
+                    <div class="form-floating form-floating-outline mb-4">
+
+                        <input asp-for="Date" class="form-control" type="date" placeholder="Date" />
+                        <label asp-for="Date" class="control-label"></label>
+
+                        <span asp-validation-for="Date" class="text-danger"></span>
+                    </div>
+                    <div class="form-floating form-floating-outline mb-4">
+                        <input asp-for="CustomerNumber" class="form-control" placeholder="CustomerNumber" />
+                        <label asp-for="CustomerNumber" class="control-label"></label>
+
+                        <span asp-validation-for="CustomerNumber" class="text-danger"></span>
+                    </div>
+                    <div class="form-floating form-floating-outline mb-4">
+                        <input asp-for="Items" class="form-control" placeholder="Items" />
+                        <label asp-for="Items" class="control-label"></label>
+
+                        <span asp-validation-for="Items" class="text-danger"></span>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+        <div class="col-md-12 col-lg-4">
+
+
+            <div class="card">
+                <div class="card-body " style="background-image: linear-gradient(to right, #FFFFFF 0%, #FFFFFF 51%, #ece5f6 100%);">
+
+
+
+                    <div class="form-floating form-floating-outline mb-4">
+
+                        <input asp-for="Rate" class="form-control" placeholder="Rate" />
+                        <label asp-for="Rate" class="control-label"></label>
+
+                        <span asp-validation-for="Rate" class="text-danger"></span>
+                    </div>
+                    <div class="form-floating form-floating-outline mb-4">
+
+                        <input asp-for="Quantity" class="form-control" placeholder="Quantity" />
+                        <label asp-for="Quantity" class="control-label"></label>
+
+                        <span asp-validation-for="Quantity" class="text-danger"></span>
+                    </div>
+                    <div class="form-floating form-floating-outline mb-4">
+
+                        <label asp-for="Discount" class="control-label"></label>
+                        <input asp-for="Discount" class="form-control" placeholder="Discount" />
+                        <span asp-validation-for="Discount" class="text-danger"></span>
+                    </div>
+                    <div class="form-floating form-floating-outline mb-4">
+
+                        <input asp-for="Tax" class="form-control" placeholder="Tax" />
+                        <label asp-for="Tax" class="control-label"></label>
+
+                        <span asp-validation-for="Tax" class="text-danger"></span>
+                    </div>
+
+
+                    <div class="form-floating form-floating-outline mb-4">
+
+                        <input asp-for="DiscountPrice" class="form-control" placeholder="DiscountPrice" />
+                        <label asp-for="DiscountPrice" class="control-label"></label>
+
+                        <span asp-validation-for="DiscountPrice" class="text-danger"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-12 col-lg-3">
+
+
+            <div class="card">
+                <div class="card-body " style="background-image: linear-gradient(to right, #FFFFFF 0%, #FFFFFF 51%, #ece5f6 100%);">
+
+
+                    <div class="form-floating form-floating-outline mb-4">
+
+                        <label asp-for="TotalAmount" class="control-label"></label>
+                        <input asp-for="TotalAmount" class="form-control" placeholder="TotalAmount" />
+                        <span asp-validation-for="TotalAmount" class="text-danger"></span>
+                    </div>
+                    <div class="form-floating form-floating-outline mb-4">
+
+                        <input asp-for="PointsNumber" class="form-control" placeholder="PointsNumber" />
+                        <label asp-for="PointsNumber" class="control-label"></label>
+
+                        <span asp-validation-for="PointsNumber" class="text-danger"></span>
+                    </div>
+                    <div class="form-floating form-floating-outline mb-4">
+
+                        <input asp-for="VoucherNumber" class="form-control" placeholder="VoucherNumber" />
+                        <label asp-for="VoucherNumber" class="control-label"></label>
+
+                        <span asp-validation-for="VoucherNumber" class="text-danger"></span>
+                    </div>
+                    <div class="form-floating form-floating-outline mb-4">
+
+                        <input asp-for="CategoryBasedDiscount" class="form-control" placeholder=" CategoryBasedDiscount" />
+                        <label asp-for="CategoryBasedDiscount" class="control-label"></label>
+
+                        <span asp-validation-for="CategoryBasedDiscount" class="text-danger"></span>
+                    </div>
+
+                    <br />
+                </div>
+            </div>
+
+            <div class="col-md-12 col-lg-1" style="height=10%">
+                <div class="form-floating form-floating-outline mb-4">
+                </div>
+            </div>
+            <div class="form-group">
+
+        </div>
+        <div class="col-md-12 col-lg-1">
+        </div>
+
+            <br /><br />
+    </div>
+        <center>
+
+            <button type="submit" style="width:180px" value="Create" asp-action="CustomerBill" class="btn btn-primary">Save</button>
+         
+            <button type="submit" style="width:180px" class="btn btn-primary"> Update </button>
+         
+            <button type="submit" style="width:180px" class="btn btn-primary">Delete</button>
+         
+            <button type="submit" style="width:180px" class="btn btn-primary">Points</button>
+         
+            <button type="submit" style="width:180px" class="btn btn-primary">Print</button>
+
+            @if (ViewBag.Message != null)
+            {
+                <div class="alert alert-success">
+
+
+                    @ViewBag.Message
+                </div>
+            }
+        </center>
+    </div>
+
+    <div class="row" style="margin-top:40px">
+        <div class="col-md-12 col-lg-1 ">
+        </div>
+        <div class="col-md-12 col-lg-10">
+            <div class="card">
+                <div class="card-body " style="background-image: linear-gradient(to right, #FFFFFF 0%, #FFFFFF 51%, #ece5f6 100%);">
+
+                    <table class="table" style="width:100%">
+                        <thead>
+                            <tr>
+
+
+                                <th>
+                                    Items
+                                </th>
+                               
+                                <th>
+                                    Quantity
+                                </th>
+                                <th>
+                                    Discount
+                                </th>
+
+                                <th>
+                                    TotalAmount
+                                </th>
+                             </tr>
+                            <tr>
+                                <td>Croma 109 cm (43 inch) Full HD LED Smart TV with Bezel Less Display (2023 model)</td>
+                                <td>1</td>
+                                <td>5.91%</td>
+                                <td>₹16,690.00</td>
+                            </tr>
+                            <tr>
+                                <td>Canon EOS R6 Mark II 24. 2 MP Mirrorless Camera with RF24-105mm f4 L is USM Lens Kit (Black)</td>
+                                <td>1</td>
+                                <td>7%</td>
+                                <td>₹2,85,299</td>
+                            </tr>
+                        </thead>
+                    </table>
+
+
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-12 col-lg-1 ">
+        </div>
+    </div>
+</form>

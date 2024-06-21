@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using ClassLibrary1;
+using Microsoft.EntityFrameworkCore;
 using StellarBillingSystem.Models;
 namespace StellarBillingSystem.Context
 {
@@ -12,7 +13,35 @@ namespace StellarBillingSystem.Context
 
         //LogTable
         public DbSet<LogsModel> SBLogs { get; set; }
+        public DbSet<ProductMatserModel> SHProductMaster { get; set; }
 
+        public DbSet<CategoryMasterModel> SHCategoryMaster { get; set; }
+
+        public DbSet<BilingSysytemModel> SHCustomerBilling { get; set; }
+
+        public DbSet<CustomerMasterModel> SHCustomerMaster { get; set; }
+
+        public DbSet<DiscountCategoryMasterModel> SHDiscountCategory { get; set; }
+
+        public DbSet<GSTMasterModel> SHGSTMaster { get; set; }
+
+        public DbSet<VoucherCustomerDetailModel> SHVoucherDetails { get; set; }
+
+        public DbSet<GodownModel> SHGodown { get; set; }
+
+        public DbSet<NetDicsountMasterModel> SHNetDiscountMaster { get; set; }
+
+        public DbSet<VoucherMasterModel> SHVoucherMaster { get; set; }
+
+        public DbSet<RackPatrionProductModel> SHRackPartionProduct { get; set; }
+
+        public DbSet<RackMasterModel> SHRackMaster { get; set; }
+
+        public DbSet<PointsReedemDetailsModel> SHPointsReedemDetails { get; set; }
+
+        public DbSet<PointsMasterModel> SHPointsMaster { get; set; }
+
+        public DbSet<ReportModel> SHReportModel { get; set; }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             if (!optionsBuilder.IsConfigured)
@@ -24,6 +53,36 @@ namespace StellarBillingSystem.Context
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<LogsModel>().HasKey(i => new { i.LogID });
+            modelBuilder.Entity<CategoryMasterModel>().HasKey(i => new { i.CategoryID });
+
+            modelBuilder.Entity<ProductMatserModel>().HasKey(i => new { i.ProductID });
+
+            modelBuilder.Entity<CustomerMasterModel>().HasKey(i => new { i.CustomerID });
+
+            modelBuilder.Entity<DiscountCategoryMasterModel>().HasKey(i => new { i.DiscountPrice });
+
+            modelBuilder.Entity<GSTMasterModel>().HasKey(i => new { i.TaxID });
+
+            modelBuilder.Entity<VoucherCustomerDetailModel>().HasKey(i => new { i.VoucherID });
+
+            modelBuilder.Entity<BilingSysytemModel>().HasKey(i => new { i.BillID });
+
+            modelBuilder.Entity<GodownModel>().HasKey(i => new { i.ProductID });
+
+            modelBuilder.Entity<NetDicsountMasterModel>().HasKey(i => new { i.NetDiscountID });
+
+            modelBuilder.Entity<VoucherMasterModel>().HasKey(i => new { i.VoucherID });
+
+            modelBuilder.Entity<RackPatrionProductModel>().HasKey(i => new { i.PartitionID });
+
+            modelBuilder.Entity<RackMasterModel>().HasKey(i => new { i.PartitionID, i.RackID });
+
+            modelBuilder.Entity<PointsReedemDetailsModel>().HasKey(i => new { i.CustomerID });
+
+            modelBuilder.Entity<PointsMasterModel>().HasKey(i => new { i.PointsID });
+
+            modelBuilder.Entity<ReportModel>().HasKey(i => new {i.ReportID});
+
 
         }
     }
