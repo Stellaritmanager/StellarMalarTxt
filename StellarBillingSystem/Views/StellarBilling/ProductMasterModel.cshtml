@@ -4,6 +4,31 @@
     ViewData["Title"] = "ProductMasterModel";
 }
 
+<script>
+    function showPopup(message) {
+        var popup = document.getElementById("popupMessage");
+        var popupText = document.getElementById("popupMessageText");
+        var popupOKButton = document.getElementById("popupOKButton");
+
+        popupText.textContent = message; // Set the message text
+        popup.style.display = "block";
+
+        popupOKButton.addEventListener("click", function () {
+            popup.style.display = "none"; // Hide the popup when OK button is clicked
+        });
+    }
+
+    function handleMessages(message) {
+        showPopup(message);
+    }
+</script>
+
+
+<div id="popupMessage" style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background-color: #f0f0f0; color: black; padding: 30px; border: 10px solid white; border-radius: 10px; z-index: 1000; display: none; text-align: center;">
+    <span id="popupMessageText" style="display: block; margin-bottom: 20px;"></span>
+    <button id="popupOKButton" style="padding: 10px 20px; background-color: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer;">OK</button>
+</div>
+
 
 <form asp-controller="StellarBilling">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
@@ -117,7 +142,7 @@
                     <button type="submit" asp-action="AddProduct" value="Save" name="buttonType" class="btn btn-primary">Save</button>
                     <button type="submit" asp-action="AddProduct" value="Delete" name="buttonType" class="btn btn-primary">Delete</button>
                     <button type="submit" asp-action="AddProduct" value="Retrieve" name="buttonType" class="btn btn-primary">Retrieve</button>
-
+@* 
                     @if (ViewBag.Message != null)
                     {
                         <div class="alert alert-success">
@@ -129,7 +154,7 @@
                         <div class="alert alert-danger">
                             @ViewBag.ErrorMessage
                         </div>
-                    }
+                    } *@
                 </center>
             </div>
             <div class="row" style="margin-top:40px">
@@ -140,6 +165,19 @@
             </div>
         </div>
     </div>
+
+    @if (ViewBag.Message != null)
+    {
+        <script>
+            handleMessages("@ViewBag.Message");
+        </script>
+    }
+    @if (ViewBag.ErrorMessage != null)
+    {
+        <script>
+            handleMessages("@ViewBag.ErrorMessage");
+        </script>
+    }
 </form>
 
   
