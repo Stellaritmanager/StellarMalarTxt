@@ -76,7 +76,7 @@ namespace StellarBillingSystem.Context
 
             modelBuilder.Entity<VoucherMasterModel>().HasKey(i => new { i.VoucherID });
 
-            modelBuilder.Entity<RackPatrionProductModel>().HasKey(i => new { i.PartitionID });
+            modelBuilder.Entity<RackPatrionProductModel>().HasKey(i => new { i.PartitionID,i.ProductID });
 
             modelBuilder.Entity<RackMasterModel>().HasKey(i => new { i.PartitionID, i.RackID });
 
