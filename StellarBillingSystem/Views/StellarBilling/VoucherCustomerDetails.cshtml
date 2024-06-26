@@ -35,18 +35,19 @@
                         <div class="card-body " style="background-image: linear-gradient(to right, #FFFFFF 0%, #FFFFFF 51%, #ece5f6 100%);">
 
                     <div class="form-floating form-floating-outline mb-4">
-                <label asp-for="VoucherID" class="control-label"></label>
+
                         <input asp-for="VoucherID" class="form-control" placeholder="VoucherID" />
+                <label asp-for="VoucherID" class="control-label"></label>
                 <span asp-validation-for="VoucherID" class="text-danger"></span>
             </div>
                     <div class="form-floating form-floating-outline mb-4">
-                <label asp-for="CustomerID" class="control-label"></label>
                         <input asp-for="CustomerID" class="form-control" placeholder="CustomerID" />
+                <label asp-for="CustomerID" class="control-label"></label>
                 <span asp-validation-for="CustomerID" class="text-danger"></span>
             </div>
                     <div class="form-floating form-floating-outline mb-4">
+                        <input asp-for="ExpiryDate" class="form-control" placeholder="ExpiryDate" type="date" />
                 <label asp-for="ExpiryDate" class="control-label"></label>
-                        <input asp-for="ExpiryDate" class="form-control" placeholder="ExpiryDate" />
                 <span asp-validation-for="ExpiryDate" class="text-danger"></span>
             </div>
                     <br />

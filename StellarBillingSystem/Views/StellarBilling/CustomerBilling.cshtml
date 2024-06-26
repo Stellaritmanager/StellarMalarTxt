@@ -178,7 +178,7 @@
          
             <button type="submit" style="width:180px" class="btn btn-primary">Delete</button>
          
-            <button type="submit" style="width:180px" class="btn btn-primary">Points</button>
+            <button type="submit" style="width:180px" asp-action="PointsOperation" class="btn btn-primary">Points</button>
          
             <button type="submit" style="width:180px" class="btn btn-primary">Print</button>
 
@@ -192,54 +192,43 @@
             }
         </center>
     </div>
+    @if (ViewBag.Customers != null)
+    {
+        <div>
+            <h3>Customers Matching Criteria:</h3>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Mobile Number</th>
+                        <th>Points Redeemed</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var customer in ViewBag.Customers)
+                    {
+                        <tr>
+                            <td>@customer.MobileNumber</td>
+                            <td>@customer.PointsReedem</td>
+                        </tr>
+                        <tr>
+                            <td>Add</td>
+                            <td>Use</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+
+
+    @if (ViewBag.Error != null)
+    {
+        <div class="alert alert-danger">@ViewBag.Error</div>
+    }
 
     <div class="row" style="margin-top:40px">
         <div class="col-md-12 col-lg-1 ">
         </div>
-        <div class="col-md-12 col-lg-10">
-            <div class="card">
-                <div class="card-body " style="background-image: linear-gradient(to right, #FFFFFF 0%, #FFFFFF 51%, #ece5f6 100%);">
-
-                    <table class="table" style="width:100%">
-                        <thead>
-                            <tr>
-
-
-                                <th>
-                                    Items
-                                </th>
-                               
-                                <th>
-                                    Quantity
-                                </th>
-                                <th>
-                                    Discount
-                                </th>
-
-                                <th>
-                                    TotalAmount
-                                </th>
-                             </tr>
-                            <tr>
-                                <td>Croma 109 cm (43 inch) Full HD LED Smart TV with Bezel Less Display (2023 model)</td>
-                                <td>1</td>
-                                <td>5.91%</td>
-                                <td>₹16,690.00</td>
-                            </tr>
-                            <tr>
-                                <td>Canon EOS R6 Mark II 24. 2 MP Mirrorless Camera with RF24-105mm f4 L is USM Lens Kit (Black)</td>
-                                <td>1</td>
-                                <td>7%</td>
-                                <td>₹2,85,299</td>
-                            </tr>
-                        </thead>
-                    </table>
-
-
-                </div>
-            </div>
-        </div>
-
         <div class="col-md-12 col-lg-1 ">
         </div>
     </div>

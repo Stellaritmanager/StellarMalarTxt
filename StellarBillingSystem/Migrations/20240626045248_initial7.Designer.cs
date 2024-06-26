@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using StellarBillingSystem.Context;
 
@@ -11,9 +12,11 @@ using StellarBillingSystem.Context;
 namespace StellarBillingSystem.Migrations
 {
     [DbContext(typeof(BillingContext))]
-    partial class BillingContextModelSnapshot : ModelSnapshot
+    [Migration("20240626045248_initial7")]
+    partial class initial7
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -87,9 +90,6 @@ namespace StellarBillingSystem.Migrations
 
                     b.Property<string>("CategoryName")
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("IsDelete")
-                        .HasColumnType("bit");
 
                     b.Property<string>("LastUpdatedDate")
                         .HasColumnType("nvarchar(max)");
@@ -165,9 +165,6 @@ namespace StellarBillingSystem.Migrations
                     b.Property<string>("Gender")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<bool>("IsDelete")
-                        .HasColumnType("bit");
-
                     b.Property<string>("LastUpdatedDate")
                         .HasColumnType("nvarchar(max)");
 
@@ -196,10 +193,11 @@ namespace StellarBillingSystem.Migrations
 
             modelBuilder.Entity("DiscountCategoryMasterModel", b =>
                 {
-                    b.Property<string>("CategoryID")
+                    b.Property<string>("DiscountPrice")
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("DiscountPrice")
+                    b.Property<string>("CategoryID")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("LastUpdatedDate")
@@ -211,7 +209,7 @@ namespace StellarBillingSystem.Migrations
                     b.Property<string>("LastUpdatedmachine")
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("CategoryID");
+                    b.HasKey("DiscountPrice");
 
                     b.ToTable("SHDiscountCategory");
                 });

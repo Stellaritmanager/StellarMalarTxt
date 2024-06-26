@@ -15,6 +15,7 @@ namespace ClassLibrary1
         private String strPrice;
         private String strDiscount;
         private String strTotalAmount;
+        private bool strIsDelete;
         private String strLastUpdatedDate;
         private String strLastUpdatedUser;
         private String strLastUpdatedmachine;
@@ -29,5 +30,6 @@ namespace ClassLibrary1
         public string? LastUpdatedUser { get => strLastUpdatedUser; set => strLastUpdatedUser = value; }
         public string? LastUpdatedmachine { get => strLastUpdatedmachine; set => strLastUpdatedmachine = value; }
         public string? CategoryID { get => strCategoryID; set => strCategoryID = value; }
+        public bool IsDelete { get => strIsDelete; set => strIsDelete = value; }
     }
 }

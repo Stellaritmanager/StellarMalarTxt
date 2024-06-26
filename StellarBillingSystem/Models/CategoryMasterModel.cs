@@ -6,6 +6,7 @@
 
         private String strCategoryID;
         private String strCategoryName;
+        private bool strIsDelete;
         private String strLastUpdatedDate;
         private String strLastUpdatedUser;
         private String strLastUpdatedmachine;
@@ -15,6 +16,7 @@
         public string? LastUpdatedDate { get => strLastUpdatedDate; set => strLastUpdatedDate = value; }
         public string? LastUpdatedUser { get => strLastUpdatedUser; set => strLastUpdatedUser = value; }
         public string? LastUpdatedmachine { get => strLastUpdatedmachine; set => strLastUpdatedmachine = value; }
-    }
+        public bool IsDelete { get => strIsDelete; set => strIsDelete = value; }
+}
 
 

@@ -14,11 +14,10 @@
                 </div>
                 <div class="col-md-12 col-lg-8">
                     <div class="card">
-                        <div class="card-body " style="background-color:#8c62c9">
+                        <div style="background-color:#8c62c9">
                             <div class="card-header d-flex justify-content-between align-items-center">
                                 <div class="container">
-                                    <h2 class="centered text-white" style="font-family:'Lucida Bright'">ProductMatserModel</h2>
-
+                                    <h2 class="centered text-white" style="font-family:'Lucida Bright';margin-left:27%;">Product Master</h2>
                                 </div>
                             </div>
                         </div>
@@ -37,28 +36,39 @@
             <div class="card">
                 <div class="card-body " style="background-image: linear-gradient(to right, #FFFFFF 0%, #FFFFFF 51%, #ece5f6 100%);">
 
-
                     <div class="form-floating form-floating-outline mb-4">
-                        <input asp-for="CategoryID" class="form-control" placeholder="CategoryID" />
-                        <label asp-for="CategoryID" class="control-label"></label>
-                     
+                        @{
+                            var getscheduleid = ((IEnumerable<CategoryMasterModel>)ViewData["categoryid"])
+                            .Select(m => new SelectListItem
+            {
+                Value = m.CategoryID.ToString(), // Assuming ScreenId is of type int
+                Text = $"{m.CategoryID} - {m.CategoryName}"
+            });
+                        }
+
+                        @Html.DropDownListFor(model => model.CategoryID, getscheduleid, "Select Category ID", new { @class = "form-control"})
+                        <label asp-for="CategoryID" class="control-label">Category ID</label>
                         <span asp-validation-for="CategoryID" class="text-danger"></span>
                     </div>
 
+
                     <div class="form-floating form-floating-outline mb-4">
-                        <input asp-for="ProductID" class="form-control" placeholder="ProductID" />
+                        <input asp-for="ProductID" class="form-control" placeholder="ProductID" required />
                 <label asp-for="ProductID" class="control-label"></label>
                
                 <span asp-validation-for="ProductID" class="text-danger"></span>
             </div>
+
+                    <button type="submit" value="Get" asp-action="AddProduct" name="buttonType" class="btn btn-primary">Get</button>
+
                     <div class="form-floating form-floating-outline mb-4">
-                        <input asp-for="ProductName" class="form-control" placeholder="ProductName" />
+                        <input asp-for="ProductName" value="@Model.ProductName" class="form-control" placeholder="ProductName" />
                 <label asp-for="ProductName" class="control-label"></label>
                
                 <span asp-validation-for="ProductName" class="text-danger"></span>
             </div>
                     <div class="form-floating form-floating-outline mb-4">
-                        <input asp-for="Brandname" class="form-control" placeholder="Brandname" />
+                        <input asp-for="Brandname" value="@Model.Brandname" class="form-control" placeholder="Brandname" />
                 <label asp-for="Brandname" class="control-label"></label>
               
                 <span asp-validation-for="Brandname" class="text-danger"></span>
@@ -75,19 +85,19 @@
 
 
                     <div class="form-floating form-floating-outline mb-4">
-                        <input asp-for="Price" class="form-control" placeholder="Price" />
+                        <input asp-for="Price" value="@Model.Price" class="form-control" placeholder="Price" />
                 <label asp-for="Price" class="control-label"></label>
                 
                 <span asp-validation-for="Price" class="text-danger"></span>
             </div>
                     <div class="form-floating form-floating-outline mb-4">
-                        <input asp-for="Discount" class="form-control" placeholder="Discount" />
+                        <input asp-for="Discount" value="@Model.Discount" class="form-control" placeholder="Discount" />
                 <label asp-for="Discount" class="control-label"></label>
-               
-                <span asp-validation-for="Discount" class="text-danger"></span>
+               @* 
+                <span asp-validation-for="Discount" class="text-danger"></span> *@
             </div>
                     <div class="form-floating form-floating-outline mb-4">
-                        <input asp-for="TotalAmount" class="form-control" placeholder="TotalAmount" />
+                        <input asp-for="TotalAmount" value="@Model.TotalAmount" class="form-control" placeholder="TotalAmount" />
                 <label asp-for="TotalAmount" class="control-label"></label>
              
                 <span asp-validation-for="TotalAmount" class="text-danger"></span>
@@ -97,24 +107,36 @@
                 </div>
             </div>
 
-            <div class="col-md-12 col-lg-1" style="height=10%">
+            <div class="col-md-12 col-lg-1" style="height:10%;">
                 <div class="form-floating form-floating-outline mb-4">
                 </div>
             </div>
             <div class="form-group">
                 <center>
 
-                    <button type="submit" style="width:180px" asp-action="AddProduct" value="Create" class="btn btn-primary">Save</button>
+                    <button type="submit" asp-action="AddProduct" value="Save" name="buttonType" class="btn btn-primary">Save</button>
+                    <button type="submit" asp-action="AddProduct" value="Delete" name="buttonType" class="btn btn-primary">Delete</button>
+                    <button type="submit" asp-action="AddProduct" value="Retrieve" name="buttonType" class="btn btn-primary">Retrieve</button>
 
                     @if (ViewBag.Message != null)
                     {
                         <div class="alert alert-success">
-
-
                             @ViewBag.Message
                         </div>
                     }
+                    @if (ViewBag.ErrorMessage != null)
+                    {
+                        <div class="alert alert-danger">
+                            @ViewBag.ErrorMessage
+                        </div>
+                    }
                 </center>
+            </div>
+            <div class="row" style="margin-top:40px">
+                <div class="col-md-12 col-lg-1 ">
+                </div>
+                <div class="col-md-12 col-lg-1 ">
+                </div>
             </div>
         </div>
     </div>
