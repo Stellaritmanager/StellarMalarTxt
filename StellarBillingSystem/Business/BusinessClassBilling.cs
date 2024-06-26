@@ -1,6 +1,8 @@
-﻿using ClassLibrary1;
+﻿
+using Microsoft.CodeAnalysis;
 using Microsoft.EntityFrameworkCore;
 using StellarBillingSystem.Context;
+using StellarBillingSystem.Models;
 
 namespace StellarBillingSystem.Business
 {
@@ -99,21 +101,50 @@ namespace StellarBillingSystem.Business
 
             return customernumber;
         }
-/*        public async Task<bool> UpdateProduct(string productId, bool isDelete)
+
+
+        public List<RackpartitionViewModel> GetRackview(string partitionID, string productID)
         {
-            var product = await _billingContext.SHProductMaster.FirstOrDefaultAsync(x => x.ProductID == productId);
+            var result = (from p in _billingContext.SHRackPartionProduct
+                          where p.PartitionID == partitionID && p.ProductID == productID && p.Isdelete == false
+                          select new RackpartitionViewModel
+                          {
+                              PartitionID = p.PartitionID,
+                              ProductID = p.ProductID,
+                               Noofitems= p.Noofitems
+        
+                          }).ToList();
+            return result;
+        }
 
-            if (product == null)
-            {
-                return false; // Product not found
-            }
 
-            product.IsDelete = isDelete;
 
-            await _billingContext.SaveChangesAsync();
 
-            return true; // Update successful
-        }*/
+
+
+
+
+
+
+
+
+
+
+        /*        public async Task<bool> UpdateProduct(string productId, bool isDelete)
+                {
+                    var product = await _billingContext.SHProductMaster.FirstOrDefaultAsync(x => x.ProductID == productId);
+
+                    if (product == null)
+                    {
+                        return false; // Product not found
+                    }
+
+                    product.IsDelete = isDelete;
+
+                    await _billingContext.SaveChangesAsync();
+
+                    return true; // Update successful
+                }*/
 
         /*        public async Task<ProductMatserModel> GetProductmaster(string productID)
                 {

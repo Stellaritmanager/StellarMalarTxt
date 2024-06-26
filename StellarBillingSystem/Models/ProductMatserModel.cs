@@ -1,7 +1,6 @@
 ﻿using System;
 
-namespace ClassLibrary1
-{
+
     public class ProductMatserModel
     {
 
@@ -32,4 +31,4 @@ namespace ClassLibrary1
         public string? CategoryID { get => strCategoryID; set => strCategoryID = value; }
         public bool IsDelete { get => strIsDelete; set => strIsDelete = value; }
     }
-}
+

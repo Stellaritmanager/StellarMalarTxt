@@ -1,11 +1,11 @@
-﻿@model RackPatrionProductModel
+﻿@model RackpartitionViewModel
 
 @{
     ViewData["Title"] = "RackPatrionProduct";
     Layout = "~/Views/Shared/_ContentNavbarLayout.cshtml";
 }
 
-<form asp-controller="StellarBilling">
+<form asp-controller="StellarBilling" asp-action="AddRackPartition">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
     <div class="row">
         <div class="col-md-12 col-lg-2">
@@ -40,13 +40,26 @@
                         <span asp-validation-for="PartitionID" class="text-danger"></span>
             </div>
                     <div class="form-floating form-floating-outline mb-4">
+                        @{
+                            var screenList = ((IEnumerable<ProductMatserModel>)ViewData["godownproductid"])
+                            .Select(m => new SelectListItem
+            {
+                Value = m.ProductID.ToString(), // Assuming ScreenId is of type int
+                Text = $"{m.ProductID} - {m.ProductName}"
+            });
+                        }
 
-                        <input asp-for="ProductID" class="form-control" placeholder="Product ID" />
-                <label asp-for="ProductID" class="control-label"></label>
-                <span asp-validation-for="ProductID" class="text-danger"></span>
-            </div>
-                    
-                    <br />
+                        @Html.DropDownListFor(model => model.ProductID, screenList, "Select Product ID", new { @class = "form-control", @required = "required" })
+                        <label asp-for="ProductID" class="control-label">Product ID</label>
+                        <span asp-validation-for="ProductID" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-floating form-floating-outline mb-4">
+
+                        <input asp-for="Noofitems" class="form-control" placeholder="No of items " required />
+                        <label asp-for="Noofitems" class="control-label">No of items</label>
+                        <span asp-validation-for="Noofitems" class="text-danger"></span>
+                    </div>
 
                 </div>
             </div>
@@ -59,7 +72,57 @@
 
     <div class="form-group">
         <center>
-            <button type="submit" value="Create" class="btn btn-primary" asp-action="AddRackPartition">Save</button>
+            <button type="submit" value="Save" name="buttonType" class="btn btn-primary">Save</button>
+            <button type="submit" value="Get" name="buttonType" class="btn btn-primary">Get</button>
+
+            </div>
+
+    @if (Model != null)
+    {
+
+
+
+        <div class="row" style="margin-top:50px">
+            <div class="col-md-12 col-lg-12">
+                <div class="card">
+
+                    <div class="card-body " style="background-image: linear-gradient(to right, #FFFFFF 0%, #FFFFFF 51%, #ece5f6 100%);">
+
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Product ID</th>
+                                    <th>Partition ID</th>
+                                    <th>No of Items </th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @*   @if(Model!=null)
+                            { *@
+                                @foreach (var item in Model.Viewrackpartition)
+                                {
+                                    <tr>
+                                        <td>@item.ProductID</td>
+                                        <td>@item.PartitionID</td>
+                                        <td>@item.Noofitems</td>
+                                        <td>
+                                            <a href="@Url.Action("Edit", new { patientId = item.ProductID, orderId = item.PartitionID })" class="btn btn-primary">Edit</a>
+                                            <a href="@Url.Action("Delete", new { patientId = item.ProductID, orderId = item.PartitionID })" class="btn btn-primary">Delete</a>
+                                        </td>
+                                    </tr>
+                                }
+
+                            </tbody>
+                        </table>
+
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    }
+
             @if (ViewBag.Message != null)
             {
                 <div class="alert alert-success">
@@ -67,7 +130,7 @@
                 </div>
             }
         </center>
-    </div>
+    
 
         </form>
 

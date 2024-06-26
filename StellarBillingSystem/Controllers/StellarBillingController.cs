@@ -1,4 +1,4 @@
-﻿using ClassLibrary1;
+﻿
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.CodeAnalysis;
@@ -536,14 +536,36 @@ namespace StellarBillingSystem.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> AddRackPartition(RackPatrionProductModel model)
+        public async Task<IActionResult> AddRackPartition(RackPatrionProductModel model,string buttonType,RackpartitionViewModel viewmodel)
         {
-            var existingrackpartition = await _billingsoftware.SHRackPartionProduct.FindAsync(model.PartitionID);
+
+            BusinessClassBilling business = new BusinessClassBilling(_billingsoftware);
+            ViewData["godownproductid"] = business.GetProductid();
+
+            if (buttonType == "Get")
+            {
+
+                var result = business.GetRackview(model.PartitionID, model.ProductID);
+                var viewModelList = result.Select(p => new RackPatrionProductModel
+                {
+                    ProductID = p.ProductID,
+                    PartitionID = p.PartitionID,
+                    Noofitems = p.Noofitems
+                }).ToList();
+
+                viewmodel.Viewrackpartition = viewModelList;
+
+                return View("RackPatrionProduct", viewmodel);
+            }
+
+
+
+            var existingrackpartition = await _billingsoftware.SHRackPartionProduct.FindAsync(model.PartitionID,model.ProductID);
             if (existingrackpartition != null)
             {
                 existingrackpartition.PartitionID = model.PartitionID;
                 existingrackpartition.ProductID = model.ProductID;
-                
+                existingrackpartition.Noofitems = model.Noofitems;
                 existingrackpartition.LastUpdatedDate = DateTime.Now.ToString();
                 existingrackpartition.LastUpdatedUser = User.Claims.First().Value.ToString();
                 existingrackpartition.LastUpdatedmachine = Request.HttpContext.Connection.RemoteIpAddress.ToString();
@@ -563,8 +585,68 @@ namespace StellarBillingSystem.Controllers
 
             ViewBag.Message = "Saved Successfully";
 
-            return View("RackPatrionProduct", model);
+            return View("RackPatrionProduct");
         }
+
+// Edit Function for RackPartition Table
+        public async Task<IActionResult> Edit(string partitionID, string productID)
+        {
+            BusinessClassBilling business = new BusinessClassBilling(_billingsoftware);
+            ViewData["godownproductid"] = business.GetProductid();
+
+            var RackEdit = await _billingsoftware.SHRackPartionProduct.FindAsync(partitionID, productID);
+            if (RackEdit == null)
+            {
+                ViewBag.ErrorMessage = "Not Found";
+            }
+
+            var rackviewTable = new RackpartitionViewModel
+            {
+                PartitionID = RackEdit.PartitionID,
+                ProductID = RackEdit.ProductID,
+                Noofitems = RackEdit.Noofitems,
+
+                Viewrackpartition = new List<RackPatrionProductModel>()
+
+            };
+
+
+            var result = business.GetRackview(RackEdit.PartitionID, RackEdit.ProductID);
+            if (result != null && result.Any())
+            {
+                var viewModelList = result.Select(p => new RackPatrionProductModel
+                {
+                    PartitionID = p.PartitionID,
+                    ProductID = p.ProductID,
+                    Noofitems = p.Noofitems
+                }).ToList();
+
+                rackviewTable.Viewrackpartition = viewModelList;
+            }
+
+
+            return View("RackPatrionProduct", rackviewTable);
+
+
+        }
+
+// Delete Function for Rack PArtition
+        public async Task<IActionResult> Delete(string partitionID, string productID)
+        {
+            BusinessClassBilling business = new BusinessClassBilling(_billingsoftware);
+            ViewData["godownproductid"] = business.GetProductid();
+
+
+            var rackDel = await _billingsoftware.SHRackPartionProduct.FindAsync(partitionID, productID);
+            if (rackDel != null)
+            {
+                rackDel.Isdelete = true;
+                await _billingsoftware.SaveChangesAsync();
+            }
+            ViewBag.Delete = "Deleted  Successfully.";
+            return View("RackPatrionProduct");
+        }
+
 
 
         public IActionResult CategoryMasterModel()
@@ -627,6 +709,9 @@ namespace StellarBillingSystem.Controllers
 
         public IActionResult RackPatrionProduct()
         {
+            BusinessClassBilling business = new BusinessClassBilling(_billingsoftware);
+            ViewData["godownproductid"] = business.GetProductid();
+
             return View();
         }
 
