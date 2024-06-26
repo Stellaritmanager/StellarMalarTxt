@@ -543,8 +543,7 @@ namespace StellarBillingSystem.Controllers
             {
                 existingrackpartition.PartitionID = model.PartitionID;
                 existingrackpartition.ProductID = model.ProductID;
-                existingrackpartition.ProductName = model.ProductName;
-                existingrackpartition.Rack = model.Rack;
+                
                 existingrackpartition.LastUpdatedDate = DateTime.Now.ToString();
                 existingrackpartition.LastUpdatedUser = User.Claims.First().Value.ToString();
                 existingrackpartition.LastUpdatedmachine = Request.HttpContext.Connection.RemoteIpAddress.ToString();
