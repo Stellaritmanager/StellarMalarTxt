@@ -867,15 +867,15 @@ namespace HealthCare.Controllers
 
             if (buttontype == "Get")
             {
-                var getstaff = await _billingsoftware.SHStaffAdmin.FirstOrDefaultAsync(x => x.StaffID == model.StaffID);
+                var getstaff = await _billingsoftware.SHStaffAdmin.FirstOrDefaultAsync(x => x.StaffID == model.StaffID&&x.IsDelete==false);
                 if (getstaff != null)
                 {
                     return View("StaffAdmin", getstaff);
                 }
                 else
                 {
-                    CategoryMasterModel par = new CategoryMasterModel();
-                    ViewBag.ErrorMessage = "No Data found for this Staff ID";
+                    StaffAdminModel par = new StaffAdminModel();
+                    ViewBag.getMessage = "No Data found for this Staff ID";
                     return View("StaffAdmin", par);
                 }
             }
@@ -887,12 +887,12 @@ namespace HealthCare.Controllers
                     stafftodelete.IsDelete = true;
                     await _billingsoftware.SaveChangesAsync();
 
-                    ViewBag.Message = "StaffID deleted successfully";
-                    return View("StaffAdmin");
+                    ViewBag.delMessage = "StaffID deleted successfully";
+                    return View("StaffAdmin",stafftodelete);
                 }
                 else
                 {
-                    ViewBag.ErrorMessage = "StaffID not found";
+                    ViewBag.delnoMessage = "StaffID not found";
                     return View("StaffAdmin");
                 }
 
@@ -908,12 +908,32 @@ namespace HealthCare.Controllers
                     await _billingsoftware.SaveChangesAsync();
 
                     model.StaffID = stafftoretrieve.StaffID;
-                   
-                    ViewBag.Message = "Deleted StaffID retrieved successfully";
+                    model.FullName=stafftoretrieve.FullName;
+                    model.ResourceTypeID = stafftoretrieve.ResourceTypeID;
+                    model.FirstName= stafftoretrieve.FirstName;
+                    model.LastName= stafftoretrieve.LastName;
+                    model.Initial = stafftoretrieve.Initial;
+                    model.Prefix= stafftoretrieve.Prefix;
+                    model.PhoneNumber= stafftoretrieve.PhoneNumber;
+                    model.DateofBirth= stafftoretrieve.DateofBirth;
+                    model.Age= stafftoretrieve.Age;
+                    model.Gender= stafftoretrieve.Gender;
+                    model.Address1= stafftoretrieve.Address1;
+                    model.City = stafftoretrieve.City;
+                    model.State= stafftoretrieve.State;
+                    model.Pin= stafftoretrieve.Pin;
+                    model.EmailId= stafftoretrieve.EmailId;
+                    model.Nationality= stafftoretrieve.Nationality;
+                    model.UserName= stafftoretrieve.UserName;
+                    model.Password= stafftoretrieve.Password;
+                    model.IdProofId= stafftoretrieve.IdProofId;
+                    model.IdProofName= stafftoretrieve.IdProofName;
+
+                    ViewBag.retMessage = "Deleted StaffID retrieved successfully";
                 }
                 else
                 {
-                    ViewBag.ErrorMessage = "StaffID not found";
+                    ViewBag.noretMessage = "StaffID not found";
                 }
                 return View("StaffAdmin", model);
             }
@@ -967,6 +987,94 @@ namespace HealthCare.Controllers
         }
 
 
+        public async Task<IActionResult> AddResourceType(ResourceTypeMasterModel model, string buttontype)
+        {
+            
+            if (buttontype == "Get")
+            {
+                var getres = await _billingsoftware.SHresourceType.FirstOrDefaultAsync(x => x.ResourceTypeID == model.ResourceTypeID && x.IsDelete == false);
+                if (getres != null)
+                {
+                    return View("ResourceTypeMaster", getres);
+                }
+                else
+                {
+                    ResourceTypeMasterModel res = new ResourceTypeMasterModel();
+                    ViewBag.getMessage = "No Data found for this ResourceTypeID";
+                    return View("ResourceTypeMaster", res);
+                }
+            }
+            else if (buttontype == "Delete")
+            {
+                var restodelete = await _billingsoftware.SHresourceType.FindAsync(model.ResourceTypeID);
+                if (restodelete != null)
+                {
+                    restodelete.IsDelete = true;
+                    await _billingsoftware.SaveChangesAsync();
+
+                    ViewBag.delMessage = "ResourceTypeID deleted successfully";
+                    return View("ResourceTypeMaster", restodelete);
+                }
+                else
+                {
+                    ViewBag.delnoMessage = "ResourceTypeID not found";
+                    return View("ResourceTypeMaster");
+                }
+
+            }
+
+            else if (buttontype == "DeleteRetrieve")
+            {
+                var restoretrieve = await _billingsoftware.SHresourceType.FindAsync(model.ResourceTypeID);
+                if (restoretrieve != null)
+                {
+                    restoretrieve.IsDelete = false;
+
+                    await _billingsoftware.SaveChangesAsync();
+
+                    model.ResourceTypeName = restoretrieve.ResourceTypeName;
+                    model.ResourceTypeID = restoretrieve.ResourceTypeID;
+                   
+                    ViewBag.retMessage = "Deleted ResourceTypeID retrieved successfully";
+                }
+                else
+                {
+                    ViewBag.noretMessage = "ResourceTypeID not found";
+                }
+                return View("ResourceTypeMaster", model);
+            }
+
+
+            var existingres = await _billingsoftware.SHresourceType.FindAsync(model.ResourceTypeID);
+
+            if (existingres != null)
+            {
+                existingres.ResourceTypeName = model.ResourceTypeName;
+                existingres.ResourceTypeID = model.ResourceTypeID;
+                existingres.lastUpdatedDate = DateTime.Now.ToString();
+                existingres.lastUpdatedUser = User.Claims.First().Value.ToString();
+                existingres.lastUpdatedMachine = Request.HttpContext.Connection.RemoteIpAddress.ToString();
+
+                _billingsoftware.Entry(existingres).State = EntityState.Modified;
+
+            }
+            else
+            {
+
+                model.lastUpdatedDate = DateTime.Now.ToString();
+                model.lastUpdatedUser = User.Claims.First().Value.ToString();
+                model.lastUpdatedMachine = Request.HttpContext.Connection.RemoteIpAddress.ToString();
+                _billingsoftware.SHresourceType.Add(model);
+            }
+            await _billingsoftware.SaveChangesAsync();
+
+            ViewBag.Message = "Saved Successfully";
+            return View("ResourceTypeMaster", model);
+
+
+        }
+
+
 
 
         public IActionResult RollTypeMaster()
@@ -980,16 +1088,22 @@ namespace HealthCare.Controllers
             BusinessClassBilling Busbill = new BusinessClassBilling(_billingsoftware);
             ViewData["resoruseid"] = Busbill.GetResourceid();
 
-            return View();
+            StaffAdminModel par = new StaffAdminModel();
+
+            return View("StaffAdmin",par);
         }
 
         public IActionResult ResourceTypeMaster()
         {
-            return View();
+            ResourceTypeMasterModel res = new ResourceTypeMasterModel();
+
+            return View("ResourceTypeMaster", res);
         }
 
         public IActionResult RollAccessMaster()
         {
+          
+
             return View();
         }
 
