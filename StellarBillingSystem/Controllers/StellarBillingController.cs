@@ -283,6 +283,10 @@ namespace HealthCare.Controllers
             var existingCustomer = await _billingsoftware.SHCustomerMaster.FindAsync(model.MobileNumber);
             if (existingCustomer != null)
             {
+                if (existingCustomer.IsDelete)
+                {
+                    return View("CustomerMaster", model);
+                }
                 existingCustomer.CustomerID = model.CustomerID;
                 existingCustomer.CustomerName = model.CustomerName;
                 existingCustomer.DateofBirth = model.DateofBirth;
@@ -290,6 +294,7 @@ namespace HealthCare.Controllers
                 existingCustomer.Address = model.Address;
                 existingCustomer.City = model.City;
                 existingCustomer.MobileNumber = model.MobileNumber;
+                existingCustomer.IsDelete = model.IsDelete;
                 existingCustomer.LastUpdatedDate = DateTime.Now.ToString();
                 existingCustomer.LastUpdatedUser = User.Claims.First().Value.ToString();
                 existingCustomer.LastUpdatedmachine = Request.HttpContext.Connection.RemoteIpAddress.ToString();
@@ -306,7 +311,6 @@ namespace HealthCare.Controllers
                 _billingsoftware.SHCustomerMaster.Add(model);
 
             }
-            _billingsoftware.SHCustomerMaster.Add(model);
 
             await _billingsoftware.SaveChangesAsync();
 
@@ -323,14 +327,73 @@ namespace HealthCare.Controllers
 
             var customer = await _billingsoftware.SHCustomerMaster.FindAsync(mobileNumber);
 
-            if (customer == null)
+            if (customer == null || customer.IsDelete != false)
             {
-                ViewBag.ErrorMessage = "Moblile Number not found";
-                return View("CustomerMaster", customer);
+                ViewBag.ErrorMessage = "Mobile Number not found or customer is deleted";
+                return View("CustomerMaster", new CustomerMasterModel()); // Return an empty model if not found or deleted
             }
 
             return View("CustomerMaster", customer);
         }
+      
+        public async Task<IActionResult> GetDeleteRetrieve(string mobileNumber)
+        {
+            if (string.IsNullOrEmpty(mobileNumber))
+            {
+                return BadRequest("Mobile number is required");
+            }
+
+            var customer = await _billingsoftware.SHCustomerMaster.FindAsync(mobileNumber);
+            if (customer == null)
+            {
+                ViewBag.ErrorMessage = "Mobile Number not found";
+                return View("Error", new CustomerMasterModel());
+            }
+
+            if (customer.IsDelete == true)
+            {
+                customer.IsDelete = false;
+                customer.LastUpdatedDate = DateTime.Now.ToString();
+                customer.LastUpdatedUser = User.Claims.First().Value.ToString();
+                customer.LastUpdatedmachine = Request.HttpContext.Connection.RemoteIpAddress.ToString();
+
+                _billingsoftware.Entry(customer).State = EntityState.Modified;
+                await _billingsoftware.SaveChangesAsync();
+            }
+            ViewBag.DelRetrieve = "Retrieve Successfully";
+
+            return View("CustomerMaster", customer);
+        }
+
+
+
+        public async Task<IActionResult> DeleteCustomer(string mobileNumber)
+        {
+            if (string.IsNullOrEmpty(mobileNumber))
+            {
+                return BadRequest("Mobile number is required");
+            }
+
+            var existingCustomer = await _billingsoftware.SHCustomerMaster.FindAsync(mobileNumber);
+            if (existingCustomer == null)
+            {
+                return NotFound("Customer not found");
+            }
+
+            existingCustomer.IsDelete = true;
+            existingCustomer.LastUpdatedDate = DateTime.Now.ToString();
+            existingCustomer.LastUpdatedUser = User.Claims.First().Value.ToString();
+            existingCustomer.LastUpdatedmachine = Request.HttpContext.Connection.RemoteIpAddress.ToString();
+
+            _billingsoftware.Entry(existingCustomer).State = EntityState.Modified;
+
+            await _billingsoftware.SaveChangesAsync();
+
+            ViewBag.delMessage = "Deleted Successfully";
+
+            return View("CustomerMaster"); // Redirect to the main view or another appropriate view
+        }
+
 
         [HttpPost]
         public async Task<IActionResult> AddDiscountCategory(DiscountCategoryMasterModel model , string buttonType)
@@ -793,6 +856,153 @@ namespace HealthCare.Controllers
             ViewBag.Delete = "Deleted  Successfully.";
             return View("RackPatrionProduct");
         }
+
+// staff reg
+        [HttpPost]
+        public async Task<IActionResult> AddStaff(StaffAdminModel model,string buttontype)
+        {
+            BusinessClassBilling Busbill = new BusinessClassBilling(_billingsoftware);
+            ViewData["resoruseid"] = Busbill.GetResourceid();
+
+
+            if (buttontype == "Get")
+            {
+                var getstaff = await _billingsoftware.SHStaffAdmin.FirstOrDefaultAsync(x => x.StaffID == model.StaffID);
+                if (getstaff != null)
+                {
+                    return View("StaffAdmin", getstaff);
+                }
+                else
+                {
+                    CategoryMasterModel par = new CategoryMasterModel();
+                    ViewBag.ErrorMessage = "No Data found for this Staff ID";
+                    return View("StaffAdmin", par);
+                }
+            }
+            else if (buttontype == "Delete")
+            {
+                var stafftodelete = await _billingsoftware.SHStaffAdmin.FindAsync(model.StaffID);
+                if (stafftodelete != null)
+                {
+                    stafftodelete.IsDelete = true;
+                    await _billingsoftware.SaveChangesAsync();
+
+                    ViewBag.Message = "StaffID deleted successfully";
+                    return View("StaffAdmin");
+                }
+                else
+                {
+                    ViewBag.ErrorMessage = "StaffID not found";
+                    return View("StaffAdmin");
+                }
+
+            }
+
+            else if (buttontype == "DeleteRetrieve")
+            {
+                var stafftoretrieve = await _billingsoftware.SHStaffAdmin.FindAsync(model.StaffID);
+                if (stafftoretrieve != null)
+                {
+                    stafftoretrieve.IsDelete = false;
+
+                    await _billingsoftware.SaveChangesAsync();
+
+                    model.StaffID = stafftoretrieve.StaffID;
+                   
+                    ViewBag.Message = "Deleted StaffID retrieved successfully";
+                }
+                else
+                {
+                    ViewBag.ErrorMessage = "StaffID not found";
+                }
+                return View("StaffAdmin", model);
+            }
+
+
+            var existingStaffAdmin = await _billingsoftware.SHStaffAdmin.FindAsync(model.StaffID);
+
+            if (existingStaffAdmin != null)
+            {
+                existingStaffAdmin.StaffID = model.StaffID;
+                existingStaffAdmin.ResourceTypeID = model.ResourceTypeID;
+                existingStaffAdmin.FirstName = model.FirstName;
+                existingStaffAdmin.LastName = model.LastName;
+                existingStaffAdmin.Initial = model.Initial;
+                existingStaffAdmin.Prefix = model.Prefix;
+                existingStaffAdmin.Age = model.Age;
+                existingStaffAdmin.DateofBirth = model.DateofBirth;
+                existingStaffAdmin.EmailId = model.EmailId;
+                existingStaffAdmin.Address1 = model.Address1;
+                existingStaffAdmin.City = model.City;
+                existingStaffAdmin.State = model.State;
+                existingStaffAdmin.Pin = model.Pin;
+                existingStaffAdmin.PhoneNumber = model.PhoneNumber;
+                existingStaffAdmin.EmailId = model.EmailId;
+                existingStaffAdmin.Nationality = model.Nationality;
+                existingStaffAdmin.UserName = model.UserName;
+                existingStaffAdmin.Password = model.Password;
+                existingStaffAdmin.IdProofId = model.IdProofId;
+                existingStaffAdmin.IdProofName = model.IdProofName;
+                existingStaffAdmin.LastupdatedDate = DateTime.Now.ToString();
+                existingStaffAdmin.LastupdatedUser = User.Claims.First().Value.ToString();
+                existingStaffAdmin.LastUpdatedMachine = Request.HttpContext.Connection.RemoteIpAddress.ToString();
+
+                _billingsoftware.Entry(existingStaffAdmin).State = EntityState.Modified;
+
+            }
+            else
+            {
+
+                model.LastupdatedDate = DateTime.Now.ToString();
+                model.LastupdatedUser = User.Claims.First().Value.ToString();
+                model.LastUpdatedMachine = Request.HttpContext.Connection.RemoteIpAddress.ToString();
+                _billingsoftware.SHStaffAdmin.Add(model);
+            }
+            await _billingsoftware.SaveChangesAsync();
+
+            ViewBag.Message = "Saved Successfully";
+            return View("StaffAdmin", model);
+
+
+        }
+
+
+
+
+        public IActionResult RollTypeMaster()
+        {
+            return View();
+        }
+
+        public IActionResult StaffAdmin()
+        {
+
+            BusinessClassBilling Busbill = new BusinessClassBilling(_billingsoftware);
+            ViewData["resoruseid"] = Busbill.GetResourceid();
+
+            return View();
+        }
+
+        public IActionResult ResourceTypeMaster()
+        {
+            return View();
+        }
+
+        public IActionResult RollAccessMaster()
+        {
+            return View();
+        }
+
+        public IActionResult RoleAccess()
+        {
+            return View();
+        }
+
+        public IActionResult ScreenMaster()
+        {
+            return View();
+        }
+
 
 
 

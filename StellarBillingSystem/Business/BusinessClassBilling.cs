@@ -92,7 +92,19 @@ namespace StellarBillingSystem.Business
 
 
 
+        public List<ResourceTypeMasterModel> GetResourceid()
+        {
+            var resoruseid = (
+                    from pr in _billingContext.SHresourceType
+                    select new ResourceTypeMasterModel
+                    {
+                        ResourceTypeID = pr.ResourceTypeID,
+                        ResourceTypeName = pr.ResourceTypeName
+                    }
+               ).ToList();
 
+            return resoruseid;
+        }
 
 
 
