@@ -21,75 +21,214 @@ namespace HealthCare.Controllers
 
         public async Task<IActionResult> AddCategory(CategoryMasterModel model , string buttonType)
         {
-            var existingCategory = await _billingsoftware.SHCategoryMaster.FindAsync(model.CategoryID);
-            if (existingCategory != null)
+            if (buttonType == "Get")
             {
-                existingCategory.CategoryID = model.CategoryID;
-                existingCategory.CategoryName = model.CategoryName;
-                existingCategory.LastUpdatedDate = DateTime.Now.ToString();
-                existingCategory.LastUpdatedUser = /*User.Claims.First().Value.ToString();*/ "Admin";
-                existingCategory.LastUpdatedmachine = Request.HttpContext.Connection.RemoteIpAddress.ToString();    
-
-                _billingsoftware.Entry(existingCategory).State = EntityState.Modified;
+                var getcategory = await _billingsoftware.SHCategoryMaster.FirstOrDefaultAsync(x => x.CategoryID == model.CategoryID && !x.IsDelete);
+                if (getcategory != null)
+                {
+                    return View("CategoryMasterModel", getcategory);
+                }
+                else
+                {
+                    CategoryMasterModel par = new CategoryMasterModel();
+                    ViewBag.ErrorMessage = "No value for this Category ID";
+                    return View("CategoryMasterModel", par);
+                }
             }
-            else
+            else if (buttonType == "Delete")
             {
-                model.LastUpdatedDate = DateTime.Now.ToString();
-                model.LastUpdatedUser = /*User.Claims.First().Value.ToString();*/  "Admin";
-                model.LastUpdatedmachine = Request.HttpContext.Connection.RemoteIpAddress.ToString();
+                var categorytodelete = await _billingsoftware.SHCategoryMaster.FindAsync(model.CategoryID);
+                if (categorytodelete != null)
+                {
+                    categorytodelete.IsDelete = true;
+                    await _billingsoftware.SaveChangesAsync();
 
+                    ViewBag.Message = "Category deleted successfully";
+                    return View("CategoryMasterModel", model);
+                }
+                else
+                {
+                    ViewBag.ErrorMessage = "Category not found";
+                    return View("CategoryMasterModel", model);
+                }
 
-                _billingsoftware.SHCategoryMaster.Add(model);
             }
-                
 
-            await _billingsoftware.SaveChangesAsync();
+            else if (buttonType == "DeleteRetrieve")
+            {
+                var categorytoretrieve = await _billingsoftware.SHCategoryMaster.FindAsync(model.CategoryID);
+                if (categorytoretrieve != null)
+                {
+                    categorytoretrieve.IsDelete = false;
 
-            ViewBag.Message = "Saved Successfully";
-           
+                    await _billingsoftware.SaveChangesAsync();
+
+                    model.CategoryID = categorytoretrieve.CategoryID;
+                    model.CategoryName = categorytoretrieve.CategoryName;
+
+                    ViewBag.Message = "Category retrieved successfully";
+                }
+                else
+                {
+                    ViewBag.ErrorMessage = "Category not found";
+                }
+                return View("CategoryMasterModel", model);
+            }
+            else if (buttonType == "save")
+            {
+                var existingCategory = await _billingsoftware.SHCategoryMaster.FindAsync(model.CategoryID);
+                if (existingCategory != null)
+                {
+                    if (existingCategory.IsDelete)
+                    {
+                        ViewBag.ErrorMessage = "Cannot update. Category is marked as deleted.";
+                        return View("CategoryMasterModel", model);
+                    }
+                    existingCategory.CategoryID = model.CategoryID;
+                    existingCategory.CategoryName = model.CategoryName;
+                    existingCategory.LastUpdatedDate = DateTime.Now.ToString();
+                    existingCategory.LastUpdatedUser = /*User.Claims.First().Value.ToString();*/ "Admin";
+                    existingCategory.LastUpdatedmachine = Request.HttpContext.Connection.RemoteIpAddress.ToString();
+
+                    _billingsoftware.Entry(existingCategory).State = EntityState.Modified;
+                }
+                else
+                {
+                    model.LastUpdatedDate = DateTime.Now.ToString();
+                    model.LastUpdatedUser = /*User.Claims.First().Value.ToString();*/  "Admin";
+                    model.LastUpdatedmachine = Request.HttpContext.Connection.RemoteIpAddress.ToString();
+
+
+                    _billingsoftware.SHCategoryMaster.Add(model);
+                }
+
+
+                await _billingsoftware.SaveChangesAsync();
+
+                ViewBag.Message = "Saved Successfully";
+            }
             return View("CategoryMasterModel");
         }
 
-
         [HttpPost]
 
-        public async Task<IActionResult> AddProduct(ProductMatserModel model)
+        public async Task<IActionResult> AddProduct(ProductMatserModel model, string buttonType)
         {
-            var existingProduct  = await _billingsoftware.SHProductMaster.FindAsync(model.ProductID);
-            if (existingProduct != null)
-            {
-                existingProduct.ProductID = model.ProductID;
-                existingProduct.CategoryID = model.CategoryID;
-                existingProduct.ProductName = model.ProductName;
-                existingProduct.Brandname = model.Brandname;
-                existingProduct.Price = model.Price;
-                existingProduct.Discount = model.Discount;
-                existingProduct.TotalAmount = model.TotalAmount;
-                existingProduct.LastUpdatedDate = DateTime.Now.ToString();
-                existingProduct.LastUpdatedUser = User.Claims.First().Value.ToString();
-                existingProduct.LastUpdatedmachine = Request.HttpContext.Connection.RemoteIpAddress.ToString();
+            BusinessClassBilling business = new BusinessClassBilling(_billingsoftware);
+            ViewData["categoryid"] = business.GetCatid();
 
-                _billingsoftware.Entry(existingProduct).State = EntityState.Modified;
+            if (buttonType == "Get")
+            {
+                var resultpro = await _billingsoftware.SHProductMaster.FirstOrDefaultAsync(x => x.ProductID == model.ProductID && !x.IsDelete);
+                if (resultpro != null)
+                {
+                    //var getbusproduct = await business.GetProductmaster(model.ProductID);
+
+                    return View("ProductMasterModel", resultpro);
+                }
+                else
+                {
+                    ProductMatserModel obj = new ProductMatserModel();
+                    ViewBag.ErrorMessage = "No value for this product ID";
+                    return View("ProductMasterModel", obj);
+                }
+            }
+
+            else if (buttonType == "Delete")
+            {
+                var productToDelete = await _billingsoftware.SHProductMaster.FindAsync(model.ProductID);
+                if (productToDelete != null)
+                {
+                    productToDelete.IsDelete = true; // Mark the product as deleted
+                    await _billingsoftware.SaveChangesAsync();
+
+                    ViewBag.Message = "Product deleted successfully";
+                    return View("ProductMasterModel", model); // Assuming you want to return the view with the same model
+                }
+                else
+                {
+                    ViewBag.ErrorMessage = "Product not found";
+                    return View("ProductMasterModel", model); // Return the view with the model
+                }
+            }
+            else if (buttonType == "DeleteRetrieve")
+            {
+                // Retrieve logic: Set a database value to 0 and retrieve values
+
+                var productToRetrieve = await _billingsoftware.SHProductMaster.FindAsync(model.ProductID);
+                if (productToRetrieve != null)
+                {
+                    // Assuming you have a property like IsRetrieved in your model
+                    productToRetrieve.IsDelete = false; // Set a specific database value to 0
+
+                    await _billingsoftware.SaveChangesAsync();
+                    // Assuming you want to retrieve certain values and display them in textboxes
+                    model.ProductID = productToRetrieve.ProductID;
+                    model.CategoryID = productToRetrieve.CategoryID;
+                    model.ProductName = productToRetrieve.ProductName;
+                    model.Brandname = productToRetrieve.Brandname;
+                    model.Price = productToRetrieve.Price;
+                    model.Discount = productToRetrieve.Discount;
+                    model.TotalAmount = productToRetrieve.TotalAmount;
+
+                    ViewBag.Message = "Product retrieved successfully";
+                }
+                else
+                {
+                    ViewBag.ErrorMessage = "Product not found";
+                }
+
+                return View("ProductMasterModel", model);
+            }
+
+
+            else if (buttonType == "Save")
+            {
+
+
+                var existingProduct = await _billingsoftware.SHProductMaster.FindAsync(model.ProductID);
+                if (existingProduct != null)
+                {
+                    if (existingProduct.IsDelete)
+                    {
+                        ViewBag.ErrorMessage = "Cannot update. Product is marked as deleted.";
+                        return View("ProductMasterModel", model);
+                    }
+
+                    existingProduct.ProductID = model.ProductID;
+                    existingProduct.CategoryID = model.CategoryID;
+                    existingProduct.ProductName = model.ProductName;
+                    existingProduct.Brandname = model.Brandname;
+                    existingProduct.Price = model.Price;
+                    existingProduct.Discount = model.Discount;
+                    existingProduct.TotalAmount = model.TotalAmount;
+                    existingProduct.LastUpdatedDate = DateTime.Now.ToString();
+                    existingProduct.LastUpdatedUser = User.Claims.First().Value.ToString();
+                    existingProduct.LastUpdatedmachine = Request.HttpContext.Connection.RemoteIpAddress.ToString();
+
+                    _billingsoftware.Entry(existingProduct).State = EntityState.Modified;
+
+                }
+                else
+                {
+
+                    model.LastUpdatedDate = DateTime.Now.ToString();
+                    model.LastUpdatedUser = User.Claims.First().Value.ToString();
+                    model.LastUpdatedmachine = Request.HttpContext.Connection.RemoteIpAddress.ToString();
+
+                    _billingsoftware.SHProductMaster.Add(model);
+                }
+
+
+                await _billingsoftware.SaveChangesAsync();
+
+                ViewBag.Message = "Saved Successfully";
 
             }
-            else
-            {
-
-                model.LastUpdatedDate = DateTime.Now.ToString();
-                model.LastUpdatedUser = User.Claims.First().Value.ToString();
-                model.LastUpdatedmachine = Request.HttpContext.Connection.RemoteIpAddress.ToString();
-
-                _billingsoftware.SHProductMaster.Add(model);
-            }
-            
-
-            await _billingsoftware.SaveChangesAsync();
-
-
-            ViewBag.Message = "Saved Successfully";
-
-            return View("ProductMasterModel" , model);
+            return View("ProductMasterModel", model);
         }
+
+
 
         [HttpPost]
 
@@ -432,12 +571,16 @@ namespace HealthCare.Controllers
 
         public IActionResult CategoryMasterModel()
         {
-            return View();
+            CategoryMasterModel par = new CategoryMasterModel();
+            return View("CategoryMasterModel", par);
         }
 
         public IActionResult ProductMasterModel()
         {
-            return View();
+            BusinessClassBilling business = new BusinessClassBilling(_billingsoftware);
+            ViewData["categoryid"] = business.GetCatid();
+            ProductMatserModel obj = new ProductMatserModel();
+            return View("ProductMasterModel", obj);
         }
 
         [HttpPost]
