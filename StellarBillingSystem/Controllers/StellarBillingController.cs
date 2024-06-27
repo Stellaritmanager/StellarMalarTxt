@@ -729,6 +729,153 @@ namespace HealthCare.Controllers
             return View("RackPatrionProduct");
         }
 
+// staff reg
+        [HttpPost]
+        public async Task<IActionResult> AddStaff(StaffAdminModel model,string buttontype)
+        {
+            BusinessClassBilling Busbill = new BusinessClassBilling(_billingsoftware);
+            ViewData["resoruseid"] = Busbill.GetResourceid();
+
+
+            if (buttontype == "Get")
+            {
+                var getstaff = await _billingsoftware.SHStaffAdmin.FirstOrDefaultAsync(x => x.StaffID == model.StaffID);
+                if (getstaff != null)
+                {
+                    return View("StaffAdmin", getstaff);
+                }
+                else
+                {
+                    CategoryMasterModel par = new CategoryMasterModel();
+                    ViewBag.ErrorMessage = "No Data found for this Staff ID";
+                    return View("StaffAdmin", par);
+                }
+            }
+            else if (buttontype == "Delete")
+            {
+                var stafftodelete = await _billingsoftware.SHStaffAdmin.FindAsync(model.StaffID);
+                if (stafftodelete != null)
+                {
+                    stafftodelete.IsDelete = true;
+                    await _billingsoftware.SaveChangesAsync();
+
+                    ViewBag.Message = "StaffID deleted successfully";
+                    return View("StaffAdmin");
+                }
+                else
+                {
+                    ViewBag.ErrorMessage = "StaffID not found";
+                    return View("StaffAdmin");
+                }
+
+            }
+
+            else if (buttontype == "DeleteRetrieve")
+            {
+                var stafftoretrieve = await _billingsoftware.SHStaffAdmin.FindAsync(model.StaffID);
+                if (stafftoretrieve != null)
+                {
+                    stafftoretrieve.IsDelete = false;
+
+                    await _billingsoftware.SaveChangesAsync();
+
+                    model.StaffID = stafftoretrieve.StaffID;
+                   
+                    ViewBag.Message = "Deleted StaffID retrieved successfully";
+                }
+                else
+                {
+                    ViewBag.ErrorMessage = "StaffID not found";
+                }
+                return View("StaffAdmin", model);
+            }
+
+
+            var existingStaffAdmin = await _billingsoftware.SHStaffAdmin.FindAsync(model.StaffID);
+
+            if (existingStaffAdmin != null)
+            {
+                existingStaffAdmin.StaffID = model.StaffID;
+                existingStaffAdmin.ResourceTypeID = model.ResourceTypeID;
+                existingStaffAdmin.FirstName = model.FirstName;
+                existingStaffAdmin.LastName = model.LastName;
+                existingStaffAdmin.Initial = model.Initial;
+                existingStaffAdmin.Prefix = model.Prefix;
+                existingStaffAdmin.Age = model.Age;
+                existingStaffAdmin.DateofBirth = model.DateofBirth;
+                existingStaffAdmin.EmailId = model.EmailId;
+                existingStaffAdmin.Address1 = model.Address1;
+                existingStaffAdmin.City = model.City;
+                existingStaffAdmin.State = model.State;
+                existingStaffAdmin.Pin = model.Pin;
+                existingStaffAdmin.PhoneNumber = model.PhoneNumber;
+                existingStaffAdmin.EmailId = model.EmailId;
+                existingStaffAdmin.Nationality = model.Nationality;
+                existingStaffAdmin.UserName = model.UserName;
+                existingStaffAdmin.Password = model.Password;
+                existingStaffAdmin.IdProofId = model.IdProofId;
+                existingStaffAdmin.IdProofName = model.IdProofName;
+                existingStaffAdmin.LastupdatedDate = DateTime.Now.ToString();
+                existingStaffAdmin.LastupdatedUser = User.Claims.First().Value.ToString();
+                existingStaffAdmin.LastUpdatedMachine = Request.HttpContext.Connection.RemoteIpAddress.ToString();
+
+                _billingsoftware.Entry(existingStaffAdmin).State = EntityState.Modified;
+
+            }
+            else
+            {
+
+                model.LastupdatedDate = DateTime.Now.ToString();
+                model.LastupdatedUser = User.Claims.First().Value.ToString();
+                model.LastUpdatedMachine = Request.HttpContext.Connection.RemoteIpAddress.ToString();
+                _billingsoftware.SHStaffAdmin.Add(model);
+            }
+            await _billingsoftware.SaveChangesAsync();
+
+            ViewBag.Message = "Saved Successfully";
+            return View("StaffAdmin", model);
+
+
+        }
+
+
+
+
+        public IActionResult RollTypeMaster()
+        {
+            return View();
+        }
+
+        public IActionResult StaffAdmin()
+        {
+
+            BusinessClassBilling Busbill = new BusinessClassBilling(_billingsoftware);
+            ViewData["resoruseid"] = Busbill.GetResourceid();
+
+            return View();
+        }
+
+        public IActionResult ResourceTypeMaster()
+        {
+            return View();
+        }
+
+        public IActionResult RollAccessMaster()
+        {
+            return View();
+        }
+
+        public IActionResult RoleAccess()
+        {
+            return View();
+        }
+
+        public IActionResult ScreenMaster()
+        {
+            return View();
+        }
+
+
 
 
         public IActionResult CustomerMaster()
