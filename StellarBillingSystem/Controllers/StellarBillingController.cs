@@ -141,7 +141,7 @@ namespace HealthCare.Controllers
         [HttpPost]
         public async Task<IActionResult> AddCustomer(CustomerMasterModel model)
         {
-            var existingCustomer = await _billingsoftware.SHCustomerMaster.FindAsync(model.CustomerID);
+            var existingCustomer = await _billingsoftware.SHCustomerMaster.FindAsync(model.MobileNumber);
             if (existingCustomer != null)
             {
                 existingCustomer.CustomerID = model.CustomerID;
@@ -151,9 +151,6 @@ namespace HealthCare.Controllers
                 existingCustomer.Address = model.Address;
                 existingCustomer.City = model.City;
                 existingCustomer.MobileNumber = model.MobileNumber;
-                existingCustomer.PointsReedem = model.PointsReedem;
-                existingCustomer.VoucherDiscount = model.VoucherDiscount;
-                existingCustomer.VoucherNumber = model.VoucherNumber;
                 existingCustomer.LastUpdatedDate = DateTime.Now.ToString();
                 existingCustomer.LastUpdatedUser = User.Claims.First().Value.ToString();
                 existingCustomer.LastUpdatedmachine = Request.HttpContext.Connection.RemoteIpAddress.ToString();
@@ -288,7 +285,7 @@ namespace HealthCare.Controllers
 
         [HttpPost]
 
-        public async Task<IActionResult> AddNetDiscount(NetDiscountMasterModel model)
+        public async Task<IActionResult>AddNetDiscount(NetDiscountMasterModel model)
         {
             var existingnetdiscount = await _billingsoftware.SHNetDiscountMaster.FindAsync(model.NetDiscount);
             if (existingnetdiscount != null)
@@ -315,7 +312,7 @@ namespace HealthCare.Controllers
 
             ViewBag.Message = "Saved Successfully";
 
-            return View("NetDicsountMaster", model);
+            return View("NetDiscountMaster", model);
 
         }
 

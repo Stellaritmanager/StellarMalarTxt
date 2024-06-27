@@ -59,7 +59,7 @@ namespace StellarBillingSystem.Context
 
             modelBuilder.Entity<ProductMatserModel>().HasKey(i => new { i.ProductID });
 
-            modelBuilder.Entity<CustomerMasterModel>().HasKey(i => new { i.CustomerID });
+            modelBuilder.Entity<CustomerMasterModel>().HasKey(i => new { i.MobileNumber });
 
             modelBuilder.Entity<DiscountCategoryMasterModel>().HasKey(i => new { i.DiscountPrice });
 
