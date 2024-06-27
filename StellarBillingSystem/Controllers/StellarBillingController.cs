@@ -175,6 +175,23 @@ namespace HealthCare.Controllers
             
             return View("CustomerMaster" , model);
         }
+        public async Task<IActionResult> GetCustomer(string mobileNumber)
+        {
+            if (string.IsNullOrEmpty(mobileNumber))
+            {
+                return BadRequest("Mobile number is required");
+            }
+
+            var customer = await _billingsoftware.SHCustomerMaster.FindAsync(mobileNumber);
+
+            if (customer == null)
+            {
+                ViewBag.ErrorMessage = "Moblile Number not found";
+                return View("CustomerMaster", customer);
+            }
+
+            return View("CustomerMaster", customer);
+        }
 
         [HttpPost]
         public async Task<IActionResult> AddDiscountCategory(DiscountCategoryMasterModel model)
