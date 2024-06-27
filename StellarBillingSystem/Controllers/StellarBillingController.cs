@@ -280,7 +280,7 @@ namespace HealthCare.Controllers
         [HttpPost]
         public async Task<IActionResult> AddCustomer(CustomerMasterModel model)
         {
-            var existingCustomer = await _billingsoftware.SHCustomerMaster.FindAsync(model.CustomerID);
+            var existingCustomer = await _billingsoftware.SHCustomerMaster.FindAsync(model.MobileNumber);
             if (existingCustomer != null)
             {
                 existingCustomer.CustomerID = model.CustomerID;
@@ -290,9 +290,6 @@ namespace HealthCare.Controllers
                 existingCustomer.Address = model.Address;
                 existingCustomer.City = model.City;
                 existingCustomer.MobileNumber = model.MobileNumber;
-                existingCustomer.PointsReedem = model.PointsReedem;
-                existingCustomer.VoucherDiscount = model.VoucherDiscount;
-                existingCustomer.VoucherNumber = model.VoucherNumber;
                 existingCustomer.LastUpdatedDate = DateTime.Now.ToString();
                 existingCustomer.LastUpdatedUser = User.Claims.First().Value.ToString();
                 existingCustomer.LastUpdatedmachine = Request.HttpContext.Connection.RemoteIpAddress.ToString();
@@ -316,6 +313,23 @@ namespace HealthCare.Controllers
             ViewBag.Message = "Saved Successfully";
             
             return View("CustomerMaster" , model);
+        }
+        public async Task<IActionResult> GetCustomer(string mobileNumber)
+        {
+            if (string.IsNullOrEmpty(mobileNumber))
+            {
+                return BadRequest("Mobile number is required");
+            }
+
+            var customer = await _billingsoftware.SHCustomerMaster.FindAsync(mobileNumber);
+
+            if (customer == null)
+            {
+                ViewBag.ErrorMessage = "Moblile Number not found";
+                return View("CustomerMaster", customer);
+            }
+
+            return View("CustomerMaster", customer);
         }
 
         [HttpPost]
@@ -427,7 +441,7 @@ namespace HealthCare.Controllers
 
         [HttpPost]
 
-        public async Task<IActionResult> AddNetDiscount(NetDiscountMasterModel model)
+        public async Task<IActionResult>AddNetDiscount(NetDiscountMasterModel model)
         {
             var existingnetdiscount = await _billingsoftware.SHNetDiscountMaster.FindAsync(model.NetDiscount);
             if (existingnetdiscount != null)
@@ -454,7 +468,7 @@ namespace HealthCare.Controllers
 
             ViewBag.Message = "Saved Successfully";
 
-            return View("NetDicsountMaster", model);
+            return View("NetDiscountMaster", model);
 
         }
 

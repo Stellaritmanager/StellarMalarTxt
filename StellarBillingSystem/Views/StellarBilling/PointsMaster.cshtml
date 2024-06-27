@@ -5,6 +5,30 @@
     Layout = "~/Views/Shared/_ContentNavbarLayout.cshtml";
 }
 
+<script>
+    function showPopup(message) {
+        var popup = document.getElementById("popupMessage");
+        var popupText = document.getElementById("popupMessageText");
+        var popupOKButton = document.getElementById("popupOKButton");
+
+        popupText.textContent = message; // Set the message text
+        popup.style.display = "block";
+
+        popupOKButton.addEventListener("click", function () {
+            popup.style.display = "none"; // Hide the popup when OK button is clicked
+        });
+    }
+
+    function handleMessages(message) {
+        showPopup(message);
+    }
+</script>
+
+<div id="popupMessage" style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background-color: #f0f0f0; color: black; padding: 30px; border: 10px solid white; border-radius: 10px; z-index: 1000; display: none; text-align: center;">
+    <span id="popupMessageText" style="display: block; margin-bottom: 20px;"></span>
+    <button id="popupOKButton" style="padding: 10px 20px; background-color: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer;">OK</button>
+</div>
+
 <form asp-controller="StellarBilling">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
@@ -39,6 +63,14 @@
                         <label asp-for="PointsID" class="control-label">Points ID</label>
                 <span asp-validation-for="PointsID" class="text-danger"></span>
                     </div>
+
+                    <div class="form-floating form-floating-outline mb-4">
+
+                        <input asp-for="NetPoints" class="form-control" placeholder="Net Point" />
+                        <label asp-for="NetPoints" class="control-label">Net Point</label>
+                        <span asp-validation-for="NetPoints" class="text-danger"></span>
+                    </div>
+
                     <div class="form-floating form-floating-outline mb-4">
 
                         <input asp-for="NetPrice" class="form-control" placeholder="Net Price"/>
@@ -59,15 +91,21 @@
     <div class="form-group">
         <center>
             <button type="submit" value="Create" class="btn btn-primary" asp-action="AddPoints">Save</button>
-            @if (ViewBag.Message != null)
+            @* @if (ViewBag.Message != null)
             {
                 <div class="alert alert-success">
                     @ViewBag.Message
                 </div>
-            }
+            } *@
         </center>
     </div>
 
-        </form>
+    @if (ViewBag.Message != null)
+    {
+        <script>
+            handleMessages("@ViewBag.Message");
+        </script>
+    }
+ </form>
 
 

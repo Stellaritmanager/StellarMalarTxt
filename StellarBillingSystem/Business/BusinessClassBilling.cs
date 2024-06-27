@@ -74,33 +74,6 @@ namespace StellarBillingSystem.Business
             return godownproductid;
         }
 
-      
-
-        public async Task<List<CustomerMasterModel>> GetCustomerById(string customerNumber)
-        {
-            var customerpoint = (from shr in _billingContext.SHPointsReedemDetails
-                                 join shc in _billingContext.SHCustomerMaster on shr.CustomerID equals shc.CustomerID
-                                 join shb in _billingContext.SHCustomerBilling on shc.MobileNumber equals shb.CustomerNumber
-                                 select shr.TotalPoints
-                                 ).First();
-            
-            
-            
-            var customernumber =  (from n in _billingContext.SHCustomerBilling
-                                  from p in _billingContext.SHPointsReedemDetails
-                                  join s in _billingContext.SHCustomerMaster on n.CustomerNumber equals s.MobileNumber
-                                  join pr in _billingContext.SHCustomerMaster on p.CustomerID equals pr.CustomerID
-                                  where s.MobileNumber == customerNumber
-                                  select new CustomerMasterModel
-                                  {
-
-                                      MobileNumber = n.CustomerNumber,
-                                      PointsReedem = p.TotalPoints,
-
-                                  }).ToListAsync().Result;
-
-            return customernumber;
-        }
 
 
         public List<RackpartitionViewModel> GetRackview(string partitionID, string productID)
