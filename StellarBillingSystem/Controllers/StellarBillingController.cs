@@ -672,14 +672,22 @@ namespace HealthCare.Controllers
             {
 
                 var result = business.GetRackview(model.PartitionID, model.ProductID);
-                var viewModelList = result.Select(p => new RackPatrionProductModel
+                if (result == null || !result.Any())
                 {
-                    ProductID = p.ProductID,
-                    PartitionID = p.PartitionID,
-                    Noofitems = p.Noofitems
-                }).ToList();
+                    ViewBag.GetMessage = "No data found.";
+                    viewmodel.Viewrackpartition = new List<RackPatrionProductModel>();
+                }
+                else
+                {
+                    var viewModelList = result.Select(p => new RackPatrionProductModel
+                    {
+                        ProductID = p.ProductID,
+                        PartitionID = p.PartitionID,
+                        Noofitems = p.Noofitems
+                    }).ToList();
 
-                viewmodel.Viewrackpartition = viewModelList;
+                    viewmodel.Viewrackpartition = viewModelList;
+                }
 
                 return View("RackPatrionProduct", viewmodel);
             }
@@ -711,7 +719,19 @@ namespace HealthCare.Controllers
 
             ViewBag.Message = "Saved Successfully";
 
-            return View("RackPatrionProduct");
+//Repopulate the table after save 
+
+            var updatedResult = business.GetRackview(model.PartitionID, model.ProductID);
+            var updatedViewModelList = updatedResult.Select(p => new RackPatrionProductModel
+            {
+                ProductID = p.ProductID,
+                PartitionID = p.PartitionID,
+                Noofitems = p.Noofitems
+            }).ToList();
+
+            viewmodel.Viewrackpartition = updatedViewModelList;
+
+            return View("RackPatrionProduct", viewmodel);
         }
 
 // Edit Function for RackPartition Table
@@ -723,7 +743,7 @@ namespace HealthCare.Controllers
             var RackEdit = await _billingsoftware.SHRackPartionProduct.FindAsync(partitionID, productID);
             if (RackEdit == null)
             {
-                ViewBag.ErrorMessage = "Not Found";
+                ViewBag.NovalueMessage = "No Data Found";
             }
 
             var rackviewTable = new RackpartitionViewModel
