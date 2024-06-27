@@ -171,8 +171,9 @@ namespace HealthCare.Controllers
                     model.Discount = productToRetrieve.Discount;
                     model.TotalAmount = productToRetrieve.TotalAmount;
 
-                  ViewBag.Message = "Product retrieved successfully";
-                }
+                    ViewBag.Message = "Product retrieved successfully";
+
+                    }
                 else
                 {
                     ViewBag.ErrorMessage = "Product not found";
@@ -184,7 +185,6 @@ namespace HealthCare.Controllers
 
             else if (buttonType == "Save")
             {
-
 
                 var existingProduct = await _billingsoftware.SHProductMaster.FindAsync(model.ProductID);
                 if (existingProduct != null)
