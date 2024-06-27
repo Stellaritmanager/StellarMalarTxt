@@ -106,6 +106,63 @@ namespace StellarBillingSystem.Business
             return resoruseid;
         }
 
+        public List<RollTypeMaster> RollAccessType()
+        {
+            var rollid = (
+                    from pr in _billingContext.SHrollType
+                    select new RollTypeMaster
+                    {
+                        RollID = pr.RollID,
+                        RollName = pr.RollName
+                    }
+                ).ToList();
+
+            return rollid;
+        }
+
+        public List<ScreenNameMasterModel> Screenname()
+        {
+            var screenname = (
+                    from pr in _billingContext.SHScreenName
+                    select new ScreenNameMasterModel
+                    {
+                        ScreenName = pr.ScreenName,
+                    }
+                ).ToList();
+
+            return screenname;
+        }
+
+
+        public List<StaffAdminModel> GetStaffID()
+        {
+            var staffid = (
+                    from pr in _billingContext.SHStaffAdmin
+                    select new StaffAdminModel
+                    {
+                        StaffID = pr.StaffID,
+                        FullName = pr.FullName
+                    }
+                ).ToList();
+
+            return staffid;
+        }
+
+        public List<ScreenMasterModel> GetScreenid()
+
+        {
+            var screenid = (
+                        from pr in _billingContext.SHScreenMaster
+                        select new ScreenMasterModel
+                        {
+                            ScreenId = pr.ScreenId,
+                            
+                            ScreenName = pr.ScreenName
+
+                        }).ToList();
+            return screenid;
+        }
+
 
 
 

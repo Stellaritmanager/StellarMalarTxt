@@ -10,13 +10,13 @@
         private string lastupdatedUser;
         private string lastupdatedDate;
         private string lastupdatedMachine;
-        private string isdelete;
+        private bool isDelete;
 
         public string RollID { get => rollID; set => rollID = value; }
         public string RollName { get => rollName; set => rollName = value; }
         public string? LastupdatedUser { get => lastupdatedUser; set => lastupdatedUser = value; }
         public string? LastupdatedDate { get => lastupdatedDate; set => lastupdatedDate = value; }
         public string? LastupdatedMachine { get => lastupdatedMachine; set => lastupdatedMachine = value; }
-        public string Isdelete { get => isdelete; set => isdelete = value; }
+        public bool IsDelete { get => isDelete; set => isDelete = value; }
     }
 }

@@ -1,9 +1,11 @@
-﻿@model StellarBillingSystem.Models.RollTypeMaster
+﻿@model StellarBillingSystem.Models.RollAccessMaster
 
 @{
-    ViewData["Title"] = "RollTypeMaster";
+    ViewData["Title"] = "RollAccessMaster";
     Layout = "~/Views/Shared/_ContentNavbarLayout.cshtml";
 }
+
+
 
 <script>
     function showPopup(message) {
@@ -29,81 +31,35 @@
     <button id="popupOKButton" style="padding: 10px 20px; background-color: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer;">OK</button>
 </div>
 
+<h1>RollAccessMaster</h1>
 
-
-<h1>RollTypeMaster</h1>
-
-<hr />
 <div class="row">
     <div class="col-md-4">
-        <form asp-action="AddRolltype" asp-controller="StellarBilling">
+        <form asp-action="RoleAccess">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-floating form-floating-outline mb-4">
 
-                <input asp-for="RollID" value="@Model.RollID" class="form-control" placeholder="RollID" />
-                <label asp-for="RollID" class="control-label">RollID</label>
-                <span asp-validation-for="RollID" class="text-danger"></span>
+                <input asp-for="StaffID" value="@Model.StaffID" class="form-control" placeholder="StaffID" />
+                <label asp-for="StaffID" class="control-label">StaffID</label>
+                <span asp-validation-for="StaffID" class="text-danger"></span>
             </div>
 
             <div class="form-floating form-floating-outline mb-4">
 
-                <input asp-for="RollName" value="@Model.RollName" class="form-control" placeholder="RollName" />
-                <label asp-for="RollName" class="control-label">RollName</label>
-                <span asp-validation-for="RollName" class="text-danger"></span>
+                <input asp-for="RollID" value="@Model.RollID" class="form-control" placeholder="RollID" />
+                <label asp-for="RollID" class="control-label">ScreenID</label>
+                <span asp-validation-for="RollID" class="text-danger"></span>
             </div>
-            
+
+           
             <div class="form-group">
                 <button type="submit" style="width:180px" value="Get" name="buttonType" class="btn btn-primary">Get</button>
                 <button type="submit" style="width:180px" value="Save" class="btn btn-primary">Save</button>
 
                 <button type="submit" style="width:180px" value="Delete" name="buttonType" class="btn btn-primary">Delete</button>
                 <button type="submit" style="width:180px" value="DeleteRetrieve" name="buttonType" class="btn btn-primary">Delete Retrieve</button>
+
             </div>
-
-
-            @if (ViewBag.Message != null)
-            {
-                <script>
-                    handleMessages("@ViewBag.Message");
-                </script>
-            }
-
-            @if (ViewBag.getMessage != null)
-            {
-                <script>
-                    handleMessages("@ViewBag.getMessage");
-                </script>
-            }
-
-            @if (ViewBag.delMessage != null)
-            {
-                <script>
-                    handleMessages("@ViewBag.delMessage");
-                </script>
-            }
-
-            @if (ViewBag.delnoMessage != null)
-            {
-                <script>
-                    handleMessages("@ViewBag.delnoMessage");
-                </script>
-            }
-
-            @if (ViewBag.retMessage != null)
-            {
-                <script>
-                    handleMessages("@ViewBag.retMessage");
-                </script>
-
-            }
-
-            @if (ViewBag.noretMessage != null)
-            {
-                <script>
-                    handleMessages("@ViewBag.noretMessage");
-                </script>
-            }
-
         </form>
     </div>
 </div>

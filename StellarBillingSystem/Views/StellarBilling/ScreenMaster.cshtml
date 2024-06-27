@@ -1,8 +1,122 @@
-﻿
+﻿@model StellarBillingSystem.Models.ScreenMasterModel
+
 @{
     ViewData["Title"] = "ScreenMaster";
     Layout = "~/Views/Shared/_ContentNavbarLayout.cshtml";
 }
 
+<script>
+    function showPopup(message) {
+        var popup = document.getElementById("popupMessage");
+        var popupText = document.getElementById("popupMessageText");
+        var popupOKButton = document.getElementById("popupOKButton");
+
+        popupText.textContent = message; // Set the message text
+        popup.style.display = "block";
+
+        popupOKButton.addEventListener("click", function () {
+            popup.style.display = "none"; // Hide the popup when OK button is clicked
+        });
+    }
+
+    function handleMessages(message) {
+        showPopup(message);
+    }
+</script>
+
+<div id="popupMessage" style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background-color: #f0f0f0; color: black; padding: 30px; border: 10px solid white; border-radius: 10px; z-index: 1000; display: none; text-align: center;">
+    <span id="popupMessageText" style="display: block; margin-bottom: 20px;"></span>
+    <button id="popupOKButton" style="padding: 10px 20px; background-color: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer;">OK</button>
+</div>
+
+
+
 <h1>ScreenMaster</h1>
+
+
+<form asp-action="Addscreen" asp-controller="StellarBilling">
+<div class="row">
+    <div class="col-md-4">
+       
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-floating form-floating-outline mb-4">
+
+                <input asp-for="ScreenId" value="@Model.ScreenId" class="form-control" placeholder="ScreenId" />
+                <label asp-for="ScreenId" class="control-label">ScreenId</label>
+                <span asp-validation-for="ScreenId" class="text-danger"></span>
+            </div>
+
+            <div class="form-floating form-floating-outline mb-4">
+                @{
+                    var screenList = ((IEnumerable<ScreenNameMasterModel>)ViewData["screenname"])
+                    .Select(m => new SelectListItem
+            {
+                Value = m.ScreenName.ToString(), // Assuming ScreenId is of type int
+                Text = $"{m.ScreenName}"
+            });
+                }
+
+                @Html.DropDownListFor(model => model.ScreenName, screenList, "Select Screen Name", new { @class = "form-control" })
+                <label asp-for="ScreenName" class="control-label"></label>
+                <span asp-validation-for="ScreenName" class="text-danger"></span>
+            </div>
+           
+
+
+    </div>
+          
+            <div class="form-group">
+                <button type="submit" style="width:180px" value="Get" name="buttonType" class="btn btn-primary">Get</button>
+                <button type="submit" style="width:180px" value="Save" class="btn btn-primary">Save</button>
+
+                <button type="submit" style="width:180px" value="Delete" name="buttonType" class="btn btn-primary">Delete</button>
+                <button type="submit" style="width:180px" value="DeleteRetrieve" name="buttonType" class="btn btn-primary">Delete Retrieve</button>
+            </div>
+
+            @if (ViewBag.Message != null)
+            {
+                <script>
+                    handleMessages("@ViewBag.Message");
+                </script>
+            }
+
+            @if (ViewBag.getMessage != null)
+            {
+                <script>
+                    handleMessages("@ViewBag.getMessage");
+                </script>
+            }
+
+            @if (ViewBag.delMessage != null)
+            {
+                <script>
+                    handleMessages("@ViewBag.delMessage");
+                </script>
+            }
+
+            @if (ViewBag.delnoMessage != null)
+            {
+                <script>
+                    handleMessages("@ViewBag.delnoMessage");
+                </script>
+            }
+
+            @if (ViewBag.retMessage != null)
+            {
+                <script>
+                    handleMessages("@ViewBag.retMessage");
+                </script>
+
+            }
+
+            @if (ViewBag.noretMessage != null)
+            {
+                <script>
+                    handleMessages("@ViewBag.noretMessage");
+                </script>
+            }
+
+        </form>
+    </div>
+</div>
 
