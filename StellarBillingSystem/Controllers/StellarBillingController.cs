@@ -81,7 +81,7 @@ namespace HealthCare.Controllers
                 {
                     if (existingCategory.IsDelete)
                     {
-                        ViewBag.ErrorMessage = "Cannot update. Category is marked as deleted.";
+                        ViewBag.ErrorMessage = "Cannot Save or Update. Category is marked as deleted.";
                         return View("CategoryMasterModel", model);
                     }
                     existingCategory.CategoryID = model.CategoryID;
@@ -107,7 +107,7 @@ namespace HealthCare.Controllers
 
                 ViewBag.Message = "Saved Successfully";
             }
-            return View("CategoryMasterModel");
+            return View("CategoryMasterModel", model);
         }
 
         [HttpPost]
@@ -333,35 +333,99 @@ namespace HealthCare.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> AddDiscountCategory(DiscountCategoryMasterModel model)
+        public async Task<IActionResult> AddDiscountCategory(DiscountCategoryMasterModel model , string buttonType)
         {
-            var existingDiscountCategory = await _billingsoftware.SHDiscountCategory.FindAsync(model.CategoryID);
-            if (existingDiscountCategory != null)
+            BusinessClassBilling business = new BusinessClassBilling(_billingsoftware);
+            ViewData["discountcategoryid"] = business.GetcategoryID();
+
+            if (buttonType == "Get")
             {
-                existingDiscountCategory.CategoryID = model.CategoryID;
-                existingDiscountCategory.DiscountPrice = model.DiscountPrice;
-                existingDiscountCategory.LastUpdatedDate = DateTime.Now.ToString();
-                existingDiscountCategory.LastUpdatedUser = User.Claims.First().Value.ToString();
-                existingDiscountCategory.LastUpdatedmachine = Request.HttpContext.Connection.RemoteIpAddress.ToString();
-
-                _billingsoftware.Entry(existingDiscountCategory).State = EntityState.Modified;
-
-            }
-            else
-            {
-                model.LastUpdatedDate = DateTime.Now.ToString();
-                model.LastUpdatedUser = User.Claims.First().Value.ToString();
-                model.LastUpdatedmachine = Request.HttpContext.Connection.RemoteIpAddress.ToString();
-
-                _billingsoftware.SHDiscountCategory.Add(model);
-
+                var getdiscount = await _billingsoftware.SHDiscountCategory.FirstOrDefaultAsync(x => x.CategoryID == model.CategoryID && !x.IsDelete);
+                if (getdiscount != null)
+                {
+                    return View("DiscountCategoryMaster", getdiscount);
+                }
+                else
+                {
+                  
+                    return View("DiscountCategoryMaster");
+                }
             }
 
+            else if (buttonType == "Delete")
+            {
+                var deletetodiscount = await _billingsoftware.SHDiscountCategory.FindAsync(model.CategoryID);
+                if (deletetodiscount != null)
+                {
+                    deletetodiscount.IsDelete = true;
+                    await _billingsoftware.SaveChangesAsync();
 
-            await _billingsoftware.SaveChangesAsync();
+                    ViewBag.Message = "Discount deleted successfully";
+                    return View("DiscountCategoryMaster", model);
+                }
+                else
+                {
+                    DiscountCategoryMasterModel obj = new DiscountCategoryMasterModel();
+                    ViewBag.ErrorMessage = "Discount Category not found";
+                    return View("DiscountCategoryMaster", obj);
+                }
+            }
+            else if (buttonType == "DeleteRetrieve")
+            {
+                var discountcategorytoretrieve = await _billingsoftware.SHDiscountCategory.FindAsync(model.CategoryID);
+                if (discountcategorytoretrieve != null)
+                {
+                    discountcategorytoretrieve.IsDelete = false;
 
-            ViewBag.Message = "Saved Successfully";
+                    await _billingsoftware.SaveChangesAsync();
 
+                    model.CategoryID = discountcategorytoretrieve.CategoryID;
+                    model.DiscountPrice = discountcategorytoretrieve.DiscountPrice;
+
+                    ViewBag.Message = "Discount category retrieved successfully";
+                }
+                else
+                {
+                    ViewBag.ErrorMessage = "Discount category not found";
+                }
+                return View("DiscountCategoryMaster", model);
+            }
+
+            else if (buttonType == "save")
+            {
+
+                var existingDiscountCategory = await _billingsoftware.SHDiscountCategory.FindAsync(model.CategoryID);
+                if (existingDiscountCategory != null)
+                {
+                    if (existingDiscountCategory.IsDelete)
+                    {
+                        ViewBag.ErrorMessage = "Cannot update. Product is marked as deleted.";
+                        return View("DiscountCategoryMaster", model);
+                    }
+                    existingDiscountCategory.CategoryID = model.CategoryID;
+                    existingDiscountCategory.DiscountPrice = model.DiscountPrice;
+                    existingDiscountCategory.LastUpdatedDate = DateTime.Now.ToString();
+                    existingDiscountCategory.LastUpdatedUser = User.Claims.First().Value.ToString();
+                    existingDiscountCategory.LastUpdatedmachine = Request.HttpContext.Connection.RemoteIpAddress.ToString();
+
+                    _billingsoftware.Entry(existingDiscountCategory).State = EntityState.Modified;
+
+                }
+                else
+                {
+                    model.LastUpdatedDate = DateTime.Now.ToString();
+                    model.LastUpdatedUser = User.Claims.First().Value.ToString();
+                    model.LastUpdatedmachine = Request.HttpContext.Connection.RemoteIpAddress.ToString();
+
+                    _billingsoftware.SHDiscountCategory.Add(model);
+
+                }
+
+
+                await _billingsoftware.SaveChangesAsync();
+
+                ViewBag.Message = "Saved Successfully";
+            }
             return View("DiscountCategoryMaster", model);
 
         }
@@ -718,7 +782,10 @@ namespace HealthCare.Controllers
 
         public IActionResult DiscountCategoryMaster()
         {
-            return View();
+            BusinessClassBilling business = new BusinessClassBilling(_billingsoftware);
+            ViewData["discountcategoryid"] = business.GetcategoryID();
+            DiscountCategoryMasterModel obj = new DiscountCategoryMasterModel();
+            return View("DiscountCategoryMaster", obj);
         }
 
         public IActionResult GSTMasterModel()
