@@ -171,7 +171,7 @@ namespace HealthCare.Controllers
                     model.Discount = productToRetrieve.Discount;
                     model.TotalAmount = productToRetrieve.TotalAmount;
 
-                    ViewBag.Message = "Product retrieved successfully";
+                  ViewBag.Message = "Product retrieved successfully";
                 }
                 else
                 {
@@ -215,8 +215,8 @@ namespace HealthCare.Controllers
                     model.LastUpdatedDate = DateTime.Now.ToString();
                     model.LastUpdatedUser = User.Claims.First().Value.ToString();
                     model.LastUpdatedmachine = Request.HttpContext.Connection.RemoteIpAddress.ToString();
-
-                    _billingsoftware.SHProductMaster.Add(model);
+                    
+                 _billingsoftware.SHProductMaster.Add(model);
                 }
 
 
