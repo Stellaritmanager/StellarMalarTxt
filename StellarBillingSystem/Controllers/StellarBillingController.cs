@@ -347,8 +347,9 @@ namespace HealthCare.Controllers
                 }
                 else
                 {
-                  
-                    return View("DiscountCategoryMaster");
+                    DiscountCategoryMasterModel obj = new DiscountCategoryMasterModel();
+                    ViewBag.ErrorMessage = "No value for this category ID";
+                    return View("DiscountCategoryMaster", obj);
                 }
             }
 
