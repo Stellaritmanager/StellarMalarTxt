@@ -122,8 +122,6 @@ namespace HealthCare.Controllers
                 var resultpro = await _billingsoftware.SHProductMaster.FirstOrDefaultAsync(x => x.ProductID == model.ProductID && !x.IsDelete);
                 if (resultpro != null)
                 {
-                    //var getbusproduct = await business.GetProductmaster(model.ProductID);
-
                     return View("ProductMasterModel", resultpro);
                 }
                 else
@@ -133,7 +131,6 @@ namespace HealthCare.Controllers
                     return View("ProductMasterModel", obj);
                 }
             }
-
             else if (buttonType == "Delete")
             {
                 var productToDelete = await _billingsoftware.SHProductMaster.FindAsync(model.ProductID);
@@ -153,16 +150,13 @@ namespace HealthCare.Controllers
             }
             else if (buttonType == "DeleteRetrieve")
             {
-                // Retrieve logic: Set a database value to 0 and retrieve values
-
                 var productToRetrieve = await _billingsoftware.SHProductMaster.FindAsync(model.ProductID);
                 if (productToRetrieve != null)
                 {
-                    // Assuming you have a property like IsRetrieved in your model
                     productToRetrieve.IsDelete = false; // Set a specific database value to 0
 
                     await _billingsoftware.SaveChangesAsync();
-                    // Assuming you want to retrieve certain values and display them in textboxes
+
                     model.ProductID = productToRetrieve.ProductID;
                     model.CategoryID = productToRetrieve.CategoryID;
                     model.ProductName = productToRetrieve.ProductName;
@@ -171,7 +165,7 @@ namespace HealthCare.Controllers
                     model.Discount = productToRetrieve.Discount;
                     model.TotalAmount = productToRetrieve.TotalAmount;
 
-                  ViewBag.Message = "Product retrieved successfully";
+                    ViewBag.Message = "Product retrieved successfully";
                 }
                 else
                 {
@@ -180,11 +174,18 @@ namespace HealthCare.Controllers
 
                 return View("ProductMasterModel", model);
             }
-
-
             else if (buttonType == "Save")
             {
-
+                // Fetch discount price based on CategoryID
+                if (!string.IsNullOrEmpty(model.CategoryID))
+                {
+                    var discountCategory = await _billingsoftware.SHDiscountCategory
+                        .FirstOrDefaultAsync(x => x.CategoryID == model.CategoryID);
+                    if (discountCategory != null)
+                    {
+                        model.Discount = discountCategory.DiscountPrice;
+                    }
+                }
 
                 var existingProduct = await _billingsoftware.SHProductMaster.FindAsync(model.ProductID);
                 if (existingProduct != null)
@@ -207,26 +208,24 @@ namespace HealthCare.Controllers
                     existingProduct.LastUpdatedmachine = Request.HttpContext.Connection.RemoteIpAddress.ToString();
 
                     _billingsoftware.Entry(existingProduct).State = EntityState.Modified;
-
                 }
                 else
                 {
-
                     model.LastUpdatedDate = DateTime.Now.ToString();
                     model.LastUpdatedUser = User.Claims.First().Value.ToString();
                     model.LastUpdatedmachine = Request.HttpContext.Connection.RemoteIpAddress.ToString();
-                    
-                 _billingsoftware.SHProductMaster.Add(model);
-                }
 
+                    _billingsoftware.SHProductMaster.Add(model);
+                }
 
                 await _billingsoftware.SaveChangesAsync();
 
                 ViewBag.Message = "Saved Successfully";
-
             }
+
             return View("ProductMasterModel", model);
         }
+
 
 
 
