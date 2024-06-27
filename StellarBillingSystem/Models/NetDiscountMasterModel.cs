@@ -1,18 +1,18 @@
 ﻿using System;
 
-public class NetDicsountMasterModel
+public class NetDiscountMasterModel
 {
-	public NetDicsountMasterModel()
+	public NetDiscountMasterModel()
 	{
 	}
 
-	private String strNetDiscountID;
+	
 	private String strNetDiscount;
     private String strLastUpdatedDate;
     private String strLastUpdatedUser;
     private String strLastUpdatedmachine;
 
-    public string NetDiscountID { get => strNetDiscountID; set => strNetDiscountID = value; }
+   
     public string? NetDiscount { get => strNetDiscount; set => strNetDiscount = value; }
     public string? LastUpdatedDate { get => strLastUpdatedDate; set => strLastUpdatedDate = value; }
     public string? LastUpdatedUser { get => strLastUpdatedUser; set => strLastUpdatedUser = value; }

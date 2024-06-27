@@ -45,7 +45,7 @@
                 <span asp-validation-for="CustomerID" class="text-danger"></span>
             </div>
                     <div class="form-floating form-floating-outline mb-4">
-                        <input asp-for="CustomerName" class="form-control" placeholder="CustomerName" />
+                        <input asp-for="CustomerName" class="form-control" placeholder="CustomerName" required/>
                 <label asp-for="CustomerName" class="control-label"></label>
                         
                 <span asp-validation-for="CustomerName" class="text-danger"></span>
@@ -94,12 +94,20 @@
                    
                     <div class="form-floating form-floating-outline mb-4">
 
-                        <input asp-for="MobileNumber" class="form-control" placeholder="MobileNumber" />
+                        <input asp-for="MobileNumber" class="form-control" placeholder="MobileNumber" required/>
                 <label asp-for="MobileNumber" class="control-label"></label>
                        
                 <span asp-validation-for="MobileNumber" class="text-danger"></span>
             </div>
-                    <div class="form-floating form-floating-outline mb-4">
+                    <button type="submit" style="width:180px" value="Create" asp-action="GetCustomer" class="btn btn-primary">Get</button>
+                    @if (ViewBag.ErrorMessage != null)
+                    {
+                        <div class="alert alert-danger">
+
+                            @ViewBag.ErrorMessage
+                        </div>
+                    }
+             @*        <div class="form-floating form-floating-outline mb-4">
 
                         <input asp-for="PointsReedem" class="form-control" placeholder="PointsReedem" />
                 <label asp-for="PointsReedem" class="control-label"></label>
@@ -119,7 +127,7 @@
                 <label asp-for="VoucherNumber" class="control-label"></label>
                      
                 <span asp-validation-for="VoucherNumber" class="text-danger"></span>
-            </div>
+            </div> *@
 
                     <br />
                 </div>

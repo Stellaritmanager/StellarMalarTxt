@@ -1,15 +1,13 @@
 ﻿
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.CodeAnalysis;
 using Microsoft.EntityFrameworkCore;
 using StellarBillingSystem.Business;
 using StellarBillingSystem.Context;
 using StellarBillingSystem.Models;
 
-namespace StellarBillingSystem.Controllers
+namespace HealthCare.Controllers
 {
-    [Authorize]
     public class StellarBillingController : Controller
     {
         private BillingContext _billingsoftware;
@@ -19,19 +17,77 @@ namespace StellarBillingSystem.Controllers
             _billingsoftware = billingsoftware;
         }
 
-
         [HttpPost]
-        public async Task<IActionResult> AddCategory(CategoryMasterModel model, string buttonType)
+
+        public async Task<IActionResult> AddCategory(CategoryMasterModel model , string buttonType)
         {
-            if (buttonType == "Save")
+            if (buttonType == "Get")
+            {
+                var getcategory = await _billingsoftware.SHCategoryMaster.FirstOrDefaultAsync(x => x.CategoryID == model.CategoryID && !x.IsDelete);
+                if (getcategory != null)
+                {
+                    return View("CategoryMasterModel", getcategory);
+                }
+                else
+                {
+                    CategoryMasterModel par = new CategoryMasterModel();
+                    ViewBag.ErrorMessage = "No value for this Category ID";
+                    return View("CategoryMasterModel", par);
+                }
+            }
+            else if (buttonType == "Delete")
+            {
+                var categorytodelete = await _billingsoftware.SHCategoryMaster.FindAsync(model.CategoryID);
+                if (categorytodelete != null)
+                {
+                    categorytodelete.IsDelete = true;
+                    await _billingsoftware.SaveChangesAsync();
+
+                    ViewBag.Message = "Category deleted successfully";
+                    return View("CategoryMasterModel", model);
+                }
+                else
+                {
+                    ViewBag.ErrorMessage = "Category not found";
+                    return View("CategoryMasterModel", model);
+                }
+
+            }
+
+            else if (buttonType == "DeleteRetrieve")
+            {
+                var categorytoretrieve = await _billingsoftware.SHCategoryMaster.FindAsync(model.CategoryID);
+                if (categorytoretrieve != null)
+                {
+                    categorytoretrieve.IsDelete = false;
+
+                    await _billingsoftware.SaveChangesAsync();
+
+                    model.CategoryID = categorytoretrieve.CategoryID;
+                    model.CategoryName = categorytoretrieve.CategoryName;
+
+                    ViewBag.Message = "Category retrieved successfully";
+                }
+                else
+                {
+                    ViewBag.ErrorMessage = "Category not found";
+                }
+                return View("CategoryMasterModel", model);
+            }
+            else if (buttonType == "save")
             {
                 var existingCategory = await _billingsoftware.SHCategoryMaster.FindAsync(model.CategoryID);
                 if (existingCategory != null)
                 {
+                    if (existingCategory.IsDelete)
+                    {
+                        ViewBag.ErrorMessage = "Cannot update. Category is marked as deleted.";
+                        return View("CategoryMasterModel", model);
+                    }
                     existingCategory.CategoryID = model.CategoryID;
                     existingCategory.CategoryName = model.CategoryName;
                     existingCategory.LastUpdatedDate = DateTime.Now.ToString();
-                    existingCategory.LastUpdatedUser = User.Claims.First().Value.ToString();
+                    existingCategory.LastUpdatedUser = /*User.Claims.First().Value.ToString();*/ "Admin";
                     existingCategory.LastUpdatedmachine = Request.HttpContext.Connection.RemoteIpAddress.ToString();
 
                     _billingsoftware.Entry(existingCategory).State = EntityState.Modified;
@@ -39,7 +95,7 @@ namespace StellarBillingSystem.Controllers
                 else
                 {
                     model.LastUpdatedDate = DateTime.Now.ToString();
-                    model.LastUpdatedUser = User.Claims.First().Value.ToString();
+                    model.LastUpdatedUser = /*User.Claims.First().Value.ToString();*/  "Admin";
                     model.LastUpdatedmachine = Request.HttpContext.Connection.RemoteIpAddress.ToString();
 
 
@@ -51,13 +107,12 @@ namespace StellarBillingSystem.Controllers
 
                 ViewBag.Message = "Saved Successfully";
             }
-                return View("CategoryMasterModel");
-            
+            return View("CategoryMasterModel");
         }
 
         [HttpPost]
 
-        public async Task<IActionResult> AddProduct(ProductMatserModel model,string buttonType)
+        public async Task<IActionResult> AddProduct(ProductMatserModel model, string buttonType)
         {
             BusinessClassBilling business = new BusinessClassBilling(_billingsoftware);
             ViewData["categoryid"] = business.GetCatid();
@@ -75,10 +130,10 @@ namespace StellarBillingSystem.Controllers
                 {
                     ProductMatserModel obj = new ProductMatserModel();
                     ViewBag.ErrorMessage = "No value for this product ID";
-                    return View("ProductMasterModel", obj);              
-                 }
+                    return View("ProductMasterModel", obj);
+                }
             }
-            
+
             else if (buttonType == "Delete")
             {
                 var productToDelete = await _billingsoftware.SHProductMaster.FindAsync(model.ProductID);
@@ -96,7 +151,7 @@ namespace StellarBillingSystem.Controllers
                     return View("ProductMasterModel", model); // Return the view with the model
                 }
             }
-            else if (buttonType == "Retrieve")
+            else if (buttonType == "DeleteRetrieve")
             {
                 // Retrieve logic: Set a database value to 0 and retrieve values
 
@@ -168,7 +223,7 @@ namespace StellarBillingSystem.Controllers
                 await _billingsoftware.SaveChangesAsync();
 
                 ViewBag.Message = "Saved Successfully";
-                                
+
             }
             return View("ProductMasterModel", model);
         }
@@ -176,9 +231,56 @@ namespace StellarBillingSystem.Controllers
 
 
         [HttpPost]
+
+        public async Task<IActionResult> CustomerBill(BilingSysytemModel model)
+        {
+            var existingbill = await _billingsoftware.SHCustomerBilling.FindAsync(model.BillID);
+            if (existingbill != null)
+            {
+                existingbill.BillID = model.BillID;
+                existingbill.CustomerName = model.CustomerName;
+                existingbill.Date = model.Date;
+                existingbill.CustomerNumber = model.CustomerNumber;
+                existingbill.Items = model.Items;
+                existingbill.Rate = model.Rate;
+                existingbill.Quantity= model.Quantity;
+                existingbill.Discount = model.Discount;
+                existingbill.Tax = model.Tax;
+                existingbill.DiscountPrice = model.DiscountPrice;
+                existingbill.TotalAmount = model.TotalAmount;
+                existingbill.PointsNumber = model.PointsNumber;
+                existingbill.VoucherNumber = model.VoucherNumber;
+                existingbill.CategoryBasedDiscount = model.CategoryBasedDiscount;
+                existingbill.TotalAmount = model.TotalAmount;
+                existingbill.LastUpdatedDate = DateTime.Now.ToString();
+                existingbill.LastUpdatedUser = User.Claims.First().Value.ToString();
+                existingbill.LastUpdatedmachine = Request.HttpContext.Connection.RemoteIpAddress.ToString();
+
+                _billingsoftware.Entry(existingbill).State = EntityState.Modified;
+
+            }
+            else
+            {
+
+                model.LastUpdatedDate = DateTime.Now.ToString();
+                model.LastUpdatedUser = User.Claims.First().Value.ToString();
+                model.LastUpdatedmachine = Request.HttpContext.Connection.RemoteIpAddress.ToString();
+            }
+
+            await _billingsoftware.SaveChangesAsync();
+
+
+            ViewBag.Message = "Saved Successfully";
+
+            return View("CustomerBilling" , model);
+        }
+
+
+
+        [HttpPost]
         public async Task<IActionResult> AddCustomer(CustomerMasterModel model)
         {
-            var existingCustomer = await _billingsoftware.SHCustomerMaster.FindAsync(model.CustomerID);
+            var existingCustomer = await _billingsoftware.SHCustomerMaster.FindAsync(model.MobileNumber);
             if (existingCustomer != null)
             {
                 existingCustomer.CustomerID = model.CustomerID;
@@ -188,9 +290,6 @@ namespace StellarBillingSystem.Controllers
                 existingCustomer.Address = model.Address;
                 existingCustomer.City = model.City;
                 existingCustomer.MobileNumber = model.MobileNumber;
-                existingCustomer.PointsReedem = model.PointsReedem;
-                existingCustomer.VoucherDiscount = model.VoucherDiscount;
-                existingCustomer.VoucherNumber = model.VoucherNumber;
                 existingCustomer.LastUpdatedDate = DateTime.Now.ToString();
                 existingCustomer.LastUpdatedUser = User.Claims.First().Value.ToString();
                 existingCustomer.LastUpdatedmachine = Request.HttpContext.Connection.RemoteIpAddress.ToString();
@@ -207,20 +306,35 @@ namespace StellarBillingSystem.Controllers
                 _billingsoftware.SHCustomerMaster.Add(model);
 
             }
+            _billingsoftware.SHCustomerMaster.Add(model);
 
             await _billingsoftware.SaveChangesAsync();
 
             ViewBag.Message = "Saved Successfully";
+            
+            return View("CustomerMaster" , model);
+        }
+        public async Task<IActionResult> GetCustomer(string mobileNumber)
+        {
+            if (string.IsNullOrEmpty(mobileNumber))
+            {
+                return BadRequest("Mobile number is required");
+            }
 
-            return View("CustomerMaster", model);
+            var customer = await _billingsoftware.SHCustomerMaster.FindAsync(mobileNumber);
+
+            if (customer == null)
+            {
+                ViewBag.ErrorMessage = "Moblile Number not found";
+                return View("CustomerMaster", customer);
+            }
+
+            return View("CustomerMaster", customer);
         }
 
         [HttpPost]
         public async Task<IActionResult> AddDiscountCategory(DiscountCategoryMasterModel model)
         {
-            BusinessClassBilling business = new BusinessClassBilling(_billingsoftware);
-            ViewData["discountcategoryid"] = business.GetcategoryID();
-
             var existingDiscountCategory = await _billingsoftware.SHDiscountCategory.FindAsync(model.CategoryID);
             if (existingDiscountCategory != null)
             {
@@ -260,7 +374,7 @@ namespace StellarBillingSystem.Controllers
             if (existingGst != null)
             {
                 existingGst.TaxID = model.TaxID;
-                existingGst.SGST = model.SGST;
+                existingGst.SGST  = model.SGST;
                 existingGst.CGST = model.CGST;
                 existingGst.OtherTax = model.OtherTax;
                 existingGst.LastUpdatedDate = DateTime.Now.ToString();
@@ -327,12 +441,12 @@ namespace StellarBillingSystem.Controllers
 
         [HttpPost]
 
-        public async Task<IActionResult> AddNetDiscount(NetDicsountMasterModel model)
+        public async Task<IActionResult>AddNetDiscount(NetDiscountMasterModel model)
         {
-            var existingnetdiscount = await _billingsoftware.SHNetDiscountMaster.FindAsync(model.NetDiscountID);
+            var existingnetdiscount = await _billingsoftware.SHNetDiscountMaster.FindAsync(model.NetDiscount);
             if (existingnetdiscount != null)
             {
-                existingnetdiscount.NetDiscountID = model.NetDiscountID;
+                
                 existingnetdiscount.NetDiscount = model.NetDiscount;
                 existingnetdiscount.LastUpdatedDate = DateTime.Now.ToString();
                 existingnetdiscount.LastUpdatedUser = User.Claims.First().Value.ToString();
@@ -354,7 +468,7 @@ namespace StellarBillingSystem.Controllers
 
             ViewBag.Message = "Saved Successfully";
 
-            return View("NetDicsountMaster", model);
+            return View("NetDiscountMaster", model);
 
         }
 
@@ -363,12 +477,12 @@ namespace StellarBillingSystem.Controllers
         public async Task<IActionResult> AddVoucher(VoucherMasterModel model)
         {
             var existingvoucher = await _billingsoftware.SHVoucherMaster.FindAsync(model.VoucherID);
-            if (existingvoucher != null)
+            if(existingvoucher == null)
             {
                 existingvoucher.VoucherID = model.VoucherID;
                 existingvoucher.VoucherNumber = model.VoucherNumber;
                 existingvoucher.VocherCost = model.VocherCost;
-                existingvoucher.ExpiryDate = model.ExpiryDate;
+                existingvoucher.ExpiryDate = model.ExpiryDate;  
                 existingvoucher.VocherDetails = model.VocherDetails;
                 existingvoucher.LastUpdatedDate = DateTime.Now.ToString();
                 existingvoucher.LastUpdatedUser = User.Claims.First().Value.ToString();
@@ -431,47 +545,14 @@ namespace StellarBillingSystem.Controllers
             return View("PointsMaster", model);
 
         }
-        [HttpPost]
-        public async Task<IActionResult> Addpoinsredeem(PointsReedemDetailsModel model)
-        {
-            BusinessClassBilling business = new BusinessClassBilling(_billingsoftware);
-            ViewData["pointreedemcustomerid"] = business.GetCustomerid();
-
-            var existingpointsredeem = await _billingsoftware.SHPointsReedemDetails.FindAsync(model.CustomerID);
-            if (existingpointsredeem != null)
-            {
-                existingpointsredeem.CustomerID = model.CustomerID;
-                existingpointsredeem.TotalPoints = model.TotalPoints;
-                existingpointsredeem.ExpiryDate = model.ExpiryDate;
-                existingpointsredeem.LastUpdatedDate = DateTime.Now.ToString();
-                existingpointsredeem.LastUpdatedUser = User.Claims.First().Value.ToString();
-                existingpointsredeem.LastUpdatedmachine = Request.HttpContext.Connection.RemoteIpAddress.ToString();
-
-                _billingsoftware.Entry(existingpointsredeem).State = EntityState.Modified;
-            }
-            else
-            {
-                model.LastUpdatedDate = DateTime.Now.ToString();
-                model.LastUpdatedUser = User.Claims.First().Value.ToString();
-                model.LastUpdatedmachine = Request.HttpContext.Connection.RemoteIpAddress.ToString();
-
-                _billingsoftware.SHPointsReedemDetails.Add(model);
-            }
-
-            await _billingsoftware.SaveChangesAsync();
-
-            ViewBag.Message = "Saved Successfully";
-
-            return View("PointsReedemDetails", model);
-        }
 
 
         [HttpPost]
 
         public async Task<IActionResult> Addrack(RackMasterModel model)
         {
-            var existingrack = await _billingsoftware.SHRackMaster.FindAsync(model.PartitionID, model.RackID);
-            if (existingrack != null)
+            var existingrack = await _billingsoftware.SHRackMaster.FindAsync(model.PartitionID , model.RackID);
+            if (existingrack == null)
             {
                 existingrack.RackID = model.RackID;
                 existingrack.PartitionID = model.PartitionID;
@@ -501,38 +582,19 @@ namespace StellarBillingSystem.Controllers
 
         }
 
-        [HttpPost]
 
-        public async Task<IActionResult> AddGodownstock(GodownModel model)
+        public IActionResult CategoryMasterModel()
         {
-            var existinggodownstock = await _billingsoftware.SHGodown.FindAsync(model.ProductID);
-            if (existinggodownstock != null)
-            {
-                existinggodownstock.ProductID = model.ProductID;
-                existinggodownstock.NumberofStocks = model.NumberofStocks;
-                existinggodownstock.NumberofStocksinRack = model.NumberofStocksinRack;
-                existinggodownstock.Description = model.Description;
-                existinggodownstock.LastUpdatedDate = DateTime.Now.ToString();
-                existinggodownstock.LastUpdatedUser = User.Claims.First().Value.ToString();
-                existinggodownstock.LastUpdatedmachine = Request.HttpContext.Connection.RemoteIpAddress.ToString();
+            CategoryMasterModel par = new CategoryMasterModel();
+            return View("CategoryMasterModel", par);
+        }
 
-                _billingsoftware.Entry(existinggodownstock).State = EntityState.Modified;
-            }
-
-            else
-            {
-                model.LastUpdatedDate = DateTime.Now.ToString();
-                model.LastUpdatedUser = User.Claims.First().Value.ToString();
-                model.LastUpdatedmachine = Request.HttpContext.Connection.RemoteIpAddress.ToString();
-
-                _billingsoftware.SHGodown.Add(model);
-            }
-
-            await _billingsoftware.SaveChangesAsync();
-            ViewBag.Message = "Saved Successfully";
-
-            return View("GodownModel", model);
-
+        public IActionResult ProductMasterModel()
+        {
+            BusinessClassBilling business = new BusinessClassBilling(_billingsoftware);
+            ViewData["categoryid"] = business.GetCatid();
+            ProductMatserModel obj = new ProductMatserModel();
+            return View("ProductMasterModel", obj);
         }
 
         [HttpPost]
@@ -669,20 +731,6 @@ namespace StellarBillingSystem.Controllers
 
 
 
-        public IActionResult CategoryMasterModel()
-        {
-            return View();
-        }
-
-        public IActionResult ProductMasterModel()
-        {
-            BusinessClassBilling business = new BusinessClassBilling(_billingsoftware);
-            ViewData["categoryid"] = business.GetCatid();
-            ProductMatserModel obj = new ProductMatserModel();
-            return View("ProductMasterModel", obj);
-
-        }
-
         public IActionResult CustomerMaster()
         {
             return View();
@@ -690,8 +738,6 @@ namespace StellarBillingSystem.Controllers
 
         public IActionResult DiscountCategoryMaster()
         {
-            BusinessClassBilling business = new BusinessClassBilling(_billingsoftware);
-            ViewData["discountcategoryid"] = business.GetcategoryID();
             return View();
         }
 
@@ -700,12 +746,12 @@ namespace StellarBillingSystem.Controllers
             return View();
         }
 
-        public IActionResult VoucherCustomerDetails()
+       public IActionResult VoucherCustomerDetails()
         {
             return View();
         }
 
-        public IActionResult NetDicsountMaster()
+        public IActionResult NetDiscountMaster()
         {
             return View();
         }
@@ -717,8 +763,6 @@ namespace StellarBillingSystem.Controllers
 
         public IActionResult PointsReedemDetails()
         {
-            BusinessClassBilling business = new BusinessClassBilling(_billingsoftware);
-            ViewData["pointreedemcustomerid"] = business.GetCustomerid();
             return View();
         }
 
@@ -749,115 +793,5 @@ namespace StellarBillingSystem.Controllers
         {
             return View();
         }
-
-
-
-
-        [HttpPost]
-
-        public async Task<IActionResult> CustomerBill(BilingSysytemModel model)
-        {
-            var existingbill = await _billingsoftware.SHCustomerBilling.FindAsync(model.BillID);
-            if (existingbill != null)
-            {
-                existingbill.BillID = model.BillID;
-                existingbill.CustomerName = model.CustomerName;
-                existingbill.Date = model.Date;
-                existingbill.CustomerNumber = model.CustomerNumber;
-                existingbill.Items = model.Items;
-                existingbill.Rate = model.Rate;
-                existingbill.Quantity = model.Quantity;
-                existingbill.Discount = model.Discount;
-                existingbill.Tax = model.Tax;
-                existingbill.DiscountPrice = model.DiscountPrice;
-                existingbill.TotalAmount = model.TotalAmount;
-                existingbill.PointsNumber = model.PointsNumber;
-                existingbill.VoucherNumber = model.VoucherNumber;
-                existingbill.CategoryBasedDiscount = model.CategoryBasedDiscount;
-                existingbill.TotalAmount = model.TotalAmount;
-                existingbill.LastUpdatedDate = DateTime.Now.ToString();
-                existingbill.LastUpdatedUser = User.Claims.First().Value.ToString();
-                existingbill.LastUpdatedmachine = Request.HttpContext.Connection.RemoteIpAddress.ToString();
-
-                _billingsoftware.Entry(existingbill).State = EntityState.Modified;
-
-            }
-            else
-            {
-
-                model.LastUpdatedDate = DateTime.Now.ToString();
-                model.LastUpdatedUser = User.Claims.First().Value.ToString();
-                model.LastUpdatedmachine = Request.HttpContext.Connection.RemoteIpAddress.ToString();
-
-                _billingsoftware.SHCustomerBilling.Add(model);
-            }
-
-            await _billingsoftware.SaveChangesAsync();
-
-
-            ViewBag.Message = "Saved Successfully";
-
-            return View("CustomerBilling", model);
-        }
-
-
-        public IActionResult CustomerBilling()
-        {
-            return View();
-        }
-
-
-
-        [HttpPost]
-        public async Task<IActionResult> PointsOperation(BilingSysytemModel model)
-        {
-            BusinessClassBilling business = new BusinessClassBilling(_billingsoftware);
-
-            var customer = await business.GetCustomerById(model.CustomerNumber);
-
-            if (customer == null)
-            {
-                ViewBag.Error = "Customer not found";
-            }
-            else
-            {
-                ViewBag.Customers = customer.Where(c => c.MobileNumber == model.CustomerNumber).ToList();
-
-            }
-
-
-            return View("CustomerBilling", customer);
-        }
-
-        /*
-                [HttpPost]
-                public async Task<IActionResult> AddPoints(string customerId, int pointsToAdd)
-                {
-                    var customer = await _billingsoftware.GetCustomerById(customerId);
-
-                    if (customer == null)
-                    {
-                        ViewBag.Error = "Customer not found.";
-                        return RedirectToAction("CustomerBilling");
-                    }
-
-                    try
-                    {
-                        await _billingsoftware.AddPointsToCustomer(customerId, pointsToAdd);
-                        ViewBag.Message = "Points added successfully.";
-                    }
-                    catch (ArgumentException ex)
-                    {
-                        ViewBag.Error = "Failed to add points: " + ex.Message;
-                    }
-                    catch (Exception ex)
-                    {
-                        ViewBag.Error = "Error: " + ex.Message;
-                    }
-
-                    return RedirectToAction("CustomerBilling");
-                }*/
-
-
     }
 }

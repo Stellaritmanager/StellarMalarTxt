@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using StellarBillingSystem.Context;
 
@@ -11,9 +12,11 @@ using StellarBillingSystem.Context;
 namespace StellarBillingSystem.Migrations
 {
     [DbContext(typeof(BillingContext))]
-    partial class BillingContextModelSnapshot : ModelSnapshot
+    [Migration("20240627043119_initial11")]
+    partial class initial11
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -107,16 +110,13 @@ namespace StellarBillingSystem.Migrations
 
             modelBuilder.Entity("CustomerMasterModel", b =>
                 {
-                    b.Property<string>("MobileNumber")
+                    b.Property<string>("CustomerID")
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("Address")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("City")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("CustomerID")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("CustomerName")
@@ -140,7 +140,19 @@ namespace StellarBillingSystem.Migrations
                     b.Property<string>("LastUpdatedmachine")
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("MobileNumber");
+                    b.Property<string>("MobileNumber")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PointsReedem")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("VoucherDiscount")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("VoucherNumber")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("CustomerID");
 
                     b.ToTable("SHCustomerMaster");
                 });
