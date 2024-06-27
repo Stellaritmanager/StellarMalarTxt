@@ -87,7 +87,7 @@ namespace StellarBillingSystem.Context
 
             modelBuilder.Entity<CustomerMasterModel>().HasKey(i => new { i.MobileNumber });
 
-            modelBuilder.Entity<DiscountCategoryMasterModel>().HasKey(i => new { i.DiscountPrice });
+            modelBuilder.Entity<DiscountCategoryMasterModel>().HasKey(i => new { i.CategoryID });
 
             modelBuilder.Entity<GSTMasterModel>().HasKey(i => new { i.TaxID });
 
