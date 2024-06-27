@@ -5,6 +5,30 @@
     Layout = "~/Views/Shared/_ContentNavbarLayout.cshtml";
 }
 
+<script>
+    function showPopup(message) {
+        var popup = document.getElementById("popupMessage");
+        var popupText = document.getElementById("popupMessageText");
+        var popupOKButton = document.getElementById("popupOKButton");
+
+        popupText.textContent = message; // Set the message text
+        popup.style.display = "block";
+
+        popupOKButton.addEventListener("click", function () {
+            popup.style.display = "none"; // Hide the popup when OK button is clicked
+        });
+    }
+
+    function handleMessages(message) {
+        showPopup(message);
+    }
+</script>
+
+<div id="popupMessage" style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background-color: #f0f0f0; color: black; padding: 30px; border: 10px solid white; border-radius: 10px; z-index: 1000; display: none; text-align: center;">
+    <span id="popupMessageText" style="display: block; margin-bottom: 20px;"></span>
+    <button id="popupOKButton" style="padding: 10px 20px; background-color: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer;">OK</button>
+</div>
+
 <form asp-controller="StellarBilling" asp-action="AddRackPartition">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
     <div class="row">
@@ -56,7 +80,7 @@
 
                     <div class="form-floating form-floating-outline mb-4">
 
-                        <input asp-for="Noofitems" class="form-control" placeholder="No of items " required />
+                        <input asp-for="Noofitems" class="form-control" placeholder="No of items "/>
                         <label asp-for="Noofitems" class="control-label">No of items</label>
                         <span asp-validation-for="Noofitems" class="text-danger"></span>
                     </div>
@@ -107,8 +131,8 @@
                                         <td>@item.PartitionID</td>
                                         <td>@item.Noofitems</td>
                                         <td>
-                                            <a href="@Url.Action("Edit", new { patientId = item.ProductID, orderId = item.PartitionID })" class="btn btn-primary">Edit</a>
-                                            <a href="@Url.Action("Delete", new { patientId = item.ProductID, orderId = item.PartitionID })" class="btn btn-primary">Delete</a>
+                                            <a href="@Url.Action("Edit", new { partitionID = item.PartitionID, productID = item.ProductID })" class="btn btn-primary">Edit</a>
+                                            <a href="@Url.Action("Delete", new { partitionID = item.PartitionID, productID = item.ProductID })" class="btn btn-primary">Delete</a>
                                         </td>
                                     </tr>
                                 }
@@ -122,13 +146,36 @@
             </div>
         </div>
     }
+    @if (ViewBag.Message != null)
+    {
+        <script>
+            handleMessages("@ViewBag.Message");
+        </script>
+    }
 
-            @if (ViewBag.Message != null)
-            {
-                <div class="alert alert-success">
-                    @ViewBag.Message
-                </div>
-            }
+    @if (ViewBag.Delete != null)
+    {
+        <script>
+            handleMessages("@ViewBag.Delete");
+        </script>
+    }
+
+    @if (ViewBag.GetMessage != null)
+    {
+        <script>
+            handleMessages("@ViewBag.GetMessage");
+        </script>
+    }
+
+    @if (ViewBag.NovalueMessage != null)
+    {
+        <script>
+            handleMessages("@ViewBag.NovalueMessage");
+        </script>
+    }
+
+
+    
         </center>
     
 
