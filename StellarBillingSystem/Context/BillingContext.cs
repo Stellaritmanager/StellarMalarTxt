@@ -29,7 +29,7 @@ namespace StellarBillingSystem.Context
 
         public DbSet<GodownModel> SHGodown { get; set; }
 
-        public DbSet<NetDicsountMasterModel> SHNetDiscountMaster { get; set; }
+        public DbSet<NetDiscountMasterModel> SHNetDiscountMaster { get; set; }
 
         public DbSet<VoucherMasterModel> SHVoucherMaster { get; set; }
 
@@ -44,7 +44,6 @@ namespace StellarBillingSystem.Context
         public DbSet<ReportModel> SHReportModel { get; set; }
 
         public DbSet<SignUpModel> SHSignUp { get; set; }
-
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             if (!optionsBuilder.IsConfigured)
@@ -62,7 +61,7 @@ namespace StellarBillingSystem.Context
 
             modelBuilder.Entity<CustomerMasterModel>().HasKey(i => new { i.CustomerID });
 
-            modelBuilder.Entity<DiscountCategoryMasterModel>().HasKey(i => new { i.CategoryID});
+            modelBuilder.Entity<DiscountCategoryMasterModel>().HasKey(i => new { i.DiscountPrice });
 
             modelBuilder.Entity<GSTMasterModel>().HasKey(i => new { i.TaxID });
 
@@ -72,7 +71,7 @@ namespace StellarBillingSystem.Context
 
             modelBuilder.Entity<GodownModel>().HasKey(i => new { i.ProductID });
 
-            modelBuilder.Entity<NetDicsountMasterModel>().HasKey(i => new { i.NetDiscountID });
+            modelBuilder.Entity<NetDiscountMasterModel>().HasKey(i => new { i.NetDiscount });
 
             modelBuilder.Entity<VoucherMasterModel>().HasKey(i => new { i.VoucherID });
 
@@ -84,7 +83,7 @@ namespace StellarBillingSystem.Context
 
             modelBuilder.Entity<PointsMasterModel>().HasKey(i => new { i.PointsID });
 
-            modelBuilder.Entity<ReportModel>().HasKey(i => new { i.ReportID });
+            modelBuilder.Entity<ReportModel>().HasKey(i => new {i.ReportID});
 
             modelBuilder.Entity<SignUpModel>().HasKey(i => new { i.Username });
 
