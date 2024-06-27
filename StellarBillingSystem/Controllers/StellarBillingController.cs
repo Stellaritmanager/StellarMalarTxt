@@ -337,7 +337,7 @@ namespace HealthCare.Controllers
         {
             BusinessClassBilling business = new BusinessClassBilling(_billingsoftware);
             ViewData["discountcategoryid"] = business.GetcategoryID();
-
+            
             if (buttonType == "Get")
             {
                 var getdiscount = await _billingsoftware.SHDiscountCategory.FirstOrDefaultAsync(x => x.CategoryID == model.CategoryID && !x.IsDelete);
