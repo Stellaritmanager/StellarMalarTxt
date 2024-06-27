@@ -2,7 +2,9 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using StellarBillingSystem.Business;
 using StellarBillingSystem.Context;
+using StellarBillingSystem.Models;
 
 namespace HealthCare.Controllers
 {
@@ -551,11 +553,6 @@ namespace HealthCare.Controllers
         }
 
 
-
-        public IActionResult CategoryMasterModel()
-        {
-            return View();
-        }
 
         public IActionResult CustomerMaster()
         {
