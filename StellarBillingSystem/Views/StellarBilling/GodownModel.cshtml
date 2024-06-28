@@ -48,15 +48,15 @@
 
                     <div class="form-floating form-floating-outline mb-4">
 
-                        <input asp-for="NumberofStocksinRack" class="form-control" placeholder="Number of Stocks in Rack" />
-                <label asp-for="NumberofStocksinRack" class="control-label"></label>
-                <span asp-validation-for="NumberofStocksinRack" class="text-danger"></span>
+                        <input asp-for="DatefofPurchase" class="form-control" placeholder="DatefofPurchase" />
+                        <label asp-for="DatefofPurchase" class="control-label">DatefofPurchase</label>
+                        <span asp-validation-for="DatefofPurchase" class="text-danger"></span>
             </div>
 
                     <div class="form-floating form-floating-outline mb-4">
-                        <input asp-for="Description" class="form-control" placeholder="Description" />
-                <label asp-for="Description" class="control-label"></label>
-                <span asp-validation-for="Description" class="text-danger"></span>
+                        <input asp-for="SupplierInformation" class="form-control" placeholder="SupplierInformation" />
+                        <label asp-for="SupplierInformation" class="control-label">SupplierInformation</label>
+                        <span asp-validation-for="SupplierInformation" class="text-danger"></span>
             </div>
                     <br />
 
@@ -70,7 +70,7 @@
     <br />
                     <div class="form-group">
                         <center>
-            <button type="submit" value="Create" asp-action="AddGodownstock" class="btn btn-primary">Save</button>
+            <button type="submit" value="Create" asp-action="GodDown" class="btn btn-primary">Save</button>
                             @if (ViewBag.Message != null)
                             {
                                 <div class="alert alert-success">
@@ -79,5 +79,21 @@
                             }
                         </center>
                     </div>
+
+    <div class="form-group">
+        <center>
+            <button type="submit" value="Create" asp-action="AddGodownstock" class="btn btn-primary">Get</button>
+            @if (ViewBag.Message != null)
+            {
+                <div class="alert alert-success">
+                    @ViewBag.Message
+                </div>
+            }
+        </center>
+    </div>
+
+
+
+
 
         </form>

@@ -198,13 +198,19 @@ namespace HealthCare.Controllers
                         return View("ProductMasterModel", model);
                     }
 
+
                     existingProduct.ProductID = model.ProductID;
                     existingProduct.CategoryID = model.CategoryID;
                     existingProduct.ProductName = model.ProductName;
                     existingProduct.Brandname = model.Brandname;
                     existingProduct.Price = model.Price;
                     existingProduct.Discount = model.Discount;
-                    existingProduct.TotalAmount = model.TotalAmount;
+                    decimal price = decimal.Parse(model.Price);
+                    decimal discount = decimal.Parse(model.Discount);
+                    decimal totalAmount = price - (price * discount / 100);
+                    existingProduct.TotalAmount = totalAmount.ToString();
+
+                    // existingProduct.TotalAmount = model.TotalAmount - (model.Price * model.Discount / 100 = model.TotalAmount);
                     existingProduct.LastUpdatedDate = DateTime.Now.ToString();
                     existingProduct.LastUpdatedUser = User.Claims.First().Value.ToString();
                     existingProduct.LastUpdatedmachine = Request.HttpContext.Connection.RemoteIpAddress.ToString();
@@ -213,6 +219,12 @@ namespace HealthCare.Controllers
                 }
                 else
                 {
+
+                    // Convert strings to decimals, calculate TotalAmount, and convert back to string
+                    decimal price = decimal.Parse(model.Price);
+                    decimal discount = decimal.Parse(model.Discount);
+                    decimal totalAmount = price - (price * discount / 100);
+                    model.TotalAmount = totalAmount.ToString();
                     model.LastUpdatedDate = DateTime.Now.ToString();
                     model.LastUpdatedUser = User.Claims.First().Value.ToString();
                     model.LastUpdatedmachine = Request.HttpContext.Connection.RemoteIpAddress.ToString();
@@ -275,6 +287,68 @@ namespace HealthCare.Controllers
 
             return View("CustomerBilling" , model);
         }
+
+
+        [HttpPost]
+
+        public async Task<IActionResult> GodDown(GodownModel model)
+        {
+            var existinggoddown = await _billingsoftware.SHGodown.FindAsync(model.ProductID, model.DatefofPurchase, model.SupplierInformation);
+            if (existinggoddown != null)
+            {
+                existinggoddown.ProductID = model.ProductID;
+                existinggoddown.NumberofStocks = model.NumberofStocks;
+                existinggoddown.DatefofPurchase = model.DatefofPurchase;
+                existinggoddown.SupplierInformation = model.SupplierInformation;
+               /* existinggoddown.StrIsDelete = model.StrIsDelete;*/
+                existinggoddown.LastUpdatedDate = DateTime.Now.ToString();
+                existinggoddown.LastUpdatedUser = User.Claims.First().Value.ToString();
+                existinggoddown.LastUpdatedmachine = Request.HttpContext.Connection.RemoteIpAddress.ToString();
+                _billingsoftware.Entry(existinggoddown).State = EntityState.Modified;
+
+            }
+            else
+            {
+
+                model.LastUpdatedDate = DateTime.Now.ToString();
+                model.LastUpdatedUser = User.Claims.First().Value.ToString();
+                model.LastUpdatedmachine = Request.HttpContext.Connection.RemoteIpAddress.ToString();
+                _billingsoftware.SHGodown.Add(model);
+            }
+
+            await _billingsoftware.SaveChangesAsync();
+
+
+            ViewBag.Message = "Saved Successfully";
+
+            return View("GodownModel", model);
+
+        }
+
+       /* [HttpPost]
+        public async Task<IActionResult> DeleteGodown(string productID, string dateOfPurchase, string supplierInformation)
+        {
+            try
+            {
+                var godownToDelete = await _billingsoftware.SHGodown.FindAsync(productID, dateOfPurchase, supplierInformation);
+
+                if (godownToDelete != null)
+                {
+                    godownToDelete.IsDelete = true; // Assuming IsDelete is an integer field
+                    _billingsoftware.Entry(godownToDelete).State = EntityState.Modified;
+                    await _billingsoftware.SaveChangesAsync();
+                }
+
+                return RedirectToAction("Index"); // Redirect to a success page or appropriate action
+            }
+            catch (Exception ex)
+            {
+                // Handle exceptions
+                ViewBag.Error = "An error occurred: " + ex.Message;
+                return View("Error"); // or return an appropriate error view
+            }
+        }*/
+
 
 
 
@@ -1003,6 +1077,12 @@ namespace HealthCare.Controllers
 
 
         }
+
+
+
+
+
+
 
 
         public async Task<IActionResult> AddResourceType(ResourceTypeMasterModel model, string buttontype)

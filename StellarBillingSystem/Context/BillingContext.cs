@@ -95,7 +95,7 @@ namespace StellarBillingSystem.Context
 
             modelBuilder.Entity<BilingSysytemModel>().HasKey(i => new { i.BillID });
 
-            modelBuilder.Entity<GodownModel>().HasKey(i => new { i.ProductID });
+            modelBuilder.Entity<GodownModel>().HasKey(i => new { i.ProductID,i.DatefofPurchase,i.SupplierInformation});
 
             modelBuilder.Entity<NetDiscountMasterModel>().HasKey(i => new { i.NetDiscount });
 
