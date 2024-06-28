@@ -77,7 +77,7 @@ namespace StellarBillingSystem.Migrations
 
                     b.HasKey("BillID");
 
-                    b.ToTable("SHCustomerBilling");
+                    b.ToTable("SHCustomerBilling", (string)null);
                 });
 
             modelBuilder.Entity("CategoryMasterModel", b =>
@@ -102,7 +102,7 @@ namespace StellarBillingSystem.Migrations
 
                     b.HasKey("CategoryID");
 
-                    b.ToTable("SHCategoryMaster");
+                    b.ToTable("SHCategoryMaster", (string)null);
                 });
 
             modelBuilder.Entity("CustomerMasterModel", b =>
@@ -142,7 +142,7 @@ namespace StellarBillingSystem.Migrations
 
                     b.HasKey("MobileNumber");
 
-                    b.ToTable("SHCustomerMaster");
+                    b.ToTable("SHCustomerMaster", (string)null);
                 });
 
             modelBuilder.Entity("DiscountCategoryMasterModel", b =>
@@ -167,7 +167,7 @@ namespace StellarBillingSystem.Migrations
 
                     b.HasKey("CategoryID");
 
-                    b.ToTable("SHDiscountCategory");
+                    b.ToTable("SHDiscountCategory", (string)null);
                 });
 
             modelBuilder.Entity("GSTMasterModel", b =>
@@ -195,7 +195,7 @@ namespace StellarBillingSystem.Migrations
 
                     b.HasKey("TaxID");
 
-                    b.ToTable("SHGSTMaster");
+                    b.ToTable("SHGSTMaster", (string)null);
                 });
 
             modelBuilder.Entity("GodownModel", b =>
@@ -226,7 +226,7 @@ namespace StellarBillingSystem.Migrations
 
                     b.HasKey("ProductID", "DatefofPurchase", "SupplierInformation");
 
-                    b.ToTable("SHGodown");
+                    b.ToTable("SHGodown", (string)null);
                 });
 
             modelBuilder.Entity("NetDiscountMasterModel", b =>
@@ -245,7 +245,7 @@ namespace StellarBillingSystem.Migrations
 
                     b.HasKey("NetDiscount");
 
-                    b.ToTable("SHNetDiscountMaster");
+                    b.ToTable("SHNetDiscountMaster", (string)null);
                 });
 
             modelBuilder.Entity("PointsMasterModel", b =>
@@ -270,7 +270,7 @@ namespace StellarBillingSystem.Migrations
 
                     b.HasKey("PointsID");
 
-                    b.ToTable("SHPointsMaster");
+                    b.ToTable("SHPointsMaster", (string)null);
                 });
 
             modelBuilder.Entity("PointsReedemDetailsModel", b =>
@@ -295,7 +295,7 @@ namespace StellarBillingSystem.Migrations
 
                     b.HasKey("CustomerID");
 
-                    b.ToTable("SHPointsReedemDetails");
+                    b.ToTable("SHPointsReedemDetails", (string)null);
                 });
 
             modelBuilder.Entity("ProductMatserModel", b =>
@@ -335,7 +335,7 @@ namespace StellarBillingSystem.Migrations
 
                     b.HasKey("ProductID");
 
-                    b.ToTable("SHProductMaster");
+                    b.ToTable("SHProductMaster", (string)null);
                 });
 
             modelBuilder.Entity("RackMasterModel", b =>
@@ -360,7 +360,7 @@ namespace StellarBillingSystem.Migrations
 
                     b.HasKey("PartitionID", "RackID");
 
-                    b.ToTable("SHRackMaster");
+                    b.ToTable("SHRackMaster", (string)null);
                 });
 
             modelBuilder.Entity("RackPatrionProductModel", b =>
@@ -388,7 +388,7 @@ namespace StellarBillingSystem.Migrations
 
                     b.HasKey("PartitionID", "ProductID");
 
-                    b.ToTable("SHRackPartionProduct");
+                    b.ToTable("SHRackPartionProduct", (string)null);
                 });
 
             modelBuilder.Entity("ReportModel", b =>
@@ -413,7 +413,7 @@ namespace StellarBillingSystem.Migrations
 
                     b.HasKey("ReportID");
 
-                    b.ToTable("SHReportModel");
+                    b.ToTable("SHReportModel", (string)null);
                 });
 
             modelBuilder.Entity("StellarBillingSystem.Models.LogsModel", b =>
@@ -447,7 +447,7 @@ namespace StellarBillingSystem.Migrations
 
                     b.HasKey("LogID");
 
-                    b.ToTable("SBLogs");
+                    b.ToTable("SBLogs", (string)null);
                 });
 
             modelBuilder.Entity("StellarBillingSystem.Models.ResourceTypeMasterModel", b =>
@@ -472,7 +472,7 @@ namespace StellarBillingSystem.Migrations
 
                     b.HasKey("ResourceTypeID");
 
-                    b.ToTable("SHresourceType");
+                    b.ToTable("SHresourceType", (string)null);
                 });
 
             modelBuilder.Entity("StellarBillingSystem.Models.RoleAccessModel", b =>
@@ -505,7 +505,7 @@ namespace StellarBillingSystem.Migrations
 
                     b.HasKey("RollID", "ScreenID");
 
-                    b.ToTable("SHRoleaccessModel");
+                    b.ToTable("SHRoleaccessModel", (string)null);
                 });
 
             modelBuilder.Entity("StellarBillingSystem.Models.RollAccessMaster", b =>
@@ -530,7 +530,7 @@ namespace StellarBillingSystem.Migrations
 
                     b.HasKey("StaffID", "RollID");
 
-                    b.ToTable("SHrollaccess");
+                    b.ToTable("SHrollaccess", (string)null);
                 });
 
             modelBuilder.Entity("StellarBillingSystem.Models.RollTypeMaster", b =>
@@ -556,7 +556,7 @@ namespace StellarBillingSystem.Migrations
 
                     b.HasKey("RollID");
 
-                    b.ToTable("SHrollType");
+                    b.ToTable("SHrollType", (string)null);
                 });
 
             modelBuilder.Entity("StellarBillingSystem.Models.ScreenMasterModel", b =>
@@ -581,7 +581,7 @@ namespace StellarBillingSystem.Migrations
 
                     b.HasKey("ScreenId");
 
-                    b.ToTable("SHScreenMaster");
+                    b.ToTable("SHScreenMaster", (string)null);
                 });
 
             modelBuilder.Entity("StellarBillingSystem.Models.ScreenNameMasterModel", b =>
@@ -595,7 +595,7 @@ namespace StellarBillingSystem.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("SHScreenName");
+                    b.ToTable("SHScreenName", (string)null);
                 });
 
             modelBuilder.Entity("StellarBillingSystem.Models.SignUpModel", b =>
@@ -625,7 +625,7 @@ namespace StellarBillingSystem.Migrations
 
                     b.HasKey("Username");
 
-                    b.ToTable("SHSignUp");
+                    b.ToTable("SHSignUp", (string)null);
                 });
 
             modelBuilder.Entity("StellarBillingSystem.Models.StaffAdminModel", b =>
@@ -707,7 +707,7 @@ namespace StellarBillingSystem.Migrations
 
                     b.HasKey("StaffID");
 
-                    b.ToTable("SHStaffAdmin");
+                    b.ToTable("SHStaffAdmin", (string)null);
                 });
 
             modelBuilder.Entity("VoucherCustomerDetailModel", b =>
@@ -732,7 +732,7 @@ namespace StellarBillingSystem.Migrations
 
                     b.HasKey("VoucherID");
 
-                    b.ToTable("SHVoucherDetails");
+                    b.ToTable("SHVoucherDetails", (string)null);
                 });
 
             modelBuilder.Entity("VoucherMasterModel", b =>
@@ -763,7 +763,7 @@ namespace StellarBillingSystem.Migrations
 
                     b.HasKey("VoucherID");
 
-                    b.ToTable("SHVoucherMaster");
+                    b.ToTable("SHVoucherMaster", (string)null);
                 });
 #pragma warning restore 612, 618
         }
