@@ -198,13 +198,19 @@ namespace HealthCare.Controllers
                         return View("ProductMasterModel", model);
                     }
 
+
                     existingProduct.ProductID = model.ProductID;
                     existingProduct.CategoryID = model.CategoryID;
                     existingProduct.ProductName = model.ProductName;
                     existingProduct.Brandname = model.Brandname;
                     existingProduct.Price = model.Price;
                     existingProduct.Discount = model.Discount;
-                    existingProduct.TotalAmount = model.TotalAmount;
+                    decimal price = decimal.Parse(model.Price);
+                    decimal discount = decimal.Parse(model.Discount);
+                    decimal totalAmount = price - (price * discount / 100);
+                    existingProduct.TotalAmount = totalAmount.ToString();
+
+                    // existingProduct.TotalAmount = model.TotalAmount - (model.Price * model.Discount / 100 = model.TotalAmount);
                     existingProduct.LastUpdatedDate = DateTime.Now.ToString();
                     existingProduct.LastUpdatedUser = User.Claims.First().Value.ToString();
                     existingProduct.LastUpdatedmachine = Request.HttpContext.Connection.RemoteIpAddress.ToString();
@@ -213,6 +219,12 @@ namespace HealthCare.Controllers
                 }
                 else
                 {
+
+                    // Convert strings to decimals, calculate TotalAmount, and convert back to string
+                    decimal price = decimal.Parse(model.Price);
+                    decimal discount = decimal.Parse(model.Discount);
+                    decimal totalAmount = price - (price * discount / 100);
+                    model.TotalAmount = totalAmount.ToString();
                     model.LastUpdatedDate = DateTime.Now.ToString();
                     model.LastUpdatedUser = User.Claims.First().Value.ToString();
                     model.LastUpdatedmachine = Request.HttpContext.Connection.RemoteIpAddress.ToString();
