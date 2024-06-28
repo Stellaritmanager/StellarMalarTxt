@@ -1000,6 +1000,12 @@ namespace HealthCare.Controllers
         }
 
 
+
+
+
+
+
+
         public async Task<IActionResult> AddResourceType(ResourceTypeMasterModel model, string buttontype)
         {
             
