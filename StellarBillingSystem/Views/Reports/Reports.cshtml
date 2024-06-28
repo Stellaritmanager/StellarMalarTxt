@@ -58,7 +58,7 @@
 
 
                                 @{
-                                    var reportModels = (IEnumerable<ReportModel>)ViewData["reportid"];
+                                    var reportModels = (IEnumerable<GenericReportModel>)ViewData["reportid"];
                                     var dropdownOptions = new List<SelectListItem>();
 
                                     foreach (var reportModel in reportModels)

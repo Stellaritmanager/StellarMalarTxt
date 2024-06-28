@@ -23,9 +23,9 @@ namespace StellarBillingSystem.Controllers
             BusinessClassBilling business = new BusinessClassBilling(_billingContext);
             ViewData["reportid"] = business.GetReportId();
            
-            var reportQuery = (from rep in _billingContext.SHReportModel
+            var reportQuery = (from rep in _billingContext.ShGenericReport
                                where (rep.ReportName == inputValue)
-                               select new ReportModel
+                               select new GenericReportModel
                                {
                                    ReportName = rep.ReportName,
                                    ReportQuery = rep.ReportQuery,

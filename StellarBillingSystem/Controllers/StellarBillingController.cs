@@ -862,65 +862,54 @@ namespace HealthCare.Controllers
                     ViewBag.retMessage = "Deleted RollID retrieved successfully";
                 }
             }
-        
 
-             var existingrackpartition = await _billingsoftware.SHRackPartionProduct.FindAsync(model.PartitionID,model.ProductID);
+
+            var existingrackpartition = await _billingsoftware.SHRackPartionProduct.FindAsync(model.PartitionID, model.ProductID);
             if (existingrackpartition != null)
             {
-                /*existingrackpartition.PartitionID = model.PartitionID;
-                existingrackpartition.ProductID = model.ProductID;
-                existingrackpartition.Noofitems = model.Noofitems;
-                existingrackpartition.LastUpdatedDate = DateTime.Now.ToString();
-                existingrackpartition.LastUpdatedUser = User.Claims.First().Value.ToString();
-                existingrackpartition.LastUpdatedmachine = Request.HttpContext.Connection.RemoteIpAddress.ToString();
-            var existingrackpartition = await _billingsoftware.SHRackPartionProduct.FindAsync(model.PartitionID,model.ProductID);*/
-                int newStock = 0;
+                int newStock;
                 if (int.TryParse(model.Noofitems, out newStock))
                 {
-                    int currentstock = 0;
-
-                    if (existingrackpartition != null)
+                    int existingstock;
+                    if (int.TryParse(existingrackpartition.Noofitems, out existingstock))
                     {
-                        int existingstock = 0;
-                        if (int.TryParse(existingrackpartition.Noofitems, out existingstock))
-                        {
-                            int stockdiff = existingstock - newStock;
+                        int stockdiff = existingstock - newStock;
 
-                            existingrackpartition.PartitionID = model.PartitionID;
-                            existingrackpartition.ProductID = model.ProductID;
-                            existingrackpartition.Noofitems = model.Noofitems;
-                            existingrackpartition.LastUpdatedDate = DateTime.Now.ToString();
-                            existingrackpartition.LastUpdatedUser = User.Claims.First().Value.ToString();
-                            existingrackpartition.LastUpdatedmachine = Request.HttpContext.Connection.RemoteIpAddress.ToString();
+                        existingrackpartition.PartitionID = model.PartitionID;
+                        existingrackpartition.ProductID = model.ProductID;
+                        existingrackpartition.Noofitems = model.Noofitems;
+                        existingrackpartition.LastUpdatedDate = DateTime.Now.ToString();
+                        existingrackpartition.LastUpdatedUser = User.Claims.First().Value.ToString();
+                        existingrackpartition.LastUpdatedmachine = Request.HttpContext.Connection.RemoteIpAddress.ToString();
 
                         _billingsoftware.Entry(existingrackpartition).State = EntityState.Modified;
 
                         var updatestock = _billingsoftware.SHGodown.FirstOrDefault(x => x.ProductID == model.ProductID);
+                        if (updatestock != null)
                         {
-                            if (updatestock != null)
-                            {
-                                int totalstock = int.Parse(updatestock.NumberofStocks);
-                                currentstock = totalstock - newStock;
+                            int totalstock = int.Parse(updatestock.NumberofStocks);
+                            int currentstock = totalstock - stockdiff;
 
-                                updatestock.NumberofStocks = currentstock.ToString();
-                                _billingsoftware.Entry(updatestock).State = EntityState.Modified;
-                            }
+                            updatestock.NumberofStocks = currentstock.ToString();
+                            _billingsoftware.Entry(updatestock).State = EntityState.Modified;
                         }
                     }
                 }
-
-                    else
+            }
+            else
+            {
+                int newStock;
+                if (int.TryParse(model.Noofitems, out newStock))
+                {
+                    var recstock = _billingsoftware.SHGodown.FirstOrDefault(x => x.ProductID == model.ProductID);
+                    if (recstock != null)
                     {
-                        var recstock = _billingsoftware.SHGodown.FirstOrDefault(x => x.ProductID == model.ProductID);
-                        if (recstock != null)
-                        {
-                            int totalstock = int.Parse(recstock.NumberofStocks);
-                            currentstock = totalstock - newStock;
+                        int totalstock = int.Parse(recstock.NumberofStocks);
+                        int currentstock = totalstock - newStock;
 
-                            recstock.NumberofStocks = currentstock.ToString();
-                            _billingsoftware.Entry(recstock).State = EntityState.Modified;
-                        }
-
+                        recstock.NumberofStocks = currentstock.ToString();
+                        _billingsoftware.Entry(recstock).State = EntityState.Modified;
+                    }
 
                     model.LastUpdatedDate = DateTime.Now.ToString();
                     model.LastUpdatedUser = User.Claims.First().Value.ToString();
@@ -945,7 +934,7 @@ namespace HealthCare.Controllers
                 }).ToList();
 
                 viewmodel.Viewrackpartition = updatedViewModelList;
-            }
+            
 
             return View("RackPatrionProduct", viewmodel);
         }

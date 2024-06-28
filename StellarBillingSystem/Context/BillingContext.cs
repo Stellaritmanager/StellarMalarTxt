@@ -59,6 +59,8 @@ namespace StellarBillingSystem.Context
 
         public DbSet<ScreenNameMasterModel> SHScreenName { get; set; }
 
+        public DbSet<GenericReportModel>ShGenericReport { get; set; }
+
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             if (!optionsBuilder.IsConfigured)
@@ -69,6 +71,7 @@ namespace StellarBillingSystem.Context
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<GenericReportModel>().HasKey(i => new { i.ReportId });
 
             modelBuilder.Entity<StaffAdminModel>().HasKey(i => new { i.StaffID });
             modelBuilder.Entity<ResourceTypeMasterModel>().HasKey(i => new { i.ResourceTypeID });
