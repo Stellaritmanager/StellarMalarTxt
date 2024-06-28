@@ -300,7 +300,7 @@ namespace HealthCare.Controllers
                 existinggoddown.NumberofStocks = model.NumberofStocks;
                 existinggoddown.DatefofPurchase = model.DatefofPurchase;
                 existinggoddown.SupplierInformation = model.SupplierInformation;
-              /*  existinggoddown.StrIsDelete = model.StrIsDelete;*/
+               /* existinggoddown.StrIsDelete = model.StrIsDelete;*/
                 existinggoddown.LastUpdatedDate = DateTime.Now.ToString();
                 existinggoddown.LastUpdatedUser = User.Claims.First().Value.ToString();
                 existinggoddown.LastUpdatedmachine = Request.HttpContext.Connection.RemoteIpAddress.ToString();
@@ -334,7 +334,7 @@ namespace HealthCare.Controllers
 
                 if (godownToDelete != null)
                 {
-                    godownToDelete.IsDelete = 1; // Assuming IsDelete is an integer field
+                    godownToDelete.IsDelete = true; // Assuming IsDelete is an integer field
                     _billingsoftware.Entry(godownToDelete).State = EntityState.Modified;
                     await _billingsoftware.SaveChangesAsync();
                 }
