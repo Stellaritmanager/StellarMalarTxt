@@ -44,6 +44,21 @@ namespace StellarBillingSystem.Context
         public DbSet<ReportModel> SHReportModel { get; set; }
 
         public DbSet<SignUpModel> SHSignUp { get; set; }
+
+        public DbSet<StaffAdminModel> SHStaffAdmin { get; set; }
+
+        public DbSet<ResourceTypeMasterModel> SHresourceType { get; set; }
+
+        public DbSet<RollAccessMaster> SHrollaccess {  get; set; }
+       
+        public DbSet<RoleAccessModel> SHRoleaccessModel { get; set; }
+
+        public DbSet<RollTypeMaster> SHrollType {  get; set; }
+
+        public DbSet<ScreenMasterModel> SHScreenMaster { get; set; }
+
+        public DbSet<ScreenNameMasterModel> SHScreenName { get; set; }
+
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             if (!optionsBuilder.IsConfigured)
@@ -54,6 +69,17 @@ namespace StellarBillingSystem.Context
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+
+            modelBuilder.Entity<StaffAdminModel>().HasKey(i => new { i.StaffID });
+            modelBuilder.Entity<ResourceTypeMasterModel>().HasKey(i => new { i.ResourceTypeID });
+            modelBuilder.Entity<RollAccessMaster>().HasKey(i => new { i.StaffID, i.RollID });
+            modelBuilder.Entity<RoleAccessModel>().HasKey(i => new { i.RollID,i.ScreenID});
+            modelBuilder.Entity<RollTypeMaster>().HasKey(i => new { i.RollID });
+            modelBuilder.Entity<ScreenMasterModel>().HasKey(i => new { i.ScreenId });
+            modelBuilder.Entity<ScreenNameMasterModel>().HasKey(i => new { i.Id });
+            
+
+
             modelBuilder.Entity<LogsModel>().HasKey(i => new { i.LogID });
             modelBuilder.Entity<CategoryMasterModel>().HasKey(i => new { i.CategoryID });
 
@@ -69,7 +95,7 @@ namespace StellarBillingSystem.Context
 
             modelBuilder.Entity<BilingSysytemModel>().HasKey(i => new { i.BillID });
 
-            modelBuilder.Entity<GodownModel>().HasKey(i => new { i.ProductID });
+            modelBuilder.Entity<GodownModel>().HasKey(i => new { i.ProductID,i.DatefofPurchase,i.SupplierInformation});
 
             modelBuilder.Entity<NetDiscountMasterModel>().HasKey(i => new { i.NetDiscount });
 

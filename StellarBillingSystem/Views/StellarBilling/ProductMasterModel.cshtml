@@ -1,5 +1,6 @@
 ﻿@model ProductMatserModel
 
+
 @{
     ViewData["Title"] = "ProductMasterModel";
 }
@@ -21,6 +22,7 @@
     function handleMessages(message) {
         showPopup(message);
     }
+
 </script>
 
 
@@ -116,17 +118,17 @@
                 <span asp-validation-for="Price" class="text-danger"></span>
             </div>
                     <div class="form-floating form-floating-outline mb-4">
-                        <input asp-for="Discount" value="@Model.Discount" class="form-control" placeholder="Discount" />
+                        <input asp-for="Discount"  value="@Model.Discount" class="form-control" placeholder="Discount" />
                 <label asp-for="Discount" class="control-label"></label>
-               @* 
-                <span asp-validation-for="Discount" class="text-danger"></span> *@
-            </div>
+               
+                <span asp-validation-for="Discount" class="text-danger"></span>
+             </div>
                     <div class="form-floating form-floating-outline mb-4">
-                        <input asp-for="TotalAmount" value="@Model.TotalAmount" class="form-control" placeholder="TotalAmount" />
+                        <input asp-for="TotalAmount" id="TotalAmount" value="@Model.TotalAmount" class="form-control" placeholder="TotalAmount" readonly />
                 <label asp-for="TotalAmount" class="control-label"></label>
              
                 <span asp-validation-for="TotalAmount" class="text-danger"></span>
-            </div>
+            </div> 
 
                     <br />
                 </div>
@@ -142,19 +144,6 @@
                     <button type="submit" asp-action="AddProduct" value="Save" name="buttonType" class="btn btn-primary">Save</button>
                     <button type="submit" asp-action="AddProduct" value="Delete" name="buttonType" class="btn btn-primary">Delete</button>
                     <button type="submit" asp-action="AddProduct" value="DeleteRetrieve" name="buttonType" class="btn btn-primary">Delete Retrieve</button>
-@* 
-                    @if (ViewBag.Message != null)
-                    {
-                        <div class="alert alert-success">
-                            @ViewBag.Message
-                        </div>
-                    }
-                    @if (ViewBag.ErrorMessage != null)
-                    {
-                        <div class="alert alert-danger">
-                            @ViewBag.ErrorMessage
-                        </div>
-                    } *@
                 </center>
             </div>
             <div class="row" style="margin-top:40px">

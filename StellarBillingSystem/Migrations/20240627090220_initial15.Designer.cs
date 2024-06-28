@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using StellarBillingSystem.Context;
 
@@ -11,9 +12,11 @@ using StellarBillingSystem.Context;
 namespace StellarBillingSystem.Migrations
 {
     [DbContext(typeof(BillingContext))]
-    partial class BillingContextModelSnapshot : ModelSnapshot
+    [Migration("20240627090220_initial15")]
+    partial class initial15
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -203,14 +206,8 @@ namespace StellarBillingSystem.Migrations
                     b.Property<string>("ProductID")
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("DatefofPurchase")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("SupplierInformation")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<bool>("IsDelete")
-                        .HasColumnType("bit");
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("LastUpdatedDate")
                         .HasColumnType("nvarchar(max)");
@@ -224,7 +221,10 @@ namespace StellarBillingSystem.Migrations
                     b.Property<string>("NumberofStocks")
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("ProductID", "DatefofPurchase", "SupplierInformation");
+                    b.Property<string>("NumberofStocksinRack")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("ProductID");
 
                     b.ToTable("SHGodown");
                 });
@@ -455,9 +455,6 @@ namespace StellarBillingSystem.Migrations
                     b.Property<string>("ResourceTypeID")
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<bool>("IsDelete")
-                        .HasColumnType("bit");
-
                     b.Property<string>("ResourceTypeName")
                         .HasColumnType("nvarchar(max)");
 
@@ -491,9 +488,6 @@ namespace StellarBillingSystem.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<bool>("Isdelete")
-                        .HasColumnType("bit");
-
                     b.Property<string>("lastUpdatedDate")
                         .HasColumnType("nvarchar(max)");
 
@@ -516,9 +510,6 @@ namespace StellarBillingSystem.Migrations
                     b.Property<string>("RollID")
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<bool>("IsDelete")
-                        .HasColumnType("bit");
-
                     b.Property<string>("LastupdatedDate")
                         .HasColumnType("nvarchar(max)");
 
@@ -537,9 +528,6 @@ namespace StellarBillingSystem.Migrations
                 {
                     b.Property<string>("RollID")
                         .HasColumnType("nvarchar(450)");
-
-                    b.Property<bool>("IsDelete")
-                        .HasColumnType("bit");
 
                     b.Property<string>("LastupdatedDate")
                         .HasColumnType("nvarchar(max)");
@@ -563,9 +551,6 @@ namespace StellarBillingSystem.Migrations
                 {
                     b.Property<string>("ScreenId")
                         .HasColumnType("nvarchar(450)");
-
-                    b.Property<bool>("IsDelete")
-                        .HasColumnType("bit");
 
                     b.Property<string>("ScreenName")
                         .HasColumnType("nvarchar(max)");

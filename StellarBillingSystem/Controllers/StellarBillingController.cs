@@ -122,8 +122,6 @@ namespace HealthCare.Controllers
                 var resultpro = await _billingsoftware.SHProductMaster.FirstOrDefaultAsync(x => x.ProductID == model.ProductID && !x.IsDelete);
                 if (resultpro != null)
                 {
-                    //var getbusproduct = await business.GetProductmaster(model.ProductID);
-
                     return View("ProductMasterModel", resultpro);
                 }
                 else
@@ -133,7 +131,6 @@ namespace HealthCare.Controllers
                     return View("ProductMasterModel", obj);
                 }
             }
-
             else if (buttonType == "Delete")
             {
                 var productToDelete = await _billingsoftware.SHProductMaster.FindAsync(model.ProductID);
@@ -153,16 +150,13 @@ namespace HealthCare.Controllers
             }
             else if (buttonType == "DeleteRetrieve")
             {
-                // Retrieve logic: Set a database value to 0 and retrieve values
-
                 var productToRetrieve = await _billingsoftware.SHProductMaster.FindAsync(model.ProductID);
                 if (productToRetrieve != null)
                 {
-                    // Assuming you have a property like IsRetrieved in your model
                     productToRetrieve.IsDelete = false; // Set a specific database value to 0
 
                     await _billingsoftware.SaveChangesAsync();
-                    // Assuming you want to retrieve certain values and display them in textboxes
+
                     model.ProductID = productToRetrieve.ProductID;
                     model.CategoryID = productToRetrieve.CategoryID;
                     model.ProductName = productToRetrieve.ProductName;
@@ -172,7 +166,8 @@ namespace HealthCare.Controllers
                     model.TotalAmount = productToRetrieve.TotalAmount;
 
                     ViewBag.Message = "Product retrieved successfully";
-                }
+
+                    }
                 else
                 {
                     ViewBag.ErrorMessage = "Product not found";
@@ -180,11 +175,19 @@ namespace HealthCare.Controllers
 
                 return View("ProductMasterModel", model);
             }
-
-
             else if (buttonType == "Save")
             {
 
+                // Fetch discount price based on CategoryID
+                if (!string.IsNullOrEmpty(model.CategoryID))
+                {
+                    var discountCategory = await _billingsoftware.SHDiscountCategory
+                        .FirstOrDefaultAsync(x => x.CategoryID == model.CategoryID);
+                    if (discountCategory != null)
+                    {
+                        model.Discount = discountCategory.DiscountPrice;
+                    }
+                }
 
                 var existingProduct = await _billingsoftware.SHProductMaster.FindAsync(model.ProductID);
                 if (existingProduct != null)
@@ -195,23 +198,33 @@ namespace HealthCare.Controllers
                         return View("ProductMasterModel", model);
                     }
 
+
                     existingProduct.ProductID = model.ProductID;
                     existingProduct.CategoryID = model.CategoryID;
                     existingProduct.ProductName = model.ProductName;
                     existingProduct.Brandname = model.Brandname;
                     existingProduct.Price = model.Price;
                     existingProduct.Discount = model.Discount;
-                    existingProduct.TotalAmount = model.TotalAmount;
+                    decimal price = decimal.Parse(model.Price);
+                    decimal discount = decimal.Parse(model.Discount);
+                    decimal totalAmount = price - (price * discount / 100);
+                    existingProduct.TotalAmount = totalAmount.ToString();
+
+                    // existingProduct.TotalAmount = model.TotalAmount - (model.Price * model.Discount / 100 = model.TotalAmount);
                     existingProduct.LastUpdatedDate = DateTime.Now.ToString();
                     existingProduct.LastUpdatedUser = User.Claims.First().Value.ToString();
                     existingProduct.LastUpdatedmachine = Request.HttpContext.Connection.RemoteIpAddress.ToString();
 
                     _billingsoftware.Entry(existingProduct).State = EntityState.Modified;
-
                 }
                 else
                 {
 
+                    // Convert strings to decimals, calculate TotalAmount, and convert back to string
+                    decimal price = decimal.Parse(model.Price);
+                    decimal discount = decimal.Parse(model.Discount);
+                    decimal totalAmount = price - (price * discount / 100);
+                    model.TotalAmount = totalAmount.ToString();
                     model.LastUpdatedDate = DateTime.Now.ToString();
                     model.LastUpdatedUser = User.Claims.First().Value.ToString();
                     model.LastUpdatedmachine = Request.HttpContext.Connection.RemoteIpAddress.ToString();
@@ -219,14 +232,14 @@ namespace HealthCare.Controllers
                     _billingsoftware.SHProductMaster.Add(model);
                 }
 
-
                 await _billingsoftware.SaveChangesAsync();
 
                 ViewBag.Message = "Saved Successfully";
-
             }
+
             return View("ProductMasterModel", model);
         }
+
 
 
 
@@ -274,6 +287,68 @@ namespace HealthCare.Controllers
 
             return View("CustomerBilling" , model);
         }
+
+
+        [HttpPost]
+
+        public async Task<IActionResult> GodDown(GodownModel model)
+        {
+            var existinggoddown = await _billingsoftware.SHGodown.FindAsync(model.ProductID, model.DatefofPurchase, model.SupplierInformation);
+            if (existinggoddown != null)
+            {
+                existinggoddown.ProductID = model.ProductID;
+                existinggoddown.NumberofStocks = model.NumberofStocks;
+                existinggoddown.DatefofPurchase = model.DatefofPurchase;
+                existinggoddown.SupplierInformation = model.SupplierInformation;
+               /* existinggoddown.StrIsDelete = model.StrIsDelete;*/
+                existinggoddown.LastUpdatedDate = DateTime.Now.ToString();
+                existinggoddown.LastUpdatedUser = User.Claims.First().Value.ToString();
+                existinggoddown.LastUpdatedmachine = Request.HttpContext.Connection.RemoteIpAddress.ToString();
+                _billingsoftware.Entry(existinggoddown).State = EntityState.Modified;
+
+            }
+            else
+            {
+
+                model.LastUpdatedDate = DateTime.Now.ToString();
+                model.LastUpdatedUser = User.Claims.First().Value.ToString();
+                model.LastUpdatedmachine = Request.HttpContext.Connection.RemoteIpAddress.ToString();
+                _billingsoftware.SHGodown.Add(model);
+            }
+
+            await _billingsoftware.SaveChangesAsync();
+
+
+            ViewBag.Message = "Saved Successfully";
+
+            return View("GodownModel", model);
+
+        }
+
+       /* [HttpPost]
+        public async Task<IActionResult> DeleteGodown(string productID, string dateOfPurchase, string supplierInformation)
+        {
+            try
+            {
+                var godownToDelete = await _billingsoftware.SHGodown.FindAsync(productID, dateOfPurchase, supplierInformation);
+
+                if (godownToDelete != null)
+                {
+                    godownToDelete.IsDelete = true; // Assuming IsDelete is an integer field
+                    _billingsoftware.Entry(godownToDelete).State = EntityState.Modified;
+                    await _billingsoftware.SaveChangesAsync();
+                }
+
+                return RedirectToAction("Index"); // Redirect to a success page or appropriate action
+            }
+            catch (Exception ex)
+            {
+                // Handle exceptions
+                ViewBag.Error = "An error occurred: " + ex.Message;
+                return View("Error"); // or return an appropriate error view
+            }
+        }*/
+
 
 
 
@@ -400,7 +475,7 @@ namespace HealthCare.Controllers
         {
             BusinessClassBilling business = new BusinessClassBilling(_billingsoftware);
             ViewData["discountcategoryid"] = business.GetcategoryID();
-
+            
             if (buttonType == "Get")
             {
                 var getdiscount = await _billingsoftware.SHDiscountCategory.FirstOrDefaultAsync(x => x.CategoryID == model.CategoryID && !x.IsDelete);
@@ -856,6 +931,655 @@ namespace HealthCare.Controllers
             ViewBag.Delete = "Deleted  Successfully.";
             return View("RackPatrionProduct");
         }
+
+// staff reg
+        [HttpPost]
+        public async Task<IActionResult> AddStaff(StaffAdminModel model,string buttontype)
+        {
+            BusinessClassBilling Busbill = new BusinessClassBilling(_billingsoftware);
+            ViewData["resoruseid"] = Busbill.GetResourceid();
+
+
+            if (buttontype == "Get")
+            {
+                var getstaff = await _billingsoftware.SHStaffAdmin.FirstOrDefaultAsync(x => x.StaffID == model.StaffID&&x.IsDelete==false);
+                if (getstaff != null)
+                {
+                    return View("StaffAdmin", getstaff);
+                }
+                else
+                {
+                    StaffAdminModel par = new StaffAdminModel();
+                    ViewBag.getMessage = "No Data found for this Staff ID";
+                    return View("StaffAdmin", par);
+                }
+            }
+            else if (buttontype == "Delete")
+            {
+                var stafftodelete = await _billingsoftware.SHStaffAdmin.FindAsync(model.StaffID);
+                if (stafftodelete != null)
+                {
+                    stafftodelete.IsDelete = true;
+                    await _billingsoftware.SaveChangesAsync();
+
+                    ViewBag.delMessage = "StaffID deleted successfully";
+                    return View("StaffAdmin",stafftodelete);
+                }
+                else
+                {
+                    ViewBag.delnoMessage = "StaffID not found";
+                    return View("StaffAdmin");
+                }
+
+            }
+
+            else if (buttontype == "DeleteRetrieve")
+            {
+                var stafftoretrieve = await _billingsoftware.SHStaffAdmin.FindAsync(model.StaffID);
+                if (stafftoretrieve != null)
+                {
+                    stafftoretrieve.IsDelete = false;
+
+                    await _billingsoftware.SaveChangesAsync();
+
+                    model.StaffID = stafftoretrieve.StaffID;
+                    model.FullName=stafftoretrieve.FullName;
+                    model.ResourceTypeID = stafftoretrieve.ResourceTypeID;
+                    model.FirstName= stafftoretrieve.FirstName;
+                    model.LastName= stafftoretrieve.LastName;
+                    model.Initial = stafftoretrieve.Initial;
+                    model.Prefix= stafftoretrieve.Prefix;
+                    model.PhoneNumber= stafftoretrieve.PhoneNumber;
+                    model.DateofBirth= stafftoretrieve.DateofBirth;
+                    model.Age= stafftoretrieve.Age;
+                    model.Gender= stafftoretrieve.Gender;
+                    model.Address1= stafftoretrieve.Address1;
+                    model.City = stafftoretrieve.City;
+                    model.State= stafftoretrieve.State;
+                    model.Pin= stafftoretrieve.Pin;
+                    model.EmailId= stafftoretrieve.EmailId;
+                    model.Nationality= stafftoretrieve.Nationality;
+                    model.UserName= stafftoretrieve.UserName;
+                    model.Password= stafftoretrieve.Password;
+                    model.IdProofId= stafftoretrieve.IdProofId;
+                    model.IdProofName= stafftoretrieve.IdProofName;
+
+                    ViewBag.retMessage = "Deleted StaffID retrieved successfully";
+                }
+                else
+                {
+                    ViewBag.noretMessage = "StaffID not found";
+                }
+                return View("StaffAdmin", model);
+            }
+
+
+            var existingStaffAdmin = await _billingsoftware.SHStaffAdmin.FindAsync(model.StaffID);
+
+            if (existingStaffAdmin != null)
+            {
+                existingStaffAdmin.StaffID = model.StaffID;
+                existingStaffAdmin.ResourceTypeID = model.ResourceTypeID;
+                existingStaffAdmin.FirstName = model.FirstName;
+                existingStaffAdmin.LastName = model.LastName;
+                existingStaffAdmin.Initial = model.Initial;
+                existingStaffAdmin.Prefix = model.Prefix;
+                existingStaffAdmin.Age = model.Age;
+                existingStaffAdmin.DateofBirth = model.DateofBirth;
+                existingStaffAdmin.EmailId = model.EmailId;
+                existingStaffAdmin.Address1 = model.Address1;
+                existingStaffAdmin.City = model.City;
+                existingStaffAdmin.State = model.State;
+                existingStaffAdmin.Pin = model.Pin;
+                existingStaffAdmin.PhoneNumber = model.PhoneNumber;
+                existingStaffAdmin.EmailId = model.EmailId;
+                existingStaffAdmin.Nationality = model.Nationality;
+                existingStaffAdmin.UserName = model.UserName;
+                existingStaffAdmin.Password = model.Password;
+                existingStaffAdmin.IdProofId = model.IdProofId;
+                existingStaffAdmin.IdProofName = model.IdProofName;
+                existingStaffAdmin.LastupdatedDate = DateTime.Now.ToString();
+                existingStaffAdmin.LastupdatedUser = User.Claims.First().Value.ToString();
+                existingStaffAdmin.LastUpdatedMachine = Request.HttpContext.Connection.RemoteIpAddress.ToString();
+
+                _billingsoftware.Entry(existingStaffAdmin).State = EntityState.Modified;
+
+            }
+            else
+            {
+
+                model.LastupdatedDate = DateTime.Now.ToString();
+                model.LastupdatedUser = User.Claims.First().Value.ToString();
+                model.LastUpdatedMachine = Request.HttpContext.Connection.RemoteIpAddress.ToString();
+                _billingsoftware.SHStaffAdmin.Add(model);
+            }
+            await _billingsoftware.SaveChangesAsync();
+
+            ViewBag.Message = "Saved Successfully";
+            return View("StaffAdmin", model);
+
+
+        }
+
+
+
+
+
+
+
+
+        public async Task<IActionResult> AddResourceType(ResourceTypeMasterModel model, string buttontype)
+        {
+            
+            if (buttontype == "Get")
+            {
+                var getres = await _billingsoftware.SHresourceType.FirstOrDefaultAsync(x => x.ResourceTypeID == model.ResourceTypeID && x.IsDelete == false);
+                if (getres != null)
+                {
+                    return View("ResourceTypeMaster", getres);
+                }
+                else
+                {
+                    ResourceTypeMasterModel res = new ResourceTypeMasterModel();
+                    ViewBag.getMessage = "No Data found for this ResourceTypeID";
+                    return View("ResourceTypeMaster", res);
+                }
+            }
+            else if (buttontype == "Delete")
+            {
+                var restodelete = await _billingsoftware.SHresourceType.FindAsync(model.ResourceTypeID);
+                if (restodelete != null)
+                {
+                    restodelete.IsDelete = true;
+                    await _billingsoftware.SaveChangesAsync();
+
+                    ViewBag.delMessage = "ResourceTypeID deleted successfully";
+                    return View("ResourceTypeMaster", restodelete);
+                }
+                else
+                {
+                    ViewBag.delnoMessage = "ResourceTypeID not found";
+                    return View("ResourceTypeMaster");
+                }
+
+            }
+
+            else if (buttontype == "DeleteRetrieve")
+            {
+                var restoretrieve = await _billingsoftware.SHresourceType.FindAsync(model.ResourceTypeID);
+                if (restoretrieve != null)
+                {
+                    restoretrieve.IsDelete = false;
+
+                    await _billingsoftware.SaveChangesAsync();
+
+                    model.ResourceTypeName = restoretrieve.ResourceTypeName;
+                    model.ResourceTypeID = restoretrieve.ResourceTypeID;
+                   
+                    ViewBag.retMessage = "Deleted ResourceTypeID retrieved successfully";
+                }
+                else
+                {
+                    ViewBag.noretMessage = "ResourceTypeID not found";
+                }
+                return View("ResourceTypeMaster", model);
+            }
+
+
+            var existingres = await _billingsoftware.SHresourceType.FindAsync(model.ResourceTypeID);
+
+            if (existingres != null)
+            {
+                existingres.ResourceTypeName = model.ResourceTypeName;
+                existingres.ResourceTypeID = model.ResourceTypeID;
+                existingres.lastUpdatedDate = DateTime.Now.ToString();
+                existingres.lastUpdatedUser = User.Claims.First().Value.ToString();
+                existingres.lastUpdatedMachine = Request.HttpContext.Connection.RemoteIpAddress.ToString();
+
+                _billingsoftware.Entry(existingres).State = EntityState.Modified;
+
+            }
+            else
+            {
+
+                model.lastUpdatedDate = DateTime.Now.ToString();
+                model.lastUpdatedUser = User.Claims.First().Value.ToString();
+                model.lastUpdatedMachine = Request.HttpContext.Connection.RemoteIpAddress.ToString();
+                _billingsoftware.SHresourceType.Add(model);
+            }
+            await _billingsoftware.SaveChangesAsync();
+
+            ViewBag.Message = "Saved Successfully";
+            return View("ResourceTypeMaster", model);
+
+
+        }
+
+
+        public async Task<IActionResult> AddRoleaccess(RoleAccessModel model, string buttontype)
+        {
+
+            BusinessClassBilling businessbill = new BusinessClassBilling(_billingsoftware);
+            ViewData["screenid"] = businessbill.GetScreenid();
+            ViewData["rollid"] = businessbill.RollAccessType();
+            ViewData["staffid"] = businessbill.GetStaffID();
+
+            if (buttontype == "Get")
+            {
+                var getrol = await _billingsoftware.SHRoleaccessModel.FirstOrDefaultAsync(x => x.RollID == model.RollID &&x.ScreenID==model.ScreenID && x.Isdelete == false);
+                if (getrol != null)
+                {
+                    return View("RoleAccess", getrol);
+                }
+                else
+                {
+                    RoleAccessModel role = new RoleAccessModel();
+                    ViewBag.getMessage = "No Data found for this RollID";
+                    return View("RoleAccess", role);
+                }
+            }
+            else if (buttontype == "Delete")
+            {
+                var roletodelete = await _billingsoftware.SHRoleaccessModel.FindAsync(model.RollID,model.ScreenID);
+                if (roletodelete != null)
+                {
+                    roletodelete.Isdelete = true;
+                    await _billingsoftware.SaveChangesAsync();
+
+                    ViewBag.delMessage = "RollID deleted successfully";
+                    return View("RoleAccess", roletodelete);
+                }
+                else
+                {
+                    ViewBag.delnoMessage = "RollID not found";
+                    return View("RoleAccess");
+                }
+
+            }
+
+            else if (buttontype == "DeleteRetrieve")
+            {
+                var roltoretrieve = await _billingsoftware.SHRoleaccessModel.FindAsync(model.RollID,model.ScreenID);
+                if (roltoretrieve != null)
+                {
+                    roltoretrieve.Isdelete = false;
+
+                    await _billingsoftware.SaveChangesAsync();
+
+                    model.RollID = roltoretrieve.RollID;
+                    model.ScreenID = roltoretrieve.ScreenID;
+                    model.Access=roltoretrieve.Access;
+                    model.Authorized = roltoretrieve.Authorized;
+
+                    ViewBag.retMessage = "Deleted RollID retrieved successfully";
+                }
+                else
+                {
+                    ViewBag.noretMessage = "RollID not found";
+                }
+                return View("RoleAccess", model);
+            }
+
+
+            var existingrole = await _billingsoftware.SHRoleaccessModel.FindAsync(model.RollID,model.ScreenID);
+
+            if (existingrole != null)
+            {
+                existingrole.RollID = model.RollID;
+                existingrole.ScreenID = model.ScreenID;
+                existingrole.Access = model.Access;
+                existingrole.Authorized = model.Authorized;
+                existingrole.lastUpdatedDate = DateTime.Now.ToString();
+                existingrole.lastUpdatedUser = User.Claims.First().Value.ToString();
+                existingrole.lastUpdatedMachine = Request.HttpContext.Connection.RemoteIpAddress.ToString();
+
+                _billingsoftware.Entry(existingrole).State = EntityState.Modified;
+
+            }
+            else
+            {
+
+                model.lastUpdatedDate = DateTime.Now.ToString();
+                model.lastUpdatedUser = User.Claims.First().Value.ToString();
+                model.lastUpdatedMachine = Request.HttpContext.Connection.RemoteIpAddress.ToString();
+                _billingsoftware.SHRoleaccessModel.Add(model);
+            }
+            await _billingsoftware.SaveChangesAsync();
+
+            ViewBag.Message = "Saved Successfully";
+            return View("RoleAccess", model);
+
+        }
+
+        public async Task<IActionResult> AddRollmaster(RollAccessMaster model, string buttontype)
+        {
+            BusinessClassBilling Busbill = new BusinessClassBilling(_billingsoftware);
+            ViewData["resoruseid"] = Busbill.GetResourceid();
+            ViewData["staffid"] = Busbill.GetStaffID();
+
+
+            if (buttontype == "Get")
+            {
+                var getroll = await _billingsoftware.SHrollaccess.FirstOrDefaultAsync(x => x.RollID == model.RollID && x.StaffID == model.StaffID && x.IsDelete == false);
+                if (getroll != null)
+                {
+                    return View("RollAccessMaster", getroll);
+                }
+                else
+                {
+                    RollAccessMaster roll = new RollAccessMaster();
+                    ViewBag.getMessage = "No Data found for this RollID";
+                    return View("RollAccessMaster", roll);
+                }
+            }
+            else if (buttontype == "Delete")
+            {
+                var rolltodelete = await _billingsoftware.SHrollaccess.FindAsync(model.RollID, model.StaffID);
+                if (rolltodelete != null)
+                {
+                    rolltodelete.IsDelete = true;
+                    await _billingsoftware.SaveChangesAsync();
+
+                    ViewBag.delMessage = "RollID deleted successfully";
+                    return View("RollAccessMaster", rolltodelete);
+                }
+                else
+                {
+                    ViewBag.delnoMessage = "RollID not found";
+                    return View("RollAccessMaster");
+                }
+
+            }
+
+            else if (buttontype == "DeleteRetrieve")
+            {
+                var rolltoretrieve = await _billingsoftware.SHrollaccess.FindAsync(model.RollID, model.StaffID);
+                if (rolltoretrieve != null)
+                {
+                    rolltoretrieve.IsDelete = false;
+
+                    await _billingsoftware.SaveChangesAsync();
+
+                    model.RollID = rolltoretrieve.RollID;
+                    model.StaffID = rolltoretrieve.StaffID;
+                   
+                    ViewBag.retMessage = "Deleted RollID retrieved successfully";
+                }
+                else
+                {
+                    ViewBag.noretMessage = "RollID not found";
+                }
+                return View("RollAccessMaster", model);
+            }
+
+
+            var existingroll = await _billingsoftware.SHrollaccess.FindAsync(model.RollID, model.StaffID);
+
+            if (existingroll != null)
+            {
+                existingroll.RollID = model.RollID;
+                existingroll.StaffID = model.StaffID;
+                existingroll.LastupdatedDate = DateTime.Now.ToString();
+                existingroll.Lastupdateduser = User.Claims.First().Value.ToString();
+                existingroll.LastupdatedMachine = Request.HttpContext.Connection.RemoteIpAddress.ToString();
+
+                _billingsoftware.Entry(existingroll).State = EntityState.Modified;
+
+            }
+            else
+            {
+
+                model.LastupdatedDate = DateTime.Now.ToString();
+                model.Lastupdateduser = User.Claims.First().Value.ToString();
+                model.LastupdatedMachine = Request.HttpContext.Connection.RemoteIpAddress.ToString();
+                _billingsoftware.SHrollaccess.Add(model);
+            }
+            await _billingsoftware.SaveChangesAsync();
+
+            ViewBag.Message = "Saved Successfully";
+            return View("RollAccessMaster", model);
+
+        }
+
+        public async Task<IActionResult> AddRolltype(RollTypeMaster model, string buttontype)
+        {
+
+            if (buttontype == "Get")
+            {
+                var getrolltype = await _billingsoftware.SHrollType.FirstOrDefaultAsync(x => x.RollID == model.RollID && x.IsDelete == false);
+                if (getrolltype != null)
+                {
+                    return View("RollTypeMaster", getrolltype);
+                }
+                else
+                {
+                    RollTypeMaster rolltype = new RollTypeMaster();
+                    ViewBag.getMessage = "No Data found for this RollID";
+                    return View("RollTypeMaster", rolltype);
+                }
+            }
+            else if (buttontype == "Delete")
+            {
+                var rolltypetodelete = await _billingsoftware.SHrollType.FindAsync(model.RollID);
+                if (rolltypetodelete != null)
+                {
+                    rolltypetodelete.IsDelete = true;
+                    await _billingsoftware.SaveChangesAsync();
+
+                    ViewBag.delMessage = "RollID deleted successfully";
+                    return View("RollTypeMaster", rolltypetodelete);
+                }
+                else
+                {
+                    ViewBag.delnoMessage = "RollID not found";
+                    return View("RollTypeMaster");
+                }
+
+            }
+
+            else if (buttontype == "DeleteRetrieve")
+            {
+                var rolltypetoretrieve = await _billingsoftware.SHrollType.FindAsync(model.RollID);
+                if (rolltypetoretrieve != null)
+                {
+                    rolltypetoretrieve.IsDelete = false;
+
+                    await _billingsoftware.SaveChangesAsync();
+
+                    model.RollID = rolltypetoretrieve.RollID;
+                    model.RollName = rolltypetoretrieve.RollName;
+
+                    ViewBag.retMessage = "Deleted RollID retrieved successfully";
+                }
+                else
+                {
+                    ViewBag.noretMessage = "RollID not found";
+                }
+                return View("RollTypeMaster", model);
+            }
+
+
+            var existingrolltype = await _billingsoftware.SHrollType.FindAsync(model.RollID);
+
+            if (existingrolltype != null)
+            {
+                existingrolltype.RollID = model.RollID;
+                existingrolltype.RollName = model.RollName;
+                existingrolltype.LastupdatedDate = DateTime.Now.ToString();
+                existingrolltype.LastupdatedUser = User.Claims.First().Value.ToString();
+                existingrolltype.LastupdatedMachine = Request.HttpContext.Connection.RemoteIpAddress.ToString();
+
+                _billingsoftware.Entry(existingrolltype).State = EntityState.Modified;
+
+            }
+            else
+            {
+
+                model.LastupdatedDate = DateTime.Now.ToString();
+                model.LastupdatedUser = User.Claims.First().Value.ToString();
+                model.LastupdatedMachine = Request.HttpContext.Connection.RemoteIpAddress.ToString();
+                _billingsoftware.SHrollType.Add(model);
+            }
+            await _billingsoftware.SaveChangesAsync();
+
+            ViewBag.Message = "Saved Successfully";
+            return View("RollTypeMaster", model);
+
+        }
+
+        public async Task<IActionResult> Addscreen(ScreenMasterModel model, string buttontype)
+        {
+
+            BusinessClassBilling businessbill = new BusinessClassBilling(_billingsoftware);
+            ViewData["screenname"] = businessbill.Screenname();
+
+            if (buttontype == "Get")
+            {
+                var getscreen = await _billingsoftware.SHScreenMaster.FirstOrDefaultAsync(x => x.ScreenId == model.ScreenId && x.IsDelete == false);
+                if (getscreen != null)
+                {
+                    return View("ScreenMaster", getscreen);
+                }
+                else
+                {
+                    ScreenMasterModel screen = new ScreenMasterModel();
+                    ViewBag.getMessage = "No Data found for this ScreenId";
+                    return View("ScreenMaster", screen);
+                }
+            }
+            else if (buttontype == "Delete")
+            {
+                var screentodelete = await _billingsoftware.SHScreenMaster.FindAsync(model.ScreenId);
+                if (screentodelete != null)
+                {
+                    screentodelete.IsDelete = true;
+                    await _billingsoftware.SaveChangesAsync();
+
+                    ViewBag.delMessage = "ScreenId deleted successfully";
+                    return View("ScreenMaster", screentodelete);
+                }
+                else
+                {
+                    ViewBag.delnoMessage = "ScreenId not found";
+                    return View("ScreenMaster");
+                }
+
+            }
+
+            else if (buttontype == "DeleteRetrieve")
+            {
+                var screentoretrieve = await _billingsoftware.SHScreenMaster.FindAsync(model.ScreenId);
+                if (screentoretrieve != null)
+                {
+                    screentoretrieve.IsDelete = false;
+
+                    await _billingsoftware.SaveChangesAsync();
+
+                    model.ScreenId = screentoretrieve.ScreenId;
+                    model.ScreenName = screentoretrieve.ScreenName;
+
+                    ViewBag.retMessage = "Deleted ScreenId retrieved successfully";
+                }
+                else
+                {
+                    ViewBag.noretMessage = "ScreenId not found";
+                }
+                return View("ScreenMaster", model);
+            }
+
+
+            var existingscreen = await _billingsoftware.SHScreenMaster.FindAsync(model.ScreenId);
+
+            if (existingscreen != null)
+            {
+                existingscreen.ScreenId = model.ScreenId;
+                existingscreen.ScreenName = model.ScreenName;
+                existingscreen.lastUpdatedDate = DateTime.Now.ToString();
+                existingscreen.lastUpdatedUser = User.Claims.First().Value.ToString();
+                existingscreen.lastUpdatedMachine = Request.HttpContext.Connection.RemoteIpAddress.ToString();
+
+                _billingsoftware.Entry(existingscreen).State = EntityState.Modified;
+
+            }
+            else
+            {
+
+                model.lastUpdatedDate = DateTime.Now.ToString();
+                model.lastUpdatedUser = User.Claims.First().Value.ToString();
+                model.lastUpdatedMachine = Request.HttpContext.Connection.RemoteIpAddress.ToString();
+                _billingsoftware.SHScreenMaster.Add(model);
+            }
+            await _billingsoftware.SaveChangesAsync();
+
+            ViewBag.Message = "Saved Successfully";
+            return View("ScreenMaster", model);
+
+        }
+
+
+
+
+
+        public IActionResult RollTypeMaster()
+        {
+            RollTypeMaster rolltype = new RollTypeMaster();
+
+            return View("RollTypeMaster", rolltype);
+        }
+
+        public IActionResult StaffAdmin()
+        {
+
+            BusinessClassBilling Busbill = new BusinessClassBilling(_billingsoftware);
+            ViewData["resoruseid"] = Busbill.GetResourceid();
+
+            StaffAdminModel par = new StaffAdminModel();
+
+            return View("StaffAdmin",par);
+        }
+
+        public IActionResult ResourceTypeMaster()
+        {
+            ResourceTypeMasterModel res = new ResourceTypeMasterModel();
+
+            return View("ResourceTypeMaster", res);
+        }
+
+        public IActionResult RollAccessMaster()
+        {
+            BusinessClassBilling Busbill = new BusinessClassBilling(_billingsoftware);
+            ViewData["resoruseid"] = Busbill.GetResourceid();
+            ViewData["staffid"] = Busbill.GetStaffID();
+
+
+
+            RollAccessMaster roll = new RollAccessMaster();
+
+            return View("RollAccessMaster", roll);
+        }
+
+        public IActionResult RoleAccess()
+        {
+            BusinessClassBilling businessbill = new BusinessClassBilling(_billingsoftware);
+            ViewData["screenid"] = businessbill.GetScreenid();
+            ViewData["rollid"] = businessbill.RollAccessType();
+            ViewData["staffid"] = businessbill.GetStaffID();
+
+
+            RoleAccessModel role = new RoleAccessModel();
+            return View("RoleAccess", role);
+        }
+
+        public IActionResult ScreenMaster()
+        {
+            BusinessClassBilling businessbill = new BusinessClassBilling(_billingsoftware);
+            ViewData["screenname"] = businessbill.Screenname();
+
+
+            ScreenMasterModel screen = new ScreenMasterModel();
+            return View("ScreenMaster", screen);
+        }
+
 
 
 
