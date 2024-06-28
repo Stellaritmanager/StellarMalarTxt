@@ -5,7 +5,7 @@
 
 <!-- Menu -->
 @* ! Do this simple *@
-<aside id="layout-menu" class="layout-menu menu-vertical menu bg-menu-theme">
+<aside id="layout-menu" class="layout-menu menu-vertical menu bg-menu-theme" style="background-image: linear-gradient(86.3deg,#006cbe ,#006cbe);">
 
   @* ! Hide app brand if navbar-full *@
   <div
@@ -22,20 +22,22 @@
     </a>
   </div>
 
-  <div class="menu-inner-shadow"></div>
+  <div class="menu-inner-shadow"></div> 
 
   @* ! Full version menu-items *@
+
+  
   <ul class="menu-inner py-1">
     <!-- Stock Management -->
         <li class='menu-item@(currentPage.EndsWith("/") || currentPage.StartsWith("/StellarBilling/") ? " active open" : "")'>
       <a href="javascript:void(0);" class="menu-link menu-toggle">
         <i class="menu-icon tf-icons bx bx-home-circle"></i>
-        <div>Stock Management</div>
+                <div style="color:#99C4E5">Stock Management</div>
       </a>
       <ul class="menu-sub">
                 <li class='menu-item@(currentPage == "/StellarBilling/CategoryMasterModel" ? " active" : "")'>
                     <a asp-controller="StellarBilling" asp-action="CategoryMasterModel" class="menu-link">
-                        <div>Category Master</div>
+                        <div style="color:#99C4E5">Category Master</div>
           </a>
         </li>
         </ul>
@@ -44,7 +46,7 @@
                 <li class='menu-item@(currentPage == "/StellarBilling/ProductMasterModel" ? " active" : "")'>
                         <a asp-controller="StellarBilling" asp-action="ProductMasterModel" class="menu-link">
 
-                            <div>Product Master</div>
+                        <div style="color:#99C4E5">Product Master</div>
                         </a>
                     </li>
                 </ul>
@@ -53,7 +55,7 @@
                 <li class='menu-item@(currentPage == "/StellarBilling/CustomerMaster" ? " active" : "")'>
                         <a asp-controller="StellarBilling" asp-action="CustomerMaster" class="menu-link">
 
-                            <div>Customer Master </div>
+                        <div style="color:cornflowerblue">Customer Master </div>
                         </a>
                     </li>
                 </ul>
@@ -62,7 +64,7 @@
                 <li class='menu-item@(currentPage == "/StellarBilling/DiscountCategoryMaster" ? " active" : "")'>
                         <a asp-controller="StellarBilling" asp-action="DiscountCategoryMaster" class="menu-link">
 
-                            <div>Discount Category Master</div>
+                        <div style="color:cornflowerblue">Discount Category Master</div>
                         </a>
                     </li>
                 </ul>
@@ -71,7 +73,7 @@
                 <li class='menu-item@(currentPage == "/StellarBilling/GSTMasterModel" ? " active" : "")'>
                         <a asp-controller="StellarBilling" asp-action="GSTMasterModel" class="menu-link">
 
-                            <div>GST Master</div>
+                        <div style="color:cornflowerblue">GST Master</div>
                         </a>
                     </li>
                 </ul>
@@ -80,7 +82,7 @@
                 <li class='menu-item@(currentPage == "/StellarBilling/VoucherCustomerDetails" ? " active" : "")'>
                         <a asp-controller="StellarBilling" asp-action="VoucherCustomerDetails" class="menu-link">
 
-                            <div>Voucher Customer Details</div>
+                        <div style="color:cornflowerblue">Voucher Customer Details</div>
                         </a>
                     </li>
                 </ul>
@@ -89,7 +91,7 @@
                 <li class='menu-item@(currentPage == "/StellarBilling/NetDiscountMaster" ? " active" : "")'>
                         <a asp-controller="StellarBilling" asp-action="NetDiscountMaster" class="menu-link">
 
-                            <div>Net Discount Master</div>
+                        <div style="color:cornflowerblue">Net Discount Master</div>
                         </a>
                     </li>
                 </ul>
@@ -98,7 +100,7 @@
                 <li class='menu-item@(currentPage == "/StellarBilling/PointsMaster" ? " active" : "")'>
                         <a asp-controller="StellarBilling" asp-action="PointsMaster" class="menu-link">
 
-                            <div>Points Master</div>
+                        <div style="color:cornflowerblue">Points Master</div>
                         </a>
                     </li>
                 </ul>
@@ -107,7 +109,7 @@
                 <li class='menu-item@(currentPage == "/StellarBilling/PointsReedemDetails" ? " active" : "")'>
                         <a asp-controller="StellarBilling" asp-action="PointsReedemDetails" class="menu-link">
 
-                            <div>Points Reedem Details</div>
+                        <div style="color:cornflowerblue">Points Reedem Details</div>
                         </a>
                     </li>
                 </ul>
@@ -116,7 +118,7 @@
                 <li class='menu-item@(currentPage == "/StellarBilling/RackMaster" ? " active" : "")'>
                         <a asp-controller="StellarBilling" asp-action="RackMaster" class="menu-link">
 
-                            <div>Rack Master</div>
+                        <div style="color:cornflowerblue">Rack Master</div>
                         </a>
                     </li>
                 </ul>
@@ -125,7 +127,7 @@
                 <li class='menu-item@(currentPage == "/StellarBilling/RackPatrionProduct" ? " active" : "")'>
                         <a asp-controller="StellarBilling" asp-action="RackPatrionProduct" class="menu-link">
 
-                            <div>Rack Patrion Product</div>
+                        <div style="color:cornflowerblue">Rack Patrion Product</div>
                         </a>
                     </li>
                 </ul>
@@ -134,7 +136,7 @@
                 <li class='menu-item@(currentPage == "/StellarBilling/VoucherMaster" ? " active" : "")'>
                         <a asp-controller="StellarBilling" asp-action="VoucherMaster" class="menu-link">
 
-                            <div>Voucher Master</div>
+                        <div style="color:cornflowerblue">Voucher Master</div>
                         </a>
                     </li>
                 </ul>
@@ -143,7 +145,7 @@
                 <li class='menu-item@(currentPage == "/StellarBilling/GodownModel" ? " active" : "")'>
                         <a asp-controller="StellarBilling" asp-action="GodownModel" class="menu-link">
 
-                            <div>GodownModel Stock</div>
+                        <div style="color:cornflowerblue">GodownModel Stock</div>
                         </a>
                     </li>
                 </ul>
@@ -157,14 +159,14 @@
             <li class='menu-item@(currentPage.EndsWith("/") || currentPage.StartsWith("/StellarBilling/") ? " active open" : "")'>
                 <a href="javascript:void(0);" class="menu-link menu-toggle">
                     <i class="menu-icon tf-icons bx bx-home-circle"></i>
-                    <div>Payment Billing</div>
+                    <div style="color:cornflowerblue">Payment Billing</div>
                 </a>
                 <ul class="menu-sub">
 
                     <li class='menu-item@(currentPage == "/StellarBilling/CustomerBilling" ? " active" : "")'>
                         <a asp-controller="StellarBilling" asp-action="CustomerBilling" class="menu-link">
 
-                            <div>Customer Billing</div>
+                            <div style="color:cornflowerblue">Customer Billing</div>
                         </a>
                     </li>
                 </ul>
@@ -178,14 +180,14 @@
             <li class='menu-item@(currentPage.EndsWith("/") || currentPage.StartsWith("/StellarBilling/") ? " active open" : "")'>
                 <a href="javascript:void(0);" class="menu-link menu-toggle">
                     <i class="menu-icon tf-icons bx bx-home-circle"></i>
-                    <div>Billing Report</div>
+                        <div style="color:cornflowerblue">Billing Report</div>
                 </a>
                 <ul class="menu-sub">
 
                     <li class='menu-item@(currentPage == "/StellarBilling/ReportModel" ? " active" : "")'>
                         <a asp-controller="StellarBilling" asp-action="ReportModel" class="menu-link">
 
-                            <div>Billing Report</div>
+                                <div style="color:cornflowerblue">Billing Report</div>
                         </a>
                     </li>
                 </ul>
