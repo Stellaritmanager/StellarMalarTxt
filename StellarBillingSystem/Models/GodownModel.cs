@@ -23,6 +23,6 @@ public class GodownModel
     public string? LastUpdatedmachine { get => strLastUpdatedmachine; set => strLastUpdatedmachine = value; }
     public string DatefofPurchase { get => strDatefofPurchase; set => strDatefofPurchase = value; }
     public string SupplierInformation { get => strSupplierInformation; set => strSupplierInformation = value; }
-    public string? StrIsDelete { get => strIsDelete; set => strIsDelete = value; }
+    public string? IsDelete { get => strIsDelete; set => strIsDelete = value; }
 
 }

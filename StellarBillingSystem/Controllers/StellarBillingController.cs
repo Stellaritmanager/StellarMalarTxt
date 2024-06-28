@@ -300,6 +300,7 @@ namespace HealthCare.Controllers
                 existinggoddown.NumberofStocks = model.NumberofStocks;
                 existinggoddown.DatefofPurchase = model.DatefofPurchase;
                 existinggoddown.SupplierInformation = model.SupplierInformation;
+              /*  existinggoddown.StrIsDelete = model.StrIsDelete;*/
                 existinggoddown.LastUpdatedDate = DateTime.Now.ToString();
                 existinggoddown.LastUpdatedUser = User.Claims.First().Value.ToString();
                 existinggoddown.LastUpdatedmachine = Request.HttpContext.Connection.RemoteIpAddress.ToString();
@@ -324,10 +325,34 @@ namespace HealthCare.Controllers
 
         }
 
+       /* [HttpPost]
+        public async Task<IActionResult> DeleteGodown(string productID, string dateOfPurchase, string supplierInformation)
+        {
+            try
+            {
+                var godownToDelete = await _billingsoftware.SHGodown.FindAsync(productID, dateOfPurchase, supplierInformation);
+
+                if (godownToDelete != null)
+                {
+                    godownToDelete.IsDelete = 1; // Assuming IsDelete is an integer field
+                    _billingsoftware.Entry(godownToDelete).State = EntityState.Modified;
+                    await _billingsoftware.SaveChangesAsync();
+                }
+
+                return RedirectToAction("Index"); // Redirect to a success page or appropriate action
+            }
+            catch (Exception ex)
+            {
+                // Handle exceptions
+                ViewBag.Error = "An error occurred: " + ex.Message;
+                return View("Error"); // or return an appropriate error view
+            }
+        }*/
 
 
 
-            [HttpPost]
+
+        [HttpPost]
         public async Task<IActionResult> AddCustomer(CustomerMasterModel model)
         {
             var existingCustomer = await _billingsoftware.SHCustomerMaster.FindAsync(model.MobileNumber);
