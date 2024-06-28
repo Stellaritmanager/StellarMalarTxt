@@ -758,8 +758,25 @@ namespace HealthCare.Controllers
             }
 
 
+            else if (buttonType == "DeleteRetrieve")
+            {
+                var rolltoretrieve = await _billingsoftware.SHRackPartionProduct.FindAsync(model.PartitionID, model.ProductID);
+                if (rolltoretrieve != null)
+                {
+                    rolltoretrieve.Isdelete = false;
 
-            var existingrackpartition = await _billingsoftware.SHRackPartionProduct.FindAsync(model.PartitionID,model.ProductID);
+                    await _billingsoftware.SaveChangesAsync();
+
+                    model.PartitionID = rolltoretrieve.PartitionID;
+                    model.ProductID = rolltoretrieve.ProductID;
+                    model.Noofitems = rolltoretrieve.Noofitems;
+
+                    ViewBag.retMessage = "Deleted RollID retrieved successfully";
+                }
+            }
+
+
+                var existingrackpartition = await _billingsoftware.SHRackPartionProduct.FindAsync(model.PartitionID,model.ProductID);
             if (existingrackpartition != null)
             {
                 existingrackpartition.PartitionID = model.PartitionID;
@@ -1171,10 +1188,10 @@ namespace HealthCare.Controllers
 
         }
 
-        public async Task<IActionResult> AddRollmaster(RollAccessMaster model, string buttontype)
+        public async Task<IActionResult> AddRollmaster(RollAccessMaster model, string buttontype, List<string> SelectedRollNames)
         {
             BusinessClassBilling Busbill = new BusinessClassBilling(_billingsoftware);
-            ViewData["resoruseid"] = Busbill.GetResourceid();
+            ViewData["rollid"] = Busbill.RollAccessType();
             ViewData["staffid"] = Busbill.GetStaffID();
 
 
@@ -1232,27 +1249,35 @@ namespace HealthCare.Controllers
                 return View("RollAccessMaster", model);
             }
 
-
-            var existingroll = await _billingsoftware.SHrollaccess.FindAsync(model.RollID, model.StaffID);
-
-            if (existingroll != null)
-            {
-                existingroll.RollID = model.RollID;
-                existingroll.StaffID = model.StaffID;
-                existingroll.LastupdatedDate = DateTime.Now.ToString();
-                existingroll.Lastupdateduser = User.Claims.First().Value.ToString();
-                existingroll.LastupdatedMachine = Request.HttpContext.Connection.RemoteIpAddress.ToString();
-
-                _billingsoftware.Entry(existingroll).State = EntityState.Modified;
-
-            }
-            else
+            foreach (var rollName in SelectedRollNames)
             {
 
-                model.LastupdatedDate = DateTime.Now.ToString();
-                model.Lastupdateduser = User.Claims.First().Value.ToString();
-                model.LastupdatedMachine = Request.HttpContext.Connection.RemoteIpAddress.ToString();
-                _billingsoftware.SHrollaccess.Add(model);
+                var existingroll = await _billingsoftware.SHrollaccess.FindAsync(rollName, model.StaffID);
+
+                if (existingroll != null)
+                {
+                    existingroll.RollID = model.RollID;
+                    existingroll.StaffID = model.StaffID;
+                    existingroll.LastupdatedDate = DateTime.Now.ToString();
+                    existingroll.Lastupdateduser = User.Claims.First().Value.ToString();
+                    existingroll.LastupdatedMachine = Request.HttpContext.Connection.RemoteIpAddress.ToString();
+
+                    _billingsoftware.Entry(existingroll).State = EntityState.Modified;
+
+                }
+                else
+                {
+                    var newAccess = new RollAccessMaster
+                    {
+                        StaffID = model.StaffID,
+                        RollID = rollName,
+                        LastupdatedDate = DateTime.Now.ToString(),
+                        Lastupdateduser = User.Claims.First().Value.ToString(),
+                        LastupdatedMachine = Request.HttpContext.Connection.RemoteIpAddress.ToString()
+                    };
+                    _billingsoftware.SHrollaccess.Add(newAccess);
+
+                }
             }
             await _billingsoftware.SaveChangesAsync();
 
@@ -1447,6 +1472,9 @@ namespace HealthCare.Controllers
             return View("RollTypeMaster", rolltype);
         }
 
+
+      
+
         public IActionResult StaffAdmin()
         {
 
@@ -1468,9 +1496,8 @@ namespace HealthCare.Controllers
         public IActionResult RollAccessMaster()
         {
             BusinessClassBilling Busbill = new BusinessClassBilling(_billingsoftware);
-            ViewData["resoruseid"] = Busbill.GetResourceid();
+            ViewData["rollid"] = Busbill.RollAccessType();
             ViewData["staffid"] = Busbill.GetStaffID();
-
 
 
             RollAccessMaster roll = new RollAccessMaster();
@@ -1564,7 +1591,7 @@ namespace HealthCare.Controllers
             return View();
         }
 
-        public IActionResult ReportModel()
+        public IActionResult Reports()
         {
             return View();
         }

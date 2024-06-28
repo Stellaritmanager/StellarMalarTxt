@@ -164,9 +164,31 @@ namespace StellarBillingSystem.Business
         }
 
 
+        public List<String> GetRoll(string userid)
+        {
+            var query = from sm in _billingContext.SHScreenMaster
+                        join rac in _billingContext.SHRoleaccessModel on sm.ScreenId equals rac.ScreenID
+                        join ram in _billingContext.SHrollaccess on rac.RollID equals ram.RollID
+                        join sam in _billingContext.SHStaffAdmin on ram.StaffID equals sam.StaffID
+                        where rac.Authorized == "1" && sam.UserName == userid
+                        select sm.ScreenName;
 
+            var result = query.ToList();
+            return result;
+        }
 
+        public List<ReportModel> GetReportId()
+        {
+            var reportid = (
+                    from pr in _billingContext.SHReportModel
+                    select new ReportModel
+                    {
+                        ReportName = pr.ReportName,
+                    }
+                ).ToList();
 
+            return reportid;
+        }
 
 
 

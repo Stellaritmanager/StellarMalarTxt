@@ -109,7 +109,7 @@ namespace StellarBillingSystem.Context
 
             modelBuilder.Entity<PointsMasterModel>().HasKey(i => new { i.PointsID });
 
-            modelBuilder.Entity<ReportModel>().HasKey(i => new {i.ReportID});
+            modelBuilder.Entity<ReportModel>().HasKey(i => new {i.ReportId});
 
             modelBuilder.Entity<SignUpModel>().HasKey(i => new { i.Username });
 
