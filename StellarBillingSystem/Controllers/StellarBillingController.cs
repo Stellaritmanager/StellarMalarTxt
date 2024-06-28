@@ -204,7 +204,7 @@ namespace HealthCare.Controllers
                     existingProduct.Brandname = model.Brandname;
                     existingProduct.Price = model.Price;
                     existingProduct.Discount = model.Discount;
-                    existingProduct.TotalAmount = model.TotalAmount;
+                    existingProduct.TotalAmount = model.TotalAmount - (model.Price * model.Discount / 100);
                     existingProduct.LastUpdatedDate = DateTime.Now.ToString();
                     existingProduct.LastUpdatedUser = User.Claims.First().Value.ToString();
                     existingProduct.LastUpdatedmachine = Request.HttpContext.Connection.RemoteIpAddress.ToString();
