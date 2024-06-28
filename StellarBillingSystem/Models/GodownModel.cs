@@ -10,6 +10,7 @@ public class GodownModel
 	private String strNumberofStocks;
     private String strDatefofPurchase;
     private String strSupplierInformation;
+    private String strIsDelete;
     private String strLastUpdatedDate;
     private String strLastUpdatedUser;
     private String strLastUpdatedmachine;
@@ -22,4 +23,6 @@ public class GodownModel
     public string? LastUpdatedmachine { get => strLastUpdatedmachine; set => strLastUpdatedmachine = value; }
     public string DatefofPurchase { get => strDatefofPurchase; set => strDatefofPurchase = value; }
     public string SupplierInformation { get => strSupplierInformation; set => strSupplierInformation = value; }
+    public string? StrIsDelete { get => strIsDelete; set => strIsDelete = value; }
+
 }

@@ -289,8 +289,45 @@ namespace HealthCare.Controllers
         }
 
 
-
         [HttpPost]
+
+        public async Task<IActionResult> GodDown(GodownModel model)
+        {
+            var existinggoddown = await _billingsoftware.SHGodown.FindAsync(model.ProductID, model.DatefofPurchase, model.SupplierInformation);
+            if (existinggoddown != null)
+            {
+                existinggoddown.ProductID = model.ProductID;
+                existinggoddown.NumberofStocks = model.NumberofStocks;
+                existinggoddown.DatefofPurchase = model.DatefofPurchase;
+                existinggoddown.SupplierInformation = model.SupplierInformation;
+                existinggoddown.LastUpdatedDate = DateTime.Now.ToString();
+                existinggoddown.LastUpdatedUser = User.Claims.First().Value.ToString();
+                existinggoddown.LastUpdatedmachine = Request.HttpContext.Connection.RemoteIpAddress.ToString();
+                _billingsoftware.Entry(existinggoddown).State = EntityState.Modified;
+
+            }
+            else
+            {
+
+                model.LastUpdatedDate = DateTime.Now.ToString();
+                model.LastUpdatedUser = User.Claims.First().Value.ToString();
+                model.LastUpdatedmachine = Request.HttpContext.Connection.RemoteIpAddress.ToString();
+                _billingsoftware.SHGodown.Add(model);
+            }
+
+            await _billingsoftware.SaveChangesAsync();
+
+
+            ViewBag.Message = "Saved Successfully";
+
+            return View("GodownModel", model);
+
+        }
+
+
+
+
+            [HttpPost]
         public async Task<IActionResult> AddCustomer(CustomerMasterModel model)
         {
             var existingCustomer = await _billingsoftware.SHCustomerMaster.FindAsync(model.MobileNumber);
