@@ -20,7 +20,7 @@ namespace HealthCare.Controllers
 
         [HttpPost]
 
-        public async Task<IActionResult> AddCategory(CategoryMasterModel model , string buttonType)
+        public async Task<IActionResult> AddCategory(CategoryMasterModel model, string buttonType)
         {
             if (buttonType == "Get")
             {
@@ -168,7 +168,7 @@ namespace HealthCare.Controllers
 
                     ViewBag.Message = "Product retrieved successfully";
 
-                    }
+                }
                 else
                 {
                     ViewBag.ErrorMessage = "Product not found";
@@ -257,7 +257,7 @@ namespace HealthCare.Controllers
                 existingbill.CustomerNumber = model.CustomerNumber;
                 existingbill.Items = model.Items;
                 existingbill.Rate = model.Rate;
-                existingbill.Quantity= model.Quantity;
+                existingbill.Quantity = model.Quantity;
                 existingbill.Discount = model.Discount;
                 existingbill.Tax = model.Tax;
                 existingbill.DiscountPrice = model.DiscountPrice;
@@ -286,13 +286,13 @@ namespace HealthCare.Controllers
 
             ViewBag.Message = "Saved Successfully";
 
-            return View("CustomerBilling" , model);
+            return View("CustomerBilling", model);
         }
 
 
         [HttpPost]
 
-        public async Task<IActionResult> GodDown(GodownModel model,string buttonType)
+        public async Task<IActionResult> GodDown(GodownModel model, string buttonType)
         {
             BusinessClassBilling business = new BusinessClassBilling(_billingsoftware);
             ViewData["godownproductid"] = business.GetProductid();
@@ -342,23 +342,23 @@ namespace HealthCare.Controllers
                 }
             }
 
-                if (buttonType == "Get")
+            if (buttonType == "Get")
+            {
+                var getStock = await _billingsoftware.SHGodown.FirstOrDefaultAsync(x => x.IsDelete == false && x.ProductID == model.ProductID && x.DatefofPurchase == model.DatefofPurchase && x.SupplierInformation == model.SupplierInformation);
+                if (getStock != null)
                 {
-                    var getStock = await _billingsoftware.SHGodown.FirstOrDefaultAsync(x => x.IsDelete == false && x.ProductID ==model.ProductID && x.DatefofPurchase==model.DatefofPurchase && x.SupplierInformation==model.SupplierInformation );
-                    if (getStock != null)
-                    {
-                       
-                       return View("GodownModel", getStock);
-                    }
-                    else
-                    {
-                        GodownModel role = new GodownModel();
-                        ViewBag.getMessage = "No Data found";
-                        return View("GodownModel", model);
-                    }
-                
+
+                    return View("GodownModel", getStock);
                 }
-           
+                else
+                {
+                    GodownModel role = new GodownModel();
+                    ViewBag.getMessage = "No Data found";
+                    return View("GodownModel", model);
+                }
+
+            }
+
             ViewBag.Message = "Saved Successfully";
 
             return View("GodownModel", model);
@@ -405,8 +405,8 @@ namespace HealthCare.Controllers
             await _billingsoftware.SaveChangesAsync();
 
             ViewBag.Message = "Saved Successfully";
-            
-            return View("CustomerMaster" , model);
+
+            return View("CustomerMaster", model);
         }
         public async Task<IActionResult> GetCustomer(string mobileNumber)
         {
@@ -425,7 +425,7 @@ namespace HealthCare.Controllers
 
             return View("CustomerMaster", customer);
         }
-      
+
         public async Task<IActionResult> GetDeleteRetrieve(string mobileNumber)
         {
             if (string.IsNullOrEmpty(mobileNumber))
@@ -486,11 +486,11 @@ namespace HealthCare.Controllers
 
 
         [HttpPost]
-        public async Task<IActionResult> AddDiscountCategory(DiscountCategoryMasterModel model , string buttonType)
+        public async Task<IActionResult> AddDiscountCategory(DiscountCategoryMasterModel model, string buttonType)
         {
             BusinessClassBilling business = new BusinessClassBilling(_billingsoftware);
             ViewData["discountcategoryid"] = business.GetcategoryID();
-            
+
             if (buttonType == "Get")
             {
                 var getdiscount = await _billingsoftware.SHDiscountCategory.FirstOrDefaultAsync(x => x.CategoryID == model.CategoryID && !x.IsDelete);
@@ -591,7 +591,7 @@ namespace HealthCare.Controllers
             if (existingGst != null)
             {
                 existingGst.TaxID = model.TaxID;
-                existingGst.SGST  = model.SGST;
+                existingGst.SGST = model.SGST;
                 existingGst.CGST = model.CGST;
                 existingGst.OtherTax = model.OtherTax;
                 existingGst.LastUpdatedDate = DateTime.Now.ToString();
@@ -658,12 +658,12 @@ namespace HealthCare.Controllers
 
         [HttpPost]
 
-        public async Task<IActionResult>AddNetDiscount(NetDiscountMasterModel model)
+        public async Task<IActionResult> AddNetDiscount(NetDiscountMasterModel model)
         {
             var existingnetdiscount = await _billingsoftware.SHNetDiscountMaster.FindAsync(model.NetDiscount);
             if (existingnetdiscount != null)
             {
-                
+
                 existingnetdiscount.NetDiscount = model.NetDiscount;
                 existingnetdiscount.LastUpdatedDate = DateTime.Now.ToString();
                 existingnetdiscount.LastUpdatedUser = User.Claims.First().Value.ToString();
@@ -694,12 +694,12 @@ namespace HealthCare.Controllers
         public async Task<IActionResult> AddVoucher(VoucherMasterModel model)
         {
             var existingvoucher = await _billingsoftware.SHVoucherMaster.FindAsync(model.VoucherID);
-            if(existingvoucher == null)
+            if (existingvoucher == null)
             {
                 existingvoucher.VoucherID = model.VoucherID;
                 existingvoucher.VoucherNumber = model.VoucherNumber;
                 existingvoucher.VocherCost = model.VocherCost;
-                existingvoucher.ExpiryDate = model.ExpiryDate;  
+                existingvoucher.ExpiryDate = model.ExpiryDate;
                 existingvoucher.VocherDetails = model.VocherDetails;
                 existingvoucher.LastUpdatedDate = DateTime.Now.ToString();
                 existingvoucher.LastUpdatedUser = User.Claims.First().Value.ToString();
@@ -768,7 +768,7 @@ namespace HealthCare.Controllers
 
         public async Task<IActionResult> Addrack(RackMasterModel model)
         {
-            var existingrack = await _billingsoftware.SHRackMaster.FindAsync(model.PartitionID , model.RackID);
+            var existingrack = await _billingsoftware.SHRackMaster.FindAsync(model.PartitionID, model.RackID);
             if (existingrack == null)
             {
                 existingrack.RackID = model.RackID;
@@ -815,7 +815,7 @@ namespace HealthCare.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> AddRackPartition(RackPatrionProductModel model,string buttonType,RackpartitionViewModel viewmodel)
+        public async Task<IActionResult> AddRackPartition(RackPatrionProductModel model, string buttonType, RackpartitionViewModel viewmodel)
         {
 
             BusinessClassBilling business = new BusinessClassBilling(_billingsoftware);
@@ -862,7 +862,7 @@ namespace HealthCare.Controllers
                     ViewBag.retMessage = "Deleted RollID retrieved successfully";
                 }
             }
-
+        
 
              var existingrackpartition = await _billingsoftware.SHRackPartionProduct.FindAsync(model.PartitionID,model.ProductID);
             if (existingrackpartition != null)
@@ -893,21 +893,21 @@ namespace HealthCare.Controllers
                             existingrackpartition.LastUpdatedUser = User.Claims.First().Value.ToString();
                             existingrackpartition.LastUpdatedmachine = Request.HttpContext.Connection.RemoteIpAddress.ToString();
 
-                            _billingsoftware.Entry(existingrackpartition).State = EntityState.Modified;
+                        _billingsoftware.Entry(existingrackpartition).State = EntityState.Modified;
 
-                            var updatestock = _billingsoftware.SHGodown.FirstOrDefault(x => x.ProductID == model.ProductID);
+                        var updatestock = _billingsoftware.SHGodown.FirstOrDefault(x => x.ProductID == model.ProductID);
+                        {
+                            if (updatestock != null)
                             {
-                                if (updatestock != null)
-                                {
-                                    int totalstock = int.Parse(updatestock.NumberofStocks);
-                                    currentstock = totalstock - newStock;
+                                int totalstock = int.Parse(updatestock.NumberofStocks);
+                                currentstock = totalstock - newStock;
 
-                                    updatestock.NumberofStocks = currentstock.ToString();
-                                    _billingsoftware.Entry(updatestock).State = EntityState.Modified;
-                                }
+                                updatestock.NumberofStocks = currentstock.ToString();
+                                _billingsoftware.Entry(updatestock).State = EntityState.Modified;
                             }
                         }
                     }
+                }
 
                     else
                     {
@@ -922,15 +922,15 @@ namespace HealthCare.Controllers
                         }
 
 
-                        model.LastUpdatedDate = DateTime.Now.ToString();
-                        model.LastUpdatedUser = User.Claims.First().Value.ToString();
-                        model.LastUpdatedmachine = Request.HttpContext.Connection.RemoteIpAddress.ToString();
+                    model.LastUpdatedDate = DateTime.Now.ToString();
+                    model.LastUpdatedUser = User.Claims.First().Value.ToString();
+                    model.LastUpdatedmachine = Request.HttpContext.Connection.RemoteIpAddress.ToString();
 
-                        _billingsoftware.SHRackPartionProduct.Add(model);
-                    }
-
-                    await _billingsoftware.SaveChangesAsync();
+                    _billingsoftware.SHRackPartionProduct.Add(model);
                 }
+
+                await _billingsoftware.SaveChangesAsync();
+            }
 
                 ViewBag.Message = "Saved Successfully";
 
@@ -949,6 +949,7 @@ namespace HealthCare.Controllers
 
             return View("RackPatrionProduct", viewmodel);
         }
+
 
 // Edit Function for RackPartition Table
         public async Task<IActionResult> Edit(string partitionID, string productID)
