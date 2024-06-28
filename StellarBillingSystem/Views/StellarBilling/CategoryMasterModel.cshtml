@@ -30,28 +30,28 @@
 
 
 <form asp-controller="StellarBilling" asp-action="AddCategory">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
 
-            <div class="row">
-                <div class="col-md-12 col-lg-2">
-                </div>
-                <div class="col-md-12 col-lg-8">
-                    <div class="card">
-                        <div class="card-body " style="background-color:#8c62c9">
-                            <div class="card-header d-flex justify-content-between align-items-center">
-                                <div class="container">
-                                    <h2 class="centered text-white" style="font-family:'Lucida Bright'">Category Master</h2>
-
-                                </div>
-                            </div>
+    <div class="row">
+        <div class="col-md-12 col-lg-2">
+        </div>
+        <div class="col-md-12 col-lg-8">
+            <div class="card" style="height:40px">
+                <div class="card-body " style="background-color:#007bff">
+                    <div style="align-items:center">
+                        <div class="container" style="text-align:center">
+                            <h2 class="centered text-white" style="font-family:'Lucida Bright'">Category Master</h2>
                         </div>
                     </div>
                 </div>
             </div>
-    <br />
+        </div>
+    </div>
+   
 
-    <div class="row" style="height:8%">
+    <div class="row" style="margin-top:70px">
+      
     </div>
 
     <div class="row gy-4">
@@ -59,23 +59,31 @@
         </div>
         <div class="col-md-12 col-lg-8">
             <div class="card">
-                <div class="card-body " style="background-image: linear-gradient(to right, #FFFFFF 0%, #FFFFFF 51%, #ece5f6 100%);">
+                <div class="card-body " style="background-image: linear-gradient(to right, #FFFFFF 0%, #e0efff 51%, #add5ff 100%);">
 
-
+                    <div class="row gy-4">
+                        <div class="col-md-12 col-lg-8">
                     <div class="form-floating form-floating-outline mb-4">
-                        <input asp-for="CategoryID" value="@Model.CategoryID" class="form-control" placeholder="CategoryID"  />
-                <label asp-for="CategoryID" class="control-label"></label>
+                        <input asp-for="CategoryID" value="@Model.CategoryID" class="form-control" placeholder="CategoryID" />
+                        <label asp-for="CategoryID" class="control-label"></label>
                         <span asp-validation-for="CategoryID" class="text-danger"></span>
-            </div>
+                    </div>
+                   </div>
+                        <div class="col-md-12 col-lg-1">
+                            </div>
+                        <div class="col-md-12 col-lg-2" style="align-items:center">
                     <div class="form-group">
-                        <button type="submit" style="width:180px" value="Get" asp-action="AddCategory" name="buttonType" class="btn btn-primary">Get</button>
-            </div>
+                        <button type="submit" style="width:120px" value="Get" asp-action="AddCategory" name="buttonType" class="btn btn-primary">Get</button>
+                    </div>
+
+                        </div>
+                    </div>
                     <div class="form-floating form-floating-outline mb-4">
                         <input asp-for="CategoryName" value="@Model.CategoryName" class="form-control" placeholder="CategoryName" />
                         <label asp-for="CategoryName" class="control-label"></label>
-             
-                <span asp-validation-for="CategoryName" class="text-danger"></span>
-            </div>
+
+                        <span asp-validation-for="CategoryName" class="text-danger"></span>
+                    </div>
 
                     <br />
 
@@ -106,11 +114,11 @@
             handleMessages("@ViewBag.Message");
         </script>
     }
-        @if (ViewBag.ErrorMessage != null)
+    @if (ViewBag.ErrorMessage != null)
     {
         <script>
             handleMessages("@ViewBag.ErrorMessage");
         </script>
     }
 </form>
-                   
+
