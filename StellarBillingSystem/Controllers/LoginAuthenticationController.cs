@@ -4,6 +4,8 @@ using Microsoft.AspNetCore.Mvc;
 using StellarBillingSystem.Context;
 using System.Security.Claims;
 using StellarBillingSystem.Models;
+using Newtonsoft.Json;
+using StellarBillingSystem.Business;
 
 namespace StellarBillingSystem.Controllers
 {
@@ -44,21 +46,21 @@ namespace StellarBillingSystem.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Login(SignUpModel model)
+        public async Task<IActionResult> Login(StaffAdminModel model, string screenid, string rollid)
         {
-            var login = await _billingContext.SHSignUp.FindAsync(model.Username);
+            var login = await _billingContext.SHStaffAdmin.FindAsync(model.UserName);
 
             if (login != null)
             {
                 if (login.Password == model.Password)
                 {
-                    login.Username = model.Username;
+                    login.UserName = model.UserName;
 
                     login.Password = model.Password;
 
                     List<Claim> claims = new List<Claim>()
                 {
-                    new Claim(ClaimTypes.NameIdentifier, model.Username),
+                    new Claim(ClaimTypes.NameIdentifier, model.UserName),
                     new Claim("OtherProperties", "Example Role")
                 };
                     ClaimsIdentity claimsIdentity = new ClaimsIdentity(claims,
@@ -71,6 +73,12 @@ namespace StellarBillingSystem.Controllers
                     await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme,
                     new ClaimsPrincipal(claimsIdentity), properties);
 
+                    BusinessClassBilling Busreg = new BusinessClassBilling(_billingContext);
+
+                    var rolldetail = Busreg.GetRoll(model.UserName);
+
+                    // Set TempData with the filtered roll details
+                    TempData["RollAccess"] = JsonConvert.SerializeObject(rolldetail);
 
 
                     return RedirectToAction("Index", "Home");

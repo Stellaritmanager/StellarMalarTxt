@@ -1,0 +1,185 @@
+﻿@using System.Data
+@using NonFactors.Mvc.Grid
+@model DataTable
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>ReportOutput</title>
+    <style>
+
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            color: #8c62c9;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+
+
+    <form asp-action="GetReports" asp-controller="Reports" method="post">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+        <div class="row" style="margin-top:70px">
+            <div class="col-md-12 col-lg-2 ">
+            </div>
+
+            <div class="col-md-12 col-lg-7 ">
+                <div class="card">
+                    <div class="card-body " style="background-color:#8c62c9">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <div class="container">
+                                <h2 class="centered text-white" style="font-family:'Lucida Bright'">ReportOutput</h2>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row" style="height:8%">
+                </div>
+
+                <div class="row">
+
+                    <div class="col-md-12 col-lg-12">
+                        <div class="card">
+                            <div class="card-body " style="background-image: linear-gradient(to right, #FFFFFF 0%, #FFFFFF 51%, #ece5f6 100%);">
+
+
+                                @{
+                                    var reportModels = (IEnumerable<ReportModel>)ViewData["reportid"];
+                                    var dropdownOptions = new List<SelectListItem>();
+
+                                    foreach (var reportModel in reportModels)
+                                    {
+                                        dropdownOptions.Add(new SelectListItem
+                {
+                    Value = reportModel.ReportName, // Set the value to the ReportName
+                    Text = reportModel.ReportName
+                });
+                                    }
+
+                                    var selectedReport = ViewData["selectedReport"] as string; // Get the selected report from ViewData
+                                }
+
+                                <div class="form-floating form-floating-outline mb-4">
+                                    @Html.DropDownList("ReportId", dropdownOptions, "Select Report Name", new { @class = "form-control", onchange = "updateHiddenInput(this.value)" })
+                                    <label for="ReportId" class="control-label">Report Name</label>
+                                    @Html.Hidden("inputValue", selectedReport)
+                                </div>
+
+                                <script>
+                                    // Function to update the hidden input value when dropdown selection changes
+                                    function updateHiddenInput(value) {
+                                        document.getElementById('inputValue').value = value;
+                                    }
+                                </script>
+
+
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row" style="height:8%">
+                </div>
+                <div class="form-group">
+                    <center>
+                        <button type="submit" name="buttonType" value="submit" class="btn btn-primary">GetReport</button>
+                       
+                    </center>
+                </div>
+                <div class="col-md-12 col-lg-3">
+                </div>
+            </div>
+        </div>
+
+        <br />
+
+
+
+
+        @if (Model != null)
+        {
+
+            <div class="card">
+                <div class="card-body " style="background-image: linear-gradient(to right, #FFFFFF 0%, #FFFFFF 51%, #ece5f6 100%);">
+
+                    <h2>HTML Table Generated from DataTable</h2>
+                    <table id="dataTable">
+                        <thead>
+                            <tr>
+                                @foreach (DataColumn column in Model.Columns)
+                                {
+                                    <th>@column.ColumnName</th>
+                                }
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (DataRow row in Model.Rows)
+                            {
+                                <tr>
+                                    @foreach (var cell in row.ItemArray)
+                                    {
+                                        <td>@cell</td>
+                                    }
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+
+                </div>
+            </div>
+            <button onclick="exportToExcel()">Export to Excel</button>
+
+            <script>
+                function exportToExcel() {
+                    try {
+                        // Select the table element
+                        var table = document.getElementById('dataTable');
+
+                        // Create a new Excel instance
+                        var excel = new ExcelJS.Workbook();
+                        var sheet = excel.addWorksheet('Sheet 1');
+
+                        // Iterate over each row and column in the table to add data to Excel sheet
+                        for (var i = 0; i < table.rows.length; i++) {
+                            var row = sheet.addRow();
+                            var cells = table.rows[i].cells;
+                            for (var j = 0; j < cells.length; j++) {
+                                row.getCell(j + 1).value = cells[j].innerText;
+                            }
+                        }
+
+                        // Save the workbook as an Excel file
+                        excel.xlsx.writeBuffer().then(function (buffer) {
+                            saveAs(new Blob([buffer], { type: "application/octet-stream" }), 'table_data.xlsx');
+                        });
+                    } catch (error) {
+                        console.error('Export to Excel failed:', error);
+                        alert('Export to Excel failed. Please try again.' + error);
+                    }
+                }
+            </script>
+            <!-- Include ExcelJS library -->
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.4.0/exceljs.min.js"></script>
+            <!-- Include FileSaver.js library for saving Blob objects -->
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+
+        }
+
+    </form>
+</body>
+</html>

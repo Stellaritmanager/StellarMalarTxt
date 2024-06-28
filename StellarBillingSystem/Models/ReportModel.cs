@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations.Schema;
 
 public class ReportModel
 {
@@ -6,19 +7,19 @@ public class ReportModel
 	{
 	}
 
-	private String strReportID;
-    private String strFromDate;
-    private String strToDate;
-    private String strLastUpdatedDate;
-    private String strLastUpdatedUser;
-    private String strLastUpdatedmachine;
 
-    public string ReportID { get => strReportID; set => strReportID = value; }
-    public string? FromDate { get => strFromDate; set => strFromDate = value; }
-    public string? ToDate { get => strToDate; set => strToDate = value; }
-    public string? LastUpdatedDate { get => strLastUpdatedDate; set => strLastUpdatedDate = value; }
-    public string? LastUpdatedUser { get => strLastUpdatedUser; set => strLastUpdatedUser = value; }
-    public string? LastUpdatedmachine { get => strLastUpdatedmachine; set => strLastUpdatedmachine = value; }
+    private int reportId;
+    private string reportName;
+    private string reportType;
+    private string reportDescription;
+    private string reportQuery;
 
+
+    [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+    public int ReportId { get => reportId; set => reportId = value; }
+    public string ReportName { get => reportName; set => reportName = value; }
+    public string ReportType { get => reportType; set => reportType = value; }
+    public string ReportDescription { get => reportDescription; set => reportDescription = value; }
+    public string ReportQuery { get => reportQuery; set => reportQuery = value; }
 }
 	
