@@ -14,6 +14,9 @@ namespace StellarBillingSystem.Models
         private String strReedemPoints;
         private String strBalance;
         private bool strIsDelete;
+        private String lastupdateduser;
+        private String lastupdateddate;
+        private String lastupdatedmachine;
 
         public string BillId { get => strBillId; set => strBillId = value; }
         public string PaymentId { get => strPaymentId; set => strPaymentId = value; }
@@ -21,5 +24,8 @@ namespace StellarBillingSystem.Models
         public string? ReedemPoints { get => strReedemPoints; set => strReedemPoints = value; }
         public string? Balance { get => strBalance; set => strBalance = value; }
         public bool IsDelete { get => strIsDelete; set => strIsDelete = value; }
+        public string? Lastupdateduser { get => lastupdateduser; set => lastupdateduser = value; }
+        public string? Lastupdateddate { get => lastupdateddate; set => lastupdateddate = value; }
+        public string? Lastupdatedmachine { get => lastupdatedmachine; set => lastupdatedmachine = value; }
     }
 }

@@ -32,7 +32,7 @@
     <div class="row">
         <div class="col-md-12 col-lg-1">
         </div>
-        <div class="col-md-12 col-lg-3">
+        <div class="col-md-12 col-lg-4">
             <div class="card">
                 <div class="card-body " style="background-image: linear-gradient(to right, #FFFFFF 0%, #FFFFFF 51%, #ece5f6 100%);">
 
@@ -50,14 +50,21 @@
                         <span asp-validation-for="BillDate" class="text-danger"></span>
                     </div>
                     <div class="form-floating form-floating-outline mb-4">
-                        <input asp-for="ProducrID" class="form-control" placeholder="ProducrID" />
-                        <label asp-for="ProducrID" class="control-label">ProducrID</label>
+                        <input asp-for="ProducrID" class="form-control" placeholder="ProductID" />
+                        <label asp-for="ProducrID" class="control-label">ProductID</label>
 
                         <span asp-validation-for="ProducrID" class="text-danger"></span>
                     </div>
 
                     <button type="submit" style="width:180px" value="Get" name="buttonType" class="btn btn-primary">Get</button>
+                    </div>
+                    </div>
+                    </div>
+                    
 
+    <div class="col-md-12 col-lg-4">
+                            <div class="card">
+                                <div class="card-body " style="background-image: linear-gradient(to right, #FFFFFF 0%, #FFFFFF 51%, #ece5f6 100%);">
 
                     <div class="form-floating form-floating-outline mb-4">
                         <input asp-for="Discount" class="form-control" placeholder="Discount" />
@@ -110,15 +117,16 @@
 
                 </div>
             </div>
-        </div>
+
+        
        
         <center>
          
-            <button type="submit" style="width:180px" value="Get" name="buttonType" class="btn btn-primary">Get</button>
+          
 
            
         </center>
-    </div>
+    
    
 
     <button type="submit" style="width:180px" value="Save" name="buttonType" class="btn btn-primary">Save</button>
@@ -129,10 +137,13 @@
 
     
 
-    <div class="row" style="margin-top:40px">
-        <div class="col-md-12 col-lg-1 ">
+  
+    <div class="col-md-12 col-lg-1" style="height=10%">
+        <div class="form-floating form-floating-outline mb-4">
         </div>
-        <div class="col-md-12 col-lg-1 ">
         </div>
+        </div>
+        <div class="col-md-12 col-lg-4">
+    
     </div>
 </form>
