@@ -1611,17 +1611,22 @@ namespace HealthCare.Controllers
                 }
                 else if (buttonType == "Load")
                 {
-                    var selectedProduct = _billingsoftware.SHProductMaster.FirstOrDefault(p => p.ProductID == SelectedProductID);
-                    if (selectedProduct != null)
-                    {
-                        
-                        return RedirectToAction("CustomerBilling", new { productID = selectedProduct.ProductID, quantity = Quantity });
-                    }
-                }
+                var selectedProduct = _billingsoftware.SHProductMaster.FirstOrDefault(p => p.ProductID == SelectedProductID);
+                if (selectedProduct != null)
+                {
+                    TempData["ProductID"] = selectedProduct.ProductID;
+                    TempData["ProductName"] = selectedProduct.ProductName;
+                    TempData["Price"] = selectedProduct.Price;
+                    TempData["Quantity"] = Quantity;
 
-                return View(model);
+                    return View("CustomerBilling");
+                }
             }
 
+            return View("ProductList", model);
+        }
+
+          
 
         
 
@@ -1630,9 +1635,14 @@ namespace HealthCare.Controllers
 
         public IActionResult ProductList()
         {
-            
+            var model = new ProductSelectModel
+            {
+                Viewproductlist = new List<ProductMatserModel>() // Initialize with an empty list
+            };
 
-            return View();
+            return View(model);
+
+
         }
 
 
@@ -1774,6 +1784,15 @@ namespace HealthCare.Controllers
 
         public IActionResult CustomerBilling()
         {
+            if (TempData["ProductID"] != null)
+            {
+                ViewBag.ProductID = TempData["ProductID"].ToString();
+                ViewBag.ProductName = TempData["ProductName"].ToString();
+                ViewBag.Price = TempData["Price"].ToString();
+                ViewBag.Quantity = TempData["Quantity"].ToString();
+            }
+
+
             return View();
         }
 

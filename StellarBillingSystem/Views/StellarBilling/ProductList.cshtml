@@ -15,7 +15,7 @@
                 <div class="card-body " style="background-color:#8c62c9">
                     <div class="card-header d-flex justify-content-between align-items-center">
                         <div class="container">
-                            <h2 class="centered text-white" style="font-family:'Lucida Bright'">CustomerBilling</h2>
+                            <h2 class="centered text-white" style="font-family:'Lucida Bright'">Product List</h2>
 
                         </div>
                     </div>
@@ -40,13 +40,13 @@
                         <input asp-for="ProductID" class="form-control" placeholder="ProductID" required />
                         <label asp-for="ProductID" class="control-label">ProductID</label>
 
-                        <span asp-validation-for="ProductID" class="text-danger"></span>
+                       
                     </div>
                     <div class="form-floating form-floating-outline mb-4">
                         <input asp-for="BarcodeID" class="form-control" placeholder="BarcodeID" />
                         <label asp-for="BarcodeID" class="control-label"></label>
 
-                        <span asp-validation-for="BarcodeID" class="text-danger"></span>
+                       
                     </div>
 
 
@@ -61,6 +61,9 @@
 
         </center>
     </div>
+
+   
+    
     @if (Model.Viewproductlist != null && Model.Viewproductlist.Any())
     {
         <div class="row mt-4">
