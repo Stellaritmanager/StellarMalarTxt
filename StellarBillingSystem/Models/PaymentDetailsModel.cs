@@ -1,0 +1,27 @@
+﻿using DocumentFormat.OpenXml.Presentation;
+
+namespace StellarBillingSystem.Models
+{
+    public class PaymentDetailsModel
+    {
+       public PaymentDetailsModel() 
+        {
+        }
+
+        private String strPaymentId;
+        private String strPaymentDiscription;
+        private String strPaymentMode;
+        private String strPaymentTransactionNumber;
+        private String strPaymentAmount;
+        private String strPaymentDate;
+        private bool isDelete;
+
+        public string PaymentId { get => strPaymentId; set => strPaymentId = value; }
+        public string PaymentDiscription { get => strPaymentDiscription; set => strPaymentDiscription = value; }
+        public string? PaymentMode { get => strPaymentMode; set => strPaymentMode = value; }
+        public string? PaymentTransactionNumber { get => strPaymentTransactionNumber; set => strPaymentTransactionNumber = value; }
+        public string? PaymentAmount { get => strPaymentAmount; set => strPaymentAmount = value; }
+        public string? PaymentDate { get => strPaymentDate; set => strPaymentDate = value; }
+        public bool IsDelete { get => isDelete; set => isDelete = value; }
+    }
+}

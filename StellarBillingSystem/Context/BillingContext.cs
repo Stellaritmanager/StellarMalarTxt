@@ -65,6 +65,14 @@ namespace StellarBillingSystem.Context
 
         public DbSet<BillingDetailsModel>SHbilldetails { get; set; }
 
+        public DbSet<PaymentMasterModel> SHPaymentMaster { get; set; }
+
+        public DbSet<PaymentDetailsModel>SHPaymentDetails { get; set; }
+
+        public DbSet<ReedemHistoryModel>SHReedemHistory { get; set; }
+
+
+
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             if (!optionsBuilder.IsConfigured)
@@ -122,6 +130,12 @@ namespace StellarBillingSystem.Context
             modelBuilder.Entity<ReportModel>().HasKey(i => new {i.ReportId});
 
             modelBuilder.Entity<SignUpModel>().HasKey(i => new { i.Username });
+
+            modelBuilder.Entity<PaymentMasterModel>().HasKey(i => new { i.BillId, i.PaymentId });
+
+            modelBuilder.Entity<PaymentDetailsModel>().HasKey(i => new { i.PaymentDiscription, i.PaymentId });
+
+            modelBuilder.Entity<ReedemHistoryModel>().HasKey(i => new { i.CustomerNumber, i.DateOfReedem });
 
 
         }

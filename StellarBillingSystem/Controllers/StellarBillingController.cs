@@ -165,6 +165,7 @@ namespace HealthCare.Controllers
                     model.Price = productToRetrieve.Price;
                     model.Discount = productToRetrieve.Discount;
                     model.TotalAmount = productToRetrieve.TotalAmount;
+                    model.BarcodeId = productToRetrieve.BarcodeId;
 
                     ViewBag.Message = "Product retrieved successfully";
 
@@ -203,6 +204,7 @@ namespace HealthCare.Controllers
                     existingProduct.ProductID = model.ProductID;
                     existingProduct.CategoryID = model.CategoryID;
                     existingProduct.ProductName = model.ProductName;
+                    existingProduct.BarcodeId = model.BarcodeId;
                     existingProduct.Brandname = model.Brandname;
                     existingProduct.Price = model.Price;
                     existingProduct.Discount = model.Discount;
