@@ -61,6 +61,10 @@ namespace StellarBillingSystem.Context
 
         public DbSet<GenericReportModel>ShGenericReport { get; set; }
 
+        public DbSet<BillingMasterModel>SHbillmaster { get; set; }
+
+        public DbSet<BillingDetailsModel>SHbilldetails { get; set; }
+
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             if (!optionsBuilder.IsConfigured)
@@ -71,6 +75,9 @@ namespace StellarBillingSystem.Context
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+
+            modelBuilder.Entity<BillingMasterModel>().HasKey(i => new { i.BillID, i.BillDate });
+            modelBuilder.Entity<BillingDetailsModel>().HasKey(i => new { i.BillID, i.ProducrID });
             modelBuilder.Entity<GenericReportModel>().HasKey(i => new { i.ReportId });
 
             modelBuilder.Entity<StaffAdminModel>().HasKey(i => new { i.StaffID });

@@ -11,9 +11,10 @@ namespace StellarBillingSystem.Controllers
     {
 
         private BillingContext _billingContext;
-        public ReportsController(BillingContext _billingContext)
+
+        public ReportsController(BillingContext billingContext)
         {
-            _billingContext = _billingContext;
+            _billingContext = billingContext;
 
         }
 
