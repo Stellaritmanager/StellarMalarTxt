@@ -5,7 +5,7 @@
     Layout = "~/Views/Shared/_ContentNavbarLayout.cshtml";
 }
 
-<form asp-controller="StellarBilling" asp-action="getcustomerbill">
+<form asp-controller="StellarBilling" asp-action="getproductlist">
     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
     <div class="row">
         <div class="col-md-12 col-lg-1">
@@ -61,31 +61,40 @@
 
         </center>
     </div>
-    @if (ViewBag.Customer != null)
+    @if (Model.Viewproductlist != null && Model.Viewproductlist.Any())
     {
-        <div>
-            <h3>Product List</h3>
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th>Product ID</th>
-                        <th>Product Name</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var customer in ViewBag.Customers)
-                    {
+        <div class="row mt-4">
+            <div class="col-md-12 col-lg-1"></div>
+            <div class="col-md-12 col-lg-10">
+                <h3>Product List</h3>
+                <table class="table">
+                    <thead>
                         <tr>
-                            <td>@customer.MobileNumber</td>
-                            <td>@customer.PointsReedem</td>
+                            <th>Select</th>
+                            <th>Product ID</th>
+                            <th>Product Name</th>
+                            <th>Unit Price</th>
+                            <th>Quantity</th>
                         </tr>
-                        <tr>
-                            <td>Add</td>
-                            <td>Use</td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                        @foreach (var product in Model.Viewproductlist)
+                        {
+                            <tr>
+                                <td>
+                                    <input type="radio" name="SelectedProductID" value="@product.ProductID" />
+                                </td>
+                                <td>@product.ProductID</td>
+                                <td>@product.ProductName</td>
+                                <td>@product.Price</td>
+                                <td>
+                                    <input type="text" name="Quantity" class="form-control" />
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
         </div>
     }
 

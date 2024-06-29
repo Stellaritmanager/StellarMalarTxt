@@ -1,4 +1,5 @@
 ﻿
+using DocumentFormat.OpenXml.InkML;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -1593,6 +1594,47 @@ namespace HealthCare.Controllers
 
         }
 
+        //customer Billing
+
+       
+            [HttpPost]
+            public IActionResult getproductlist(ProductSelectModel model, string buttonType, string SelectedProductID, string Quantity)
+            {
+                if (buttonType == "Search")
+                {
+                model.Viewproductlist = _billingsoftware.SHProductMaster
+               .Where(p => p.ProductID.Contains(model.ProductID) || p.BarcodeId.Contains(model.BarcodeID))
+               .ToList();
+
+                return View("ProductList", model);
+                }
+                else if (buttonType == "Load")
+                {
+                    var selectedProduct = _billingsoftware.SHProductMaster.FirstOrDefault(p => p.ProductID == SelectedProductID);
+                    if (selectedProduct != null)
+                    {
+                        
+                        return RedirectToAction("CustomerBilling", new { productID = selectedProduct.ProductID, quantity = Quantity });
+                    }
+                }
+
+                return View(model);
+            }
+
+
+        
+
+
+
+
+        public IActionResult ProductList()
+        {
+            
+
+            return View();
+        }
+
+
 
 
 
@@ -1604,7 +1646,7 @@ namespace HealthCare.Controllers
             return View("RollTypeMaster", rolltype);
         }
 
-
+        
       
 
         public IActionResult StaffAdmin()
