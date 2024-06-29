@@ -249,26 +249,27 @@ namespace HealthCare.Controllers
 
         [HttpPost]
 
-        public async Task<IActionResult> CustomerBill(BilingSysytemModel model)
+        public async Task<IActionResult> getCustomerBill(BillTableModel model,string buttonType)
         {
+            if(buttonType=="Get")
+            {
+                return RedirectToAction("ProductList");
+            }
+            
+
             var existingbill = await _billingsoftware.SHCustomerBilling.FindAsync(model.BillID);
             if (existingbill != null)
             {
                 existingbill.BillID = model.BillID;
-                existingbill.CustomerName = model.CustomerName;
-                existingbill.Date = model.Date;
+                
+               
                 existingbill.CustomerNumber = model.CustomerNumber;
-                existingbill.Items = model.Items;
-                existingbill.Rate = model.Rate;
+               
                 existingbill.Quantity = model.Quantity;
                 existingbill.Discount = model.Discount;
-                existingbill.Tax = model.Tax;
-                existingbill.DiscountPrice = model.DiscountPrice;
-                existingbill.TotalAmount = model.TotalAmount;
-                existingbill.PointsNumber = model.PointsNumber;
-                existingbill.VoucherNumber = model.VoucherNumber;
-                existingbill.CategoryBasedDiscount = model.CategoryBasedDiscount;
-                existingbill.TotalAmount = model.TotalAmount;
+               
+                
+                
                 existingbill.LastUpdatedDate = DateTime.Now.ToString();
                 existingbill.LastUpdatedUser = User.Claims.First().Value.ToString();
                 existingbill.LastUpdatedmachine = Request.HttpContext.Connection.RemoteIpAddress.ToString();
@@ -279,9 +280,9 @@ namespace HealthCare.Controllers
             else
             {
 
-                model.LastUpdatedDate = DateTime.Now.ToString();
+               /* model.LastUpdatedDate = DateTime.Now.ToString();
                 model.LastUpdatedUser = User.Claims.First().Value.ToString();
-                model.LastUpdatedmachine = Request.HttpContext.Connection.RemoteIpAddress.ToString();
+                model.LastUpdatedmachine = Request.HttpContext.Connection.RemoteIpAddress.ToString();*/
             }
 
             await _billingsoftware.SaveChangesAsync();
@@ -1768,6 +1769,12 @@ namespace HealthCare.Controllers
 
             return View("GodownModel", res);
            
+        }
+
+
+        public IActionResult CustomerBilling()
+        {
+            return View();
         }
 
         public IActionResult Reports()

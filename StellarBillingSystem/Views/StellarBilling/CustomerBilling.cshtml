@@ -1,4 +1,4 @@
-﻿ @model ProductSelectModel
+﻿ @model BillTableModel
 
 @{
     ViewData["Title"] = "CustomerBilling";
@@ -6,7 +6,7 @@
 }
 
 
-<form asp-controller="StellarBilling" asp-action="getcustomerbill">
+<form asp-controller="StellarBilling" asp-action="getCustomerBill">
     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
     <div class="row">
         <div class="col-md-12 col-lg-1">
@@ -38,18 +38,75 @@
 
 
                     <div class="form-floating form-floating-outline mb-4">
-                        <input asp-for="ProductID" class="form-control" placeholder="ProductID" required />
-                        <label asp-for="ProductID" class="control-label">ProductID</label>
+                        <input asp-for="BillID" class="form-control" placeholder="BillID" required />
+                        <label asp-for="BillID" class="control-label">BillID</label>
 
-                        <span asp-validation-for="ProductID" class="text-danger"></span>
+                        <span asp-validation-for="BillID" class="text-danger"></span>
                     </div>
                     <div class="form-floating form-floating-outline mb-4">
-                        <input asp-for="BarcodeID" class="form-control" placeholder="BarcodeID" />
-                        <label asp-for="BarcodeID" class="control-label"></label>
+                        <input asp-for="BillDate" class="form-control" placeholder="BillDate" />
+                        <label asp-for="BillDate" class="control-label">BillDate</label>
 
-                        <span asp-validation-for="BarcodeID" class="text-danger"></span>
+                        <span asp-validation-for="BillDate" class="text-danger"></span>
                     </div>
-                   
+                    <div class="form-floating form-floating-outline mb-4">
+                        <input asp-for="ProducrID" class="form-control" placeholder="ProducrID" />
+                        <label asp-for="ProducrID" class="control-label">ProducrID</label>
+
+                        <span asp-validation-for="ProducrID" class="text-danger"></span>
+                    </div>
+
+                    <button type="submit" style="width:180px" value="Get" name="buttonType" class="btn btn-primary">Get</button>
+
+
+                    <div class="form-floating form-floating-outline mb-4">
+                        <input asp-for="Discount" class="form-control" placeholder="Discount" />
+                        <label asp-for="Discount" class="control-label">Discount</label>
+
+                        <span asp-validation-for="Discount" class="text-danger"></span>
+                    </div>
+
+                     <div class="form-floating form-floating-outline mb-4">
+                        <input asp-for="Price" class="form-control" placeholder="Price" />
+                        <label asp-for="Price" class="control-label">Price</label>
+
+                        <span asp-validation-for="Price" class="text-danger"></span>
+                    </div>
+
+                     <div class="form-floating form-floating-outline mb-4">
+                        <input asp-for="Quantity" class="form-control" placeholder="Quantity" />
+                        <label asp-for="Quantity" class="control-label">Quantity</label>
+
+                        <span asp-validation-for="Quantity" class="text-danger"></span>
+                    </div>
+
+                     <div class="form-floating form-floating-outline mb-4">
+                        <input asp-for="NetPrice" class="form-control" placeholder="NetPrice" />
+                        <label asp-for="NetPrice" class="control-label">NetPrice</label>
+
+                        <span asp-validation-for="NetPrice" class="text-danger"></span>
+                    </div>
+
+                     <div class="form-floating form-floating-outline mb-4">
+                        <input asp-for="Totalprice" class="form-control" placeholder="Totalprice" />
+                        <label asp-for="Totalprice" class="control-label">Totalprice</label>
+
+                        <span asp-validation-for="Totalprice" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-floating form-floating-outline mb-4">
+                        <input asp-for="TotalDiscount" class="form-control" placeholder="TotalDiscount" />
+                        <label asp-for="TotalDiscount" class="control-label">TotalDiscount</label>
+
+                        <span asp-validation-for="TotalDiscount" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-floating form-floating-outline mb-4">
+                        <input asp-for="CustomerNumber" class="form-control" placeholder="CustomerNumber" />
+                        <label asp-for="CustomerNumber" class="control-label">CustomerNumber</label>
+
+                        <span asp-validation-for="CustomerNumber" class="text-danger"></span>
+                    </div>
 
                 </div>
             </div>
@@ -57,40 +114,18 @@
        
         <center>
          
-            <button type="submit" style="width:180px" value="Search" name="buttonType" class="btn btn-primary">Search</button>
+            <button type="submit" style="width:180px" value="Get" name="buttonType" class="btn btn-primary">Get</button>
 
            
         </center>
     </div>
-    @if (ViewBag.Customer != null)
-    {
-        <div>
-            <h3>Product List</h3>
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th>Product ID</th>
-                        <th>Product Name</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var customer in ViewBag.Customers)
-                    {
-                        <tr>
-                            <td>@customer.MobileNumber</td>
-                            <td>@customer.PointsReedem</td>
-                        </tr>
-                        <tr>
-                            <td>Add</td>
-                            <td>Use</td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
-        </div>
-    }
+   
 
-    <button type="submit" style="width:180px" value="Load" name="buttonType" class="btn btn-primary">Load</button>
+    <button type="submit" style="width:180px" value="Save" name="buttonType" class="btn btn-primary">Save</button>
+
+    <button type="submit" style="width:180px" value="Delete" name="buttonType" class="btn btn-primary">Delete</button>
+
+    <button type="submit" style="width:180px" value="Paymet" name="buttonType" class="btn btn-primary">Payment</button>
 
     
 
