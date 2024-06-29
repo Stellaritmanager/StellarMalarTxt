@@ -7,7 +7,7 @@
         }
         private string billID;
         private string billDate;
-        private string productId;
+        private string productID;
         private string productName;
         private string discount;
         private string price;
@@ -34,7 +34,8 @@
         public string Lastupdateduser { get => lastupdateduser; set => lastupdateduser = value; }
         public string Lastupdateddate { get => lastupdateddate; set => lastupdateddate = value; }
         public string Lastupdatedmachine { get => lastupdatedmachine; set => lastupdatedmachine = value; }
-        public string ProductId { get => productId; set => productId = value; }
+       
         public string ProductName { get => productName; set => productName = value; }
+        public string ProductID { get => productID; set => productID = value; }
     }
 }

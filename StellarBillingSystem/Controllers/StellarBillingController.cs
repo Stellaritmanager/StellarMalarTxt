@@ -1784,14 +1784,7 @@ namespace HealthCare.Controllers
 
         public IActionResult CustomerBilling()
         {
-            if (TempData["ProductID"] != null)
-            {
-                ViewBag.ProductID = TempData["ProductID"].ToString();
-                ViewBag.ProductName = TempData["ProductName"].ToString();
-                ViewBag.Price = TempData["Price"].ToString();
-                ViewBag.Quantity = TempData["Quantity"].ToString();
-            }
-
+            
 
             return View();
         }
