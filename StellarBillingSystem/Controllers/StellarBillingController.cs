@@ -1,7 +1,9 @@
 ﻿
+using DocumentFormat.OpenXml.Bibliography;
 using DocumentFormat.OpenXml.InkML;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.CodeAnalysis;
 using Microsoft.EntityFrameworkCore;
 using NuGet.Protocol;
 using StellarBillingSystem.Business;
@@ -1599,7 +1601,7 @@ namespace HealthCare.Controllers
 
        
             [HttpPost]
-            public IActionResult getproductlist(ProductSelectModel model, string buttonType, string SelectedProductID, string Quantity)
+            public IActionResult getproductlist(ProductSelectModel model, string buttonType, string SelectedProductID, string Quantity,string productid,string productname,string unitprice)
             {
                 if (buttonType == "Search")
                 {
@@ -1619,7 +1621,13 @@ namespace HealthCare.Controllers
                     TempData["Price"] = selectedProduct.Price;
                     TempData["Quantity"] = Quantity;
 
-                    return View("CustomerBilling");
+                    return RedirectToAction("CustomerBilling", new
+                    {
+                        productid = selectedProduct.ProductID,
+                        productname = selectedProduct.ProductName,
+                        unitprice = selectedProduct.Price,
+                        Quantity = Quantity
+                    });
                 }
             }
 
@@ -1782,9 +1790,18 @@ namespace HealthCare.Controllers
         }
 
 
-        public IActionResult CustomerBilling()
+        public IActionResult CustomerBilling(string productid, string productname, string unitprice, string Quantity)
         {
-            
+            if (TempData.ContainsKey("ProductID"))
+            {
+
+                productid = TempData["ProductID"].ToString();
+                productname = TempData["ProductName"].ToString();
+                unitprice = TempData["Price"].ToString();
+                Quantity = TempData["Quantity"].ToString();
+            }
+
+
 
             return View();
         }

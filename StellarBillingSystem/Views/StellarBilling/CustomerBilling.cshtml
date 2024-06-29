@@ -49,11 +49,20 @@
 
                         <span asp-validation-for="BillDate" class="text-danger"></span>
                     </div>
+
+
                     <div class="form-floating form-floating-outline mb-4">
                         <input asp-for="ProductID" class="form-control" placeholder="ProductID" />
                         <label asp-for="ProductID" class="control-label">ProductID</label>
 
                         <span asp-validation-for="ProductID" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-floating form-floating-outline mb-4">
+                        <input asp-for="ProductName" class="form-control" placeholder="ProductName" />
+                        <label asp-for="ProductName" class="control-label">ProductName</label>
+
+                        <span asp-validation-for="ProductName" class="text-danger"></span>
                     </div>
 
                     <button type="submit" style="width:180px" value="Get" name="buttonType" class="btn btn-primary">Get</button>
