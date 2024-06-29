@@ -1,10 +1,9 @@
-﻿ @model ProductSelectModel
+﻿@model ProductSelectModel
 
 @{
-    ViewData["Title"] = "CustomerBilling";
+    ViewData["Title"] = "ProductList";
     Layout = "~/Views/Shared/_ContentNavbarLayout.cshtml";
 }
-
 
 <form asp-controller="StellarBilling" asp-action="getcustomerbill">
     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
@@ -49,17 +48,17 @@
 
                         <span asp-validation-for="BarcodeID" class="text-danger"></span>
                     </div>
-                   
+
 
                 </div>
             </div>
         </div>
-       
+
         <center>
-         
+
             <button type="submit" style="width:180px" value="Search" name="buttonType" class="btn btn-primary">Search</button>
 
-           
+
         </center>
     </div>
     @if (ViewBag.Customer != null)
@@ -92,7 +91,7 @@
 
     <button type="submit" style="width:180px" value="Load" name="buttonType" class="btn btn-primary">Load</button>
 
-    
+
 
     <div class="row" style="margin-top:40px">
         <div class="col-md-12 col-lg-1 ">
