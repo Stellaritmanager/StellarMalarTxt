@@ -177,11 +177,11 @@ namespace StellarBillingSystem.Business
             return result;
         }
 
-        public List<ReportModel> GetReportId()
+        public List<GenericReportModel> GetReportId()
         {
             var reportid = (
-                    from pr in _billingContext.SHReportModel
-                    select new ReportModel
+                    from pr in _billingContext.ShGenericReport
+                    select new GenericReportModel
                     {
                         ReportName = pr.ReportName,
                     }
