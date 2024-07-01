@@ -5,7 +5,7 @@
         public BillingDetailsModel() { }
 
         private string billID;
-        private string producrID;
+        private string productID;
         private string discount;
         private string price;
         private string quantity;
@@ -13,12 +13,13 @@
         private string totalprice;
         private string totalDiscount;
         private bool isDelete;
+        private string productName;
         private string lastupdateduser;
         private string lastupdateddate;
         private string lastupdatedmachine;
 
         public string BillID { get => billID; set => billID = value; }
-        public string ProducrID { get => producrID; set => producrID = value; }
+       
         public string? Discount { get => discount; set => discount = value; }
         public string? Price { get => price; set => price = value; }
         public string? Quantity { get => quantity; set => quantity = value; }
@@ -29,5 +30,7 @@
         public string? Lastupdateduser { get => lastupdateduser; set => lastupdateduser = value; }
         public string? Lastupdateddate { get => lastupdateddate; set => lastupdateddate = value; }
         public string? Lastupdatedmachine { get => lastupdatedmachine; set => lastupdatedmachine = value; }
+        public string ProductName { get => productName; set => productName = value; }
+        public string ProductID { get => productID; set => productID = value; }
     }
 }

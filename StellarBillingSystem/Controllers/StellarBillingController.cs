@@ -4,6 +4,7 @@ using DocumentFormat.OpenXml.InkML;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.CodeAnalysis;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using NuGet.Protocol;
 using StellarBillingSystem.Business;
@@ -251,13 +252,28 @@ namespace HealthCare.Controllers
 
         [HttpPost]
 
-        public async Task<IActionResult> getCustomerBill(BillTableModel model,string buttonType)
+        public async Task<IActionResult> getCustomerBill(BillProductlistModel model,string buttonType)
         {
             if(buttonType=="Get")
             {
                 return RedirectToAction("ProductList");
             }
-            
+
+            var parameter1 = new SqlParameter("@pBillID", model.BillID);
+            var parameter2 = new SqlParameter("@pBillDate", model.BillDate);
+            var parameter3 = new SqlParameter("@pProductID", model.ProductID);
+            var parameter4 = new SqlParameter("@pProductName", model.ProductName);
+            var parameter5 = new SqlParameter("@pDiscount", model.Discount);
+            var parameter6 = new SqlParameter("@pPrice", model.Price);
+            var parameter7 = new SqlParameter("@pQuantity", model.Quantity);
+            var parameter8 = new SqlParameter("@pNetPrice", model.NetPrice);
+            var parameter9 = new SqlParameter("@pTotalPrice", model.Totalprice);
+            var parameter10 = new SqlParameter("@pTotalDiscount", model.TotalDiscount);
+            var parameter11 = new SqlParameter("@pCustomerNumber", model.CustomerNumber);
+            var parameter12 = new SqlParameter("@pIsDelete", model.IsDelete);
+            var parameter13 = new SqlParameter("@pLastUpdatedUser", model.Lastupdateduser);
+            var parameter14 = new SqlParameter("@pLastUpdatedDate", model.Lastupdateddate);
+            var parameter15 = new SqlParameter("@pLastUpdatedMachine", model.Lastupdatedmachine);
 
             var existingbill = await _billingsoftware.SHCustomerBilling.FindAsync(model.BillID);
             if (existingbill != null)
@@ -1616,20 +1632,21 @@ namespace HealthCare.Controllers
                 var selectedProduct = _billingsoftware.SHProductMaster.FirstOrDefault(p => p.ProductID == SelectedProductID);
                 if (selectedProduct != null)
                 {
-                    TempData["ProductID"] = selectedProduct.ProductID;
-                    TempData["ProductName"] = selectedProduct.ProductName;
-                    TempData["Price"] = selectedProduct.Price;
-                    TempData["Quantity"] = Quantity;
-
-                    return RedirectToAction("CustomerBilling", new
+                    var billDetail = new BillingDetailsModel
                     {
-                        productid = selectedProduct.ProductID,
-                        productname = selectedProduct.ProductName,
-                        unitprice = selectedProduct.Price,
+                        ProductID = selectedProduct.ProductID,
+                        ProductName = selectedProduct.ProductName,
+                        Price = selectedProduct.Price,
                         Quantity = Quantity
-                    });
+                    };
+
+                    _billingsoftware.SHbilldetails.Add(billDetail);
+                    _billingsoftware.SaveChanges();
+
+                    return RedirectToAction("CustomerBilling");
                 }
             }
+
 
             return View("ProductList", model);
         }
@@ -1790,20 +1807,30 @@ namespace HealthCare.Controllers
         }
 
 
-        public IActionResult CustomerBilling(string productid, string productname, string unitprice, string Quantity)
+        public IActionResult CustomerBilling(string productid, string productname, string unitprice, string quantity)
         {
-            if (TempData.ContainsKey("ProductID"))
+
+            /* var model = new BillProductlistModel()
+             {
+                 Viewbillproductlist = new List<BillTableModel>() 
+             };
+ */
+            var model = new BillProductlistModel
             {
+                Viewbillproductlist = _billingsoftware.SHbilldetails
+             .Select(b => new BillTableModel
+             {
+                 ProductID = b.ProductID,
+                 ProductName = b.ProductName,
+                 Price = b.Price,
+                 Quantity = b.Quantity
+                 // Map other properties as needed
+             })
+             .ToList()
+            };
 
-                productid = TempData["ProductID"].ToString();
-                productname = TempData["ProductName"].ToString();
-                unitprice = TempData["Price"].ToString();
-                Quantity = TempData["Quantity"].ToString();
-            }
 
-
-
-            return View();
+            return View(model);
         }
 
         public IActionResult Reports()

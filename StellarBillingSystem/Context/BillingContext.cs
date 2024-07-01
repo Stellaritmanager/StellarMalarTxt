@@ -85,7 +85,7 @@ namespace StellarBillingSystem.Context
         {
 
             modelBuilder.Entity<BillingMasterModel>().HasKey(i => new { i.BillID, i.BillDate });
-            modelBuilder.Entity<BillingDetailsModel>().HasKey(i => new { i.BillID, i.ProducrID });
+            modelBuilder.Entity<BillingDetailsModel>().HasKey(i => new { i.BillID, i.ProductID });
             modelBuilder.Entity<GenericReportModel>().HasKey(i => new { i.ReportId });
 
             modelBuilder.Entity<StaffAdminModel>().HasKey(i => new { i.StaffID });
