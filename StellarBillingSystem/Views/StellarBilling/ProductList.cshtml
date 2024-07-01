@@ -7,6 +7,9 @@
 
 <form asp-controller="StellarBilling" asp-action="getproductlist">
     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+    <input type="hidden" name="BillID" value="ViewBag.BillID" />
+
     <div class="row">
         <div class="col-md-12 col-lg-1">
         </div>

@@ -19,7 +19,9 @@
         private string lastupdateduser;
         private string lastupdateddate;
         private string lastupdatedmachine;
-        private List<BillTableModel> viewbillproductlist;
+        private BillingMasterModel masterModel;
+        private BillingDetailsModel detailModel;
+        private List<BillingDetailsModel> viewbillproductlist;
 
         public string BillID { get => billID; set => billID = value; }
         public string BillDate { get => billDate; set => billDate = value; }
@@ -36,6 +38,9 @@
         public string Lastupdateduser { get => lastupdateduser; set => lastupdateduser = value; }
         public string Lastupdateddate { get => lastupdateddate; set => lastupdateddate = value; }
         public string Lastupdatedmachine { get => lastupdatedmachine; set => lastupdatedmachine = value; }
-        public List<BillTableModel> Viewbillproductlist { get => viewbillproductlist; set => viewbillproductlist = value; }
+       
+        public BillingMasterModel MasterModel { get => masterModel; set => masterModel = value; }
+        public BillingDetailsModel DetailModel { get => detailModel; set => detailModel = value; }
+        public List<BillingDetailsModel> Viewbillproductlist { get => viewbillproductlist; set => viewbillproductlist = value; }
     }
 }
