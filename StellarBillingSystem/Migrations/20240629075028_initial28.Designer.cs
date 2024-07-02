@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using StellarBillingSystem.Context;
 
@@ -11,9 +12,11 @@ using StellarBillingSystem.Context;
 namespace StellarBillingSystem.Migrations
 {
     [DbContext(typeof(BillingContext))]
-    partial class BillingContextModelSnapshot : ModelSnapshot
+    [Migration("20240629075028_initial28")]
+    partial class initial28
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -440,7 +443,7 @@ namespace StellarBillingSystem.Migrations
                     b.Property<string>("BillID")
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("ProductID")
+                    b.Property<string>("ProducrID")
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("Discount")
@@ -464,10 +467,6 @@ namespace StellarBillingSystem.Migrations
                     b.Property<string>("Price")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("ProductName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("Quantity")
                         .HasColumnType("nvarchar(max)");
 
@@ -477,7 +476,7 @@ namespace StellarBillingSystem.Migrations
                     b.Property<string>("Totalprice")
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("BillID", "ProductID");
+                    b.HasKey("BillID", "ProducrID");
 
                     b.ToTable("SHbilldetails");
                 });
@@ -594,15 +593,6 @@ namespace StellarBillingSystem.Migrations
                     b.Property<bool>("IsDelete")
                         .HasColumnType("bit");
 
-                    b.Property<string>("Lastupdateddate")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Lastupdatedmachine")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Lastupdateduser")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("PaymentAmount")
                         .HasColumnType("nvarchar(max)");
 
@@ -637,15 +627,6 @@ namespace StellarBillingSystem.Migrations
                     b.Property<bool>("IsDelete")
                         .HasColumnType("bit");
 
-                    b.Property<string>("Lastupdateddate")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Lastupdatedmachine")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Lastupdateduser")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("ReedemPoints")
                         .HasColumnType("nvarchar(max)");
 
@@ -664,15 +645,6 @@ namespace StellarBillingSystem.Migrations
 
                     b.Property<bool>("IsDelete")
                         .HasColumnType("bit");
-
-                    b.Property<string>("Lastupdateddate")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Lastupdatedmachine")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Lastupdateduser")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ReedemPoints")
                         .HasColumnType("nvarchar(max)");

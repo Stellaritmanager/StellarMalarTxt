@@ -1,0 +1,117 @@
+﻿@model ProductSelectModel
+
+@{
+    ViewData["Title"] = "ProductList";
+    Layout = "~/Views/Shared/_ContentNavbarLayout.cshtml";
+}
+
+<form asp-controller="StellarBilling" asp-action="getproductlist">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+    <input type="hidden" name="BillID" value="ViewBag.BillID" />
+
+    <div class="row">
+        <div class="col-md-12 col-lg-1">
+        </div>
+        <div class="col-md-12 col-lg-10">
+            <div class="card">
+                <div class="card-body " style="background-color:#8c62c9">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <div class="container">
+                            <h2 class="centered text-white" style="font-family:'Lucida Bright'">Product List</h2>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <br />
+
+    <div class="row" style="height:8%">
+    </div>
+
+    <div class="row">
+        <div class="col-md-12 col-lg-1">
+        </div>
+        <div class="col-md-12 col-lg-3">
+            <div class="card">
+                <div class="card-body " style="background-image: linear-gradient(to right, #FFFFFF 0%, #FFFFFF 51%, #ece5f6 100%);">
+
+
+                    <div class="form-floating form-floating-outline mb-4">
+                        <input asp-for="ProductID" class="form-control" placeholder="ProductID" required />
+                        <label asp-for="ProductID" class="control-label">ProductID</label>
+
+                       
+                    </div>
+                    <div class="form-floating form-floating-outline mb-4">
+                        <input asp-for="BarcodeID" class="form-control" placeholder="BarcodeID" />
+                        <label asp-for="BarcodeID" class="control-label"></label>
+
+                       
+                    </div>
+
+
+                </div>
+            </div>
+        </div>
+
+        <center>
+
+            <button type="submit" style="width:180px" value="Search" name="buttonType" class="btn btn-primary">Search</button>
+
+
+        </center>
+    </div>
+
+   
+    
+    @if (Model.Viewproductlist != null && Model.Viewproductlist.Any())
+    {
+        <div class="row mt-4">
+            <div class="col-md-12 col-lg-1"></div>
+            <div class="col-md-12 col-lg-10">
+                <h3>Product List</h3>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Select</th>
+                            <th>Product ID</th>
+                            <th>Product Name</th>
+                            <th>Unit Price</th>
+                            <th>Quantity</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var product in Model.Viewproductlist)
+                        {
+                            <tr>
+                                <td>
+                                    <input type="radio" name="SelectedProductID" value="@product.ProductID" />
+                                </td>
+                                <td>@product.ProductID</td>
+                                <td>@product.ProductName</td>
+                                <td>@product.Price</td>
+                                <td>
+                                    <input type="text" name="Quantity" class="form-control" />
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    }
+
+    <button type="submit" style="width:180px" value="Load" name="buttonType" class="btn btn-primary">Load</button>
+
+
+
+    <div class="row" style="margin-top:40px">
+        <div class="col-md-12 col-lg-1 ">
+        </div>
+        <div class="col-md-12 col-lg-1 ">
+        </div>
+    </div>
+</form>

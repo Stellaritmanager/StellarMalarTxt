@@ -14,6 +14,7 @@
         private String strPrice;
         private String strDiscount;
         private String strTotalAmount;
+        private String strBarcodeId;
         private bool strIsDelete;
         private String strLastUpdatedDate;
         private String strLastUpdatedUser;
@@ -30,5 +31,6 @@
         public string? LastUpdatedmachine { get => strLastUpdatedmachine; set => strLastUpdatedmachine = value; }
         public string? CategoryID { get => strCategoryID; set => strCategoryID = value; }
         public bool IsDelete { get => strIsDelete; set => strIsDelete = value; }
-    }
+        public string? BarcodeId { get => strBarcodeId; set => strBarcodeId = value; }
+}
 

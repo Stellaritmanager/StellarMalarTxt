@@ -1,11 +1,16 @@
 ﻿
+using DocumentFormat.OpenXml.Bibliography;
+using DocumentFormat.OpenXml.InkML;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.CodeAnalysis;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using NuGet.Protocol;
 using StellarBillingSystem.Business;
 using StellarBillingSystem.Context;
 using StellarBillingSystem.Models;
+using System.Data;
 
 namespace HealthCare.Controllers
 {
@@ -165,6 +170,7 @@ namespace HealthCare.Controllers
                     model.Price = productToRetrieve.Price;
                     model.Discount = productToRetrieve.Discount;
                     model.TotalAmount = productToRetrieve.TotalAmount;
+                    model.BarcodeId = productToRetrieve.BarcodeId;
 
                     ViewBag.Message = "Product retrieved successfully";
 
@@ -203,6 +209,7 @@ namespace HealthCare.Controllers
                     existingProduct.ProductID = model.ProductID;
                     existingProduct.CategoryID = model.CategoryID;
                     existingProduct.ProductName = model.ProductName;
+                    existingProduct.BarcodeId = model.BarcodeId;
                     existingProduct.Brandname = model.Brandname;
                     existingProduct.Price = model.Price;
                     existingProduct.Discount = model.Discount;
@@ -244,50 +251,6 @@ namespace HealthCare.Controllers
 
 
 
-        [HttpPost]
-
-        public async Task<IActionResult> CustomerBill(BilingSysytemModel model)
-        {
-            var existingbill = await _billingsoftware.SHCustomerBilling.FindAsync(model.BillID);
-            if (existingbill != null)
-            {
-                existingbill.BillID = model.BillID;
-                existingbill.CustomerName = model.CustomerName;
-                existingbill.Date = model.Date;
-                existingbill.CustomerNumber = model.CustomerNumber;
-                existingbill.Items = model.Items;
-                existingbill.Rate = model.Rate;
-                existingbill.Quantity = model.Quantity;
-                existingbill.Discount = model.Discount;
-                existingbill.Tax = model.Tax;
-                existingbill.DiscountPrice = model.DiscountPrice;
-                existingbill.TotalAmount = model.TotalAmount;
-                existingbill.PointsNumber = model.PointsNumber;
-                existingbill.VoucherNumber = model.VoucherNumber;
-                existingbill.CategoryBasedDiscount = model.CategoryBasedDiscount;
-                existingbill.TotalAmount = model.TotalAmount;
-                existingbill.LastUpdatedDate = DateTime.Now.ToString();
-                existingbill.LastUpdatedUser = User.Claims.First().Value.ToString();
-                existingbill.LastUpdatedmachine = Request.HttpContext.Connection.RemoteIpAddress.ToString();
-
-                _billingsoftware.Entry(existingbill).State = EntityState.Modified;
-
-            }
-            else
-            {
-
-                model.LastUpdatedDate = DateTime.Now.ToString();
-                model.LastUpdatedUser = User.Claims.First().Value.ToString();
-                model.LastUpdatedmachine = Request.HttpContext.Connection.RemoteIpAddress.ToString();
-            }
-
-            await _billingsoftware.SaveChangesAsync();
-
-
-            ViewBag.Message = "Saved Successfully";
-
-            return View("CustomerBilling", model);
-        }
 
 
         [HttpPost]
@@ -921,26 +884,26 @@ namespace HealthCare.Controllers
                 await _billingsoftware.SaveChangesAsync();
             }
 
-                ViewBag.Message = "Saved Successfully";
+            ViewBag.Message = "Saved Successfully";
 
-                //Repopulate the table after save 
+            //Repopulate the table after save 
 
-                var updatedResult = business.GetRackview(model.PartitionID, model.ProductID);
-                var updatedViewModelList = updatedResult.Select(p => new RackPatrionProductModel
-                {
-                    ProductID = p.ProductID,
-                    PartitionID = p.PartitionID,
-                    Noofitems = p.Noofitems
-                }).ToList();
+            var updatedResult = business.GetRackview(model.PartitionID, model.ProductID);
+            var updatedViewModelList = updatedResult.Select(p => new RackPatrionProductModel
+            {
+                ProductID = p.ProductID,
+                PartitionID = p.PartitionID,
+                Noofitems = p.Noofitems
+            }).ToList();
 
-                viewmodel.Viewrackpartition = updatedViewModelList;
-            
+            viewmodel.Viewrackpartition = updatedViewModelList;
+
 
             return View("RackPatrionProduct", viewmodel);
         }
 
 
-// Edit Function for RackPartition Table
+        // Edit Function for RackPartition Table
         public async Task<IActionResult> Edit(string partitionID, string productID)
         {
             BusinessClassBilling business = new BusinessClassBilling(_billingsoftware);
@@ -982,7 +945,7 @@ namespace HealthCare.Controllers
 
         }
 
-// Delete Function for Rack PArtition
+        // Delete Function for Rack PArtition
         public async Task<IActionResult> Delete(string partitionID, string productID)
         {
             BusinessClassBilling business = new BusinessClassBilling(_billingsoftware);
@@ -999,9 +962,9 @@ namespace HealthCare.Controllers
             return View("RackPatrionProduct");
         }
 
-// staff reg
+        // staff reg
         [HttpPost]
-        public async Task<IActionResult> AddStaff(StaffAdminModel model,string buttontype)
+        public async Task<IActionResult> AddStaff(StaffAdminModel model, string buttontype)
         {
             BusinessClassBilling Busbill = new BusinessClassBilling(_billingsoftware);
             ViewData["resoruseid"] = Busbill.GetResourceid();
@@ -1009,7 +972,7 @@ namespace HealthCare.Controllers
 
             if (buttontype == "Get")
             {
-                var getstaff = await _billingsoftware.SHStaffAdmin.FirstOrDefaultAsync(x => x.StaffID == model.StaffID&&x.IsDelete==false);
+                var getstaff = await _billingsoftware.SHStaffAdmin.FirstOrDefaultAsync(x => x.StaffID == model.StaffID && x.IsDelete == false);
                 if (getstaff != null)
                 {
                     return View("StaffAdmin", getstaff);
@@ -1030,7 +993,7 @@ namespace HealthCare.Controllers
                     await _billingsoftware.SaveChangesAsync();
 
                     ViewBag.delMessage = "StaffID deleted successfully";
-                    return View("StaffAdmin",stafftodelete);
+                    return View("StaffAdmin", stafftodelete);
                 }
                 else
                 {
@@ -1050,26 +1013,26 @@ namespace HealthCare.Controllers
                     await _billingsoftware.SaveChangesAsync();
 
                     model.StaffID = stafftoretrieve.StaffID;
-                    model.FullName=stafftoretrieve.FullName;
+                    model.FullName = stafftoretrieve.FullName;
                     model.ResourceTypeID = stafftoretrieve.ResourceTypeID;
-                    model.FirstName= stafftoretrieve.FirstName;
-                    model.LastName= stafftoretrieve.LastName;
+                    model.FirstName = stafftoretrieve.FirstName;
+                    model.LastName = stafftoretrieve.LastName;
                     model.Initial = stafftoretrieve.Initial;
-                    model.Prefix= stafftoretrieve.Prefix;
-                    model.PhoneNumber= stafftoretrieve.PhoneNumber;
-                    model.DateofBirth= stafftoretrieve.DateofBirth;
-                    model.Age= stafftoretrieve.Age;
-                    model.Gender= stafftoretrieve.Gender;
-                    model.Address1= stafftoretrieve.Address1;
+                    model.Prefix = stafftoretrieve.Prefix;
+                    model.PhoneNumber = stafftoretrieve.PhoneNumber;
+                    model.DateofBirth = stafftoretrieve.DateofBirth;
+                    model.Age = stafftoretrieve.Age;
+                    model.Gender = stafftoretrieve.Gender;
+                    model.Address1 = stafftoretrieve.Address1;
                     model.City = stafftoretrieve.City;
-                    model.State= stafftoretrieve.State;
-                    model.Pin= stafftoretrieve.Pin;
-                    model.EmailId= stafftoretrieve.EmailId;
-                    model.Nationality= stafftoretrieve.Nationality;
-                    model.UserName= stafftoretrieve.UserName;
-                    model.Password= stafftoretrieve.Password;
-                    model.IdProofId= stafftoretrieve.IdProofId;
-                    model.IdProofName= stafftoretrieve.IdProofName;
+                    model.State = stafftoretrieve.State;
+                    model.Pin = stafftoretrieve.Pin;
+                    model.EmailId = stafftoretrieve.EmailId;
+                    model.Nationality = stafftoretrieve.Nationality;
+                    model.UserName = stafftoretrieve.UserName;
+                    model.Password = stafftoretrieve.Password;
+                    model.IdProofId = stafftoretrieve.IdProofId;
+                    model.IdProofName = stafftoretrieve.IdProofName;
 
                     ViewBag.retMessage = "Deleted StaffID retrieved successfully";
                 }
@@ -1137,7 +1100,7 @@ namespace HealthCare.Controllers
 
         public async Task<IActionResult> AddResourceType(ResourceTypeMasterModel model, string buttontype)
         {
-            
+
             if (buttontype == "Get")
             {
                 var getres = await _billingsoftware.SHresourceType.FirstOrDefaultAsync(x => x.ResourceTypeID == model.ResourceTypeID && x.IsDelete == false);
@@ -1182,7 +1145,7 @@ namespace HealthCare.Controllers
 
                     model.ResourceTypeName = restoretrieve.ResourceTypeName;
                     model.ResourceTypeID = restoretrieve.ResourceTypeID;
-                   
+
                     ViewBag.retMessage = "Deleted ResourceTypeID retrieved successfully";
                 }
                 else
@@ -1233,7 +1196,7 @@ namespace HealthCare.Controllers
 
             if (buttontype == "Get")
             {
-                var getrol = await _billingsoftware.SHRoleaccessModel.FirstOrDefaultAsync(x => x.RollID == model.RollID &&x.ScreenID==model.ScreenID && x.Isdelete == false);
+                var getrol = await _billingsoftware.SHRoleaccessModel.FirstOrDefaultAsync(x => x.RollID == model.RollID && x.ScreenID == model.ScreenID && x.Isdelete == false);
                 if (getrol != null)
                 {
                     return View("RoleAccess", getrol);
@@ -1247,7 +1210,7 @@ namespace HealthCare.Controllers
             }
             else if (buttontype == "Delete")
             {
-                var roletodelete = await _billingsoftware.SHRoleaccessModel.FindAsync(model.RollID,model.ScreenID);
+                var roletodelete = await _billingsoftware.SHRoleaccessModel.FindAsync(model.RollID, model.ScreenID);
                 if (roletodelete != null)
                 {
                     roletodelete.Isdelete = true;
@@ -1266,7 +1229,7 @@ namespace HealthCare.Controllers
 
             else if (buttontype == "DeleteRetrieve")
             {
-                var roltoretrieve = await _billingsoftware.SHRoleaccessModel.FindAsync(model.RollID,model.ScreenID);
+                var roltoretrieve = await _billingsoftware.SHRoleaccessModel.FindAsync(model.RollID, model.ScreenID);
                 if (roltoretrieve != null)
                 {
                     roltoretrieve.Isdelete = false;
@@ -1275,7 +1238,7 @@ namespace HealthCare.Controllers
 
                     model.RollID = roltoretrieve.RollID;
                     model.ScreenID = roltoretrieve.ScreenID;
-                    model.Access=roltoretrieve.Access;
+                    model.Access = roltoretrieve.Access;
                     model.Authorized = roltoretrieve.Authorized;
 
                     ViewBag.retMessage = "Deleted RollID retrieved successfully";
@@ -1288,7 +1251,7 @@ namespace HealthCare.Controllers
             }
 
 
-            var existingrole = await _billingsoftware.SHRoleaccessModel.FindAsync(model.RollID,model.ScreenID);
+            var existingrole = await _billingsoftware.SHRoleaccessModel.FindAsync(model.RollID, model.ScreenID);
 
             if (existingrole != null)
             {
@@ -1369,7 +1332,7 @@ namespace HealthCare.Controllers
 
                     model.RollID = rolltoretrieve.RollID;
                     model.StaffID = rolltoretrieve.StaffID;
-                   
+
                     ViewBag.retMessage = "Deleted RollID retrieved successfully";
                 }
                 else
@@ -1591,6 +1554,146 @@ namespace HealthCare.Controllers
 
         }
 
+        //customer Billing
+
+
+        [HttpPost]
+        public IActionResult getproductlist(ProductSelectModel model, string billid, string BillID, string buttonType, string SelectedProductID, string Quantity, string productid, string productname, string unitprice)
+        {
+            if (buttonType == "Search")
+            {
+                model.Viewproductlist = _billingsoftware.SHProductMaster
+               .Where(p => p.ProductID.Contains(model.ProductID) || p.BarcodeId.Contains(model.BarcodeID))
+               .ToList();
+
+                return View("ProductList", model);
+            }
+            else if (buttonType == "Load")
+            {
+                var selectedProduct = _billingsoftware.SHProductMaster.FirstOrDefault(p => p.ProductID == SelectedProductID);
+                if (selectedProduct != null)
+                {
+                    var existingDetail = _billingsoftware.SHbilldetails.FirstOrDefault(b =>
+               b.BillID == TempData.Peek("BillID").ToString() && b.ProductID == selectedProduct.ProductID);
+
+                    if (existingDetail != null)
+                    {
+                        // Update existing detail
+                        existingDetail.Quantity = model.Quantity;
+                    }
+                    else
+                    {
+                        // Create new detail
+                        var billDetail = new BillingDetailsModel
+                        {
+                            BillID = TempData.Peek("BillID").ToString(),
+                            ProductID = selectedProduct.ProductID,
+                            ProductName = selectedProduct.ProductName,
+                            Price = selectedProduct.Price,
+                            Quantity = model.Quantity
+                        };
+
+                        _billingsoftware.SHbilldetails.Add(billDetail);
+                    }
+
+                    _billingsoftware.SaveChanges();
+
+                    return RedirectToAction("CustomerBilling", new
+                    {
+                        billid = TempData.Peek("BillID").ToString(),
+                        productid = selectedProduct.ProductID,
+                        productname = selectedProduct.ProductName,
+                        price = selectedProduct.Price,
+                        quantity = model.Quantity
+                    });
+                }
+            }
+
+
+            return View("ProductList", model);
+        }
+
+        [HttpPost]
+
+        public async Task<IActionResult> getCustomerBill(BillProductlistModel model, string buttonType, string BillID, BillingMasterModel masterModel, BillingDetailsModel detailModel)
+        {
+            if (buttonType == "Get")
+            {
+
+                TempData["BillID"] = BillID;
+
+                return RedirectToAction("ProductList", new { BillID = BillID });
+            }
+            var isDeleteValue = (object)masterModel.IsDelete ?? DBNull.Value;
+
+            var parameters = new[]
+   {
+        new SqlParameter("@BillID", masterModel.BillID),
+        new SqlParameter("@BillDate", masterModel.BillDate),
+        new SqlParameter("@CustomerNumber", masterModel.CustomerNumber),
+        new SqlParameter("@TotalPrice", masterModel.Totalprice ?? (object)DBNull.Value),
+        new SqlParameter("@TotalDiscount", masterModel.TotalDiscount ?? (object)DBNull.Value),
+        new SqlParameter("@NetPrice", masterModel.NetPrice ?? (object)DBNull.Value),
+       /* new SqlParameter("@IsDelete", isDeleteValue),*/
+        new SqlParameter("@LastUpdatedUser", User.Claims.First().Value.ToString()),
+        new SqlParameter("@LastUpdatedDate", DateTime.Now.ToString()),
+        new SqlParameter("@LastUpdatedMachine", Request.HttpContext.Connection.RemoteIpAddress.ToString()),
+        new SqlParameter("@ProductID", detailModel.ProductID),
+        new SqlParameter("@ProductName", detailModel.ProductName ?? (object)DBNull.Value),
+        new SqlParameter("@Discount", detailModel.Discount ?? (object)DBNull.Value),
+        new SqlParameter("@Price", detailModel.Price ?? (object)DBNull.Value),
+        new SqlParameter("@Quantity", detailModel.Quantity ?? (object)DBNull.Value),
+       
+    };
+
+            await _billingsoftware.Database.ExecuteSqlRawAsync("EXEC InsertBillProduct @BillID, @BillDate, @CustomerNumber, @TotalPrice,@TotalDiscount,@NetPrice,@LastUpdatedUser, @LastUpdatedDate, @LastUpdatedMachine, @ProductID, @ProductName, @Discount, @Price, @Quantity", parameters);
+
+            
+
+
+            var billingDetails = await _billingsoftware.SHbilldetails
+       .Where(d => d.BillID == masterModel.BillID)
+       .ToListAsync();
+
+            // Prepare the view model to pass to the view
+            var viewModel = new BillProductlistModel
+            {
+                MasterModel = masterModel,
+                DetailModel = detailModel,
+                Viewbillproductlist = billingDetails
+            };
+
+            ViewBag.Message = "Saved Successfully";
+            return View("CustomerBilling", viewModel);
+        }
+
+
+
+
+
+
+
+
+        public IActionResult ProductList(string BillID)
+        {
+            if (string.IsNullOrEmpty(BillID) && TempData["BillID"] != null)
+            {
+                BillID = TempData["BillID"].ToString();
+            }
+
+            var model = new ProductSelectModel
+            {
+                Viewproductlist = new List<ProductMatserModel>() // Initialize with an empty list
+            };
+
+            ViewBag.BillID = BillID;
+
+            return View(model);
+
+
+        }
+
+
 
 
 
@@ -1603,7 +1706,7 @@ namespace HealthCare.Controllers
         }
 
 
-      
+
 
         public IActionResult StaffAdmin()
         {
@@ -1613,7 +1716,7 @@ namespace HealthCare.Controllers
 
             StaffAdminModel par = new StaffAdminModel();
 
-            return View("StaffAdmin",par);
+            return View("StaffAdmin", par);
         }
 
         public IActionResult ResourceTypeMaster()
@@ -1678,7 +1781,7 @@ namespace HealthCare.Controllers
             return View();
         }
 
-       public IActionResult VoucherCustomerDetails()
+        public IActionResult VoucherCustomerDetails()
         {
             return View();
         }
@@ -1723,12 +1826,54 @@ namespace HealthCare.Controllers
             GodownModel res = new GodownModel();
 
             return View("GodownModel", res);
-           
+
         }
 
-        public IActionResult Reports()
+
+        public IActionResult CustomerBilling(string productid, string productname, string unitprice, string quantity, string billid, string SelectedProductID)
         {
-            return View();
+
+            /* var model = new BillProductlistModel()
+             {
+                 Viewbillproductlist = new List<BillTableModel>() 
+             };
+ */
+            var model = new BillProductlistModel();
+
+            // Retrieve selected product
+            var selectedProduct = _billingsoftware.SHProductMaster.FirstOrDefault(p => p.ProductID == productid);
+
+            if (selectedProduct != null)
+            {
+                // Retrieve bill detail for the specified BillID and ProductID
+                var billDetail = _billingsoftware.SHbilldetails
+                    .Where(b => b.BillID == billid && b.ProductID == selectedProduct.ProductID)
+                    .Select(b => new BillingDetailsModel
+                    {
+                        ProductID = b.ProductID,
+                        ProductName = b.ProductName,
+                        Price = b.Price,
+                        Quantity = b.Quantity
+                    })
+                    .FirstOrDefault(); // Retrieve only the first matching item
+
+                if (billDetail != null)
+                {
+                    model.Viewbillproductlist = new List<BillingDetailsModel> { billDetail };
+                }
+                else
+                {
+                    // Handle case where no detail is found
+                    model.Viewbillproductlist = new List<BillingDetailsModel>();
+                }
+            }
+            else
+            {
+                // Handle case where selected product is not found
+                model.Viewbillproductlist = new List<BillingDetailsModel>();
+            }
+
+            return View(model);
         }
     }
 }
