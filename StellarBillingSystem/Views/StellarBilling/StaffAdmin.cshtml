@@ -28,246 +28,277 @@
     <button id="popupOKButton" style="padding: 10px 20px; background-color: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer;">OK</button>
 </div>
 
-<h1>StaffAdmin</h1>
+
+
+
 
 <form asp-action="AddStaff" asp-controller="StellarBilling">
-
-<div class="row">
-    <div class="col-md-4">
-        
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
 
-            <div class="form-floating form-floating-outline mb-4">
-                <input asp-for="StaffID" value="@Model.StaffID" class="form-control" placeholder="StaffId" />
-                <label asp-for="StaffID" class="control-label">Staff ID</label>
-                <span asp-validation-for="StaffID" class="text-danger"></span>
+
+    <div class="row">
+        <div class="col-md-12 col-lg-2">
+        </div>
+        <div class="col-md-12 col-lg-8">
+            <div class="card">
+                <div style="background-color:#007bff">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <div class="container">
+                            <h2 class="centered text-white" style="font-family:'Lucida Bright';margin-left:27%;">StaffAdmin</h2>
+                        </div>
+                    </div>
+                </div>
             </div>
+        </div>
+    </div>
+    <br />
 
-            <div class="form-group">
-                <button type="submit" style="width:180px" value="Get"  name="buttonType" class="btn btn-primary">Get</button>
-            </div>
+    <div class="row" style="height:8%">
+    </div>
 
-            <div class="form-floating form-floating-outline mb-4">
-                @{
-                    var screenList = ((IEnumerable<ResourceTypeMasterModel>)ViewData["resoruseid"])
-                    .Select(m => new SelectListItem
+    <div class="row">
+        <div class="col-md-12 col-lg-2">
+        </div>
+
+
+
+        <div class="col-md-12 col-lg-8">
+            <div class="card">
+                <div class="card-body " style="background-image: linear-gradient(to right, #FFFFFF 0%, #e0efff 51%, #add5ff 100%);">
+
+                    <div class="row">
+
+                        <div class="col-md-12 col-lg-6">
+
+                            <div class="form-floating form-floating-outline mb-4">
+                                <input asp-for="StaffID" value="@Model.StaffID" class="form-control" placeholder="StaffId" />
+                                <label asp-for="StaffID" class="control-label">Staff ID</label>
+                                <span asp-validation-for="StaffID" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="col-md-12 col-lg-2">
+                            <button type="submit" style="width:180px" value="Get" name="buttonType" class="btn btn-primary">Get</button>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12 col-lg-4">
+
+                                                    <div class="form-floating form-floating-outline mb-4">
+                                @{
+                                    var screenList = ((IEnumerable<ResourceTypeMasterModel>)ViewData["resoruseid"])
+                                    .Select(m => new SelectListItem
             {
                 Value = m.ResourceTypeID.ToString(), // Assuming ScreenId is of type int
                 Text = $"{m.ResourceTypeID} - {m.ResourceTypeName}"
             });
-                }
+                                }
 
-                @Html.DropDownListFor(model => model.ResourceTypeID, screenList, "Select Resource ID", new { @class = "form-control" })
-                <label asp-for="ResourceTypeID" class="control-label"></label>
-                <span asp-validation-for="ResourceTypeID" class="text-danger"></span>
-            </div>
+                                @Html.DropDownListFor(model => model.ResourceTypeID, screenList, "Select Resource ID", new { @class = "form-control" })
+                                <label asp-for="ResourceTypeID" class="control-label"></label>
+                                <span asp-validation-for="ResourceTypeID" class="text-danger"></span>
+                            </div>
 
-            <div class="form-floating form-floating-outline mb-4">
-                <input asp-for="FirstName" value="@Model.FirstName" class="form-control" placeholder="FirstName" />
-                <label asp-for="FirstName" class="control-label">FirstName</label>
-                <span asp-validation-for="FirstName" class="text-danger"></span>
-            </div>
-
-
-            <div class="form-floating form-floating-outline mb-4">
-
-                <input asp-for="LastName" value="@Model.LastName" class="form-control" placeholder="LastName" />
-                <label asp-for="LastName" class="control-label">LastName</label>
-                <span asp-validation-for="LastName" class="text-danger"></span>
-            </div>
+                            <div class="form-floating form-floating-outline mb-4">
+                                <input asp-for="FirstName" value="@Model.FirstName" class="form-control" placeholder="FirstName" />
+                                <label asp-for="FirstName" class="control-label">FirstName</label>
+                                <span asp-validation-for="FirstName" class="text-danger"></span>
+                            </div>
 
 
-            <div class="form-floating form-floating-outline mb-4">
+                            <div class="form-floating form-floating-outline mb-4">
 
-                <input asp-for="FullName" value="@Model.FullName" class="form-control" placeholder="FullName" />
-                <label asp-for="FullName" class="control-label">FullName</label>
-                <span asp-validation-for="FullName" class="text-danger"></span>
-            </div>
-
-            <div class="form-floating form-floating-outline mb-4">
-
-                <input asp-for="Initial" value="@Model.Initial" class="form-control" placeholder="Initial" />
-                <label asp-for="Initial" class="control-label">Initial</label>
-                <span asp-validation-for="Initial" class="text-danger"></span>
-            </div>
-            <div class="form-floating form-floating-outline mb-4">
-
-                <input asp-for="Prefix" value="@Model.Prefix" class="form-control" placeholder="Prefix" />
-                <label asp-for="Prefix" class="control-label">Prefix</label>
-                <span asp-validation-for="Prefix" class="text-danger"></span>
-            </div>
-
-            <div class="form-floating form-floating-outline mb-4">
-                <input asp-for="PhoneNumber" value="@Model.PhoneNumber" class="form-control" placeholder="PhoneNumber" />
-                <label asp-for="PhoneNumber" class="control-label"></label>
-                <span asp-validation-for="PhoneNumber" class="text-danger"></span>
-            </div>
-
-    </div>
-</div>
+                                <input asp-for="LastName" value="@Model.LastName" class="form-control" placeholder="LastName" />
+                                <label asp-for="LastName" class="control-label">LastName</label>
+                                <span asp-validation-for="LastName" class="text-danger"></span>
+                            </div>
 
 
-    </div>
-<div class="col-md-12 col-lg-4">
-    <div class="card">
-        <div class="card-body" style="background-image: linear-gradient(to right, #FFFFFF 0%, #FFFFFF 51%, #ece5f6 100%);">
+                            <div class="form-floating form-floating-outline mb-4">
 
-            <div class="demo-inline-spacing">
+                                <input asp-for="FullName" value="@Model.FullName" class="form-control" placeholder="FullName" />
+                                <label asp-for="FullName" class="control-label">FullName</label>
+                                <span asp-validation-for="FullName" class="text-danger"></span>
+                            </div>
 
-                <div class="form-floating form-floating-outline mb-4">
+                            <div class="form-floating form-floating-outline mb-4">
 
-                        <input asp-for="DateofBirth" value="@Model.DateofBirth" class="form-control" placeholder="DateofBirth" />
-                    <label asp-for="DateofBirth" class="control-label">DateofBirth</label>
-                    <span asp-validation-for="DateofBirth" class="text-danger"></span>
-                </div>
+                                <input asp-for="Initial" value="@Model.Initial" class="form-control" placeholder="Initial" />
+                                <label asp-for="Initial" class="control-label">Initial</label>
+                                <span asp-validation-for="Initial" class="text-danger"></span>
+                            </div>
+                            <div class="form-floating form-floating-outline mb-4">
 
-                <div class="form-floating form-floating-outline mb-4">
+                                <input asp-for="Prefix" value="@Model.Prefix" class="form-control" placeholder="Prefix" />
+                                <label asp-for="Prefix" class="control-label">Prefix</label>
+                                <span asp-validation-for="Prefix" class="text-danger"></span>
+                            </div>
 
-                        <input asp-for="Age" value="@Model.Age" class="form-control" placeholder="Age" />
-                    <label asp-for="Age" class="control-label">Age</label>
-                    <span asp-validation-for="Age" class="text-danger"></span>
-                </div>
+                            <div class="form-floating form-floating-outline mb-4">
+                                <input asp-for="PhoneNumber" value="@Model.PhoneNumber" class="form-control" placeholder="PhoneNumber" />
+                                <label asp-for="PhoneNumber" class="control-label"></label>
+                                <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+                            </div>
 
-                <div class="form-group">
-                    <label class="control-label">Gender:</label><br />
-                    <div class="form-check form-check-inline">
-                            <input asp-for="Gender" value="@Model.Gender" class="form-check-input" type="radio" value="Male" id="maleRadio" />
-                        <label class="form-check-label" for="maleRadio">Male</label>
+                        </div>
+
+                            <div class="col-md-12 col-lg-4">
+
+                                <div class="form-floating form-floating-outline mb-4">
+
+                                    <input asp-for="DateofBirth" value="@Model.DateofBirth" class="form-control" placeholder="DateofBirth" />
+                                    <label asp-for="DateofBirth" class="control-label">DateofBirth</label>
+                                    <span asp-validation-for="DateofBirth" class="text-danger"></span>
+                                </div>
+
+                                <div class="form-floating form-floating-outline mb-4">
+
+                                    <input asp-for="Age" value="@Model.Age" class="form-control" placeholder="Age" />
+                                    <label asp-for="Age" class="control-label">Age</label>
+                                    <span asp-validation-for="Age" class="text-danger"></span>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="control-label">Gender:</label><br />
+                                    <div class="form-check form-check-inline">
+                                        <input asp-for="Gender" value="@Model.Gender" class="form-check-input" type="radio" value="Male" id="maleRadio" />
+                                        <label class="form-check-label" for="maleRadio">Male</label>
+                                    </div>
+                                    <div class="form-check form-check-inline">
+                                        <input asp-for="Gender" value="@Model.Gender" class="form-check-input" type="radio" value="Female" id="femaleRadio" />
+                                        <label class="form-check-label" for="femaleRadio">Female</label>
+                                    </div>
+                                    <div class="form-check form-check-inline">
+                                        <input asp-for="Gender" value="@Model.Gender" class="form-check-input" type="radio" value="Other" id="otherRadio" />
+                                        <label class="form-check-label" for="otherRadio">Other</label>
+                                    </div>
+                                    <span asp-validation-for="Gender" class="text-danger"></span>
+                                </div>
+                                <div class="input-group input-group-merge speech-to-text form-floating form-floating-outline mb-4">
+                                    <textarea asp-for="Address1" value="@Model.Address1" class="form-control" placeholder="Address1" aria-describedby="text-to-speech-addon"></textarea>
+                                    <label asp-for="Address1" class="control-label">Address1</label>
+                                    <span class="input-group-text" id="text-to-speech-addon">
+                                        <i class="mdi mdi-microphone-outline cursor-pointer text-to-speech-toggle"></i>
+                                    </span>
+
+                                    <span asp-validation-for="Address1" class="text-danger"></span>
+                                </div>
+
+
+
+                                <div class="form-floating form-floating-outline mb-4">
+                                    <input asp-for="City" value="@Model.City" class="form-control" placeholder="City" />
+                                    <label asp-for="City" class="control-label">City</label>
+                                    <span asp-validation-for="City" class="text-danger"></span>
+                                </div>
+
+                                <div class="form-floating form-floating-outline mb-4">
+                                    <input asp-for="State" value="@Model.State" class="form-control" placeholder="State" />
+                                    <label asp-for="State" class="control-label">State</label>
+                                    <span asp-validation-for="State" class="text-danger"></span>
+                                </div>
+                                <div class="form-floating form-floating-outline mb-4">
+                                    <input asp-for="Pin" value="@Model.Pin" class="form-control" placeholder="Pin" />
+                                    <label asp-for="Pin" class="control-label">Pin</label>
+                                    <span asp-validation-for="Pin" class="text-danger"></span>
+                                </div>
+                        </div>
+
+                        <div class="col-md-12 col-lg-4">
+                                
+                                <div class="form-floating form-floating-outline mb-4">
+                                <input asp-for="EmailId" value="@Model.EmailId" class="form-control" placeholder="EmailId" />
+                                <label asp-for="EmailId" class="control-label">EmailId</label>
+                                <span asp-validation-for="EmailId" class="text-danger"></span>
+                            </div>
+                            <div class="form-floating form-floating-outline mb-4">
+                                <input asp-for="Nationality" value="@Model.Nationality" class="form-control" placeholder="Nationality" />
+                                <label asp-for="Nationality" class="control-label">Nationality</label>
+                                <span asp-validation-for="Nationality" class="text-danger"></span>
+                            </div>
+                            <div class="form-floating form-floating-outline mb-4">
+                                <input asp-for="UserName" value="@Model.UserName" class="form-control" placeholder="UserName" />
+                                <label asp-for="UserName" class="control-label">UserName</label>
+                                <span asp-validation-for="UserName" class="text-danger"></span>
+                            </div>
+                            <div class="form-floating form-floating-outline mb-4">
+                                <input asp-for="Password" value="@Model.Password" class="form-control" placeholder="Password" />
+                                <label asp-for="Password" class="control-label">Password</label>
+                                <span asp-validation-for="Password" class="text-danger"></span>
+                            </div>
+
+                            <div class="form-floating form-floating-outline mb-4">
+                                <input asp-for="IdProofId" value="@Model.IdProofId" class="form-control" placeholder="IdProofId" />
+                                <label asp-for="IdProofId" class="control-label">IdProofId</label>
+                                <span asp-validation-for="IdProofId" class="text-danger"></span>
+                            </div>
+                            <div class="form-floating form-floating-outline mb-4">
+                                <input asp-for="IdProofName" value="@Model.IdProofName" class="form-control" placeholder="IdProofName" />
+                                <label asp-for="IdProofName" class="control-label">IdProofName</label>
+                                <span asp-validation-for="IdProofName" class="text-danger"></span>
+                            </div>
+
+                        </div>
                     </div>
-                    <div class="form-check form-check-inline">
-                            <input asp-for="Gender" value="@Model.Gender" class="form-check-input" type="radio" value="Female" id="femaleRadio" />
-                        <label class="form-check-label" for="femaleRadio">Female</label>
-                    </div>
-                    <div class="form-check form-check-inline">
-                            <input asp-for="Gender" value="@Model.Gender" class="form-check-input" type="radio" value="Other" id="otherRadio" />
-                        <label class="form-check-label" for="otherRadio">Other</label>
-                    </div>
-                    <span asp-validation-for="Gender" class="text-danger"></span>
                 </div>
-                <div class="input-group input-group-merge speech-to-text form-floating form-floating-outline mb-4">
-                        <textarea asp-for="Address1" value="@Model.Address1" class="form-control" placeholder="Address1" aria-describedby="text-to-speech-addon"></textarea>
-                    <label asp-for="Address1" class="control-label">Address1</label>
-                    <span class="input-group-text" id="text-to-speech-addon">
-                        <i class="mdi mdi-microphone-outline cursor-pointer text-to-speech-toggle"></i>
-                    </span>
-
-                    <span asp-validation-for="Address1" class="text-danger"></span>
-                </div>
-
-             
-
-                <div class="form-floating form-floating-outline mb-4">
-                        <input asp-for="City" value="@Model.City" class="form-control" placeholder="City" />
-                    <label asp-for="City" class="control-label">City</label>
-                    <span asp-validation-for="City" class="text-danger"></span>
-                </div>
-
-                <div class="form-floating form-floating-outline mb-4">
-                        <input asp-for="State" value="@Model.State" class="form-control" placeholder="State" />
-                    <label asp-for="State" class="control-label">State</label>
-                    <span asp-validation-for="State" class="text-danger"></span>
-                </div>
-                <div class="form-floating form-floating-outline mb-4">
-                        <input asp-for="Pin" value="@Model.Pin" class="form-control" placeholder="Pin" />
-                    <label asp-for="Pin" class="control-label">Pin</label>
-                    <span asp-validation-for="Pin" class="text-danger"></span>
-                </div>
-
-
+            </div>
+            <div class="col-md-12 col-lg-2">
             </div>
         </div>
+        <div class="row" style="margin-top:30px">
 
-    </div>
-</div>
-<div class="col-md-12 col-lg-3">
-    <div class="card">
-        <div class="card-body" style="background-image: linear-gradient(to right, #FFFFFF 0%, #FFFFFF 51%, #ece5f6 100%);">
-            <div class="form-floating form-floating-outline mb-4">
-                    <input asp-for="EmailId" value="@Model.EmailId" class="form-control" placeholder="EmailId" />
-                <label asp-for="EmailId" class="control-label">EmailId</label>
-                <span asp-validation-for="EmailId" class="text-danger"></span>
-            </div>
-            <div class="form-floating form-floating-outline mb-4">
-                    <input asp-for="Nationality" value="@Model.Nationality" class="form-control" placeholder="Nationality" />
-                <label asp-for="Nationality" class="control-label">Nationality</label>
-                <span asp-validation-for="Nationality" class="text-danger"></span>
-            </div>
-            <div class="form-floating form-floating-outline mb-4">
-                    <input asp-for="UserName" value="@Model.UserName" class="form-control" placeholder="UserName" />
-                <label asp-for="UserName" class="control-label">UserName</label>
-                <span asp-validation-for="UserName" class="text-danger"></span>
-            </div>
-            <div class="form-floating form-floating-outline mb-4">
-                    <input asp-for="Password" value="@Model.Password" class="form-control" placeholder="Password" />
-                <label asp-for="Password" class="control-label">Password</label>
-                <span asp-validation-for="Password" class="text-danger"></span>
-            </div>
-
-            <div class="form-floating form-floating-outline mb-4">
-                    <input asp-for="IdProofId" value="@Model.IdProofId" class="form-control" placeholder="IdProofId" />
-                <label asp-for="IdProofId" class="control-label">IdProofId</label>
-                <span asp-validation-for="IdProofId" class="text-danger"></span>
-            </div>
-            <div class="form-floating form-floating-outline mb-4">
-                    <input asp-for="IdProofName" value="@Model.IdProofName" class="form-control" placeholder="IdProofName" />
-                <label asp-for="IdProofName" class="control-label">IdProofName</label>
-                <span asp-validation-for="IdProofName" class="text-danger"></span>
-            </div>
-            
             <div class="form-group">
-                <button type="submit" style="width:180px" value="Save" class="btn btn-primary">Save</button>
+                <center>
+                                <button type="submit" style="width:180px" value="Save" class="btn btn-primary">Save</button>
 
-                    <button type="submit" style="width:180px" value="Delete"  name="buttonType" class="btn btn-primary">Delete</button>
-                    <button type="submit" style="width:180px" value="DeleteRetrieve" name="buttonType" class="btn btn-primary">Delete Retrieve</button>
-                    
-            </div>
+                                <button type="submit" style="width:180px" value="Delete" name="buttonType" class="btn btn-primary">Delete</button>
+                                <button type="submit" style="width:180px" value="DeleteRetrieve" name="buttonType" class="btn btn-primary">Delete Retrieve</button>
+                    </center>
+                            </div>
+                            </div>
 
-                @if (ViewBag.Message != null)
-                {
-                    <script>
-                        handleMessages("@ViewBag.Message");
-                    </script>
-                }
+                            @if (ViewBag.Message != null)
+                            {
+                                <script>
+                                    handleMessages("@ViewBag.Message");
+                                </script>
+                            }
 
-                @if (ViewBag.getMessage != null)
-                {
-                    <script>
-                        handleMessages("@ViewBag.getMessage");
-                    </script>
-                }
+                            @if (ViewBag.getMessage != null)
+                            {
+                                <script>
+                                    handleMessages("@ViewBag.getMessage");
+                                </script>
+                            }
 
-                @if (ViewBag.delMessage != null)
-                {
-                    <script>
-                        handleMessages("@ViewBag.delMessage");
-                    </script>
-                }
+                            @if (ViewBag.delMessage != null)
+                            {
+                                <script>
+                                    handleMessages("@ViewBag.delMessage");
+                                </script>
+                            }
 
-                @if (ViewBag.delnoMessage != null)
-                {
-                    <script>
-                        handleMessages("@ViewBag.delnoMessage");
-                    </script>
-                }
+                            @if (ViewBag.delnoMessage != null)
+                            {
+                                <script>
+                                    handleMessages("@ViewBag.delnoMessage");
+                                </script>
+                            }
 
-                @if (ViewBag.retMessage != null)
-                {
-                    <script>
-                        handleMessages("@ViewBag.retMessage");
-                    </script>
+                            @if (ViewBag.retMessage != null)
+                            {
+                                <script>
+                                    handleMessages("@ViewBag.retMessage");
+                                </script>
 
-                }
+                            }
 
-                @if (ViewBag.noretMessage != null)
-                {
-                    <script>
-                        handleMessages("@ViewBag.noretMessage");
-                    </script>
-                }
+                            @if (ViewBag.noretMessage != null)
+                            {
+                                <script>
+                                    handleMessages("@ViewBag.noretMessage");
+                                </script>
+                            }
 
-        </form>
-    </div>
-</div>
-
-
+</form>
+    

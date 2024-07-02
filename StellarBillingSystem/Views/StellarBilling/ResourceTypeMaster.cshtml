@@ -29,81 +29,127 @@
     <button id="popupOKButton" style="padding: 10px 20px; background-color: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer;">OK</button>
 </div>
 
-
-<h1>ResourceTypeMaster</h1>
-
+<form asp-action="AddResourceType" asp-controller="StellarBilling">
 
 <div class="row">
-    <div class="col-md-4">
-        <form asp-action="AddResourceType" asp-controller="StellarBilling">
-
-            <div class="form-floating form-floating-outline mb-4">
-
-                <input asp-for="ResourceTypeID" value="@Model.ResourceTypeID" class="form-control" placeholder="ResourceTypeID" />
-                <label asp-for="ResourceTypeID" class="control-label">ResourceTypeID</label>
-                <span asp-validation-for="ResourceTypeID" class="text-danger"></span>
+    <div class="col-md-12 col-lg-2">
+    </div>
+    <div class="col-md-12 col-lg-8">
+        <div class="card" style="height:40px">
+            <div class="card-body " style="background-color:#007bff">
+                <div style="align-items:center">
+                    <div class="container" style="text-align:center">
+                        <h2 class="centered text-white" style="font-family:'Lucida Bright'">ResourceTypeMaster</h2>
+                    </div>
+                </div>
             </div>
-
-            <div class="form-floating form-floating-outline mb-4">
-
-                <input asp-for="ResourceTypeName" value="@Model.ResourceTypeName" class="form-control" placeholder="ResourceTypeName" />
-                <label asp-for="ResourceTypeName" class="control-label">ResourceTypeName</label>
-                <span asp-validation-for="ResourceTypeName" class="text-danger"></span>
-            </div>
-
-            <div class="form-group">
-                <button type="submit" style="width:180px" value="Get" name="buttonType" class="btn btn-primary">Get</button>
-                <button type="submit" style="width:180px" value="Save" class="btn btn-primary">Save</button>
-
-                <button type="submit" style="width:180px" value="Delete" name="buttonType" class="btn btn-primary">Delete</button>
-                <button type="submit" style="width:180px" value="DeleteRetrieve" name="buttonType" class="btn btn-primary">Delete Retrieve</button>
-
-            </div>
-
-            @if (ViewBag.Message != null)
-            {
-                <script>
-                    handleMessages("@ViewBag.Message");
-                </script>
-            }
-
-            @if (ViewBag.getMessage != null)
-            {
-                <script>
-                    handleMessages("@ViewBag.getMessage");
-                </script>
-            }
-
-            @if (ViewBag.delMessage != null)
-            {
-                <script>
-                    handleMessages("@ViewBag.delMessage");
-                </script>
-            }
-
-            @if (ViewBag.delnoMessage != null)
-            {
-                <script>
-                    handleMessages("@ViewBag.delnoMessage");
-                </script>
-            }
-
-            @if (ViewBag.retMessage != null)
-            {
-                <script>
-                    handleMessages("@ViewBag.retMessage");
-                </script>
-
-            }
-
-            @if (ViewBag.noretMessage != null)
-            {
-                <script>
-                    handleMessages("@ViewBag.noretMessage");
-                </script>
-            }
-
-        </form>
+        </div>
     </div>
 </div>
 
+
+<div class="row" style="margin-top:70px">
+</div>
+
+<div class="row gy-4">
+    <div class="col-md-12 col-lg-2">
+    </div>
+    <div class="col-md-12 col-lg-8">
+        <div class="card">
+            <div class="card-body " style="background-image: linear-gradient(to right, #FFFFFF 0%, #e0efff 51%, #add5ff 100%);">
+
+                <div class="row gy-4">
+                    <div class="col-md-12 col-lg-8">
+                        
+
+                            <div class="form-floating form-floating-outline mb-4">
+
+                                <input asp-for="ResourceTypeID" value="@Model.ResourceTypeID" class="form-control" placeholder="ResourceTypeID" />
+                                <label asp-for="ResourceTypeID" class="control-label">ResourceTypeID</label>
+                                <span asp-validation-for="ResourceTypeID" class="text-danger"></span>
+                            </div>
+
+                    </div>
+                    <div class="col-md-12 col-lg-1">
+                    </div>
+                    <div class="col-md-12 col-lg-2" style="align-items:center">
+                        <div class="form-group">
+                            <button type="submit" style="width:180px" value="Get" name="buttonType" class="btn btn-primary">Get</button>
+                        </div>
+
+                        <br />
+
+
+                    </div>
+                </div>
+                        
+       
+
+        <div class="form-floating form-floating-outline mb-4">
+
+            <input asp-for="ResourceTypeName" value="@Model.ResourceTypeName" class="form-control" placeholder="ResourceTypeName" />
+            <label asp-for="ResourceTypeName" class="control-label">ResourceTypeName</label>
+            <span asp-validation-for="ResourceTypeName" class="text-danger"></span>
+        </div>
+                </div>
+
+
+                <div class="col-md-12 col-lg-2">
+                </div>
+
+            </div>
+            <br />
+        </div>
+        <div class="form-group">
+            <center>
+
+                <button type="submit" style="width:180px" value="Save" class="btn btn-primary">Save</button>
+                <button type="submit" style="width:180px" value="Delete" name="buttonType" class="btn btn-primary">Delete</button>
+                <button type="submit" style="width:180px" value="DeleteRetrieve" name="buttonType" class="btn btn-primary">Delete Retrieve</button>
+            </center>
+        </div>
+
+        @if (ViewBag.Message != null)
+        {
+            <script>
+                handleMessages("@ViewBag.Message");
+            </script>
+        }
+
+        @if (ViewBag.getMessage != null)
+        {
+            <script>
+                handleMessages("@ViewBag.getMessage");
+            </script>
+        }
+
+        @if (ViewBag.delMessage != null)
+        {
+            <script>
+                handleMessages("@ViewBag.delMessage");
+            </script>
+        }
+
+        @if (ViewBag.delnoMessage != null)
+        {
+            <script>
+                handleMessages("@ViewBag.delnoMessage");
+            </script>
+        }
+
+        @if (ViewBag.retMessage != null)
+        {
+            <script>
+                handleMessages("@ViewBag.retMessage");
+            </script>
+
+        }
+
+        @if (ViewBag.noretMessage != null)
+        {
+            <script>
+                handleMessages("@ViewBag.noretMessage");
+            </script>
+        }
+
+        </form>
