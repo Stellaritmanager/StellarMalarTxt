@@ -36,19 +36,19 @@
         <div class="col-md-12 col-lg-2">
         </div>
         <div class="col-md-12 col-lg-8">
-            <div class="card">
-                <div class="card-body " style="background-color:#8c62c9">
-                    <div class="card-header d-flex justify-content-between align-items-center">
-                        <div class="container">
+            <div class="card" style="height:70px">
+                <div class="card-body " style="background-color:#007bff">
+                    <div style="align-items:center">
+                        <div class="container" style="text-align:center">
                             <h2 class="centered text-white" style="font-family:'Lucida Bright'">Points Master</h2>
-
                         </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-    <br />
+
+
     <div class="row" style="height:8%">
     </div>
     <div class="row gy-4">
@@ -56,7 +56,7 @@
         </div>
         <div class="col-md-12 col-lg-8">
             <div class="card">
-                <div class="card-body " style="background-image: linear-gradient(to right, #FFFFFF 0%, #FFFFFF 51%, #ece5f6 100%);">
+                <div class="card-body " style="background-image: linear-gradient(to right, #FFFFFF 0%, #e0efff 51%, #add5ff 100%);">
 
                     <div class="form-floating form-floating-outline mb-4">
                         <input asp-for="PointsID" class="form-control" placeholder="Points ID" required />
@@ -77,6 +77,8 @@
                         <label asp-for="NetPrice" class="control-label">Net Price</label>
                 <span asp-validation-for="NetPrice" class="text-danger"></span>
             </div>
+
+
                     <br />
 
                 </div>
@@ -91,21 +93,16 @@
     <div class="form-group">
         <center>
             <button type="submit" value="Create" class="btn btn-primary" asp-action="AddPoints">Save</button>
-            @* @if (ViewBag.Message != null)
-            {
-                <div class="alert alert-success">
-                    @ViewBag.Message
-                </div>
-            } *@
+
+           
         </center>
     </div>
-
     @if (ViewBag.Message != null)
     {
         <script>
             handleMessages("@ViewBag.Message");
         </script>
     }
- </form>
 
+</form>
 
