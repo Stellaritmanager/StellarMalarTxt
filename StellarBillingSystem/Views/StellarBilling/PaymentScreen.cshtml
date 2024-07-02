@@ -1,0 +1,110 @@
+﻿@model List<StellarBillingSystem.Models.PaymentTableViewModel>
+
+@{
+    ViewData["Title"] = "PaymentScreen";
+    Layout = "~/Views/Shared/_ContentNavbarLayout.cshtml"; // Adjust layout path as needed
+}
+
+<form asp-controller="StellarBilling" asp-action="AddPayment">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+    <div class="container">
+        <h2 class="text-center">Customer Master</h2>
+    </div>
+
+    <div class="row mt-4">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-body">
+                    <div class="form-group">
+                        <label for="BillId">Bill ID</label>
+                        <input type="text" class="form-control" id="BillId" name="BillId" value="@ViewBag.BillId" />
+                    </div>
+                    <div class="form-group">
+                        <label for="Balance">Balance</label>
+                        <input type="text" class="form-control" id="Balance" name="Balance" value="@ViewBag.Balance" />
+                    </div>
+                    <div class="form-group">
+                        <label for="BillDate">Bill Date</label>
+                        <input type="text" class="form-control" id="BillDate" name="BillDate" value="@ViewBag.BillDate" />
+                    </div>
+                    <div class="form-group">
+                        <label for="PaymentId">Payment ID</label>
+                        <input type="text" class="form-control" id="PaymentId" name="PaymentId" value="@ViewBag.PaymentID" />
+                    </div>
+                    <div class="form-group">
+                        <label for="CustomerNumber">Customer Number</label>
+                        <input type="text" class="form-control" id="CustomerNumber" name="CustomerNumber" value="@ViewBag.CustomerNumber" />
+                    </div>
+                    <div class="form-group">
+                        <label for="RedeemPoints">Redeem Points</label>
+                        <input type="text" class="form-control" id="RedeemPoints" name="RedeemPoints" value="@ViewBag.ReedemPoints" />
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        @if (ViewBag.Slots != null)
+        {
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-body">
+                        <h3>Payment Details</h3>
+                        <table class="table" >
+                            <thead>
+                                <tr>
+                                    <th>Select</th>
+                                    <th>Payment Date</th>
+                                    <th>Payment Description</th>
+                                    <th>Payment Mode</th>
+                                    <th>Transaction Number</th>
+                                    <th>Payment Amount</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+
+                                @for (int i = 0; i < ViewBag.Slots.Count; i++)
+                                {
+                                    var detail = ViewBag.Slots[i];
+                                    <tr>
+                                        <td>
+                                            <input type="radio" name="selectedSlotId" value="@detail.PaymentDiscription" />
+                                            @*  <input type="hidden" name="billDetails[@i].DetailID" value="@detail.DetailID" />
+                                        <input type="hidden" name="billDetails[@i].BillID" value="@ViewBag.BillID" /> *@
+                                        </td>
+                                        <td>
+                                            <input type="text" class="form-control" name="billpayment[@i].PaymentDate" value="@detail.PaymentDate" />
+                                        </td>
+                                        <td>
+                                            <input type="text" class="form-control" name="billpayment[@i].PaymentDiscription" value="@detail.PaymentDiscription" />
+                                        </td>
+                                        <td>
+                                            <input type="text" class="form-control" name="billpayment[@i].PaymentMode" value="@detail.PaymentMode" />
+                                        </td>
+                                        <td>
+                                            <input type="text" class="form-control" name="billpayment[@i].PaymentTransactionNumber" value="@detail.PaymentTransactionNumber" />
+                                        </td>
+                                        <td>
+                                            <input type="text" class="form-control" name="billpayment[@i].PaymentAmount" value="@detail.PaymentAmount" />
+                                        </td>
+
+                                    </tr>
+                                }
+                            </tbody>
+                        
+                    </table>
+                    
+                </div>
+            </div>
+        </div>
+        }
+    </div>
+
+    <div class="row mt-4">
+        <div class="col-md-12">
+            <button type="submit" class="btn btn-primary" name="buttonType" value="DeletePayment">Delete Payment</button>
+            <button type="submit" class="btn btn-primary" name="buttonType" value="AddPayment">AddPayment</button>
+            <button type="submit" class="btn btn-primary" name="buttonType" value="Save">Save</button>
+        </div>
+    </div>
+</form>

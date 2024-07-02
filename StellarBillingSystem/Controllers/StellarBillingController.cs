@@ -1573,17 +1573,17 @@ namespace HealthCare.Controllers
                 var selectedProduct = _billingsoftware.SHProductMaster.FirstOrDefault(p => p.ProductID == SelectedProductID);
                 if (selectedProduct != null)
                 {
-                    var existingDetail = _billingsoftware.SHbilldetails.FirstOrDefault (b =>
+                    var existingDetail = _billingsoftware.SHbilldetails.FirstOrDefault(b =>
                b.BillID == TempData.Peek("BillID").ToString() && b.ProductID == selectedProduct.ProductID);
 
                     if (existingDetail != null)
                     {
-                        
+
                         existingDetail.Quantity = Quantity;
                     }
                     else
                     {
-                        
+
                         var billDetail = new BillingDetailsModel
                         {
                             BillID = TempData.Peek("BillID").ToString(),
@@ -1643,7 +1643,7 @@ namespace HealthCare.Controllers
         new SqlParameter("@Discount", detailModel.Discount ?? (object)DBNull.Value),
         new SqlParameter("@Price", detailModel.Price ?? (object)DBNull.Value),
         new SqlParameter("@Quantity", detailModel.Quantity ?? (object)DBNull.Value),
-       
+
     };
 
             await _billingsoftware.Database.ExecuteSqlRawAsync("EXEC InsertBillProduct @BillID, @BillDate, @CustomerNumber, @TotalPrice,@TotalDiscount,@NetPrice,@LastUpdatedUser, @LastUpdatedDate, @LastUpdatedMachine, @ProductID, @ProductName, @Discount, @Price, @Quantity", parameters);
@@ -1860,7 +1860,7 @@ namespace HealthCare.Controllers
                         Price = selectedProduct.TotalAmount,
                         Quantity = b.Quantity
                     })
-                    .FirstOrDefault(); 
+                    .FirstOrDefault();
 
                 if (billDetail != null)
                 {
@@ -1879,6 +1879,92 @@ namespace HealthCare.Controllers
             }
 
             return View(model);
+
         }
+
+
+
+
+        [HttpPost]
+        public async Task<IActionResult> AddPayment(PaymentMasterModel model, PaymentDetailsModel detailsmodel, string buttonType, List<PaymentDetailsModel> billpayment, string selectedSlotId,
+string BillId, string Balance, string BillDate, string PaymentId, string paymentdescription, string CustomerNumber, string ReedemPoints, string action)
+        {
+            ViewBag.PaymentID = BillId;
+            ViewBag.BillId = BillId;
+            ViewBag.Balance = Balance;
+            ViewBag.BillDate = BillDate;
+            ViewBag.CustomerNumber = CustomerNumber;
+            ViewBag.ReedemPoints = ReedemPoints;
+
+            /* if (billPayment == null)
+             {
+                 billPayment = new List<PaymentTableViewModel>();
+             }*/
+            if (buttonType == "AddPayment")
+            {
+                var newDetail = new PaymentDetailsModel
+                {
+                    PaymentId = PaymentId,
+                    PaymentDiscription = string.Empty,
+                    PaymentDate = string.Empty,
+                    PaymentMode = string.Empty,
+                    PaymentTransactionNumber = string.Empty,
+                    PaymentAmount = string.Empty
+
+                };
+
+
+                _billingsoftware.SHPaymentDetails.Add(newDetail);
+            }
+            _billingsoftware.SaveChanges();
+
+
+            ViewBag.Slots = _billingsoftware.SHPaymentDetails.Where(b => b.PaymentId == PaymentId && b.IsDelete == false).ToList();
+
+
+
+            if (buttonType == "Save")
+            {
+                var parameters = new[]
+                {
+        new SqlParameter("@BillId", model.BillId),
+        new SqlParameter("@PaymentId", model.PaymentId),
+        new SqlParameter("@CustomerNumber", model.CustomerNumber ?? (object)DBNull.Value),
+        new SqlParameter("@ReedemPoints", model.ReedemPoints ?? (object)DBNull.Value),
+        new SqlParameter("@Balance", model.Balance ?? (object)DBNull.Value),
+        new SqlParameter("@PaymentDiscription", detailsmodel.PaymentDiscription),
+        new SqlParameter("@PaymentMode", detailsmodel.PaymentMode ?? (object)DBNull.Value),
+        new SqlParameter("@PaymentTransactionNumber", detailsmodel.PaymentTransactionNumber ?? (object)DBNull.Value),
+        new SqlParameter("@PaymentAmount", detailsmodel.PaymentAmount ?? (object)DBNull.Value),
+        new SqlParameter("@PaymentDate", detailsmodel.PaymentDate ?? (object)DBNull.Value),
+        new SqlParameter("@LastUpdatedUser", User.Claims.First().Value.ToString()),
+        new SqlParameter("@LastUpdatedDate", DateTime.Now.ToString()),
+        new SqlParameter("@LastUpdatedMachine", Request.HttpContext.Connection.RemoteIpAddress.ToString())
+    };
+
+                await _billingsoftware.Database.ExecuteSqlRawAsync("EXEC InsertBillPayment @BillId, @PaymentId, @CustomerNumber, @ReedemPoints, @Balance, @PaymentDiscription, @PaymentMode, @PaymentTransactionNumber, @PaymentAmount, @PaymentDate, @LastUpdatedUser, @LastUpdatedDate, @LastUpdatedMachine", parameters);
+            }
+
+            return View("PaymentScreen");
+
+        }
+
+
+
+
+        public IActionResult PaymentScreen()
+        {
+
+
+            return View();
+
+        }
+
+
+
     }
-}
+
+
+        }
+    
+
