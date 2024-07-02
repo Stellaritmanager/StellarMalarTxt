@@ -96,27 +96,7 @@
                         <span asp-validation-for="Quantity" class="text-danger"></span>
                     </div>
 
-                     <div class="form-floating form-floating-outline mb-4">
-                        <input asp-for="NetPrice" class="form-control" placeholder="NetPrice" />
-                        <label asp-for="NetPrice" class="control-label">NetPrice</label>
-
-                        <span asp-validation-for="NetPrice" class="text-danger"></span>
-                    </div>
-
-                     <div class="form-floating form-floating-outline mb-4">
-                        <input asp-for="Totalprice" class="form-control" placeholder="Totalprice" />
-                        <label asp-for="Totalprice" class="control-label">Totalprice</label>
-
-                        <span asp-validation-for="Totalprice" class="text-danger"></span>
-                    </div>
-
-                    <div class="form-floating form-floating-outline mb-4">
-                        <input asp-for="TotalDiscount" class="form-control" placeholder="TotalDiscount" />
-                        <label asp-for="TotalDiscount" class="control-label">TotalDiscount</label>
-
-                        <span asp-validation-for="TotalDiscount" class="text-danger"></span>
-                    </div>
-
+                    
                     <div class="form-floating form-floating-outline mb-4">
                         <input asp-for="CustomerNumber" class="form-control" placeholder="CustomerNumber" />
                         <label asp-for="CustomerNumber" class="control-label">CustomerNumber</label>
@@ -178,7 +158,32 @@
                         </table>
                     </div>
                 </div>
+
+           
             }
+
+        <div class="form-floating form-floating-outline mb-4">
+            <input asp-for="NetPrice" class="form-control" placeholder="NetPrice" value="@ViewBag.NetPrice" readonly />
+            <label asp-for="NetPrice" class="control-label">NetPrice</label>
+
+
+        </div>
+
+        <div class="form-floating form-floating-outline mb-4">
+            <input asp-for="Totalprice" class="form-control" placeholder="Totalprice" value="@ViewBag.TotalPrice" readonly />
+            <label asp-for="Totalprice" class="control-label">Totalprice</label>
+
+
+        </div>
+
+        <div class="form-floating form-floating-outline mb-4">
+            <input asp-for="TotalDiscount" class="form-control" placeholder="TotalDiscount" value="@ViewBag.TotalDiscount" readonly />
+            <label asp-for="TotalDiscount" class="control-label">TotalDiscount</label>
+
+
+        </div>
+
+
 
             <button type="submit" style="width:180px" value="Save" name="buttonType" class="btn btn-primary">Save</button>
 

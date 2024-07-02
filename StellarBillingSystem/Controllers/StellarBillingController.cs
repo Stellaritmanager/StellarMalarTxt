@@ -1573,24 +1573,24 @@ namespace HealthCare.Controllers
                 var selectedProduct = _billingsoftware.SHProductMaster.FirstOrDefault(p => p.ProductID == SelectedProductID);
                 if (selectedProduct != null)
                 {
-                    var existingDetail = _billingsoftware.SHbilldetails.FirstOrDefault(b =>
+                    var existingDetail = _billingsoftware.SHbilldetails.FirstOrDefault (b =>
                b.BillID == TempData.Peek("BillID").ToString() && b.ProductID == selectedProduct.ProductID);
 
                     if (existingDetail != null)
                     {
-                        // Update existing detail
-                        existingDetail.Quantity = model.Quantity;
+                        
+                        existingDetail.Quantity = Quantity;
                     }
                     else
                     {
-                        // Create new detail
+                        
                         var billDetail = new BillingDetailsModel
                         {
                             BillID = TempData.Peek("BillID").ToString(),
                             ProductID = selectedProduct.ProductID,
                             ProductName = selectedProduct.ProductName,
-                            Price = selectedProduct.Price,
-                            Quantity = model.Quantity
+                            Price = selectedProduct.TotalAmount,
+                            Quantity = Quantity
                         };
 
                         _billingsoftware.SHbilldetails.Add(billDetail);
@@ -1603,8 +1603,8 @@ namespace HealthCare.Controllers
                         billid = TempData.Peek("BillID").ToString(),
                         productid = selectedProduct.ProductID,
                         productname = selectedProduct.ProductName,
-                        price = selectedProduct.Price,
-                        quantity = model.Quantity
+                        price = selectedProduct.TotalAmount,
+                        quantity = Quantity
                     });
                 }
             }
@@ -1648,23 +1648,28 @@ namespace HealthCare.Controllers
 
             await _billingsoftware.Database.ExecuteSqlRawAsync("EXEC InsertBillProduct @BillID, @BillDate, @CustomerNumber, @TotalPrice,@TotalDiscount,@NetPrice,@LastUpdatedUser, @LastUpdatedDate, @LastUpdatedMachine, @ProductID, @ProductName, @Discount, @Price, @Quantity", parameters);
 
-            
+            var updatedMaster = await _billingsoftware.SHbillmaster
+       .Where(m => m.BillID == masterModel.BillID)
+       .FirstOrDefaultAsync();
+
+            if (updatedMaster != null)
+            {
+                ViewBag.TotalPrice = updatedMaster.Totalprice;
+                ViewBag.TotalDiscount = updatedMaster.TotalDiscount;
+                ViewBag.NetPrice = updatedMaster.NetPrice;
+            }
 
 
             var billingDetails = await _billingsoftware.SHbilldetails
        .Where(d => d.BillID == masterModel.BillID)
        .ToListAsync();
 
-            // Prepare the view model to pass to the view
-            var viewModel = new BillProductlistModel
-            {
-                MasterModel = masterModel,
-                DetailModel = detailModel,
-                Viewbillproductlist = billingDetails
-            };
+            model.MasterModel = updatedMaster;
+            model.Viewbillproductlist = billingDetails;
+
 
             ViewBag.Message = "Saved Successfully";
-            return View("CustomerBilling", viewModel);
+            return View("CustomerBilling", model);
         }
 
 
@@ -1830,7 +1835,7 @@ namespace HealthCare.Controllers
         }
 
 
-        public IActionResult CustomerBilling(string productid, string productname, string unitprice, string quantity, string billid, string SelectedProductID)
+        public IActionResult CustomerBilling(string productid, string productname, string price, string quantity, string billid, string SelectedProductID)
         {
 
             /* var model = new BillProductlistModel()
@@ -1847,15 +1852,15 @@ namespace HealthCare.Controllers
             {
                 // Retrieve bill detail for the specified BillID and ProductID
                 var billDetail = _billingsoftware.SHbilldetails
-                    .Where(b => b.BillID == billid && b.ProductID == selectedProduct.ProductID)
+                    .Where(b => b.BillID == billid && b.ProductID == productid)
                     .Select(b => new BillingDetailsModel
                     {
                         ProductID = b.ProductID,
                         ProductName = b.ProductName,
-                        Price = b.Price,
+                        Price = selectedProduct.TotalAmount,
                         Quantity = b.Quantity
                     })
-                    .FirstOrDefault(); // Retrieve only the first matching item
+                    .FirstOrDefault(); 
 
                 if (billDetail != null)
                 {
