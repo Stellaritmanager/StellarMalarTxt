@@ -43,12 +43,13 @@
 
                         <span asp-validation-for="BillID" class="text-danger"></span>
                     </div>
+                   
                     <div class="form-floating form-floating-outline mb-4">
-                        <input asp-for="BillDate" class="form-control" placeholder="BillDate" type="date"/>
+                        <input asp-for="BillDate" class="form-control" placeholder="BillDate" required />
                         <label asp-for="BillDate" class="control-label">BillDate</label>
 
                         <span asp-validation-for="BillDate" class="text-danger"></span>
-                    </div>
+                    </div>
 
 
                     <div class="form-floating form-floating-outline mb-4">
@@ -75,12 +76,7 @@
                             <div class="card">
                                 <div class="card-body " style="background-image: linear-gradient(to right, #FFFFFF 0%, #FFFFFF 51%, #ece5f6 100%);">
 
-                    <div class="form-floating form-floating-outline mb-4">
-                        <input asp-for="Discount" class="form-control" placeholder="Discount" />
-                        <label asp-for="Discount" class="control-label">Discount</label>
-
-                        <span asp-validation-for="Discount" class="text-danger"></span>
-                    </div>
+                   
 
                      <div class="form-floating form-floating-outline mb-4">
                         <input asp-for="Price" class="form-control" placeholder="Price" />
@@ -96,13 +92,12 @@
                         <span asp-validation-for="Quantity" class="text-danger"></span>
                     </div>
 
-                    
-                    <div class="form-floating form-floating-outline mb-4">
-                        <input asp-for="CustomerNumber" class="form-control" placeholder="CustomerNumber" />
-                        <label asp-for="CustomerNumber" class="control-label">CustomerNumber</label>
+                        <div class="form-floating form-floating-outline mb-4">
+                            <input asp-for="CustomerNumber" class="form-control" placeholder="CustomerNumber" required />
+                            <label asp-for="CustomerNumber" class="control-label">CustomerNumber</label>
 
-                        <span asp-validation-for="CustomerNumber" class="text-danger"></span>
-                    </div>
+                            <span asp-validation-for="CustomerNumber" class="text-danger"></span>
+                        </div>
 
                 </div>
             </div>

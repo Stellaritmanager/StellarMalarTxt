@@ -1558,7 +1558,7 @@ namespace HealthCare.Controllers
 
 
         [HttpPost]
-        public IActionResult getproductlist(ProductSelectModel model, string billid, string BillID, string buttonType, string SelectedProductID, string Quantity, string productid, string productname, string unitprice)
+        public IActionResult getproductlist(ProductSelectModel model, string billid, string BillID, string buttonType, string SelectedProductID, string Quantity, string productid, string productname, string unitprice,string billdate,string customernumber)
         {
             if (buttonType == "Search")
             {
@@ -1587,10 +1587,12 @@ namespace HealthCare.Controllers
                         var billDetail = new BillingDetailsModel
                         {
                             BillID = TempData.Peek("BillID").ToString(),
+                            BillDate= TempData.Peek("BillDate").ToString(),
+                            CustomerNumber= TempData.Peek("CustomerNumber").ToString(),
                             ProductID = selectedProduct.ProductID,
                             ProductName = selectedProduct.ProductName,
                             Price = selectedProduct.TotalAmount,
-                            Quantity = Quantity
+                            Quantity = Quantity,
                         };
 
                         _billingsoftware.SHbilldetails.Add(billDetail);
@@ -1601,10 +1603,14 @@ namespace HealthCare.Controllers
                     return RedirectToAction("CustomerBilling", new
                     {
                         billid = TempData.Peek("BillID").ToString(),
+                        billdate = TempData.Peek("BillDate").ToString(),
+                        customernumber = TempData.Peek("CustomerNumber").ToString(),
                         productid = selectedProduct.ProductID,
                         productname = selectedProduct.ProductName,
                         price = selectedProduct.TotalAmount,
-                        quantity = Quantity
+                        quantity = Quantity,
+                       
+                        
                     });
                 }
             }
@@ -1679,11 +1685,14 @@ namespace HealthCare.Controllers
 
 
 
-        public IActionResult ProductList(string BillID)
+        public IActionResult ProductList(string BillID,string BillDate,string customernumber)
         {
             if (string.IsNullOrEmpty(BillID) && TempData["BillID"] != null)
             {
                 BillID = TempData["BillID"].ToString();
+                BillDate = TempData["BillDate"].ToString();
+                customernumber = TempData["CustomerNumber"].ToString();
+
             }
 
             var model = new ProductSelectModel
@@ -1838,11 +1847,7 @@ namespace HealthCare.Controllers
         public IActionResult CustomerBilling(string productid, string productname, string price, string quantity, string billid, string SelectedProductID)
         {
 
-            /* var model = new BillProductlistModel()
-             {
-                 Viewbillproductlist = new List<BillTableModel>() 
-             };
- */
+       
             var model = new BillProductlistModel();
 
             // Retrieve selected product
@@ -1858,7 +1863,9 @@ namespace HealthCare.Controllers
                         ProductID = b.ProductID,
                         ProductName = b.ProductName,
                         Price = selectedProduct.TotalAmount,
-                        Quantity = b.Quantity
+                        Quantity = b.Quantity,
+                        
+                       
                     })
                     .FirstOrDefault();
 
