@@ -1570,6 +1570,16 @@ namespace HealthCare.Controllers
             }
             else if (buttonType == "Load")
             {
+
+                if (string.IsNullOrEmpty(SelectedProductID))
+                {
+                    ViewBag.notselect = "Please select a product.";
+                    model.Viewproductlist = _billingsoftware.SHProductMaster
+                        .Where(p => p.ProductID.Contains(model.ProductID) || p.BarcodeId.Contains(model.BarcodeID))
+                        .ToList();
+                    return View("ProductList", model);
+                }
+
                 var selectedProduct = _billingsoftware.SHProductMaster.FirstOrDefault(p => p.ProductID == SelectedProductID);
                 if (selectedProduct != null)
                 {
@@ -1621,14 +1631,16 @@ namespace HealthCare.Controllers
 
         [HttpPost]
 
-        public async Task<IActionResult> getCustomerBill(BillProductlistModel model, string buttonType, string BillID, BillingMasterModel masterModel, BillingDetailsModel detailModel)
+        public async Task<IActionResult> getCustomerBill(BillProductlistModel model, string buttonType, string BillID,string BillDate,string CustomerNumber, BillingMasterModel masterModel, BillingDetailsModel detailModel)
         {
             if (buttonType == "Get")
             {
 
                 TempData["BillID"] = BillID;
+                TempData["BillDate"] = BillDate;
+                TempData["CustomerNumber"] = CustomerNumber;
 
-                return RedirectToAction("ProductList", new { BillID = BillID });
+                return RedirectToAction("ProductList", new { BillID = BillID,BillDate= BillDate,CustomerNumber=CustomerNumber });
             }
             var isDeleteValue = (object)masterModel.IsDelete ?? DBNull.Value;
 
@@ -1685,13 +1697,13 @@ namespace HealthCare.Controllers
 
 
 
-        public IActionResult ProductList(string BillID,string BillDate,string customernumber)
+        public IActionResult ProductList(string BillID,string BillDate,string CustomerNumber)
         {
             if (string.IsNullOrEmpty(BillID) && TempData["BillID"] != null)
             {
                 BillID = TempData["BillID"].ToString();
                 BillDate = TempData["BillDate"].ToString();
-                customernumber = TempData["CustomerNumber"].ToString();
+                CustomerNumber = TempData["CustomerNumber"].ToString();
 
             }
 
@@ -1701,6 +1713,9 @@ namespace HealthCare.Controllers
             };
 
             ViewBag.BillID = BillID;
+            ViewBag.BillDate = BillDate;
+            ViewBag.CustomerNumber = CustomerNumber;
+
 
             return View(model);
 
@@ -1864,7 +1879,8 @@ namespace HealthCare.Controllers
                         ProductName = b.ProductName,
                         Price = selectedProduct.TotalAmount,
                         Quantity = b.Quantity,
-                        
+                        BillDate=b.BillDate,
+                        CustomerNumber=b.CustomerNumber
                        
                     })
                     .FirstOrDefault();
@@ -1872,6 +1888,7 @@ namespace HealthCare.Controllers
                 if (billDetail != null)
                 {
                     model.Viewbillproductlist = new List<BillingDetailsModel> { billDetail };
+
                 }
                 else
                 {
