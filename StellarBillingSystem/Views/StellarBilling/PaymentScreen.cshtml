@@ -20,6 +20,9 @@
                         <label for="BillId">Bill ID</label>
                         <input type="text" class="form-control" id="BillId" name="BillId" value="@ViewBag.BillId" />
                     </div>
+
+                    <button type="submit" class="btn btn-primary" name="buttonType" value="GetBill">Get Bill</button>
+
                     <div class="form-group">
                         <label for="Balance">Balance</label>
                         <input type="text" class="form-control" id="Balance" name="Balance" value="@ViewBag.Balance" />
@@ -30,16 +33,28 @@
                     </div>
                     <div class="form-group">
                         <label for="PaymentId">Payment ID</label>
-                        <input type="text" class="form-control" id="PaymentId" name="PaymentId" value="@ViewBag.PaymentID" />
+                        <input type="text" class="form-control" id="PaymentId" name="PaymentId" value="@ViewBag.PaymentId" />
                     </div>
+
+                    <button type="submit" class="btn btn-primary" name="buttonType" value="GetPaymentDetails">Get Payment Details </button>
+
+
+
                     <div class="form-group">
                         <label for="CustomerNumber">Customer Number</label>
                         <input type="text" class="form-control" id="CustomerNumber" name="CustomerNumber" value="@ViewBag.CustomerNumber" />
                     </div>
+
+
+                    <button type="submit" class="btn btn-primary" name="buttonType" value="GetPoints">GetPoints </button>
+                   
                     <div class="form-group">
-                        <label for="RedeemPoints">Redeem Points</label>
-                        <input type="text" class="form-control" id="RedeemPoints" name="RedeemPoints" value="@ViewBag.ReedemPoints" />
+                        <label for="ReedemPoints">Redeem Points</label>
+                        <input type="text" class="form-control" id="ReedemPoints" name="ReedemPoints" value="@ViewBag.ReedemPoints" />
                     </div>
+
+                    <button type="submit" class="btn btn-primary" name="buttonType" value="Redeem">Redeem </button>
+
                 </div>
             </div>
         </div>
@@ -76,7 +91,7 @@
                                             <input type="text" class="form-control" name="billpayment[@i].PaymentDate" value="@detail.PaymentDate" />
                                         </td>
                                         <td>
-                                            <input type="text" class="form-control" name="billpayment[@i].PaymentDiscription" value="@detail.PaymentDiscription" />
+                                            <input type="text" class="form-control" name="billpayment[@i].PaymentDiscription" value="@detail.PaymentDiscription" readonly/>
                                         </td>
                                         <td>
                                             <input type="text" class="form-control" name="billpayment[@i].PaymentMode" value="@detail.PaymentMode" />
