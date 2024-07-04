@@ -1484,15 +1484,17 @@ namespace HealthCare.Controllers
                     ViewBag.getMessage = "No Data found for this ScreenId";
                     return View("ScreenMaster", screen);
                 }
+
             }
+
             else if (buttontype == "Delete")
             {
                 var screentodelete = await _billingsoftware.SHScreenMaster.FindAsync(model.ScreenId);
+
                 if (screentodelete != null)
                 {
                     screentodelete.IsDelete = true;
                     await _billingsoftware.SaveChangesAsync();
-
                     ViewBag.delMessage = "ScreenId deleted successfully";
                     return View("ScreenMaster", screentodelete);
                 }
@@ -1679,7 +1681,6 @@ namespace HealthCare.Controllers
         new SqlParameter("@Quantity", detailModel.Quantity ?? (object)DBNull.Value),
 
     };
-
             await _billingsoftware.Database.ExecuteSqlRawAsync("EXEC InsertBillProduct @BillID, @BillDate, @CustomerNumber, @TotalPrice,@TotalDiscount,@NetPrice,@LastUpdatedUser, @LastUpdatedDate, @LastUpdatedMachine, @ProductID, @ProductName, @Discount, @Price, @Quantity", parameters);
             ViewBag.SaveMessage = "save successfully";
 
@@ -1930,7 +1931,9 @@ namespace HealthCare.Controllers
         public async Task<IActionResult> AddPayment(PaymentMasterModel model, PaymentDetailsModel detailsmodel, string buttonType, List<PaymentDetailsModel> billpayment, string selectedSlotId,
 string BillId, string Balance, string BillDate, string PaymentId, string paymentdescription, string CustomerNumber, string ReedemPoints, string action)
         {
-            ViewBag.PaymentID = BillId;
+            BusinessClassBilling businessbill = new BusinessClassBilling(_billingsoftware);
+
+            ViewBag.PaymentId = PaymentId;
             ViewBag.BillId = BillId;
             ViewBag.Balance = Balance;
             ViewBag.BillDate = BillDate;
@@ -1941,12 +1944,14 @@ string BillId, string Balance, string BillDate, string PaymentId, string payment
              {
                  billPayment = new List<PaymentTableViewModel>();
              }*/
+
+
             if (buttonType == "AddPayment")
             {
                 var newDetail = new PaymentDetailsModel
                 {
                     PaymentId = PaymentId,
-                    PaymentDiscription = string.Empty,
+                    PaymentDiscription =businessbill.GeneratePaymentDescription(PaymentId),
                     PaymentDate = string.Empty,
                     PaymentMode = string.Empty,
                     PaymentTransactionNumber = string.Empty,
@@ -1956,34 +1961,148 @@ string BillId, string Balance, string BillDate, string PaymentId, string payment
 
 
                 _billingsoftware.SHPaymentDetails.Add(newDetail);
+
+                _billingsoftware.SaveChanges();
+
+
+                ViewBag.Slots = _billingsoftware.SHPaymentDetails.Where(b => b.PaymentId == PaymentId && b.IsDelete == false).ToList();
+
             }
-            _billingsoftware.SaveChanges();
-
-
-            ViewBag.Slots = _billingsoftware.SHPaymentDetails.Where(b => b.PaymentId == PaymentId && b.IsDelete == false).ToList();
 
 
 
-            if (buttonType == "Save")
+            if (buttonType == "GetBill")
             {
-                var parameters = new[]
+
+                var billDetails = await _billingsoftware.SHPaymentMaster
+           .Where(b => b.BillId == BillId && b.IsDelete == false)
+           .Select(b => new PaymentTableViewModel
+           {
+               PaymentId =b.PaymentId,
+               BillId=b.BillId,
+               Balance = b.Balance, // Assuming Balance is part of PaymentDetailsModel
+               CustomerNumber = b.CustomerNumber, // Assuming CustomerNumber is part of PaymentDetailsModel
+               ReedemPoints = b.ReedemPoints // Assuming ReedemPoints is part of PaymentDetailsModel
+           })
+           .ToListAsync();
+
+                if (billDetails.Any())
                 {
+                    ViewBag.PaymentId = PaymentId;
+                    ViewBag.BillId = BillId;
+                    ViewBag.Balance = billDetails.First().Balance;
+                   /* ViewBag.BillDate = billDetails.First().BillDate;*/
+                    ViewBag.CustomerNumber = billDetails.First().CustomerNumber;
+                    ViewBag.ReedemPoints = billDetails.First().ReedemPoints;
+                   
+
+                }
+                else
+                {
+                    ViewBag.Message = "No details found for the given Payment ID.";
+                }
+                return View("PaymentScreen", billDetails);
+            }
+
+            if (buttonType == "GetPaymentDetails")
+            {
+
+                var billDetailspay = await _billingsoftware.SHPaymentDetails
+        .Where(b => b.PaymentId == PaymentId && b.IsDelete == false)
+        .Select(b => new PaymentDetailsModel
+        {
+            PaymentId = b.PaymentId,
+            PaymentDiscription = b.PaymentDiscription,
+            PaymentMode = b.PaymentMode,
+            PaymentTransactionNumber = b.PaymentTransactionNumber,
+            PaymentAmount = b.PaymentAmount,
+            PaymentDate = b.PaymentDate
+        })
+        .ToListAsync();
+
+                if (billDetailspay.Any())
+                {
+                    ViewBag.Slots = billDetailspay; // Assign the correct model to ViewBag or ViewData
+                }
+                else
+                {
+                    ViewBag.Message = "No details found for the given Payment ID.";
+                }
+            }
+
+
+
+            if (buttonType == "GetPoints")
+            {
+                // Retrieve RedeemPoints based on CustomerNumber
+                var customer = await _billingsoftware.SHPaymentMaster
+                    .FirstOrDefaultAsync(c => c.CustomerNumber == CustomerNumber);
+
+                if (customer != null)
+                {
+                    var pointsID = await _billingsoftware.SHPointsMaster
+                        .FromSqlRaw("SELECT dbo.GeneratePointsID("+CustomerNumber+") AS PointsID", new SqlParameter("@CustomerNumber", CustomerNumber))
+                        .Select(p => p.PointsID)
+                        .FirstOrDefaultAsync();
+
+                    ViewBag.CustomerNumber = customer.CustomerNumber;
+                    ViewBag.ReedemPoints = pointsID;
+                }
+                else
+                {
+                    ViewBag.Message = "Customer not found.";
+                }
+                return View("PaymentScreen");
+
+            }
+
+
+
+
+
+
+
+
+                if (buttonType == "Save")
+            {
+
+                var paymentDetail = billpayment.FirstOrDefault();
+
+
+                if (paymentDetail == null)
+                {
+                    // Handle the case where there is no payment detail to save
+                    ModelState.AddModelError("", "No payment details provided.");
+                    return View("PaymentScreen");
+                }
+                else
+                {
+
+                    
+
+
+                    var parameters = new[]
+                    {
         new SqlParameter("@BillId", model.BillId),
         new SqlParameter("@PaymentId", model.PaymentId),
         new SqlParameter("@CustomerNumber", model.CustomerNumber ?? (object)DBNull.Value),
         new SqlParameter("@ReedemPoints", model.ReedemPoints ?? (object)DBNull.Value),
         new SqlParameter("@Balance", model.Balance ?? (object)DBNull.Value),
-        new SqlParameter("@PaymentDiscription", detailsmodel.PaymentDiscription),
-        new SqlParameter("@PaymentMode", detailsmodel.PaymentMode ?? (object)DBNull.Value),
-        new SqlParameter("@PaymentTransactionNumber", detailsmodel.PaymentTransactionNumber ?? (object)DBNull.Value),
-        new SqlParameter("@PaymentAmount", detailsmodel.PaymentAmount ?? (object)DBNull.Value),
-        new SqlParameter("@PaymentDate", detailsmodel.PaymentDate ?? (object)DBNull.Value),
+        new SqlParameter("@PaymentDiscription", paymentDetail.PaymentDiscription),
+        new SqlParameter("@PaymentMode", paymentDetail.PaymentMode ?? (object)DBNull.Value),
+        new SqlParameter("@PaymentTransactionNumber", paymentDetail.PaymentTransactionNumber ?? (object)DBNull.Value),
+        new SqlParameter("@PaymentAmount", paymentDetail.PaymentAmount ?? (object)DBNull.Value),
+        new SqlParameter("@PaymentDate", paymentDetail.PaymentDate ?? (object)DBNull.Value),
         new SqlParameter("@LastUpdatedUser", User.Claims.First().Value.ToString()),
         new SqlParameter("@LastUpdatedDate", DateTime.Now.ToString()),
-        new SqlParameter("@LastUpdatedMachine", Request.HttpContext.Connection.RemoteIpAddress.ToString())
+        new SqlParameter("@LastUpdatedMachine", Request.HttpContext.Connection.RemoteIpAddress.ToString()),
+        new SqlParameter("@Reedem", "Y")
     };
 
-                await _billingsoftware.Database.ExecuteSqlRawAsync("EXEC InsertBillPayment @BillId, @PaymentId, @CustomerNumber, @ReedemPoints, @Balance, @PaymentDiscription, @PaymentMode, @PaymentTransactionNumber, @PaymentAmount, @PaymentDate, @LastUpdatedUser, @LastUpdatedDate, @LastUpdatedMachine", parameters);
+                    await _billingsoftware.Database.ExecuteSqlRawAsync("EXEC InsertBillPayment @BillId, @PaymentId, @CustomerNumber, @ReedemPoints, @Balance, @PaymentDiscription, @PaymentMode, @PaymentTransactionNumber, @PaymentAmount, @PaymentDate, @LastUpdatedUser, @LastUpdatedDate, @LastUpdatedMachine,@Reedem", parameters);
+                }
+
+                _billingsoftware.SaveChanges();
             }
 
             return View("PaymentScreen");

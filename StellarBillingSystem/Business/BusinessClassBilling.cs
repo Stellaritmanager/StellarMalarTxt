@@ -190,7 +190,11 @@ namespace StellarBillingSystem.Business
             return reportid;
         }
 
-
+        public string GeneratePaymentDescription(string paymentId)
+        {
+            string timestamp = DateTime.Now.ToString("HH:mm:ss");
+            return $"{paymentId}_{timestamp}";
+        }
 
 
 
@@ -245,6 +249,12 @@ namespace StellarBillingSystem.Business
                     customer.PointsReedem += pointsToAdd;
                     await _billingContext.SaveChangesAsync();
                 }*/
+
+
+
+
+
+
     }
 
 
