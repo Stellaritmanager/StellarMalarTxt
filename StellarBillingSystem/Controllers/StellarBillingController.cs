@@ -375,6 +375,7 @@ namespace HealthCare.Controllers
         {
             if (string.IsNullOrEmpty(mobileNumber))
             {
+                ViewBag.Message = "Mobile number is required";
                 return BadRequest("Mobile number is required");
             }
 
@@ -393,14 +394,15 @@ namespace HealthCare.Controllers
         {
             if (string.IsNullOrEmpty(mobileNumber))
             {
-                return BadRequest("Mobile number is required");
+                ViewBag.ErrorMessage = "Mobile number is required";
+                return View("CustomerMaster");
             }
 
             var customer = await _billingsoftware.SHCustomerMaster.FindAsync(mobileNumber);
             if (customer == null)
             {
                 ViewBag.ErrorMessage = "Mobile Number not found";
-                return View("Error", new CustomerMasterModel());
+                return View("CustomerMaster", new CustomerMasterModel());
             }
 
             if (customer.IsDelete == true)
@@ -413,7 +415,7 @@ namespace HealthCare.Controllers
                 _billingsoftware.Entry(customer).State = EntityState.Modified;
                 await _billingsoftware.SaveChangesAsync();
             }
-            ViewBag.DelRetrieve = "Retrieve Successfully";
+            ViewBag.Message = "Retrieve Successfully";
 
             return View("CustomerMaster", customer);
         }
@@ -424,13 +426,15 @@ namespace HealthCare.Controllers
         {
             if (string.IsNullOrEmpty(mobileNumber))
             {
-                return BadRequest("Mobile number is required");
+                ViewBag.ErrorMessage = "Mobile number is required";
+                return View("CustomerMaster");
             }
 
             var existingCustomer = await _billingsoftware.SHCustomerMaster.FindAsync(mobileNumber);
             if (existingCustomer == null)
             {
-                return NotFound("Customer not found");
+                ViewBag.Message = "Customer not found";
+                return View("CustomerMaster");
             }
 
             existingCustomer.IsDelete = true;
@@ -442,7 +446,7 @@ namespace HealthCare.Controllers
 
             await _billingsoftware.SaveChangesAsync();
 
-            ViewBag.delMessage = "Deleted Successfully";
+            ViewBag.Message = "Deleted Successfully";
 
             return View("CustomerMaster"); // Redirect to the main view or another appropriate view
         }
