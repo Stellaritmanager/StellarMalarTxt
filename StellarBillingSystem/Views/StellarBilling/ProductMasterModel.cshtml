@@ -66,23 +66,8 @@
                     <div class="row">
                         <div class="col-md-12 col-lg-1">
                         </div>
-                        <div class="col-md-12 col-lg-4">
-                            <div class="form-floating form-floating-outline mb-4">
-                                @{
-                                    var getscheduleid = ((IEnumerable<CategoryMasterModel>)ViewData["categoryid"])
-                                    .Select(m => new SelectListItem
-            {
-                Value = m.CategoryID.ToString(), // Assuming ScreenId is of type int
-                Text = $"{m.CategoryID} - {m.CategoryName}"
-            });
-                                }
-
-                                @Html.DropDownListFor(model => model.CategoryID, getscheduleid, "Select Category ID", new { @class = "form-control" })
-                                <label asp-for="CategoryID" class="control-label">Category ID</label>
-                                <span asp-validation-for="CategoryID" class="text-danger"></span>
-                            </div>
-                        </div>
-                        <div class="col-md-12 col-lg-4">
+                     
+                        <div class="col-md-12 col-lg-8">
 
                             <div class="form-floating form-floating-outline mb-4">
                                 <input asp-for="ProductID" class="form-control" placeholder="Product ID" required />
@@ -115,7 +100,20 @@
                         <div class="col-md-12 col-lg-2">
         </div>
                         <div class="col-md-12 col-lg-8">
+                            <div class="form-floating form-floating-outline mb-4">
+                                @{
+                                    var getscheduleid = ((IEnumerable<CategoryMasterModel>)ViewData["categoryid"])
+                                    .Select(m => new SelectListItem
+            {
+                Value = m.CategoryID.ToString(), // Assuming ScreenId is of type int
+                Text = $"{m.CategoryID} - {m.CategoryName}"
+            });
+                                }
 
+                                @Html.DropDownListFor(model => model.CategoryID, getscheduleid, "Select Category ID", new { @class = "form-control" })
+                                <label asp-for="CategoryID" class="control-label">Category ID</label>
+                                <span asp-validation-for="CategoryID" class="text-danger"></span>
+                            </div>
                             <div class="form-floating form-floating-outline mb-4">
                                 <textarea asp-for="ProductName" class="form-control" placeholder="Product Name"  style="height: 200px;"></textarea>
                                 <label asp-for="ProductName" class="control-label">Product Name</label>

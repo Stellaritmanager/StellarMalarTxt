@@ -386,6 +386,7 @@ namespace HealthCare.Controllers
         {
             if (string.IsNullOrEmpty(mobileNumber))
             {
+                ViewBag.Message = "Mobile number is required";
                 return BadRequest("Mobile number is required");
             }
 
@@ -404,7 +405,8 @@ namespace HealthCare.Controllers
         {
             if (string.IsNullOrEmpty(mobileNumber))
             {
-                return BadRequest("Mobile number is required");
+                ViewBag.ErrorMessage = "Mobile number is required";
+                return View("CustomerMaster");
             }
 
             var customer = await _billingsoftware.SHCustomerMaster.FindAsync(mobileNumber);
@@ -424,7 +426,7 @@ namespace HealthCare.Controllers
                 _billingsoftware.Entry(customer).State = EntityState.Modified;
                 await _billingsoftware.SaveChangesAsync();
             }
-            ViewBag.DelRetrieve = "Retrieve Successfully";
+            ViewBag.Message = "Retrieve Successfully";
 
             return View("CustomerMaster", customer);
         }
@@ -455,7 +457,7 @@ namespace HealthCare.Controllers
 
             await _billingsoftware.SaveChangesAsync();
 
-            ViewBag.delMessage = "Deleted Successfully";
+            ViewBag.Message = "Deleted Successfully";
 
             return View("CustomerMaster"); // Redirect to the main view or another appropriate view
         }
