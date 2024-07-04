@@ -1560,13 +1560,20 @@ namespace HealthCare.Controllers
         [HttpPost]
         public IActionResult getproductlist(ProductSelectModel model, string billid, string BillID, string buttonType, string SelectedProductID, string Quantity, string productid, string productname, string unitprice,string billdate,string customernumber)
         {
+
             if (buttonType == "Search")
             {
-                model.Viewproductlist = _billingsoftware.SHProductMaster
-               .Where(p => p.ProductID.Contains(model.ProductID) || p.BarcodeId.Contains(model.BarcodeID))
-               .ToList();
+                var productList = _billingsoftware.SHProductMaster
+            .Where(p => p.ProductID.Contains(model.ProductID) || p.BarcodeId.Contains(model.BarcodeID))
+            .ToList();
 
-                return View("ProductList", model);
+                if (productList.Count == 0)
+                {
+                    ViewBag.NotfoundMessage = "No products found.";
+                }
+
+                model.Viewproductlist = productList;
+
             }
             else if (buttonType == "Load")
             {
@@ -1631,8 +1638,17 @@ namespace HealthCare.Controllers
 
         [HttpPost]
 
-        public async Task<IActionResult> getCustomerBill(BillProductlistModel model, string buttonType, string BillID,string BillDate,string CustomerNumber, BillingMasterModel masterModel, BillingDetailsModel detailModel)
+        public async Task<IActionResult> getCustomerBill(BillProductlistModel model, string buttonType, string BillID,string BillDate,string CustomerNumber,string TotalPrice, BillingMasterModel masterModel, BillingDetailsModel detailModel)
         {
+            if(buttonType== "Payment")
+            {
+                TempData["BillID"] = BillID;
+                TempData["TotalPrice"] = TotalPrice;
+                TempData["CustomerNumber"] = CustomerNumber;
+                return Redirect("PaymentScreen");
+            }
+
+
             if (buttonType == "Get")
             {
 
@@ -1665,6 +1681,7 @@ namespace HealthCare.Controllers
     };
 
             await _billingsoftware.Database.ExecuteSqlRawAsync("EXEC InsertBillProduct @BillID, @BillDate, @CustomerNumber, @TotalPrice,@TotalDiscount,@NetPrice,@LastUpdatedUser, @LastUpdatedDate, @LastUpdatedMachine, @ProductID, @ProductName, @Discount, @Price, @Quantity", parameters);
+            ViewBag.SaveMessage = "save successfully";
 
             var updatedMaster = await _billingsoftware.SHbillmaster
        .Where(m => m.BillID == masterModel.BillID)
@@ -1976,11 +1993,22 @@ string BillId, string Balance, string BillDate, string PaymentId, string payment
 
 
 
-        public IActionResult PaymentScreen()
+        public IActionResult PaymentScreen(string BillID, string TotalPrice, string CustomerNumber)
         {
+            if (string.IsNullOrEmpty(BillID) && TempData["BillID"] != null)
+            {
+                BillID = TempData["BillID"].ToString();
+                TotalPrice = TempData["TotalPrice"].ToString();
+                CustomerNumber = TempData["CustomerNumber"].ToString();
+            }
 
+            var model = new List<PaymentTableViewModel>(); // Initialize with an empty list or fetch existing payment details if needed
 
-            return View();
+            ViewBag.BillId = BillID;
+            ViewBag.CustomerNumber = CustomerNumber;
+            ViewBag.Balance = TotalPrice;
+
+            return View(model);
 
         }
 
