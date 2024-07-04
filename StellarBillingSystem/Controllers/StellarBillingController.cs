@@ -133,7 +133,7 @@ namespace HealthCare.Controllers
                 else
                 {
                     ProductMatserModel obj = new ProductMatserModel();
-                    ViewBag.ErrorMessage = "No value for this product ID";
+                    ViewBag.NoProductMessage = "No value for this product ID";
                     return View("ProductMasterModel", obj);
                 }
             }
@@ -185,14 +185,25 @@ namespace HealthCare.Controllers
             else if (buttonType == "Save")
             {
 
+
+                if (string.IsNullOrEmpty(model.Price))
+                {
+                    ViewBag.PriceErrorMessage = "Please enter a price.";
+                    return View("ProductMasterModel", model);
+                }
+
                 // Fetch discount price based on CategoryID
-                if (!string.IsNullOrEmpty(model.CategoryID))
+                if (!string.IsNullOrEmpty(model.ProductID))
                 {
                     var discountCategory = await _billingsoftware.SHDiscountCategory
                         .FirstOrDefaultAsync(x => x.CategoryID == model.CategoryID);
                     if (discountCategory != null)
                     {
                         model.Discount = discountCategory.DiscountPrice;
+                    }
+                    else
+                    {
+                        model.Discount = "0"; 
                     }
                 }
 
@@ -400,7 +411,7 @@ namespace HealthCare.Controllers
             if (customer == null)
             {
                 ViewBag.ErrorMessage = "Mobile Number not found";
-                return View("Error", new CustomerMasterModel());
+                return View("CustomerMaster", new CustomerMasterModel());
             }
 
             if (customer.IsDelete == true)
@@ -424,13 +435,15 @@ namespace HealthCare.Controllers
         {
             if (string.IsNullOrEmpty(mobileNumber))
             {
-                return BadRequest("Mobile number is required");
+                ViewBag.ErrorMessage = "Mobile Number not found";
+                return View("Error", new CustomerMasterModel());
             }
 
             var existingCustomer = await _billingsoftware.SHCustomerMaster.FindAsync(mobileNumber);
             if (existingCustomer == null)
             {
-                return NotFound("Customer not found");
+                ViewBag.ErrorMessage = "Mobile Number not found";
+                return View("CustomerMaster", new CustomerMasterModel());
             }
 
             existingCustomer.IsDelete = true;

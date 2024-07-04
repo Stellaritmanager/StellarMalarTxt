@@ -64,8 +64,8 @@
                     <div class="row gy-4">
                         <div class="col-md-12 col-lg-8">
                     <div class="form-floating form-floating-outline mb-4">
-                        <input asp-for="CategoryID" value="@Model.CategoryID" class="form-control" placeholder="CategoryID" />
-                        <label asp-for="CategoryID" class="control-label"></label>
+                        <input asp-for="CategoryID" value="@Model.CategoryID" class="form-control" placeholder="Category ID" required />
+                                <label asp-for="CategoryID" class="control-label">Category ID</label>
                         <span asp-validation-for="CategoryID" class="text-danger"></span>
                     </div>
                    </div>
@@ -79,8 +79,8 @@
                         </div>
                     </div>
                     <div class="form-floating form-floating-outline mb-4">
-                        <input asp-for="CategoryName" value="@Model.CategoryName" class="form-control" placeholder="CategoryName" />
-                        <label asp-for="CategoryName" class="control-label"></label>
+                        <input asp-for="CategoryName" value="@Model.CategoryName" class="form-control" placeholder="Category Name" />
+                        <label asp-for="CategoryName" class="control-label">Category Name</label>
 
                         <span asp-validation-for="CategoryName" class="text-danger"></span>
                     </div>
