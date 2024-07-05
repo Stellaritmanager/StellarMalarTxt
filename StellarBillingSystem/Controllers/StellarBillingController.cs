@@ -271,7 +271,34 @@ namespace HealthCare.Controllers
             BusinessClassBilling business = new BusinessClassBilling(_billingsoftware);
             ViewData["godownproductid"] = business.GetProductid();
 
-            if (buttonType == "Save")
+
+            if (buttonType == "DeleteRetrieve")
+            {
+                var screentoretrieve = await _billingsoftware.SHGodown.FindAsync(model.ProductID,model.DatefofPurchase, model.SupplierInformation);
+                if (screentoretrieve != null)
+                {
+                    screentoretrieve.IsDelete = false;
+
+                    await _billingsoftware.SaveChangesAsync();
+
+                    model.ProductID = screentoretrieve.ProductID;
+                    model.DatefofPurchase = screentoretrieve.DatefofPurchase;
+                    model.NumberofStocks = screentoretrieve.NumberofStocks;
+                    model.SupplierInformation = screentoretrieve.SupplierInformation;
+
+                    ViewBag.retMessage = "Deleted ScreenId retrieved successfully";
+                    return View("GodownModel", screentoretrieve);
+                }
+                else
+                {
+                    ScreenMasterModel scrn = new ScreenMasterModel();
+                    ViewBag.nostockMessage = "ScreenId not found";
+                }
+                return View("GodownModel", model);
+            }
+
+
+                if (buttonType == "Save")
             {
                 var existinggoddown = await _billingsoftware.SHGodown.FindAsync(model.ProductID, model.DatefofPurchase, model.SupplierInformation);
                 if (existinggoddown != null)
@@ -315,6 +342,8 @@ namespace HealthCare.Controllers
                     return View("GodownModel", model); // Return the view with the model
                 }
             }
+
+
 
             if (buttonType == "Get")
             {
@@ -838,7 +867,15 @@ namespace HealthCare.Controllers
                     model.Noofitems = rolltoretrieve.Noofitems;
 
                     ViewBag.retMessage = "Deleted RollID retrieved successfully";
+                
+                   
                 }
+                else
+                {
+                    ViewBag.NovalueMessage = "Data Not Found";
+                }
+
+                return View("RackPatrionProduct");
             }
 
 
@@ -1060,6 +1097,13 @@ namespace HealthCare.Controllers
 
 
             var existingStaffAdmin = await _billingsoftware.SHStaffAdmin.FindAsync(model.StaffID);
+
+
+            if (string.IsNullOrWhiteSpace(model.UserName) || string.IsNullOrWhiteSpace(model.Password))
+            {
+                ViewBag.validateMessage = "Username and Password are required.";
+                return View("StaffAdmin", model);
+            }
 
             if (existingStaffAdmin != null)
             {
@@ -1305,7 +1349,7 @@ namespace HealthCare.Controllers
 
             if (buttontype == "Get")
             {
-                var getroll = await _billingsoftware.SHrollaccess.FirstOrDefaultAsync(x => x.RollID == model.RollID && x.StaffID == model.StaffID && x.IsDelete == false);
+                var getroll = await _billingsoftware.SHrollaccess.FirstOrDefaultAsync(x => x.StaffID == model.StaffID && x.IsDelete == false);
                 if (getroll != null)
                 {
                     return View("RollAccessMaster", getroll);
@@ -1319,78 +1363,95 @@ namespace HealthCare.Controllers
             }
             else if (buttontype == "Delete")
             {
-                var rolltodelete = await _billingsoftware.SHrollaccess.FindAsync(model.RollID, model.StaffID);
-                if (rolltodelete != null)
+                foreach (var rollName in SelectedRollNames)
                 {
-                    rolltodelete.IsDelete = true;
-                    await _billingsoftware.SaveChangesAsync();
 
-                    ViewBag.delMessage = "RollID deleted successfully";
-                    return View("RollAccessMaster", rolltodelete);
+                    var rolltodelete = await _billingsoftware.SHrollaccess.FindAsync(model.StaffID, rollName);
+                    if (rolltodelete != null)
+                    {
+                        rolltodelete.IsDelete = true;
+                        await _billingsoftware.SaveChangesAsync();
+
+                        ViewBag.delMessage = "RollID deleted successfully";
+                        return View("RollAccessMaster", rolltodelete);
+                    }
+
+                    else
+                    {
+                        ViewBag.delnoMessage = "RollID not found";
+                        return View("RollAccessMaster");
+                    }
                 }
-                else
-                {
-                    ViewBag.delnoMessage = "RollID not found";
-                    return View("RollAccessMaster");
-                }
+                ViewBag.delnoMessage = "RollID not found";
+                return View("RollAccessMaster");
 
             }
 
             else if (buttontype == "DeleteRetrieve")
             {
-                var rolltoretrieve = await _billingsoftware.SHrollaccess.FindAsync(model.RollID, model.StaffID);
-                if (rolltoretrieve != null)
+                foreach (var rollName in SelectedRollNames)
                 {
-                    rolltoretrieve.IsDelete = false;
+                    var rolltoretrieve = await _billingsoftware.SHrollaccess.FindAsync(model.StaffID, rollName);
+                    if (rolltoretrieve != null)
+                    {
+                        rolltoretrieve.IsDelete = false;
 
-                    await _billingsoftware.SaveChangesAsync();
+                        await _billingsoftware.SaveChangesAsync();
 
-                    model.RollID = rolltoretrieve.RollID;
-                    model.StaffID = rolltoretrieve.StaffID;
+                        model.RollID = rolltoretrieve.RollID;
+                        model.StaffID = rolltoretrieve.StaffID;
 
-                    ViewBag.retMessage = "Deleted RollID retrieved successfully";
+                        ViewBag.retMessage = "Deleted RollID retrieved successfully";
+                        return View("RollAccessMaster", rolltoretrieve);
+                    }
+                    else
+                    {
+                        ViewBag.noretMessage = "RollID not found";
+                    }
                 }
-                else
-                {
-                    ViewBag.noretMessage = "RollID not found";
-                }
+                ViewBag.noretMessage = "RollID not found";
                 return View("RollAccessMaster", model);
             }
 
-            foreach (var rollName in SelectedRollNames)
+
+            else if (buttontype == "Save")
             {
-
-                var existingroll = await _billingsoftware.SHrollaccess.FindAsync(rollName, model.StaffID);
-
-                if (existingroll != null)
+                foreach (var rollName in SelectedRollNames)
                 {
-                    existingroll.RollID = model.RollID;
-                    existingroll.StaffID = model.StaffID;
-                    existingroll.LastupdatedDate = DateTime.Now.ToString();
-                    existingroll.Lastupdateduser = User.Claims.First().Value.ToString();
-                    existingroll.LastupdatedMachine = Request.HttpContext.Connection.RemoteIpAddress.ToString();
 
-                    _billingsoftware.Entry(existingroll).State = EntityState.Modified;
+                    var existingroll = await _billingsoftware.SHrollaccess.FindAsync(model.StaffID, rollName);
 
-                }
-                else
-                {
-                    var newAccess = new RollAccessMaster
+                    if (existingroll != null)
                     {
-                        StaffID = model.StaffID,
-                        RollID = rollName,
-                        LastupdatedDate = DateTime.Now.ToString(),
-                        Lastupdateduser = User.Claims.First().Value.ToString(),
-                        LastupdatedMachine = Request.HttpContext.Connection.RemoteIpAddress.ToString()
-                    };
-                    _billingsoftware.SHrollaccess.Add(newAccess);
+                        existingroll.RollID = model.RollID;
+                        existingroll.StaffID = model.StaffID;
+                        existingroll.LastupdatedDate = DateTime.Now.ToString();
+                        existingroll.Lastupdateduser = User.Claims.First().Value.ToString();
+                        existingroll.LastupdatedMachine = Request.HttpContext.Connection.RemoteIpAddress.ToString();
 
+                        _billingsoftware.Entry(existingroll).State = EntityState.Modified;
+
+                    }
+                    else
+                    {
+                        var newAccess = new RollAccessMaster
+                        {
+                            StaffID = model.StaffID,
+                            RollID = rollName,
+                            LastupdatedDate = DateTime.Now.ToString(),
+                            Lastupdateduser = User.Claims.First().Value.ToString(),
+                            LastupdatedMachine = Request.HttpContext.Connection.RemoteIpAddress.ToString()
+                        };
+                        _billingsoftware.SHrollaccess.Add(newAccess);
+
+                    }
                 }
-            }
-            await _billingsoftware.SaveChangesAsync();
+                await _billingsoftware.SaveChangesAsync();
 
-            ViewBag.Message = "Saved Successfully";
-            return View("RollAccessMaster", model);
+                ViewBag.Message = "Saved Successfully";
+            }
+                return View("RollAccessMaster", model);
+            
 
         }
 
@@ -1424,8 +1485,10 @@ namespace HealthCare.Controllers
                 }
                 else
                 {
+                    RollTypeMaster rolltype = new RollTypeMaster();
                     ViewBag.delnoMessage = "RollID not found";
-                    return View("RollTypeMaster");
+
+                    return View("RollTypeMaster", rolltype);
                 }
 
             }
@@ -1446,6 +1509,7 @@ namespace HealthCare.Controllers
                 }
                 else
                 {
+                    
                     ViewBag.noretMessage = "RollID not found";
                 }
                 return View("RollTypeMaster", model);
@@ -1515,8 +1579,10 @@ namespace HealthCare.Controllers
                 }
                 else
                 {
+
+                    ScreenMasterModel scrn = new ScreenMasterModel();
                     ViewBag.delnoMessage = "ScreenId not found";
-                    return View("ScreenMaster");
+                    return View("ScreenMaster", scrn);
                 }
 
             }
@@ -1537,6 +1603,7 @@ namespace HealthCare.Controllers
                 }
                 else
                 {
+                    ScreenMasterModel scrn = new ScreenMasterModel();
                     ViewBag.noretMessage = "ScreenId not found";
                 }
                 return View("ScreenMaster", model);

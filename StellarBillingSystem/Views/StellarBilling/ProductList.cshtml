@@ -39,17 +39,15 @@
     <input type="hidden" name="CustomerNumber" value="ViewBag.CustomerNumber" />
 
 
-
     <div class="row">
-        <div class="col-md-12 col-lg-1">
+        <div class="col-md-12 col-lg-2">
         </div>
-        <div class="col-md-12 col-lg-10">
+        <div class="col-md-12 col-lg-8">
             <div class="card">
-                <div class="card-body " style="background-color:#8c62c9">
+                <div style="background-color:#007bff">
                     <div class="card-header d-flex justify-content-between align-items-center">
                         <div class="container">
-                            <h2 class="centered text-white" style="font-family:'Lucida Bright'">Product List</h2>
-
+                            <h2 class="centered text-white" style="font-family:'Lucida Bright';margin-left:27%;">Product List</h2>
                         </div>
                     </div>
                 </div>
@@ -58,16 +56,17 @@
     </div>
     <br />
 
+
     <div class="row" style="height:8%">
     </div>
 
     <div class="row">
-        <div class="col-md-12 col-lg-1">
+        <div class="col-md-12 col-lg-2">
         </div>
-        <div class="col-md-12 col-lg-3">
-            <div class="card">
-                <div class="card-body " style="background-image: linear-gradient(to right, #FFFFFF 0%, #FFFFFF 51%, #ece5f6 100%);">
 
+        <div class="col-md-12 col-lg-8">
+            <div class="card">
+                <div class="card-body " style="background-image: linear-gradient(to right, #FFFFFF 0%, #e0efff 51%, #add5ff 100%);">
 
                     <div class="form-floating form-floating-outline mb-4">
                         <input asp-for="ProductID" class="form-control" placeholder="ProductID" required />
@@ -82,6 +81,13 @@
                        
                     </div>
 
+                    <center>
+
+                        <button type="submit"  value="Search" name="buttonType" class="btn btn-primary">Search</button>
+
+
+                    </center>
+                    <br />
                     <div class="form-floating form-floating-outline mb-4">
                         <input asp-for="Quantity" class="form-control" placeholder="Quantity" required/>
                         <label asp-for="Quantity" class="control-label">Quantity</label>
@@ -93,11 +99,9 @@
                 </div>
             </div>
         </div>
-
+        <br />
         <center>
-
-            <button type="submit" style="width:180px" value="Search" name="buttonType" class="btn btn-primary">Search</button>
-
+            <button type="submit"  value="Load" name="buttonType" class="btn btn-primary">Load</button>
 
         </center>
     </div>
@@ -139,8 +143,7 @@
         </div>
     }
 
-    <button type="submit" style="width:180px" value="Load" name="buttonType" class="btn btn-primary">Load</button>
-
+   
 
     @if (ViewBag.NotfoundMessage != null)
     {

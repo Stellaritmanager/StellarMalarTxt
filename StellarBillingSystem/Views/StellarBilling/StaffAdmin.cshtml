@@ -45,7 +45,7 @@
                 <div style="background-color:#007bff">
                     <div class="card-header d-flex justify-content-between align-items-center">
                         <div class="container">
-                            <h2 class="centered text-white" style="font-family:'Lucida Bright';margin-left:27%;">StaffAdmin</h2>
+                            <h2 class="centered text-white" style="font-family:'Lucida Bright';margin-left:27%;">Staff Admin</h2>
                         </div>
                     </div>
                 </div>
@@ -72,7 +72,7 @@
                         <div class="col-md-12 col-lg-6">
 
                             <div class="form-floating form-floating-outline mb-4">
-                                <input asp-for="StaffID" value="@Model.StaffID" class="form-control" placeholder="StaffId" />
+                                <input asp-for="StaffID" value="@Model.StaffID" class="form-control" placeholder="Staff ID" required />
                                 <label asp-for="StaffID" class="control-label">Staff ID</label>
                                 <span asp-validation-for="StaffID" class="text-danger"></span>
                             </div>
@@ -95,29 +95,29 @@
                                 }
 
                                 @Html.DropDownListFor(model => model.ResourceTypeID, screenList, "Select Resource ID", new { @class = "form-control" })
-                                <label asp-for="ResourceTypeID" class="control-label"></label>
+                                <label asp-for="ResourceTypeID" class="control-label">Resource TypeID</label>
                                 <span asp-validation-for="ResourceTypeID" class="text-danger"></span>
                             </div>
 
                             <div class="form-floating form-floating-outline mb-4">
-                                <input asp-for="FirstName" value="@Model.FirstName" class="form-control" placeholder="FirstName" />
-                                <label asp-for="FirstName" class="control-label">FirstName</label>
+                                <input asp-for="FirstName" value="@Model.FirstName" class="form-control" placeholder="First Name" pattern="^[A-Za-z\s]+$" title="Customer Name should contain only letters and spaces" />
+                                <label asp-for="FirstName" class="control-label">First Name</label>
                                 <span asp-validation-for="FirstName" class="text-danger"></span>
                             </div>
 
 
                             <div class="form-floating form-floating-outline mb-4">
 
-                                <input asp-for="LastName" value="@Model.LastName" class="form-control" placeholder="LastName" />
-                                <label asp-for="LastName" class="control-label">LastName</label>
+                                <input asp-for="LastName" value="@Model.LastName" class="form-control" placeholder="Last Name" pattern="^[A-Za-z\s]+$" title="Customer Name should contain only letters and spaces" />
+                                <label asp-for="LastName" class="control-label">Last Name</label>
                                 <span asp-validation-for="LastName" class="text-danger"></span>
                             </div>
 
 
                             <div class="form-floating form-floating-outline mb-4">
 
-                                <input asp-for="FullName" value="@Model.FullName" class="form-control" placeholder="FullName" />
-                                <label asp-for="FullName" class="control-label">FullName</label>
+                                <input asp-for="FullName" value="@Model.FullName" class="form-control" placeholder="Full Name" pattern="^[A-Za-z\s]+$" title="Customer Name should contain only letters and spaces" />
+                                <label asp-for="FullName" class="control-label">Full Name</label>
                                 <span asp-validation-for="FullName" class="text-danger"></span>
                             </div>
 
@@ -135,8 +135,8 @@
                             </div>
 
                             <div class="form-floating form-floating-outline mb-4">
-                                <input asp-for="PhoneNumber" value="@Model.PhoneNumber" class="form-control" placeholder="PhoneNumber" />
-                                <label asp-for="PhoneNumber" class="control-label"></label>
+                                <input asp-for="PhoneNumber" value="@Model.PhoneNumber" class="form-control" placeholder="Phone Number" pattern="^\d{10}$" title="Mobile Number should be exactly 10 digits" />
+                                <label asp-for="PhoneNumber" class="control-label">Phone Number</label>
                                 <span asp-validation-for="PhoneNumber" class="text-danger"></span>
                             </div>
 
@@ -146,8 +146,8 @@
 
                                 <div class="form-floating form-floating-outline mb-4">
 
-                                    <input asp-for="DateofBirth" value="@Model.DateofBirth" class="form-control" placeholder="DateofBirth" />
-                                    <label asp-for="DateofBirth" class="control-label">DateofBirth</label>
+                                    <input asp-for="DateofBirth" value="@Model.DateofBirth" class="form-control" placeholder="DateofBirth" type="date" />
+                                    <label asp-for="DateofBirth" class="control-label">Date of Birth</label>
                                     <span asp-validation-for="DateofBirth" class="text-danger"></span>
                                 </div>
 
@@ -158,25 +158,27 @@
                                     <span asp-validation-for="Age" class="text-danger"></span>
                                 </div>
 
-                                <div class="form-group">
-                                    <label class="control-label">Gender:</label><br />
-                                    <div class="form-check form-check-inline">
-                                        <input asp-for="Gender" value="@Model.Gender" class="form-check-input" type="radio" value="Male" id="maleRadio" />
-                                        <label class="form-check-label" for="maleRadio">Male</label>
-                                    </div>
-                                    <div class="form-check form-check-inline">
-                                        <input asp-for="Gender" value="@Model.Gender" class="form-check-input" type="radio" value="Female" id="femaleRadio" />
-                                        <label class="form-check-label" for="femaleRadio">Female</label>
-                                    </div>
-                                    <div class="form-check form-check-inline">
-                                        <input asp-for="Gender" value="@Model.Gender" class="form-check-input" type="radio" value="Other" id="otherRadio" />
-                                        <label class="form-check-label" for="otherRadio">Other</label>
-                                    </div>
-                                    <span asp-validation-for="Gender" class="text-danger"></span>
+                            <div class="mb-4">
+                                <label class="control-label">Gender</label>
+                                <div class="form-check">
+                                    <input asp-for="Gender" class="form-check-input" type="radio" value="Male" id="genderMale" />
+                                    <label class="form-check-label" for="genderMale">Male</label>
                                 </div>
+                                <div class="form-check">
+                                    <input asp-for="Gender" class="form-check-input" type="radio" value="Female" id="genderFemale" />
+                                    <label class="form-check-label" for="genderFemale">Female</label>
+                                </div>
+                                <div class="form-check">
+                                    <input asp-for="Gender" class="form-check-input" type="radio" value="Other" id="genderOther" />
+                                    <label class="form-check-label" for="genderOther">Other</label>
+                                </div>
+                                <span asp-validation-for="Gender" class="text-danger"></span>
+                            </div>
+
+
                                 <div class="input-group input-group-merge speech-to-text form-floating form-floating-outline mb-4">
-                                    <textarea asp-for="Address1" value="@Model.Address1" class="form-control" placeholder="Address1" aria-describedby="text-to-speech-addon"></textarea>
-                                    <label asp-for="Address1" class="control-label">Address1</label>
+                                    <textarea asp-for="Address1" value="@Model.Address1" class="form-control" placeholder="Address" aria-describedby="text-to-speech-addon"></textarea>
+                                    <label asp-for="Address1" class="control-label">Address</label>
                                     <span class="input-group-text" id="text-to-speech-addon">
                                         <i class="mdi mdi-microphone-outline cursor-pointer text-to-speech-toggle"></i>
                                     </span>
@@ -207,8 +209,8 @@
                         <div class="col-md-12 col-lg-4">
                                 
                                 <div class="form-floating form-floating-outline mb-4">
-                                <input asp-for="EmailId" value="@Model.EmailId" class="form-control" placeholder="EmailId" />
-                                <label asp-for="EmailId" class="control-label">EmailId</label>
+                                <input asp-for="EmailId" value="@Model.EmailId" class="form-control" placeholder="Email ID" type="email" />
+                                <label asp-for="EmailId" class="control-label">Email ID</label>
                                 <span asp-validation-for="EmailId" class="text-danger"></span>
                             </div>
                             <div class="form-floating form-floating-outline mb-4">
@@ -299,6 +301,14 @@
                                     handleMessages("@ViewBag.noretMessage");
                                 </script>
                             }
+
+        @if (ViewBag.validateMessage != null)
+        {
+            <script>
+                handleMessages("@ViewBag.validateMessage");
+            </script>
+        }
+
 
 </form>
     

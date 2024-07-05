@@ -30,27 +30,28 @@
 </div>
 
 <form asp-controller="StellarBilling" asp-action="AddRackPartition">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+          
 
     <div class="row">
         <div class="col-md-12 col-lg-2">
         </div>
         <div class="col-md-12 col-lg-8">
-            <div class="card" style="height:70px">
-                <div class="card-body " style="background-color:#007bff">
-                    <div style="align-items:center">
-                        <div class="container" style="text-align:center">
-                            <h2 class="centered text-white" style="font-family:'Lucida Bright'">Rack Partition Product</h2>
+            <div class="card">
+                <div style="background-color:#007bff">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <div class="container">
+                            <h2 class="centered text-white" style="font-family:'Lucida Bright';margin-left:21%;">Rack Partition Product</h2>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-
+    <br />
 
     <div class="row" style="height:8%">
     </div>
+
     <div class="row gy-4">
         <div class="col-md-12 col-lg-2">
         </div>
@@ -62,7 +63,7 @@
                     <div class="form-floating form-floating-outline mb-4">
 
                         <input asp-for="PartitionID" class="form-control" placeholder="Partition ID" required />
-                        <label asp-for="PartitionID" class="control-label"></label>
+                        <label asp-for="PartitionID" class="control-label">Partition ID</label>
                         <span asp-validation-for="PartitionID" class="text-danger"></span>
             </div>
                     <div class="form-floating form-floating-outline mb-4">
@@ -80,11 +81,13 @@
                         <span asp-validation-for="ProductID" class="text-danger"></span>
                     </div>
 
+                    <button type="submit" value="Get" name="buttonType" class="btn btn-primary">Get</button>
+
                     <div class="form-floating form-floating-outline mb-4">
 
                         <input asp-for="Noofitems" class="form-control" placeholder="No of items "/>
                         <label asp-for="Noofitems" class="control-label">No of items</label>
-                        <span asp-validation-for="Noofitems" class="text-danger"></span>
+                        
                     </div>
 
                     <br />
@@ -180,6 +183,14 @@
     }
 
 
+    @if (ViewBag.retMessage != null)
+    {
+        <script>
+            handleMessages("@ViewBag.retMessage");
+        </script>
+    }
+
+    
     
         </center>
     

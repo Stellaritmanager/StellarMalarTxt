@@ -39,20 +39,20 @@
         <div class="col-md-12 col-lg-2">
         </div>
         <div class="col-md-12 col-lg-8">
-            <div class="card" style="height:40px">
-                <div class="card-body " style="background-color:#007bff">
-                    <div style="align-items:center">
-                        <div class="container" style="text-align:center">
-                            <h2 class="centered text-white" style="font-family:'Lucida Bright'">ScreenMaster</h2>
+            <div class="card">
+                <div style="background-color:#007bff">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <div class="container">
+                            <h2 class="centered text-white" style="font-family:'Lucida Bright';margin-left:27%;">Screen Master</h2>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+    <br />
 
-
-    <div class="row" style="margin-top:70px">
+    <div class="row" style="height:8%">
     </div>
 
     <div class="row gy-4">
@@ -71,8 +71,8 @@
 
             <div class="form-floating form-floating-outline mb-4">
 
-                <input asp-for="ScreenId" value="@Model.ScreenId" class="form-control" placeholder="ScreenId" />
-                <label asp-for="ScreenId" class="control-label">ScreenId</label>
+                <input asp-for="ScreenId" value="@Model.ScreenId" class="form-control" placeholder="Screen ID" />
+                <label asp-for="ScreenId" class="control-label">Screen ID</label>
                 <span asp-validation-for="ScreenId" class="text-danger"></span>
             </div>
 
@@ -81,7 +81,7 @@
                         </div>
                         <div class="col-md-12 col-lg-2" style="align-items:center">
                             <div class="form-group">
-                                <button type="submit" style="width:180px" value="Get" name="buttonType" class="btn btn-primary">Get</button>
+                                <button type="submit"  value="Get" name="buttonType" class="btn btn-primary">Get</button>
                             </div>
 
                         </div>
@@ -98,8 +98,8 @@
             });
                 }
 
-                @Html.DropDownListFor(model => model.ScreenName, screenList, "Select Screen Name", new { @class = "form-control" })
-                <label asp-for="ScreenName" class="control-label"></label>
+                        @Html.DropDownListFor(model => model.ScreenName, screenList, "Select Screen Name", new { @class = "form-control", value = "@Model.ScreenName" })
+                        <label asp-for="ScreenName" class="control-label">Screen Name</label>
                 <span asp-validation-for="ScreenName" class="text-danger"></span>
             </div>
 
