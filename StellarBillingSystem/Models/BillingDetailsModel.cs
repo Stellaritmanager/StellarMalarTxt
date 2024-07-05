@@ -5,6 +5,8 @@
         public BillingDetailsModel() { }
 
         private string billID;
+        private string billDate;
+        private string customerNumber;
         private string productID;
         private string discount;
         private string price;
@@ -32,5 +34,7 @@
         public string? Lastupdatedmachine { get => lastupdatedmachine; set => lastupdatedmachine = value; }
         public string ProductName { get => productName; set => productName = value; }
         public string ProductID { get => productID; set => productID = value; }
+        public string? BillDate { get => billDate; set => billDate = value; }
+        public string? CustomerNumber { get => customerNumber; set => customerNumber = value; }
     }
 }

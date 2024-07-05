@@ -4,6 +4,56 @@
     ViewData["Title"] = "Customer Master";
     Layout = "~/Views/Shared/_ContentNavbarLayout.cshtml";
 }
+<script>
+    function showPopup(message) {
+        var popup = document.getElementById("popupMessage");
+        var popupText = document.getElementById("popupMessageText");
+        var popupOKButton = document.getElementById("popupOKButton");
+
+        popupText.textContent = message; // Set the message text
+        popup.style.display = "block";
+
+        popupOKButton.addEventListener("click", function () {
+            popup.style.display = "none"; // Hide the popup when OK button is clicked
+        });
+    }
+
+    function handleMessages(message) {
+        showPopup(message);
+    }
+</script>
+
+<div id="popupMessage" style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background-color: #f0f0f0; color: black; padding: 30px; border: 10px solid white; border-radius: 10px; z-index: 1000; display: none; text-align: center;">
+    <span id="popupMessageText" style="display: block; margin-bottom: 20px;"></span>
+    <button id="popupOKButton" style="padding: 10px 20px; background-color: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer;">OK</button>
+</div>
+
+
+<script>
+    function showPopup(message) {
+        var popup = document.getElementById("popupMessage");
+        var popupText = document.getElementById("popupMessageText");
+        var popupOKButton = document.getElementById("popupOKButton");
+
+        popupText.textContent = message; // Set the message text
+        popup.style.display = "block";
+
+        popupOKButton.addEventListener("click", function () {
+            popup.style.display = "none"; // Hide the popup when OK button is clicked
+        });
+    }
+
+    function handleMessages(message) {
+        showPopup(message);
+    }
+
+</script>
+
+
+<div id="popupMessage" style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background-color: #f0f0f0; color: black; padding: 30px; border: 10px solid white; border-radius: 10px; z-index: 1000; display: none; text-align: center;">
+    <span id="popupMessageText" style="display: block; margin-bottom: 20px;"></span>
+    <button id="popupOKButton" style="padding: 10px 20px; background-color: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer;">OK</button>
+</div>
 
 <form asp-controller="StellarBilling">
     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
@@ -18,7 +68,7 @@
                 <div style="background-color:#007bff">
                     <div class="card-header d-flex justify-content-between align-items-center">
                         <div class="container">
-                            <h2 class="centered text-white" style="font-family:'Lucida Bright';margin-left:27%;">CustomerMaster</h2>
+                            <h2 class="centered text-white" style="font-family:'Lucida Bright';margin-left:27%;">Customer Master</h2>
                         </div>
                     </div>
                 </div>
@@ -45,7 +95,7 @@
                         <div class="col-md-12 col-lg-6">
                             <div class="form-floating form-floating-outline mb-4">
 
-                                <input asp-for="MobileNumber" class="form-control" placeholder="Mobile Number" required />
+                                <input asp-for="MobileNumber" class="form-control" placeholder="Mobile Number" pattern="^\d{10}$" title="Mobile Number should be exactly 10 digits" required />
                                 <label asp-for="MobileNumber" class="control-label">Mobile Number</label>
 
                                 <span asp-validation-for="MobileNumber" class="text-danger"></span>
@@ -73,7 +123,7 @@
                         <span asp-validation-for="CustomerID" class="text-danger"></span>
                     </div>
                     <div class="form-floating form-floating-outline mb-4">
-                        <input asp-for="CustomerName" class="form-control" placeholder="Customer Name" />
+                                <input asp-for="CustomerName" class="form-control" placeholder="Customer Name" pattern="^[A-Za-z\s]+$" title="Customer Name should contain only letters and spaces" />
                         <label asp-for="CustomerName" class="control-label">Customer Name</label>
 
                         <span asp-validation-for="CustomerName" class="text-danger"></span>
@@ -143,6 +193,7 @@
         </div>
         </div> *@
         <div class="form-group">
+            <br />
             <center>
                 <button type="submit" style="width:180px" value="Create" asp-action="AddCustomer" class="btn btn-primary">Save</button>
                 <button type="submit" style="width:180px" value="Create" asp-action="DeleteCustomer" class="btn btn-primary">Delete</button>
@@ -171,79 +222,26 @@
             handleMessages("@ViewBag.ErrorMessage");
         </script>
     }
+    @if (ViewBag.delMessage != null)
+    {
+        <script>
+            handleMessages("@ViewBag.delMessage");
+        </script>
+    }
+
+    @if (ViewBag.DelRetrieve != null)
+    {
+        <script>
+            handleMessages("@ViewBag.DelRetrieve");
+        </script>
+    }
+
+
 </form>
-@*        <div class="form-floating form-floating-outline mb-4">
-
-                <input asp-for="PointsReedem" class="form-control" placeholder="PointsReedem" />
-                <label asp-for="PointsReedem" class="control-label"></label>
-
-                <span asp-validation-for="PointsReedem" class="text-danger"></span>
-                </div>
-                <div class="form-floating form-floating-outline mb-4">
-
-                <input asp-for="VoucherDiscount" class="form-control" placeholder="VoucherDiscount" />
-                <label asp-for="VoucherDiscount" class="control-label"></label>
-
-                <span asp-validation-for="VoucherDiscount" class="text-danger"></span>
-                </div>
-                <div class="form-floating form-floating-outline mb-4">
-
-                <input asp-for="VoucherNumber" class="form-control" placeholder="VoucherNumber" />
-                <label asp-for="VoucherNumber" class="control-label"></label>
-
-                <span asp-validation-for="VoucherNumber" class="text-danger"></span>
-                </div> *@
-
-
-@*  <div class="form-group">
-            <center>
-
-                <button type="submit" style="width:180px" value="Create" asp-action="AddCustomer" class="btn btn-primary">Save</button>
-                @if (ViewBag.Message != null)
-                {
-                    <div class="alert alert-success">
-
-
-                        @ViewBag.Message
-                    </div>
-                }
-            </center>
-        </div>
-
-        <div class="form-group">
-            <center>
-
-                <button type="submit" style="width:180px" value="Create" asp-action="DeleteCustomer" class="btn btn-primary">Delete</button>
-            </center>
-            @if (ViewBag.delMessage != null)
-            {
-                <div class="alert alert-success">
-
-
-                    @ViewBag.delMessage
-                </div>
-            }
-        </div>
-
-        <div class="form-group">
-            <center>
-                <button type="submit" style="width:180px" value="Create" asp-action="GetDeleteRetrieve" class="btn btn-primary">DeleteRetrieve</button>
-            </center>
-            @if (ViewBag.DelRetrieve != null)
-            {
-                <div class="alert alert-success">
-
-
-                    @ViewBag.DelRetrieve
-                </div>
-            }
-        </div>
 
 
 
-        <div class="col-md-12 col-lg-1" style="height=10%">
-            <div class="form-floating form-floating-outline mb-4">
-            </div>
-        </div> *@
+
+
 
 

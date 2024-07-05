@@ -66,27 +66,12 @@
                     <div class="row">
                         <div class="col-md-12 col-lg-1">
                         </div>
-                        <div class="col-md-12 col-lg-4">
-                            <div class="form-floating form-floating-outline mb-4">
-                                @{
-                                    var getscheduleid = ((IEnumerable<CategoryMasterModel>)ViewData["categoryid"])
-                                    .Select(m => new SelectListItem
-            {
-                Value = m.CategoryID.ToString(), // Assuming ScreenId is of type int
-                Text = $"{m.CategoryID} - {m.CategoryName}"
-            });
-                                }
-
-                                @Html.DropDownListFor(model => model.CategoryID, getscheduleid, "Select Category ID", new { @class = "form-control" })
-                                <label asp-for="CategoryID" class="control-label">Category ID</label>
-                                <span asp-validation-for="CategoryID" class="text-danger"></span>
-                            </div>
-                        </div>
-                        <div class="col-md-12 col-lg-4">
+                     
+                        <div class="col-md-12 col-lg-8">
 
                             <div class="form-floating form-floating-outline mb-4">
-                                <input asp-for="ProductID" class="form-control" placeholder="ProductID" required />
-                                <label asp-for="ProductID" class="control-label"></label>
+                                <input asp-for="ProductID" class="form-control" placeholder="Product ID" required />
+                                <label asp-for="ProductID" class="control-label">Product ID</label>
 
                                 <span asp-validation-for="ProductID" class="text-danger"></span>
                             </div>
@@ -115,11 +100,23 @@
                         <div class="col-md-12 col-lg-2">
         </div>
                         <div class="col-md-12 col-lg-8">
-
                             <div class="form-floating form-floating-outline mb-4">
-                                <input asp-for="ProductName" value="@Model.ProductName" class="form-control" placeholder="ProductName" />
-                                <label asp-for="ProductName" class="control-label"></label>
+                                @{
+                                    var getscheduleid = ((IEnumerable<CategoryMasterModel>)ViewData["categoryid"])
+                                    .Select(m => new SelectListItem
+            {
+                Value = m.CategoryID.ToString(), // Assuming ScreenId is of type int
+                Text = $"{m.CategoryID} - {m.CategoryName}"
+            });
+                                }
 
+                                @Html.DropDownListFor(model => model.CategoryID, getscheduleid, "Select Category ID", new { @class = "form-control" })
+                                <label asp-for="CategoryID" class="control-label">Category ID</label>
+                                <span asp-validation-for="CategoryID" class="text-danger"></span>
+                            </div>
+                            <div class="form-floating form-floating-outline mb-4">
+                                <textarea asp-for="ProductName" class="form-control" placeholder="Product Name"  style="height: 200px;"></textarea>
+                                <label asp-for="ProductName" class="control-label">Product Name</label>
                                 <span asp-validation-for="ProductName" class="text-danger"></span>
                             </div>
                             <div class="form-floating form-floating-outline mb-4">
@@ -131,20 +128,21 @@
 
 
                             <div class="form-floating form-floating-outline mb-4">
-                                <input asp-for="Price" value="@Model.Price" class="form-control" placeholder="Price" />
-                                <label asp-for="Price" class="control-label"></label>
+                                <input asp-for="Price" value="@Model.Price" class="form-control" placeholder="Price" pattern="^\d{1,3}(,\d{3})*(\.\d{1,2})?$|^\d+(\.\d{1,2})?$"
+                                       title="Please enter a valid price format, e.g., ₹3000, ₹3,000.00" />
+                                <label asp-for="Price" class="control-label">Price</label>
 
                                 <span asp-validation-for="Price" class="text-danger"></span>
                             </div>
                             <div class="form-floating form-floating-outline mb-4">
-                                <input asp-for="Discount" value="@Model.Discount" class="form-control" placeholder="Discount" />
-                                <label asp-for="Discount" class="control-label"></label>
+                                <input asp-for="Discount" value="@Model.Discount" class="form-control" placeholder="Discount"  readonly/>
+                                <label asp-for="Discount" class="control-label">Discount</label>
 
                                 <span asp-validation-for="Discount" class="text-danger"></span>
                             </div>
                             <div class="form-floating form-floating-outline mb-4">
-                                <input asp-for="TotalAmount" id="TotalAmount" value="@Model.TotalAmount" class="form-control" placeholder="TotalAmount" readonly />
-                                <label asp-for="TotalAmount" class="control-label"></label>
+                                <input asp-for="TotalAmount" id="TotalAmount" value="@Model.TotalAmount" class="form-control" placeholder="Total Amount" readonly />
+                                <label asp-for="TotalAmount" class="control-label">Total Amount</label>
 
                                 <span asp-validation-for="TotalAmount" class="text-danger"></span>
                             </div>
@@ -160,7 +158,9 @@
             <div class="form-floating form-floating-outline mb-4">
             </div>
         </div>
+        
         <div class="form-group">
+            <br />
             <center>
 
                 <button type="submit" asp-action="AddProduct" value="Save" name="buttonType" class="btn btn-primary">Save</button>
@@ -182,11 +182,25 @@
             handleMessages("@ViewBag.Message");
         </script>
     }
+    @if (ViewBag.NoProductMessage != null)
+    {
+        <script>
+            handleMessages("@ViewBag.NoProductMessage");
+        </script>
+    }
+    @if (ViewBag.PriceErrorMessage != null)
+    {
+        <script>
+            handleMessages("@ViewBag.PriceErrorMessage");
+        </script>
+    }
+
     @if (ViewBag.ErrorMessage != null)
     {
         <script>
             handleMessages("@ViewBag.ErrorMessage");
         </script>
     }
+
 </form>
 
