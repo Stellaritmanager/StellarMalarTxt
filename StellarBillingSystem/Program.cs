@@ -19,7 +19,7 @@ builder.Services.AddAuthentication(
     .AddCookie(options =>
     {
         options.LoginPath = "/LoginAuthentication/Login";
-        options.ExpireTimeSpan = TimeSpan.FromHours(1);
+        options.ExpireTimeSpan = TimeSpan.FromHours(0);
     }) ;
 
 // Add services to the container.
