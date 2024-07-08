@@ -1724,6 +1724,18 @@ namespace HealthCare.Controllers
 
         public async Task<IActionResult> getCustomerBill(BillProductlistModel model, string buttonType, string BillID,string BillDate,string CustomerNumber,string TotalPrice, BillingMasterModel masterModel, BillingDetailsModel detailModel)
         {
+            //Code for print the Bill 
+            if(buttonType =="Print")
+            {
+                String Query = "Select SD.BillID,Convert(varchar(10),SD.BillDate,101) as BillDate,SD.ProductID,Sp.ProductName, SD.Price,SD.Quantity,SD.CustomerNumber as CustomerName, SD.CustomerNumber,\r\nSD.TotalDiscount,SD.Totalprice  from SHbilldetails SD inner join SHbillmaster SB \r\non SD.BillID= SB.BillID\r\ninner join SHProductMaster SP\r\non SD.ProductID = sp.ProductID\r\n where sd.IsDelete=0";
+
+                var Table = BusinessClassCommon.DataTable(_billingsoftware, Query);
+
+                BusinessClassBilling objbilling = new BusinessClassBilling(_billingsoftware);
+               
+                return File(objbilling.PrintBillDetails(Table), "application/vnd.openxmlformats-officedocument.wordprocessingml.document", "Bill_"+ TempData["BillID"]+".docx");
+            }
+
             if(buttonType== "Payment")
             {
                 TempData["BillID"] = BillID;
@@ -2325,6 +2337,6 @@ string BillId, string Balance, string BillDate, string PaymentId, string payment
     }
 
 
-        }
+}
     
 
