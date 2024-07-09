@@ -1730,21 +1730,21 @@ namespace HealthCare.Controllers
 
         [HttpPost]
 
-        public async Task<IActionResult> getCustomerBill(BillProductlistModel model, string buttonType, string BillID,string BillDate,string CustomerNumber,string TotalPrice, BillingMasterModel masterModel, BillingDetailsModel detailModel)
+        public async Task<IActionResult> getCustomerBill(BillProductlistModel model, string buttonType, string BillID, string BillDate, string CustomerNumber, string TotalPrice, BillingMasterModel masterModel, BillingDetailsModel detailModel)
         {
             //Code for print the Bill 
-            if(buttonType =="Print")
+            if (buttonType == "Download Bill")
             {
-                String Query = "Select SD.BillID,Convert(varchar(10),SD.BillDate,101) as BillDate,SD.ProductID,Sp.ProductName, SD.Price,SD.Quantity,SD.CustomerNumber as CustomerName, SD.CustomerNumber,\r\nSD.TotalDiscount,SD.Totalprice  from SHbilldetails SD inner join SHbillmaster SB \r\non SD.BillID= SB.BillID\r\ninner join SHProductMaster SP\r\non SD.ProductID = sp.ProductID\r\n where sd.IsDelete=0";
+                String Query = "Select SD.BillID,Convert(varchar(10),SD.BillDate,101) as BillDate,SD.ProductID,Sp.ProductName, SD.Price,SD.Quantity,SD.CustomerNumber as CustomerName, SD.CustomerNumber,\r\nSD.TotalDiscount,SD.Totalprice  from SHbilldetails SD inner join SHbillmaster SB \r\non SD.BillID= SB.BillID\r\ninner join SHProductMaster SP\r\non SD.ProductID = sp.ProductID\r\n where sd.IsDelete=0 AND sd.BillID = BillID";
 
                 var Table = BusinessClassCommon.DataTable(_billingsoftware, Query);
 
                 BusinessClassBilling objbilling = new BusinessClassBilling(_billingsoftware);
-               
-                return File(objbilling.PrintBillDetails(Table), "application/vnd.openxmlformats-officedocument.wordprocessingml.document", "Bill_"+ TempData["BillID"]+".docx");
+
+                return File(objbilling.PrintBillDetails(Table), "application/vnd.openxmlformats-officedocument.wordprocessingml.document", "Bill_" + TempData["BillID"] + ".docx");
             }
 
-            if(buttonType== "Payment")
+            if (buttonType == "Payment")
             {
                 TempData["BillID"] = BillID;
                 TempData["TotalPrice"] = TotalPrice;
@@ -1753,15 +1753,60 @@ namespace HealthCare.Controllers
             }
 
 
-            if (buttonType == "Get")
+            if (buttonType == "Get Product")
             {
 
                 TempData["BillID"] = BillID;
                 TempData["BillDate"] = BillDate;
                 TempData["CustomerNumber"] = CustomerNumber;
 
-                return RedirectToAction("ProductList", new { BillID = BillID,BillDate= BillDate,CustomerNumber=CustomerNumber });
+                return RedirectToAction("ProductList", new { BillID = model.BillID, BillDate = model.BillDate, CustomerNumber = model.CustomerNumber });
             }
+
+            if (buttonType == "Get")
+            {
+                var billID = model.BillID; // Assuming model contains the BillID
+                var billDate = model.BillDate; // Assuming model contains the BillDate
+                var customerNumber = model.CustomerNumber; // Assuming model contains the CustomerNumber
+
+                var updatedMasterex = _billingsoftware.SHbillmaster.FirstOrDefault(m =>
+                    m.BillID == billID && m.BillDate == billDate && m.CustomerNumber == customerNumber);
+
+                if (updatedMasterex != null)
+                {
+                    ViewBag.TotalPrice = updatedMasterex.Totalprice;
+                    ViewBag.TotalDiscount = updatedMasterex.TotalDiscount;
+                    ViewBag.NetPrice = updatedMasterex.NetPrice;
+
+                    var exbillingDetails = _billingsoftware.SHbilldetails
+                        .Where(d => d.BillID == billID)
+                        .ToList();
+
+                    // Prepare the view model to pass to the view
+                    var viewModel = new BillProductlistModel
+                    {
+                        MasterModel = new BillingMasterModel
+                        {
+                            BillID = billID,
+                            BillDate = updatedMasterex.BillDate,
+                            CustomerNumber = updatedMasterex.CustomerNumber
+                        },
+                        Viewbillproductlist = exbillingDetails
+                    };
+
+                    return View("CustomerBilling", viewModel);
+                }
+                else
+                {
+                    // Handle case where no matching record is found
+                    ModelState.AddModelError("", "No matching BillID, BillDate, and CustomerNumber found.");
+                    return View("CustomerBilling", model);
+                }
+            
+ 
+            }
+
+
             var isDeleteValue = (object)masterModel.IsDelete ?? DBNull.Value;
 
             var parameters = new[]
@@ -2008,7 +2053,14 @@ namespace HealthCare.Controllers
                 if (billDetail != null)
                 {
                     model.Viewbillproductlist = new List<BillingDetailsModel> { billDetail };
-
+                    model.ProductID = billDetail.ProductID;
+                    model.ProductName = billDetail.ProductName;
+                    model.Price = billDetail.Price;
+                    model.Quantity = billDetail.Quantity;
+                    model.BillID=billDetail.BillID;
+                    model.BillDate = billDetail.BillDate;
+                    model.CustomerNumber=billDetail.CustomerNumber;
+                    
                 }
                 else
                 {
