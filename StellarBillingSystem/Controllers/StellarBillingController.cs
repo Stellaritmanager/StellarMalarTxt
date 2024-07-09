@@ -32,13 +32,13 @@ namespace HealthCare.Controllers
                 var getcategory = await _billingsoftware.SHCategoryMaster.FirstOrDefaultAsync(x => x.CategoryID == model.CategoryID && !x.IsDelete);
                 if (getcategory != null)
                 {
-                    return View("CategoryMasterModel", getcategory);
+                    return View("CategoryMaster", getcategory);
                 }
                 else
                 {
                     CategoryMasterModel par = new CategoryMasterModel();
                     ViewBag.ErrorMessage = "No value for this Category ID";
-                    return View("CategoryMasterModel", par);
+                    return View("CategoryMaster", par);
                 }
             }
             else if (buttonType == "Delete")
@@ -50,12 +50,12 @@ namespace HealthCare.Controllers
                     await _billingsoftware.SaveChangesAsync();
 
                     ViewBag.Message = "Category deleted successfully";
-                    return View("CategoryMasterModel", model);
+                    return View("CategoryMaster", model);
                 }
                 else
                 {
                     ViewBag.ErrorMessage = "Category not found";
-                    return View("CategoryMasterModel", model);
+                    return View("CategoryMaster", model);
                 }
 
             }
@@ -78,7 +78,7 @@ namespace HealthCare.Controllers
                 {
                     ViewBag.ErrorMessage = "Category not found";
                 }
-                return View("CategoryMasterModel", model);
+                return View("CategoryMaster", model);
             }
             else if (buttonType == "save")
             {
@@ -88,7 +88,7 @@ namespace HealthCare.Controllers
                     if (existingCategory.IsDelete)
                     {
                         ViewBag.ErrorMessage = "Cannot Save or Update. Category is marked as deleted.";
-                        return View("CategoryMasterModel", model);
+                        return View("CategoryMaster", model);
                     }
                     existingCategory.CategoryID = model.CategoryID;
                     existingCategory.CategoryName = model.CategoryName;
@@ -113,7 +113,7 @@ namespace HealthCare.Controllers
 
                 ViewBag.Message = "Saved Successfully";
             }
-            return View("CategoryMasterModel", model);
+            return View("CategoryMaster", model);
         }
 
         [HttpPost]
@@ -128,13 +128,13 @@ namespace HealthCare.Controllers
                 var resultpro = await _billingsoftware.SHProductMaster.FirstOrDefaultAsync(x => x.ProductID == model.ProductID && !x.IsDelete);
                 if (resultpro != null)
                 {
-                    return View("ProductMasterModel", resultpro);
+                    return View("ProductMaster", resultpro);
                 }
                 else
                 {
                     ProductMatserModel obj = new ProductMatserModel();
                     ViewBag.NoProductMessage = "No value for this product ID";
-                    return View("ProductMasterModel", obj);
+                    return View("ProductMaster", obj);
                 }
             }
             else if (buttonType == "Delete")
@@ -146,12 +146,12 @@ namespace HealthCare.Controllers
                     await _billingsoftware.SaveChangesAsync();
 
                     ViewBag.Message = "Product deleted successfully";
-                    return View("ProductMasterModel", model); // Assuming you want to return the view with the same model
+                    return View("ProductMaster", model); // Assuming you want to return the view with the same model
                 }
                 else
                 {
                     ViewBag.ErrorMessage = "Product not found";
-                    return View("ProductMasterModel", model); // Return the view with the model
+                    return View("ProductMaster", model); // Return the view with the model
                 }
             }
             else if (buttonType == "DeleteRetrieve")
@@ -180,7 +180,7 @@ namespace HealthCare.Controllers
                     ViewBag.ErrorMessage = "Product not found";
                 }
 
-                return View("ProductMasterModel", model);
+                return View("ProductMaster", model);
             }
             else if (buttonType == "Save")
             {
@@ -189,7 +189,13 @@ namespace HealthCare.Controllers
                 if (string.IsNullOrEmpty(model.Price))
                 {
                     ViewBag.PriceErrorMessage = "Please enter a price.";
-                    return View("ProductMasterModel", model);
+                    return View("ProductMaster", model);
+                }
+
+                if (string.IsNullOrEmpty(model.CategoryID))
+                {
+                    ViewBag.CatErrorMessage = "Please enter a CategoryID.";
+                    return View("ProductMaster", model);
                 }
 
                 // Fetch discount price based on CategoryID
@@ -213,7 +219,7 @@ namespace HealthCare.Controllers
                     if (existingProduct.IsDelete)
                     {
                         ViewBag.ErrorMessage = "Cannot update. Product is marked as deleted.";
-                        return View("ProductMasterModel", model);
+                        return View("ProductMaster", model);
                     }
 
 
@@ -256,7 +262,7 @@ namespace HealthCare.Controllers
                 ViewBag.Message = "Saved Successfully";
             }
 
-            return View("ProductMasterModel", model);
+            return View("ProductMaster", model);
         }
 
 
@@ -807,18 +813,18 @@ namespace HealthCare.Controllers
         }
 
 
-        public IActionResult CategoryMasterModel()
+        public IActionResult CategoryMaster()
         {
             CategoryMasterModel par = new CategoryMasterModel();
-            return View("CategoryMasterModel", par);
+            return View("CategoryMaster", par);
         }
 
-        public IActionResult ProductMasterModel()
+        public IActionResult ProductMaster()
         {
             BusinessClassBilling business = new BusinessClassBilling(_billingsoftware);
             ViewData["categoryid"] = business.GetCatid();
             ProductMatserModel obj = new ProductMatserModel();
-            return View("ProductMasterModel", obj);
+            return View("ProductMaster", obj);
         }
 
         [HttpPost]
@@ -908,6 +914,8 @@ namespace HealthCare.Controllers
                             updatestock.NumberofStocks = currentstock.ToString();
                             _billingsoftware.Entry(updatestock).State = EntityState.Modified;
                         }
+
+                        await _billingsoftware.SaveChangesAsync();
                     }
                 }
             }
