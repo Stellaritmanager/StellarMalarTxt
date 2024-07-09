@@ -30,8 +30,8 @@
 </div>
 
 
-        <form asp-action="AddRoleaccess" asp-controller="StellarBilling">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+<form asp-action="AddRoleaccess" asp-controller="StellarBilling">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
     <div class="row">
         <div class="col-md-12 col-lg-2">
@@ -53,156 +53,157 @@
     <div class="row" style="height:8%">
     </div>
 
-            <div class="row gy-4">
-                <div class="col-md-12 col-lg-2">
-                </div>
-                <div class="col-md-12 col-lg-8">
-                    <div class="card">
-                        <div class="card-body " style="background-image: linear-gradient(to right, #FFFFFF 0%, #e0efff 51%, #add5ff 100%);">
+    <div class="row gy-4">
+        <div class="col-md-12 col-lg-2">
+        </div>
+        <div class="col-md-12 col-lg-8">
+            <div class="card">
+                <div class="card-body " style="background-image: linear-gradient(to right, #FFFFFF 0%, #e0efff 51%, #add5ff 100%);">
 
 
 
-                            <div class="row gy-4">
-                                
+                    <div class="row gy-4">
 
-                                    <div class="form-floating form-floating-outline mb-4">
-                                        @{
-                                            var rollList = ((IEnumerable<RollTypeMaster>)ViewData["rollid"])
-                                            .Select(m => new SelectListItem
+
+                        <div class="form-floating form-floating-outline mb-4">
+                            @{
+                                var rollList = ((IEnumerable<RollTypeMaster>)ViewData["rollid"])
+                                .Select(m => new SelectListItem
             {
                 Value = m.RollID.ToString(), // Assuming ScreenId is of type int
                 Text = $"{m.RollID} - {m.RollName}"
             });
-                                        }
+                            }
 
-                                        @Html.DropDownListFor(model => model.RollID, rollList, "Select Roll ID", new { @class = "form-control",@required="required" })
-                                        <label asp-for="RollID" class="control-label">Roll ID</label>
-                                        <span asp-validation-for="RollID" class="text-danger"></span>
-                                    </div>
-
-
-
-                               
-                                <div class="col-md-12 col-lg-1">
-                                </div>
-                               
-                            </div>
+                            @Html.DropDownListFor(model => model.RollID, rollList, "Select Roll ID", new { @class = "form-control", @required = "required" })
+                            <label asp-for="RollID" class="control-label"></label>
+                            <span asp-validation-for="RollID" class="text-danger"></span>
+                        </div>
 
 
-                            <div class="form-floating form-floating-outline mb-4">
-                               @{
-                                    var screenList = ((IEnumerable<ScreenMasterModel>)ViewData["screenid"])
-                                    .Select(m => new SelectListItem
+
+
+                        <div class="col-md-12 col-lg-1">
+                        </div>
+
+                    </div>
+
+
+                    <div class="form-floating form-floating-outline mb-4">
+                        @{
+                            var screenList = ((IEnumerable<ScreenMasterModel>)ViewData["screenid"])
+                            .Select(m => new SelectListItem
             {
                 Value = m.ScreenId.ToString(), // Assuming ScreenId is of type int
                 Text = $"{m.ScreenId} - {m.ScreenName}"
             });
-                                }
+                        }
 
                         @Html.DropDownListFor(model => model.ScreenID, screenList, "Select Screen", new { @class = "form-control", @required = "required" })
                         <label asp-for="ScreenID" class="control-label">Screen ID</label>
-                                <span asp-validation-for="ScreenID" class="text-danger"></span>
-                            </div>
-
-                    <div class="col-md-12 col-lg-2" style="align-items:center">
+                        <span asp-validation-for="ScreenID" class="text-danger"></span>
+                    </div>
+                    <center>
                         <div class="form-group">
                             <button type="submit" value="Get" name="buttonType" class="btn btn-primary">Get</button>
                         </div>
-                        <br />
-                    </div>
+                    </center>
 
-                            <div class="form-floating form-floating-outline mb-4">
-
-                                <div class="form-group">
-                                    <label class="control-label">Read Write Access:</label><br />
-                                    <div class="form-check form-check-inline">
-                                        <input asp-for="Access" class="form-check-input" type="radio" value="R" id="ReadRadio" />
-                                        <label class="form-check-label" for="ReadRadio">Read</label>
-                                    </div>
-                                    <div class="form-check form-check-inline">
-                                        <input asp-for="Access" class="form-check-input" type="radio" value="W" id="WriteRadio" />
-                                        <label class="form-check-label" for="WriteRadio">Write</label>
-                                    </div>
-                                   
-                                </div>
-                            </div>
-                            <div class="col-md-12 col-lg-4">
-                                <label class="control-label">Authorized:</label><br />
-                                <div class="form-check form-check-inline">
-                                    <input asp-for="Authorized" class="form-check-input" type="radio" value="1" id="YesRadio" />
-                                    <label class="form-check-label" for="YesRadio">Yes</label>
-                                </div>
-
-
-                                <div class="form-check form-check-inline">
-                                    <input asp-for="Authorized" class="form-check-input" type="radio" value="0" id="NoRadio" />
-                                    <label class="form-check-label" for="NORadio">NO</label>
-                                </div>
-
-
-                            </div>
-                        </div>
-
-
-                        <div class="col-md-12 col-lg-2">
-                        </div>
-
-                    </div>
                     <br />
-                </div>
-                <div class="form-group">
-                    <center>
 
-                                <button type="submit" style="width:180px" value="Save" class="btn btn-primary">Save</button>
 
-                                <button type="submit" style="width:180px" value="Delete" name="buttonType" class="btn btn-primary">Delete</button>
-                                <button type="submit" style="width:180px" value="DeleteRetrieve" name="buttonType" class="btn btn-primary">Delete Retrieve</button>
-                            </center>
+                    <div class="form-floating form-floating-outline mb-4">
+
+                        <div class="form-group">
+                            <label class="control-label">Read Write Access:</label><br />
+                            <div class="form-check form-check-inline">
+                                <input asp-for="Access" class="form-check-input" type="radio" value="R" id="ReadRadio" />
+                                <label class="form-check-label" for="ReadRadio">Read</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input asp-for="Access" class="form-check-input" type="radio" value="W" id="WriteRadio" />
+                                <label class="form-check-label" for="WriteRadio">Write</label>
+                            </div>
+
+                        </div>
+                    </div>
+                    <div class="col-md-12 col-lg-4">
+                        <label class="control-label">Authorized:</label><br />
+                        <div class="form-check form-check-inline">
+                            <input asp-for="Authorized" class="form-check-input" type="radio" value="1" id="YesRadio" />
+                            <label class="form-check-label" for="YesRadio">Yes</label>
                         </div>
 
 
-                                @if (ViewBag.Message != null)
-                                {
-                                    <script>
-                                        handleMessages("@ViewBag.Message");
-                                    </script>
-                                }
-
-                                @if (ViewBag.getMessage != null)
-                                {
-                                    <script>
-                                        handleMessages("@ViewBag.getMessage");
-                                    </script>
-                                }
-
-                                @if (ViewBag.delMessage != null)
-                                {
-                                    <script>
-                                        handleMessages("@ViewBag.delMessage");
-                                    </script>
-                                }
-
-                                @if (ViewBag.delnoMessage != null)
-                                {
-                                    <script>
-                                        handleMessages("@ViewBag.delnoMessage");
-                                    </script>
-                                }
-
-                                @if (ViewBag.retMessage != null)
-                                {
-                                    <script>
-                                        handleMessages("@ViewBag.retMessage");
-                                    </script>
-
-                                }
-
-                                @if (ViewBag.noretMessage != null)
-                                {
-                                    <script>
-                                        handleMessages("@ViewBag.noretMessage");
-                                    </script>
-                                }
+                        <div class="form-check form-check-inline">
+                            <input asp-for="Authorized" class="form-check-input" type="radio" value="0" id="NoRadio" />
+                            <label class="form-check-label" for="NORadio">NO</label>
+                        </div>
 
 
-        </form>
+                    </div>
+                </div>
+
+
+                <div class="col-md-12 col-lg-2">
+                </div>
+
+            </div>
+            <br />
+        </div>
+        <div class="form-group">
+            <center>
+
+                <button type="submit" style="width:180px" value="Save" class="btn btn-primary">Save</button>
+
+                <button type="submit" style="width:180px" value="Delete" name="buttonType" class="btn btn-primary">Delete</button>
+                <button type="submit" style="width:180px" value="DeleteRetrieve" name="buttonType" class="btn btn-primary">Delete Retrieve</button>
+            </center>
+        </div>
+
+
+        @if (ViewBag.Message != null)
+        {
+            <script>
+                handleMessages("@ViewBag.Message");
+            </script>
+        }
+
+        @if (ViewBag.getMessage != null)
+        {
+            <script>
+                handleMessages("@ViewBag.getMessage");
+            </script>
+        }
+
+        @if (ViewBag.delMessage != null)
+        {
+            <script>
+                handleMessages("@ViewBag.delMessage");
+            </script>
+        }
+
+        @if (ViewBag.delnoMessage != null)
+        {
+            <script>
+                handleMessages("@ViewBag.delnoMessage");
+            </script>
+        }
+
+        @if (ViewBag.retMessage != null)
+        {
+            <script>
+                handleMessages("@ViewBag.retMessage");
+            </script>
+
+        }
+
+        @if (ViewBag.noretMessage != null)
+        {
+            <script>
+                handleMessages("@ViewBag.noretMessage");
+            </script>
+        }
+
+
+</form>

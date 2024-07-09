@@ -44,11 +44,11 @@
 
       @if (rollAccessList != null)
 {
-                @if (rollAccessList.Contains("CategoryMasterModel"))
+                @if (rollAccessList.Contains("CategoryMaster"))
                 {
                     <ul class="menu-sub">
-                        <li class='menu-item@(currentPage == "/StellarBilling/CategoryMasterModel" ? " active" : "")'>
-                    <a asp-controller="StellarBilling" asp-action="CategoryMasterModel" class="menu-link">
+                        <li class='menu-item@(currentPage == "/StellarBilling/CategoryMaster" ? " active" : "")'>
+                    <a asp-controller="StellarBilling" asp-action="CategoryMaster" class="menu-link">
                         <div>Category Master</div>
           </a>
         </li>
@@ -57,12 +57,12 @@
 }
  @if (rollAccessList != null)
             {
-                @if (rollAccessList.Contains("ProductMasterModel"))
+                @if (rollAccessList.Contains("ProductMaster"))
                 {
                     <ul class="menu-sub">
 
-                        <li class='menu-item@(currentPage == "/StellarBilling/ProductMasterModel" ? " active" : "")'>
-                            <a asp-controller="StellarBilling" asp-action="ProductMasterModel" class="menu-link">
+                        <li class='menu-item@(currentPage == "/StellarBilling/ProductMaster" ? " active" : "")'>
+                            <a asp-controller="StellarBilling" asp-action="ProductMaster" class="menu-link">
 
                                 <div>Product Master</div>
                             </a>

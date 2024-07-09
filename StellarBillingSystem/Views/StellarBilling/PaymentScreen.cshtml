@@ -8,118 +8,197 @@
 <form asp-controller="StellarBilling" asp-action="AddPayment">
     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
-    <div class="container">
-        <h2 class="text-center">Customer Master</h2>
-    </div>
 
-    <div class="row mt-4">
-        <div class="col-md-6">
+    <div class="row">
+        <div class="col-md-12 col-lg-2">
+        </div>
+        <div class="col-md-12 col-lg-8">
             <div class="card">
-                <div class="card-body">
-                    <div class="form-group">
-                        <label for="BillId">Bill ID</label>
-                        <input type="text" class="form-control" id="BillId" name="BillId" value="@ViewBag.BillId" />
+                <div style="background-color:#007bff">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <div class="container">
+                            <h2 class="centered text-white" style="font-family:'Lucida Bright';margin-left:27%;">Customer Master</h2>
+                        </div>
                     </div>
-
-                    <button type="submit" class="btn btn-primary" name="buttonType" value="GetBill">Get Bill</button>
-
-                    <div class="form-group">
-                        <label for="Balance">Balance</label>
-                        <input type="text" class="form-control" id="Balance" name="Balance" value="@ViewBag.Balance" />
-                    </div>
-                    <div class="form-group">
-                        <label for="BillDate">Bill Date</label>
-                        <input type="text" class="form-control" id="BillDate" name="BillDate" value="@ViewBag.BillDate" />
-                    </div>
-                    <div class="form-group">
-                        <label for="PaymentId">Payment ID</label>
-                        <input type="text" class="form-control" id="PaymentId" name="PaymentId" value="@ViewBag.PaymentId" />
-                    </div>
-
-                    <button type="submit" class="btn btn-primary" name="buttonType" value="GetPaymentDetails">Get Payment Details </button>
-
-
-
-                    <div class="form-group">
-                        <label for="CustomerNumber">Customer Number</label>
-                        <input type="text" class="form-control" id="CustomerNumber" name="CustomerNumber" value="@ViewBag.CustomerNumber" />
-                    </div>
-
-
-                    <button type="submit" class="btn btn-primary" name="buttonType" value="GetPoints">GetPoints </button>
-                   
-                    <div class="form-group">
-                        <label for="ReedemPoints">Redeem Points</label>
-                        <input type="text" class="form-control" id="ReedemPoints" name="ReedemPoints" value="@ViewBag.ReedemPoints" />
-                    </div>
-
-                    <button type="submit" class="btn btn-primary" name="buttonType" value="Redeem">Redeem </button>
-
                 </div>
             </div>
         </div>
+    </div>
+    <br />
 
-        @if (ViewBag.Slots != null)
-        {
-            <div class="col-md-6">
-                <div class="card">
-                    <div class="card-body">
-                        <h3>Payment Details</h3>
-                        <table class="table" >
-                            <thead>
-                                <tr>
-                                    <th>Select</th>
-                                    <th>Payment Date</th>
-                                    <th>Payment Description</th>
-                                    <th>Payment Mode</th>
-                                    <th>Transaction Number</th>
-                                    <th>Payment Amount</th>
-                                </tr>
-                            </thead>
-                            <tbody>
+    <div class="row" style="height:8%">
+    </div>
 
-                                @for (int i = 0; i < ViewBag.Slots.Count; i++)
-                                {
-                                    var detail = ViewBag.Slots[i];
-                                    <tr>
-                                        <td>
-                                            <input type="radio" name="selectedSlotId" value="@detail.PaymentDiscription" />
-                                            @*  <input type="hidden" name="billDetails[@i].DetailID" value="@detail.DetailID" />
-                                        <input type="hidden" name="billDetails[@i].BillID" value="@ViewBag.BillID" /> *@
-                                        </td>
-                                        <td>
-                                            <input type="text" class="form-control" name="billpayment[@i].PaymentDate" value="@detail.PaymentDate" />
-                                        </td>
-                                        <td>
-                                            <input type="text" class="form-control" name="billpayment[@i].PaymentDiscription" value="@detail.PaymentDiscription" readonly/>
-                                        </td>
-                                        <td>
-                                            <input type="text" class="form-control" name="billpayment[@i].PaymentMode" value="@detail.PaymentMode" />
-                                        </td>
-                                        <td>
-                                            <input type="text" class="form-control" name="billpayment[@i].PaymentTransactionNumber" value="@detail.PaymentTransactionNumber" />
-                                        </td>
-                                        <td>
-                                            <input type="text" class="form-control" name="billpayment[@i].PaymentAmount" value="@detail.PaymentAmount" />
-                                        </td>
+    <div class="row gy-4">
+        <div class="col-md-12 col-lg-2">
+        </div>
+        <div class="col-md-12 col-lg-8">
+            <div class="card">
+                <div class="card-body " style="background-image: linear-gradient(to right, #FFFFFF 0%, #e0efff 51%, #add5ff 100%);">
 
-                                    </tr>
-                                }
-                            </tbody>
-                        
-                    </table>
-                    
+                    <div class="row gy-4">
+                        <div class="col-md-12 col-lg-8">
+
+
+                            <div class="form-floating form-floating-outline mb-4">
+
+                                <input type="text" class="form-control" id="BillId" name="BillId" placeholder="BillId" value="@ViewBag.BillId" />
+                                <label for="BillId" class="control-label">Bill ID</label>
+                            </div>
+                        </div>
+                        <div class="col-md-12 col-lg-1">
+                        </div>
+                        <div class="col-md-12 col-lg-2" style="align-items:center">
+                            <div class="form-group">
+                                <center>
+
+                                    <button type="submit" class="btn btn-primary" name="buttonType" value="GetBill">GetBill</button>
+
+                                </center>
+                            </div>
+
+
+                        </div>
+                    </div>
+
+
+                    <div class="form-floating form-floating-outline mb-4">
+
+                        <input type="text" class="form-control" id="Balance" name="Balance" placeholder="Balance" value="@ViewBag.Balance" />
+                        <label for="Balance" class="control-label">Balance</label>
+                    </div>
+                    <div class="form-floating form-floating-outline mb-4">
+
+                        <input type="text" class="form-control" id="BillDate" name="BillDate" placeholder="Bill Date" value="@ViewBag.BillDate" />
+                        <label for="BillDate" class="control-label">Bill Date</label>
+
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-12 col-lg-7">
+
+                            <div class="form-floating form-floating-outline mb-4">
+
+                                <input type="text" class="form-control" id="PaymentId" name="PaymentId" placeholder="Payment ID" value="@ViewBag.PaymentId" />
+                                <label for="PaymentId" class="control-label">Payment ID</label>
+
+                            </div>
+                        </div>
+                        <div class="col-md-12 col-lg-1">
+                        </div>
+                        <div class="col-md-12 col-lg-3">
+                            <center>
+                                <button type="submit" class="btn btn-primary" name="buttonType" value="GetPaymentDetails">GetPaymentDetails </button>
+                            </center>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-12 col-lg-7">
+
+                                <div class="form-floating form-floating-outline mb-4">
+
+                                    <input type="text" class="form-control" id="CustomerNumber" name="CustomerNumber" placeholder="Customer Number" value="@ViewBag.CustomerNumber" />
+                                    <label for="CustomerNumber" class="control-label">Customer Number</label>
+
+                                </div>
+                            </div>
+                            <div class="col-md-12 col-lg-1">
+                            </div>
+                            <div class="col-md-12 col-lg-3">
+
+                                <center>
+                                    <button type="submit" class="btn btn-primary" name="buttonType" value="GetPoints">GetPoints </button>
+                                </center>
+
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12 col-lg-8">
+
+
+                                    <div class="form-floating form-floating-outline mb-4">
+
+                                        <input type="text" class="form-control" id="ReedemPoints" name="ReedemPoints" placeholder="Redeem Points" value="@ViewBag.ReedemPoints" />
+                                        <label for="ReedemPoints" class="control-label">Redeem Points</label>
+
+                                    </div>
+                                </div>
+                                <div class="col-md-12 col-lg-1">
+                                </div>
+                                <div class="col-md-12 col-lg-2">
+
+                                    <center>
+                                        <button type="submit" class="btn btn-primary" name="buttonType" value="Redeem">Redeem </button>
+                                    </center>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    @if (ViewBag.Slots != null)
+                    {
+                        <div class="col-md-6">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h3>Payment Details</h3>
+                                    <table class="table">
+                                        <thead>
+                                            <tr>
+                                                <th>Select</th>
+                                                <th>Payment Date</th>
+                                                <th>Payment Description</th>
+                                                <th>Payment Mode</th>
+                                                <th>Transaction Number</th>
+                                                <th>Payment Amount</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+
+                                            @for (int i = 0; i < ViewBag.Slots.Count; i++)
+                                            {
+                                                var detail = ViewBag.Slots[i];
+                                                <tr>
+                                                    <td>
+                                                        <input type="radio" name="selectedSlotId" value="@detail.PaymentDiscription" />
+                                                        @*  <input type="hidden" name="billDetails[@i].DetailID" value="@detail.DetailID" />
+                                                <input type="hidden" name="billDetails[@i].BillID" value="@ViewBag.BillID" /> *@
+                                                    </td>
+                                                    <td>
+                                                        <input type="text" class="form-control" name="billpayment[@i].PaymentDate" value="@detail.PaymentDate" />
+                                                    </td>
+                                                    <td>
+                                                        <input type="text" class="form-control" name="billpayment[@i].PaymentDiscription" value="@detail.PaymentDiscription" readonly />
+                                                    </td>
+                                                    <td>
+                                                        <input type="text" class="form-control" name="billpayment[@i].PaymentMode" value="@detail.PaymentMode" />
+                                                    </td>
+                                                    <td>
+                                                        <input type="text" class="form-control" name="billpayment[@i].PaymentTransactionNumber" value="@detail.PaymentTransactionNumber" />
+                                                    </td>
+                                                    <td>
+                                                        <input type="text" class="form-control" name="billpayment[@i].PaymentAmount" value="@detail.PaymentAmount" />
+                                                    </td>
+
+                                                </tr>
+                                            }
+                                        </tbody>
+
+                                    </table>
+
+                                </div>
+                            </div>
+                        </div>
+                    }
                 </div>
             </div>
         </div>
-        }
     </div>
-
-    <div class="row mt-4">
-        <div class="col-md-12">
-            <button type="submit" class="btn btn-primary" name="buttonType" value="DeletePayment">Delete Payment</button>
-            <button type="submit" class="btn btn-primary" name="buttonType" value="AddPayment">AddPayment</button>
-            <button type="submit" class="btn btn-primary" name="buttonType" value="Save">Save</button>
+</br>
+    <center>
+        <div class="row mt-4">
+            <div class="col-md-12">
+                <button type="submit" class="btn btn-primary" name="buttonType" value="DeletePayment">Delete Payment</button>
+                <button type="submit" class="btn btn-primary" name="buttonType" value="AddPayment">AddPayment</button>
+                <button type="submit" class="btn btn-primary" name="buttonType" value="Save">Save</button>
+            </div>
         </div>
-    </div>
+    </center>
 </form>
