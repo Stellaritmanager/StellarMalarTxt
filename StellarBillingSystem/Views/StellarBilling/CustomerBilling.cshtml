@@ -62,7 +62,7 @@
                     <div class="row">
                         <div class="col-md-12 col-lg-3">
                             <div class="form-floating form-floating-outline mb-4">
-                                <input asp-for="BillID" class="form-control" placeholder="Bill ID" value="@Model.BillID" required />
+                                <input type="BillID" class="form-control" placeholder="Bill ID" name="BillID" value="@Model.BillID" required />
                                 <label asp-for="BillID" class="control-label">Bill ID</label>
 
                                
@@ -73,7 +73,7 @@
                         <div class="col-md-12 col-lg-3">
 
                             <div class="form-floating form-floating-outline mb-4">
-                                <input asp-for="BillDate" class="form-control" placeholder="Bill Date" type="date" value="@Model.BillDate" required />
+                                <input asp-for="BillDate" class="form-control" placeholder="Bill Date" name="BillDate" type="date" value="@Model.BillDate" required />
                                 <label asp-for="BillDate" class="control-label">Bill Date</label>
 
                                
@@ -81,7 +81,7 @@
                         </div>
                         <div class="col-md-12 col-lg-3">
                             <div class="form-floating form-floating-outline mb-4">
-                                <input asp-for="CustomerNumber" class="form-control" placeholder="Customer Number" value="@Model.CustomerNumber" required />
+                                <input asp-for="CustomerNumber" name="CustomerNumber" class="form-control" placeholder="Customer Number" value="@Model.CustomerNumber" required />
                                 <label asp-for="CustomerNumber" class="control-label">Customer Number</label>
 
                                
@@ -99,7 +99,7 @@
                         <div class="col-md-12 col-lg-3">
 
                             <div class="form-floating form-floating-outline mb-4">
-                                <input asp-for="ProductID" class="form-control" placeholder="Product ID" value="@Model.ProductID" />
+                                <input type="ProductID" class="form-control" name="ProductID" placeholder="Product ID" value="@Model.ProductID" />
                                 <label asp-for="ProductID" class="control-label">Product ID</label>
 
                               
@@ -107,7 +107,7 @@
 
                             <div class="form-floating form-floating-outline mb-4">
 
-                                <input asp-for="ProductName" class="form-control" placeholder="Product Name" value="@Model.ProductName" />
+                                <input type="ProductName" class="form-control" name="ProductName" placeholder="Product Name" value="@Model.ProductName" />
                                 <label asp-for="ProductName" class="control-label">Product Name</label>
 
                                 
@@ -115,14 +115,14 @@
 
                             <div class="form-floating form-floating-outline mb-4">
 
-                                <input asp-for="Price" class="form-control" placeholder="Price" value="@Model.Price" />
+                                <input type="Price" class="form-control" name="Price" placeholder="Price" value="@Model.Price" />
                                 <label asp-for="Price" class="control-label">Price</label>
 
                                
                             </div>
 
                             <div class="form-floating form-floating-outline mb-4">
-                                <input asp-for="Quantity" class="form-control" placeholder="Quantity" value="@Model.Quantity" />
+                                <input type="Quantity" class="form-control" name="Quantity" placeholder="Quantity" value="@Model.Quantity" />
                                 <label asp-for="Quantity" class="control-label">Quantity</label>
 
                                
@@ -191,7 +191,7 @@
 
             <div class="col-md-12 col-lg-3">
                 <div class="form-floating form-floating-outline mb-4">
-                    <input asp-for="NetPrice" class="form-control" placeholder="Net Price" value="@ViewBag.NetPrice" readonly />
+                    <input type="NetPrice" class="form-control" name="NetPrice" placeholder="Net Price" value="@ViewBag.NetPrice" readonly />
                     <label asp-for="NetPrice" class="control-label">Net Price</label>
 
 
@@ -199,7 +199,7 @@
             </div>
             <div class="col-md-12 col-lg-3">
                 <div class="form-floating form-floating-outline mb-4">
-                    <input asp-for="Totalprice" class="form-control" placeholder="Total price" value="@ViewBag.TotalPrice" readonly />
+                    <input type="Totalprice" class="form-control" name="Totalprice" placeholder="Total price" value="@ViewBag.TotalPrice" readonly />
                     <label asp-for="Totalprice" class="control-label">Total price</label>
 
 
@@ -208,7 +208,7 @@
             <div class="col-md-12 col-lg-3">
 
                 <div class="form-floating form-floating-outline mb-4">
-                    <input asp-for="TotalDiscount" class="form-control" placeholder="Total Discount" value="@ViewBag.TotalDiscount" readonly />
+                    <input type="TotalDiscount" class="form-control" name="TotalDiscount" placeholder="Total Discount" value="@ViewBag.TotalDiscount" readonly />
                     <label asp-for="TotalDiscount" class="control-label">Total Discount</label>
 
                 </div>
@@ -222,7 +222,7 @@
                     <center>
                         <button type="submit" style="width:180px" value="Save" name="buttonType" class="btn btn-primary">Save</button>
 
-                        <button type="submit" style="width:180px" value="Delete" name="buttonType" class="btn btn-primary">Delete</button>
+                        <button type="submit" style="width:180px" value="Delete Bill" name="buttonType" class="btn btn-primary">Delete Bill</button>
 
                         <button type="submit" style="width:180px" value="Payment" name="buttonType" class="btn btn-primary">Payment</button>
 
@@ -240,6 +240,19 @@
         </script>
     }
 
+    @if (ViewBag.Getnotfound != null)
+    {
+        <script>
+            handleMessages("@ViewBag.Getnotfound");
+        </script>
+    }
+
+    @if (ViewBag.DelMessage != null)
+    {
+        <script>
+            handleMessages("@ViewBag.DelMessage");
+        </script>
+    }
 
 
 

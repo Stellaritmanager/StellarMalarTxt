@@ -1735,7 +1735,7 @@ namespace HealthCare.Controllers
             //Code for print the Bill 
             if (buttonType == "Download Bill")
             {
-                String Query = "Select SD.BillID,Convert(varchar(10),SD.BillDate,101) as BillDate,SD.ProductID,Sp.ProductName, SD.Price,SD.Quantity,SD.CustomerNumber as CustomerName, SD.CustomerNumber,\r\nSD.TotalDiscount,SD.Totalprice  from SHbilldetails SD inner join SHbillmaster SB \r\non SD.BillID= SB.BillID\r\ninner join SHProductMaster SP\r\non SD.ProductID = sp.ProductID\r\n where sd.IsDelete=0 AND sd.BillID = BillID";
+                String Query = "Select SD.BillID,Convert(varchar(10),SD.BillDate,101) as BillDate,SD.ProductID,Sp.ProductName, SD.Price,SD.Quantity,SD.CustomerNumber as CustomerName, SD.CustomerNumber,\r\nSD.TotalDiscount,SD.Totalprice  from SHbilldetails SD inner join SHbillmaster SB \r\non SD.BillID= SB.BillID\r\ninner join SHProductMaster SP\r\non SD.ProductID = sp.ProductID\r\n where sd.IsDelete=0 AND sd.BillID ='"+ BillID+"'";
 
                 var Table = BusinessClassCommon.DataTable(_billingsoftware, Query);
 
@@ -1765,12 +1765,12 @@ namespace HealthCare.Controllers
 
             if (buttonType == "Get")
             {
-                var billID = model.BillID; // Assuming model contains the BillID
-                var billDate = model.BillDate; // Assuming model contains the BillDate
-                var customerNumber = model.CustomerNumber; // Assuming model contains the CustomerNumber
+                var billID = model.BillID; 
+                var billDate = model.BillDate;
+                var customerNumber = model.CustomerNumber; 
 
                 var updatedMasterex = _billingsoftware.SHbillmaster.FirstOrDefault(m =>
-                    m.BillID == billID && m.BillDate == billDate && m.CustomerNumber == customerNumber);
+                    m.BillID == billID && m.BillDate == billDate && m.CustomerNumber == customerNumber&&m.IsDelete==false);
 
                 if (updatedMasterex != null)
                 {
@@ -1791,23 +1791,57 @@ namespace HealthCare.Controllers
                             BillDate = updatedMasterex.BillDate,
                             CustomerNumber = updatedMasterex.CustomerNumber
                         },
-                        Viewbillproductlist = exbillingDetails
+                        Viewbillproductlist = exbillingDetails,
+                        BillID = billID,
+                        BillDate = updatedMasterex.BillDate,
+                        CustomerNumber = updatedMasterex.CustomerNumber
                     };
 
                     return View("CustomerBilling", viewModel);
                 }
                 else
                 {
-                    // Handle case where no matching record is found
-                    ModelState.AddModelError("", "No matching BillID, BillDate, and CustomerNumber found.");
-                    return View("CustomerBilling", model);
+
+                    BillProductlistModel promodel = new BillProductlistModel();
+                    ViewBag.Getnotfound = "No Data Found For This ID";
+                    
+                    return View("CustomerBilling",promodel);
                 }
             
  
             }
 
+            if (buttonType == "Delete Bill")
+            {
+                var billID = model.BillID;
+                var billDate = model.BillDate;
+                var customerNumber = model.CustomerNumber;
 
-            var isDeleteValue = (object)masterModel.IsDelete ?? DBNull.Value;
+                var Deltbill = _billingsoftware.SHbillmaster.FirstOrDefault(m =>
+                    m.BillID == billID && m.BillDate == billDate && m.CustomerNumber == customerNumber);
+
+                if (Deltbill != null)
+                {
+                    Deltbill.IsDelete = true;
+                    _billingsoftware.SaveChanges();
+
+                }
+                else
+                {
+
+                    BillProductlistModel promodel = new BillProductlistModel();
+                    ViewBag.Getnotfound = "No Data Found For This ID";
+                    return View("CustomerBilling", promodel);
+
+                }
+
+                    
+                     ViewBag.DelMessage = "Deleted Bill Successfully";
+                     return View("CustomerBilling",model);
+            }
+
+
+                var isDeleteValue = (object)masterModel.IsDelete ?? DBNull.Value;
 
             var parameters = new[]
    {
@@ -2024,7 +2058,7 @@ namespace HealthCare.Controllers
         }
 
 
-        public IActionResult CustomerBilling(string productid, string productname, string price, string quantity, string billid, string SelectedProductID)
+        public IActionResult CustomerBilling(string productid, string billid, string SelectedProductID)
         {
 
        
@@ -2045,7 +2079,8 @@ namespace HealthCare.Controllers
                         Price = selectedProduct.TotalAmount,
                         Quantity = b.Quantity,
                         BillDate=b.BillDate,
-                        CustomerNumber=b.CustomerNumber
+                        CustomerNumber=b.CustomerNumber,
+                        BillID=b.BillID
                        
                     })
                     .FirstOrDefault();
