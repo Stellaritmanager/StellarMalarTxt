@@ -95,7 +95,7 @@
                     </div>
                     <div class="form-floating form-floating-outline mb-4">
 
-                        <input type="text" class="form-control" id="BillDate" name="BillDate" placeholder="Bill Date" value="@ViewBag.BillDate" />
+                        <input type="date" class="form-control" id="BillDate" name="BillDate" placeholder="Bill Date" value="@ViewBag.BillDate"  />
                         <label for="BillDate" class="control-label">Bill Date</label>
 
                     </div>
@@ -188,7 +188,7 @@
                                                 <input type="hidden" name="billDetails[@i].BillID" value="@ViewBag.BillID" /> *@
                                                     </td>
                                                     <td>
-                                                        <input type="text" class="form-control" name="billpayment[@i].PaymentDate" value="@detail.PaymentDate" />
+                                                        <input type="date" class="form-control" name="billpayment[@i].PaymentDate" value="@detail.PaymentDate" type="date"/>
                                                     </td>
                                                     <td>
                                                         <input type="text" class="form-control" name="billpayment[@i].PaymentDiscription" value="@detail.PaymentDiscription" readonly />
@@ -215,14 +215,25 @@
         }
     </div>
 
-    <div class="row mt-4">
-        <div class="col-md-12">
-            <button type="submit" class="btn btn-primary" name="buttonType" value="DeletePayment">Delete Payment</button>
-            <button type="submit" class="btn btn-primary" name="buttonType" value="AddPayment">AddPayment</button>
-            <button type="submit" class="btn btn-primary" name="buttonType" value="Save">Save</button>
+ 
+
+ 
+
+                                                
+                
+            </div>
         </div>
     </div>
-
+</br>
+    <center>
+        <div class="row mt-4">
+            <div class="col-md-12">
+                <button type="submit" class="btn btn-primary" name="buttonType" value="DeletePayment">Delete Payment</button>
+                <button type="submit" class="btn btn-primary" name="buttonType" value="AddPayment">AddPayment</button>
+                <button type="submit" class="btn btn-primary" name="buttonType" value="Save">Save</button>
+            </div>
+        </div>
+    </center>
     @if (ViewBag.Message != null)
     {
         <script>
@@ -243,29 +254,4 @@
             handleMessages("@ViewBag.DeleteMessage");
         </script>
     }
-
-                                                </tr>
-                                            }
-                                        </tbody>
-
-                                    </table>
-
-                                </div>
-                            </div>
-                        </div>
-                    }
-                </div>
-            </div>
-        </div>
-    </div>
-</br>
-    <center>
-        <div class="row mt-4">
-            <div class="col-md-12">
-                <button type="submit" class="btn btn-primary" name="buttonType" value="DeletePayment">Delete Payment</button>
-                <button type="submit" class="btn btn-primary" name="buttonType" value="AddPayment">AddPayment</button>
-                <button type="submit" class="btn btn-primary" name="buttonType" value="Save">Save</button>
-            </div>
-        </div>
-    </center>
 </form>

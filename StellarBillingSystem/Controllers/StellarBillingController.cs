@@ -2211,7 +2211,7 @@ string BillId, string Balance, string BillDate, string PaymentId, string payment
                     ViewBag.BillId = firstBillDetail.BillId;
                     ViewBag.Balance = firstBillDetail.Balance;
                     ViewBag.CustomerNumber = firstBillDetail.CustomerNumber;
-                    ViewBag.ReedemPoints = firstBillDetail.ReedemPoints;
+                    //ViewBag.ReedemPoints = firstBillDetail.ReedemPoints;
                     ViewBag.Slots = firstBillDetail.Viewpayment;
                 }
                 else
@@ -2418,8 +2418,9 @@ string BillId, string Balance, string BillDate, string PaymentId, string payment
 
                 _billingsoftware.SaveChanges();
                 ViewBag.Message = "Saved Successfully";
+                return View("PaymentScreen");
             }
-            
+
             return View("PaymentScreen");
 
         }
@@ -2452,6 +2453,6 @@ string BillId, string Balance, string BillDate, string PaymentId, string payment
 
 
  }
-}
+
     
 
