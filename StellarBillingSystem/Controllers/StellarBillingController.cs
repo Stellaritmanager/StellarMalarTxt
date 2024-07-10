@@ -881,7 +881,39 @@ namespace HealthCare.Controllers
                     ViewBag.NovalueMessage = "Data Not Found";
                 }
 
-                return View("RackPatrionProduct");
+                var models = new RackpartitionViewModel
+                {
+                    Viewrackpartition = new List<RackPatrionProductModel>()
+                };
+                return View("RackPatrionProduct", models);
+            }
+
+            else if (buttonType == "Delete")
+            {
+                var rolltoretrieve = await _billingsoftware.SHRackPartionProduct.FindAsync(model.PartitionID, model.ProductID);
+                if (rolltoretrieve != null)
+                {
+                    rolltoretrieve.Isdelete = true;
+
+
+                    await _billingsoftware.SaveChangesAsync();
+
+                   
+
+                    ViewBag.retMessage = "Deleted RollID  successfully";
+
+
+                }
+                else
+                {
+                    ViewBag.NovalueMessage = "Data Not Found";
+                }
+
+                var models = new RackpartitionViewModel
+                {
+                    Viewrackpartition = new List<RackPatrionProductModel>()
+                };
+                return View("RackPatrionProduct", models);
             }
 
 
@@ -908,11 +940,29 @@ namespace HealthCare.Controllers
                         var updatestock = _billingsoftware.SHGodown.FirstOrDefault(x => x.ProductID == model.ProductID);
                         if (updatestock != null)
                         {
+                            if (string.IsNullOrEmpty(updatestock.NumberofStocks))
+                            {
+                                
+                                ViewBag.nostockMessage = "Stocks is not available.";
+
+                                var models = new RackpartitionViewModel
+                                {
+                                    Viewrackpartition = new List<RackPatrionProductModel>()
+                                };
+
+                                return View("RackPatrionProduct", models);
+                            }
+
                             int totalstock = int.Parse(updatestock.NumberofStocks);
                             int currentstock = totalstock - stockdiff;
 
                             updatestock.NumberofStocks = currentstock.ToString();
                             _billingsoftware.Entry(updatestock).State = EntityState.Modified;
+                        }
+                        else
+                        {
+                            ViewBag.godowmnmessage = "No stock is available";
+                            return View("RackPatrionProduct");
                         }
 
                         await _billingsoftware.SaveChangesAsync();
@@ -1735,7 +1785,7 @@ namespace HealthCare.Controllers
             //Code for print the Bill 
             if (buttonType == "Download Bill")
             {
-                String Query = "Select SD.BillID,Convert(varchar(10),SD.BillDate,101) as BillDate,SD.ProductID,Sp.ProductName, SD.Price,SD.Quantity,SD.CustomerNumber as CustomerName, SD.CustomerNumber,\r\nSD.TotalDiscount,SD.Totalprice  from SHbilldetails SD inner join SHbillmaster SB \r\non SD.BillID= SB.BillID\r\ninner join SHProductMaster SP\r\non SD.ProductID = sp.ProductID\r\n where sd.IsDelete=0 AND sd.BillID ='"+ BillID+"'";
+                String Query = "Select SD.BillID,Convert(varchar(10),SD.BillDate,101) as BillDate,SD.ProductID,Sp.ProductName, SD.Price,SD.Quantity,SD.CustomerNumber as CustomerName, SD.CustomerNumber,\r\nSD.TotalDiscount,SD.Totalprice as DetailTotalprice, SB.Totalprice as MasterTotalprice  from SHbilldetails SD inner join SHbillmaster SB \r\non SD.BillID= SB.BillID\r\ninner join SHProductMaster SP\r\non SD.ProductID = sp.ProductID\r\n where sd.IsDelete=0 AND sd.BillID ='" + BillID+"'";
 
                 var Table = BusinessClassCommon.DataTable(_billingsoftware, Query);
 
@@ -2035,11 +2085,18 @@ namespace HealthCare.Controllers
         }
 
         public IActionResult RackPatrionProduct()
-        {
+       {
             BusinessClassBilling business = new BusinessClassBilling(_billingsoftware);
             ViewData["godownproductid"] = business.GetProductid();
 
-            return View();
+            var model = new RackpartitionViewModel
+            {
+                Viewrackpartition = new List<RackPatrionProductModel>() 
+            };
+
+           
+
+            return View(model);
         }
 
         public IActionResult VoucherMaster()

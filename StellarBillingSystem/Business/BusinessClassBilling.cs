@@ -213,6 +213,7 @@ namespace StellarBillingSystem.Business
                 document.ReplaceText("<<custnum>>", pbillData.Rows[0]["CustomerNumber"].ToString());
                 document.ReplaceText("<<billdate>>", pbillData.Rows[0]["BillDate"].ToString());
                 document.ReplaceText("<<billno>>", pbillData.Rows[0]["BillID"].ToString());
+                document.ReplaceText("<<totalamount>>", pbillData.Rows[0]["MasterTotalprice"].ToString());
 
                 //document.ReplaceText("{Placeholder2}", "Dynamic Value 2");
 
@@ -238,7 +239,7 @@ namespace StellarBillingSystem.Business
                     table.Rows[rowcount].Cells[2].Paragraphs[0].Append(objRow["Price"].ToString());
                     table.Rows[rowcount].Cells[3].Paragraphs[0].Append(objRow["Quantity"].ToString());
                     table.Rows[rowcount].Cells[4].Paragraphs[0].Append(objRow["TotalDiscount"].ToString());
-                    table.Rows[rowcount].Cells[5].Paragraphs[0].Append(objRow["Totalprice"].ToString());
+                    table.Rows[rowcount].Cells[5].Paragraphs[0].Append(objRow["DetailTotalprice"].ToString());
                     rowcount++;
                 }
 
