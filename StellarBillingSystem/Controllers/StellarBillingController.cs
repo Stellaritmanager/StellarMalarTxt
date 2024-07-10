@@ -2171,8 +2171,6 @@ namespace HealthCare.Controllers
         }
 
 
-
-
         [HttpPost]
         public async Task<IActionResult> AddPayment(PaymentMasterModel model, PaymentDetailsModel detailsmodel, string buttonType, List<PaymentDetailsModel> billpayment, string selectedSlotId,
 string BillId, string Balance, string BillDate, string PaymentId, string paymentdescription, string CustomerNumber, string ReedemPoints, string action)
@@ -2214,6 +2212,26 @@ string BillId, string Balance, string BillDate, string PaymentId, string payment
                 ViewBag.Slots = _billingsoftware.SHPaymentDetails.Where(b => b.PaymentId == PaymentId && b.IsDelete == false).ToList();
 
             }
+            else if (buttonType == "DeletePayment" && !string.IsNullOrEmpty(selectedSlotId))
+            {
+                var detail = _billingsoftware.SHPaymentDetails
+                    .FirstOrDefault(p => p.PaymentDiscription == selectedSlotId);
+
+                if (detail != null)
+                {
+                    detail.IsDelete = true;
+                    _billingsoftware.SaveChanges();
+
+                    ViewBag.Slots = _billingsoftware.SHPaymentDetails
+                        .Where(b => b.PaymentId == PaymentId && b.IsDelete == false)
+                        .ToList();
+                }
+                ViewBag.DeleteMessage = "Deleted Successfully";
+                return View("PaymentScreen");
+            }
+
+
+
 
 
 
@@ -2250,7 +2268,7 @@ string BillId, string Balance, string BillDate, string PaymentId, string payment
                     ViewBag.BillId = firstBillDetail.BillId;
                     ViewBag.Balance = firstBillDetail.Balance;
                     ViewBag.CustomerNumber = firstBillDetail.CustomerNumber;
-                    ViewBag.ReedemPoints = firstBillDetail.ReedemPoints;
+                    //ViewBag.ReedemPoints = firstBillDetail.ReedemPoints;
                     ViewBag.Slots = firstBillDetail.Viewpayment;
                 }
                 else
@@ -2287,6 +2305,8 @@ string BillId, string Balance, string BillDate, string PaymentId, string payment
             }
 
 
+           
+
 
             if (buttonType == "GetPoints")
             {
@@ -2304,7 +2324,7 @@ string BillId, string Balance, string BillDate, string PaymentId, string payment
                     ViewBag.CustomerNumber = customer.CustomerNumber;
                     ViewBag.ReedemPoints = pointsID;
 
-
+/*
                     var billDetails = await _billingsoftware.SHPaymentMaster
                .Where(b => b.CustomerNumber == CustomerNumber && b.IsDelete == false)
                .Select(b => new PaymentTableViewModel
@@ -2341,7 +2361,7 @@ string BillId, string Balance, string BillDate, string PaymentId, string payment
                     else
                     {
                         ViewBag.Message = "Customer not found.";
-                    }
+                    }*/
                     return View("PaymentScreen");
                 }
             }
@@ -2409,6 +2429,7 @@ string BillId, string Balance, string BillDate, string PaymentId, string payment
                     .ToListAsync();
 
                 ViewBag.Slots = billDetailspay;
+                ViewBag.ReedemMessage = "Reedem Successfully";
 
             }
 
@@ -2419,7 +2440,7 @@ string BillId, string Balance, string BillDate, string PaymentId, string payment
             if (buttonType == "Save")
             {
 
-                var paymentDetail = billpayment.FirstOrDefault();
+                var paymentDetail = billpayment.FirstOrDefault(p => p.PaymentDiscription == selectedSlotId);
 
 
                 if (paymentDetail == null)
@@ -2430,9 +2451,6 @@ string BillId, string Balance, string BillDate, string PaymentId, string payment
                 }
                 else
                 {
-
-                    
-
 
                     var parameters = new[]
                     {
@@ -2456,6 +2474,8 @@ string BillId, string Balance, string BillDate, string PaymentId, string payment
                 }
 
                 _billingsoftware.SaveChanges();
+                ViewBag.Message = "Saved Successfully";
+                return View("PaymentScreen");
             }
 
             return View("PaymentScreen");
@@ -2489,6 +2509,7 @@ string BillId, string Balance, string BillDate, string PaymentId, string payment
     }
 
 
-}
+ }
+
     
 

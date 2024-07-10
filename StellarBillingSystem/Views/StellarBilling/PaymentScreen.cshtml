@@ -5,6 +5,32 @@
     Layout = "~/Views/Shared/_ContentNavbarLayout.cshtml"; // Adjust layout path as needed
 }
 
+
+<script>
+    function showPopup(message) {
+        var popup = document.getElementById("popupMessage");
+        var popupText = document.getElementById("popupMessageText");
+        var popupOKButton = document.getElementById("popupOKButton");
+
+        popupText.textContent = message; // Set the message text
+        popup.style.display = "block";
+
+        popupOKButton.addEventListener("click", function () {
+            popup.style.display = "none"; // Hide the popup when OK button is clicked
+        });
+    }
+
+    function handleMessages(message) {
+        showPopup(message);
+    }
+</script>
+
+
+<div id="popupMessage" style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background-color: #f0f0f0; color: black; padding: 30px; border: 10px solid white; border-radius: 10px; z-index: 1000; display: none; text-align: center;">
+    <span id="popupMessageText" style="display: block; margin-bottom: 20px;"></span>
+    <button id="popupOKButton" style="padding: 10px 20px; background-color: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer;">OK</button>
+</div>
+
 <form asp-controller="StellarBilling" asp-action="AddPayment">
     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
@@ -69,7 +95,7 @@
                     </div>
                     <div class="form-floating form-floating-outline mb-4">
 
-                        <input type="text" class="form-control" id="BillDate" name="BillDate" placeholder="Bill Date" value="@ViewBag.BillDate" />
+                        <input type="date" class="form-control" id="BillDate" name="BillDate" placeholder="Bill Date" value="@ViewBag.BillDate"  />
                         <label for="BillDate" class="control-label">Bill Date</label>
 
                     </div>
@@ -162,7 +188,7 @@
                                                 <input type="hidden" name="billDetails[@i].BillID" value="@ViewBag.BillID" /> *@
                                                     </td>
                                                     <td>
-                                                        <input type="text" class="form-control" name="billpayment[@i].PaymentDate" value="@detail.PaymentDate" />
+                                                        <input type="date" class="form-control" name="billpayment[@i].PaymentDate" value="@detail.PaymentDate" type="date"/>
                                                     </td>
                                                     <td>
                                                         <input type="text" class="form-control" name="billpayment[@i].PaymentDiscription" value="@detail.PaymentDiscription" readonly />
@@ -177,17 +203,24 @@
                                                         <input type="text" class="form-control" name="billpayment[@i].PaymentAmount" value="@detail.PaymentAmount" />
                                                     </td>
 
-                                                </tr>
-                                            }
-                                        </tbody>
-
-                                    </table>
-
-                                </div>
-                            </div>
-                        </div>
-                    }
+                                    </tr>
+                                }
+                            </tbody>
+                        
+                    </table>
+                    
                 </div>
+            </div>
+        </div>
+        }
+    </div>
+
+ 
+
+ 
+
+                                                
+                
             </div>
         </div>
     </div>
@@ -201,4 +234,24 @@
             </div>
         </div>
     </center>
+    @if (ViewBag.Message != null)
+    {
+        <script>
+            handleMessages("@ViewBag.Message");
+        </script>
+    }
+
+    @if (ViewBag.ReedemMessage != null)
+    {
+        <script>
+            handleMessages("@ViewBag.ReedemMessage");
+        </script>
+    }
+
+    @if (ViewBag.DeleteMessage != null)
+    {
+        <script>
+            handleMessages("@ViewBag.DeleteMessage");
+        </script>
+    }
 </form>
