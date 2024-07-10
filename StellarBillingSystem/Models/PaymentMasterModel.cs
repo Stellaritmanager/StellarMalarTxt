@@ -13,6 +13,7 @@ namespace StellarBillingSystem.Models
         private String strCustomerNumber;
         private String strReedemPoints;
         private String strBalance;
+        private String strBillDate;
         private bool strIsDelete;
         private String lastupdateduser;
         private String lastupdateddate;
@@ -27,5 +28,6 @@ namespace StellarBillingSystem.Models
         public string? Lastupdateduser { get => lastupdateduser; set => lastupdateduser = value; }
         public string? Lastupdateddate { get => lastupdateddate; set => lastupdateddate = value; }
         public string? Lastupdatedmachine { get => lastupdatedmachine; set => lastupdatedmachine = value; }
+        public string? BillDate { get => strBillDate; set => strBillDate = value; }
     }
 }
