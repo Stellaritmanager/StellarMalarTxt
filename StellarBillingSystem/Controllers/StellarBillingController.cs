@@ -292,13 +292,13 @@ namespace HealthCare.Controllers
                     model.NumberofStocks = screentoretrieve.NumberofStocks;
                     model.SupplierInformation = screentoretrieve.SupplierInformation;
 
-                    ViewBag.retMessage = "Deleted ScreenId retrieved successfully";
+                    ViewBag.retMessage = "Deleted Stock retrieved successfully";
                     return View("GodownModel", screentoretrieve);
                 }
                 else
                 {
                     ScreenMasterModel scrn = new ScreenMasterModel();
-                    ViewBag.nostockMessage = "ScreenId not found";
+                    ViewBag.nostockMessage = "Stock not found";
                 }
                 return View("GodownModel", model);
             }
@@ -328,8 +328,12 @@ namespace HealthCare.Controllers
                     model.LastUpdatedUser = User.Claims.First().Value.ToString();
                     model.LastUpdatedmachine = Request.HttpContext.Connection.RemoteIpAddress.ToString();
                     _billingsoftware.SHGodown.Add(model);
-                    await _billingsoftware.SaveChangesAsync();
+                   
                 }
+
+                  await  _billingsoftware.SaveChangesAsync();
+                ViewBag.Message = "saved Successfully";
+
             }
             if (buttonType == "Delete")
             {
@@ -750,6 +754,7 @@ namespace HealthCare.Controllers
             {
                 existingpoints.PointsID = model.PointsID;
                 existingpoints.NetPrice = model.NetPrice;
+                existingpoints.NetPoints = model.NetPoints;
                 existingpoints.LastUpdatedDate = DateTime.Now.ToString();
                 existingpoints.LastUpdatedUser = User.Claims.First().Value.ToString();
                 existingpoints.LastUpdatedmachine = Request.HttpContext.Connection.RemoteIpAddress.ToString();
@@ -917,6 +922,17 @@ namespace HealthCare.Controllers
             }
 
 
+            var recstockgodwomn = _billingsoftware.SHGodown.FirstOrDefault(x => x.ProductID == model.ProductID);
+            if (recstockgodwomn == null)
+            {
+                ViewBag.entergodowmnMessage = "Please enter the Product and Stock in Godown Master";
+                var models = new RackpartitionViewModel
+                {
+                    Viewrackpartition = new List<RackPatrionProductModel>()
+                };
+                return View("RackPatrionProduct", models);
+            }
+
             var existingrackpartition = await _billingsoftware.SHRackPartionProduct.FindAsync(model.PartitionID, model.ProductID);
             if (existingrackpartition != null)
             {
@@ -961,8 +977,12 @@ namespace HealthCare.Controllers
                         }
                         else
                         {
-                            ViewBag.godowmnmessage = "No stock is available";
-                            return View("RackPatrionProduct");
+                            var models = new RackpartitionViewModel
+                            {
+                                Viewrackpartition = new List<RackPatrionProductModel>()
+                            };
+                            ViewBag.godowmnmessage = "No stock is available check Godowmn Master";
+                            return View("RackPatrionProduct", models);
                         }
 
                         await _billingsoftware.SaveChangesAsync();
