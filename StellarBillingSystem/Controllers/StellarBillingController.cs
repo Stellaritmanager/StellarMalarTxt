@@ -877,7 +877,7 @@ namespace HealthCare.Controllers
                     model.ProductID = rolltoretrieve.ProductID;
                     model.Noofitems = rolltoretrieve.Noofitems;
 
-                    ViewBag.retMessage = "Deleted RollID retrieved successfully";
+                    ViewBag.retMessage = "Deleted ProductID retrieved successfully";
                 
                    
                 }
@@ -905,7 +905,7 @@ namespace HealthCare.Controllers
 
                    
 
-                    ViewBag.retMessage = "Deleted RollID  successfully";
+                    ViewBag.retMessage = "Deleted ProductID  successfully";
 
 
                 }
@@ -942,7 +942,21 @@ namespace HealthCare.Controllers
                     int existingstock;
                     if (int.TryParse(existingrackpartition.Noofitems, out existingstock))
                     {
-                        int stockdiff = existingstock - newStock;
+                        int totalstock = int.Parse(recstockgodwomn.NumberofStocks);
+                        int currentstock = totalstock - newStock;
+
+                        if (currentstock < 0)
+                        {
+                            ViewBag.stockErrorMessage = "Insufficient stock in Godown.";
+                            var models = new RackpartitionViewModel
+                            {
+                                Viewrackpartition = new List<RackPatrionProductModel>()
+                            };
+                            return View("RackPatrionProduct", models);
+                        }
+
+                        recstockgodwomn.NumberofStocks = currentstock.ToString();
+                        _billingsoftware.Entry(recstockgodwomn).State = EntityState.Modified;
 
                         existingrackpartition.PartitionID = model.PartitionID;
                         existingrackpartition.ProductID = model.ProductID;
@@ -953,37 +967,7 @@ namespace HealthCare.Controllers
 
                         _billingsoftware.Entry(existingrackpartition).State = EntityState.Modified;
 
-                        var updatestock = _billingsoftware.SHGodown.FirstOrDefault(x => x.ProductID == model.ProductID);
-                        if (updatestock != null)
-                        {
-                            if (string.IsNullOrEmpty(updatestock.NumberofStocks))
-                            {
-                                
-                                ViewBag.nostockMessage = "Stocks is not available.";
-
-                                var models = new RackpartitionViewModel
-                                {
-                                    Viewrackpartition = new List<RackPatrionProductModel>()
-                                };
-
-                                return View("RackPatrionProduct", models);
-                            }
-
-                            int totalstock = int.Parse(updatestock.NumberofStocks);
-                            int currentstock = totalstock - stockdiff;
-
-                            updatestock.NumberofStocks = currentstock.ToString();
-                            _billingsoftware.Entry(updatestock).State = EntityState.Modified;
-                        }
-                        else
-                        {
-                            var models = new RackpartitionViewModel
-                            {
-                                Viewrackpartition = new List<RackPatrionProductModel>()
-                            };
-                            ViewBag.godowmnmessage = "No stock is available check Godowmn Master";
-                            return View("RackPatrionProduct", models);
-                        }
+                      
 
                         await _billingsoftware.SaveChangesAsync();
                     }
@@ -1000,6 +984,17 @@ namespace HealthCare.Controllers
                         int totalstock = int.Parse(recstock.NumberofStocks);
                         int currentstock = totalstock - newStock;
 
+                        if (currentstock < 0)
+                        {
+                            ViewBag.stockErrorMessage = "Insufficient stock in Godown.";
+                            var models = new RackpartitionViewModel
+                            {
+                                Viewrackpartition = new List<RackPatrionProductModel>()
+                            };
+
+                            return View("RackPatrionProduct", models);
+                        }
+
                         recstock.NumberofStocks = currentstock.ToString();
                         _billingsoftware.Entry(recstock).State = EntityState.Modified;
                     }
@@ -1009,9 +1004,9 @@ namespace HealthCare.Controllers
                     model.LastUpdatedmachine = Request.HttpContext.Connection.RemoteIpAddress.ToString();
 
                     _billingsoftware.SHRackPartionProduct.Add(model);
-                }
 
-                await _billingsoftware.SaveChangesAsync();
+                    await _billingsoftware.SaveChangesAsync();
+                }
             }
 
             ViewBag.Message = "Saved Successfully";
@@ -1265,8 +1260,9 @@ namespace HealthCare.Controllers
                 }
                 else
                 {
+                    ResourceTypeMasterModel res = new ResourceTypeMasterModel();
                     ViewBag.delnoMessage = "ResourceTypeID not found";
-                    return View("ResourceTypeMaster");
+                    return View("ResourceTypeMaster", res);
                 }
 
             }
@@ -1287,7 +1283,9 @@ namespace HealthCare.Controllers
                 }
                 else
                 {
+                    ResourceTypeMasterModel res = new ResourceTypeMasterModel();
                     ViewBag.noretMessage = "ResourceTypeID not found";
+                    return View("ResourceTypeMaster", res);
                 }
                 return View("ResourceTypeMaster", model);
             }
@@ -1501,6 +1499,15 @@ namespace HealthCare.Controllers
 
                     if (existingroll != null)
                     {
+                        var duplicateRoll = _billingsoftware.SHrollaccess
+                     .FirstOrDefault(x => x.RollID == model.RollID && x.StaffID != model.StaffID);
+
+                        if (duplicateRoll == null)
+                        {
+                            ViewBag.ErrorMessage = "RollID already exists Cannot update same ID";
+                            return View("RollAccessMaster", model);
+                        }
+
                         existingroll.RollID = model.RollID;
                         existingroll.StaffID = model.StaffID;
                         existingroll.LastupdatedDate = DateTime.Now.ToString();

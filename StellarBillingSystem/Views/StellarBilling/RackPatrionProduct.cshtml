@@ -217,6 +217,13 @@
         </script>
     }
 
+    @if (ViewBag.stockErrorMessage != null)
+    {
+        <script>
+            handleMessages("@ViewBag.stockErrorMessage");
+        </script>
+    }
+
     
     
         </center>

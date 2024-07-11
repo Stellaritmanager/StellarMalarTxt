@@ -71,7 +71,7 @@
 
             <div class="form-floating form-floating-outline mb-4">
 
-                <input asp-for="ScreenId" value="@Model.ScreenId" class="form-control" placeholder="Screen ID" />
+                <input asp-for="ScreenId" value="@Model.ScreenId" class="form-control" placeholder="Screen ID" required />
                 <label asp-for="ScreenId" class="control-label">Screen ID</label>
                 <span asp-validation-for="ScreenId" class="text-danger"></span>
             </div>
@@ -98,7 +98,7 @@
             });
                 }
 
-                        @Html.DropDownListFor(model => model.ScreenName, screenList, "Select Screen Name", new { @class = "form-control", value = "@Model.ScreenName" })
+                        @Html.DropDownListFor(model => model.ScreenName, screenList, "Select Screen Name", new { @class = "form-control"})
                         <label asp-for="ScreenName" class="control-label">Screen Name</label>
                 <span asp-validation-for="ScreenName" class="text-danger"></span>
             </div>
