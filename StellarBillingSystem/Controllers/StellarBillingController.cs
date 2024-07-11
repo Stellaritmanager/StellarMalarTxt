@@ -2273,7 +2273,7 @@ string BillId, string Balance, string BillDate, string PaymentId, string payment
                 }
                 else
                 {
-                    ViewBag.Message = "No details found for the given Payment ID.";
+                    ViewBag.Message = "No details found for the given Bill ID.";
                 }
                 return View("PaymentScreen", billDetails);
             }
@@ -2496,20 +2496,32 @@ string BillId, string Balance, string BillDate, string PaymentId, string payment
 
             var model = new List<PaymentTableViewModel>(); // Initialize with an empty list or fetch existing payment details if needed
 
+            if (string.IsNullOrEmpty(TotalPrice) && !string.IsNullOrEmpty(BillID))
+            {
+                using (var connection = new SqlConnection("YourConnectionString"))
+                {
+                    connection.Open();
+                    var command = new SqlCommand("SELECT dbo.GenerateBillID(@BillID)", connection);
+                    command.Parameters.AddWithValue("@BillID", BillID);
+                    var balance = command.ExecuteScalar();
+                    TotalPrice = balance?.ToString() ?? "0";
+                }
+            }
+
             ViewBag.BillId = BillID;
             ViewBag.CustomerNumber = CustomerNumber;
             ViewBag.Balance = TotalPrice;
 
             return View(model);
-
         }
+
 
 
 
     }
 
 
- }
+}
 
     
 
