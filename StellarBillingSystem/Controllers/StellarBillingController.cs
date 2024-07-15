@@ -199,32 +199,39 @@ namespace HealthCare.Controllers
             {
 
 
-                if (string.IsNullOrEmpty(model.Price))
+                decimal price;
+                if (!decimal.TryParse(model.Price, out price))
                 {
-                    ViewBag.PriceErrorMessage = "Please enter a price.";
+                    ViewBag.PriceErrorMessage = "Please enter a valid price.";
                     return View("ProductMaster", model);
                 }
 
-                if (string.IsNullOrEmpty(model.CategoryID))
+                decimal discount;
+                if (!decimal.TryParse(model.DiscountCategory, out discount))
                 {
-                    ViewBag.CatErrorMessage = "Please enter a CategoryID.";
+                    ViewBag.DiscountErrorMessage = "Please select a valid discount category.";
                     return View("ProductMaster", model);
                 }
 
-                // Fetch discount price based on CategoryID
-                if (!string.IsNullOrEmpty(model.ProductID))
-                {
-                    var discountCategory = await _billingsoftware.SHDiscountCategory
-                        .FirstOrDefaultAsync(x => x.CategoryID == model.CategoryID);
-                    if (discountCategory != null)
-                    {
-                        model.DiscountCategory = discountCategory.DiscountPrice;
-                    }
-                    else
-                    {
-                        model.DiscountCategory = "0"; 
-                    }
-                }
+                /* // Fetch discount price based on CategoryID
+                 if (!string.IsNullOrEmpty(model.ProductID))
+                 {
+                     var discountCategory = await _billingsoftware.SHDiscountCategory
+                         .FirstOrDefaultAsync(x => x.CategoryID == model.CategoryID);
+                     if (discountCategory != null)
+                     {
+                         model.DiscountCategory = discountCategory.DiscountPrice;
+                     }
+                     else
+                     {
+                         model.DiscountCategory = "0"; 
+                     }
+                 }*/
+
+
+                
+                decimal totalAmount = price - (price * discount / 100);
+                model.TotalAmount = totalAmount.ToString();
 
                 var existingProduct = await _billingsoftware.SHProductMaster.FindAsync(model.ProductID);
                 if (existingProduct != null)
@@ -246,10 +253,10 @@ namespace HealthCare.Controllers
                     existingProduct.SGST = model.SGST;
                     existingProduct.CGST = model.CGST;
                     existingProduct.OtherTax= model.OtherTax;
-                    decimal price = decimal.Parse(model.Price);
-                    decimal discount = decimal.Parse(model.DiscountCategory);
-                    decimal totalAmount = price - (price * discount / 100);
-                    existingProduct.TotalAmount = totalAmount.ToString();
+                    existingProduct.Price = model.Price;
+                    existingProduct.DiscountCategory = model.DiscountCategory;
+                    existingProduct.TotalAmount = model.TotalAmount;
+                   
 
                     // existingProduct.TotalAmount = model.TotalAmount - (model.Price * model.Discount / 100 = model.TotalAmount);
                     existingProduct.LastUpdatedDate = DateTime.Now.ToString();
@@ -262,10 +269,7 @@ namespace HealthCare.Controllers
                 {
 
                     // Convert strings to decimals, calculate TotalAmount, and convert back to string
-                    decimal price = decimal.Parse(model.Price);
-                    decimal discount = decimal.Parse(model.DiscountCategory);
-                    decimal totalAmount = price - (price * discount / 100);
-                    model.TotalAmount = totalAmount.ToString();
+                   
                     model.LastUpdatedDate = DateTime.Now.ToString();
                     model.LastUpdatedUser = User.Claims.First().Value.ToString();
                     model.LastUpdatedmachine = Request.HttpContext.Connection.RemoteIpAddress.ToString();
@@ -1804,6 +1808,11 @@ namespace HealthCare.Controllers
         [HttpPost]
         public IActionResult getproductlist(ProductSelectModel model, string billid, string BillID, string buttonType, string SelectedProductID, string Quantity, string productid, string productname, string unitprice,string billdate,string customernumber)
         {
+            if (string.IsNullOrEmpty(model.ProductID) && string.IsNullOrEmpty(model.BarcodeID))
+            {
+                ViewBag.ValidationMessage = "Please enter either ProductID or BarcodeID.";
+                return View("ProductList", model);
+            }
 
             if (buttonType == "Search")
             {
@@ -1817,6 +1826,9 @@ namespace HealthCare.Controllers
                 }
 
                 model.Viewproductlist = productList;
+                model.ProductID = model.ProductID;
+                model.BarcodeID = model.BarcodeID;
+                return View("ProductList", model);
 
             }
             else if (buttonType == "Load")
