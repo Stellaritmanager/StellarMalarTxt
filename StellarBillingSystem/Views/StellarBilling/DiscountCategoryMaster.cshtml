@@ -62,22 +62,13 @@
                     <div class="row gy-4">
                         <div class="col-md-12 col-lg-6">
 
+                            <div class="form-floating form-floating-outline mb-4">
+                                <input asp-for="CategoryID" value="@Model.CategoryID" class="form-control" placeholder="Discount Category ID " required />
+                                <label asp-for="CategoryID" class="control-label">Discount Category ID </label>
 
-                    <div class="form-floating form-floating-outline mb-4">
-                        @{
-                            var getcatid = ((IEnumerable<CategoryMasterModel>)ViewData["discountcategoryid"])
-                            .Select(m => new SelectListItem
-            {
-                Value = m.CategoryID.ToString(), // Assuming ScreenId is of type int
-                Text = $"{m.CategoryID} - {m.CategoryName}"
-            });
-                        }
-
-                        @Html.DropDownListFor(model => model.CategoryID, getcatid, "Select Category ID", new { @class = "form-control", required = "required"})
-                        <label asp-for="CategoryID" class="control-label">Category ID</label>
-                        <span asp-validation-for="CategoryID" class="text-danger"></span>
-                    </div>
-
+                                <span asp-validation-for="DiscountPrice" class="text-danger"></span>
+                            </div>
+                  
                         </div>
                         <div class="col-md-12 col-lg-1">
                         </div>
@@ -102,8 +93,8 @@
             </div> *@
                     
                     <div class="form-floating form-floating-outline mb-4">
-                        <input asp-for="DiscountPrice" value="@Model.DiscountPrice" class="form-control" placeholder="Discount Price" pattern="^\d+$" title="Please enter a valid format. Only numbers are allowed." />
-                        <label asp-for="DiscountPrice" class="control-label">Discount Price</label>
+                        <input asp-for="DiscountPrice" value="@Model.DiscountPrice" class="form-control" placeholder="Discount Percentage" pattern="^\d+$" title="Please enter a valid format. Only numbers are allowed." />
+                        <label asp-for="DiscountPrice" class="control-label">Discount Percentage</label>
                       
                 <span asp-validation-for="DiscountPrice" class="text-danger"></span>
             </div>

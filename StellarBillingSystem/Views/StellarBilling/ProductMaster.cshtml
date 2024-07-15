@@ -76,6 +76,13 @@
                                 <span asp-validation-for="ProductID" class="text-danger"></span>
                             </div>
 
+                            <div class="form-floating form-floating-outline mb-4">
+                                <input asp-for="BarcodeId" class="form-control" placeholder="Barcode ID"  />
+                                <label asp-for="BarcodeId" class="control-label">Barcode ID</label>
+
+                                <span asp-validation-for="BarcodeId" class="text-danger"></span>
+                            </div>
+
                         </div>
                      
                         <div class="col-md-12 col-lg-2" style="width:110px">
@@ -136,10 +143,36 @@
                                 <span asp-validation-for="Price" class="text-danger"></span>
                             </div>
                             <div class="form-floating form-floating-outline mb-4">
-                                <input asp-for="Discount" value="@Model.Discount" class="form-control" placeholder="Discount"  readonly/>
-                                <label asp-for="Discount" class="control-label">Discount</label>
+                                <input asp-for="SGST" value="@Model.SGST" class="form-control" placeholder="SGST" />
+                                <label asp-for="SGST" class="control-label">SGST</label>
 
-                                <span asp-validation-for="Discount" class="text-danger"></span>
+                                <span asp-validation-for="SGST" class="text-danger"></span>
+                            </div>
+                            <div class="form-floating form-floating-outline mb-4">
+                                <input asp-for="CGST" value="@Model.CGST" class="form-control" placeholder="CGST" />
+                                <label asp-for="CGST" class="control-label">CGST</label>
+
+                                <span asp-validation-for="CGST" class="text-danger"></span>
+                            </div>
+                            <div class="form-floating form-floating-outline mb-4">
+                                <input asp-for="OtherTax" value="@Model.OtherTax" class="form-control" placeholder="OtherTax" />
+                                <label asp-for="OtherTax" class="control-label">OtherTax</label>
+
+                                <span asp-validation-for="SGST" class="text-danger"></span>
+                            </div>
+                            <div class="form-floating form-floating-outline mb-4">
+                                @{
+                                    var discount = ((IEnumerable<DiscountCategoryMasterModel>)ViewData["discountid"])
+                                    .Select(m => new SelectListItem
+            {
+                Value = m.DiscountPrice.ToString(), // Assuming ScreenId is of type int
+                Text = $"{m.CategoryID} - {m.DiscountPrice}"
+            });
+                                }
+
+                                @Html.DropDownListFor(model => model.DiscountCategory, discount, "Select Discount ID", new { @class = "form-control" })
+                                <label asp-for="DiscountCategory" class="control-label">Discount Category</label>
+                                <span asp-validation-for="DiscountCategory" class="text-danger"></span>
                             </div>
                             <div class="form-floating form-floating-outline mb-4">
                                 <input asp-for="TotalAmount" id="TotalAmount" value="@Model.TotalAmount" class="form-control" placeholder="Total Amount" readonly />

@@ -166,6 +166,21 @@ namespace StellarBillingSystem.Business
             return screenid;
         }
 
+        public List<DiscountCategoryMasterModel> Getdiscountid()
+
+        {
+            var discountid = (
+                        from pr in _billingContext.SHDiscountCategory
+                        select new DiscountCategoryMasterModel
+                        {
+                            CategoryID = pr.CategoryID,
+
+                            DiscountPrice = pr.DiscountPrice
+
+                        }).ToList();
+            return discountid;
+        }
+
 
         public List<String> GetRoll(string userid)
         {

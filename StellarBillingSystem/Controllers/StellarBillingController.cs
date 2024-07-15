@@ -128,6 +128,7 @@ namespace HealthCare.Controllers
         {
             BusinessClassBilling business = new BusinessClassBilling(_billingsoftware);
             ViewData["categoryid"] = business.GetCatid();
+            ViewData["discountid"] = business.Getdiscountid();
 
             if (buttonType == "Get")
             {
@@ -177,9 +178,12 @@ namespace HealthCare.Controllers
                     model.ProductName = productToRetrieve.ProductName;
                     model.Brandname = productToRetrieve.Brandname;
                     model.Price = productToRetrieve.Price;
-                    model.Discount = productToRetrieve.Discount;
+                    model.DiscountCategory = productToRetrieve.DiscountCategory;
                     model.TotalAmount = productToRetrieve.TotalAmount;
                     model.BarcodeId = productToRetrieve.BarcodeId;
+                    model.SGST = productToRetrieve.SGST;
+                    model.CGST = productToRetrieve.CGST;
+                    model.OtherTax = productToRetrieve.OtherTax;
 
                     ViewBag.Message = "Product retrieved successfully";
 
@@ -214,11 +218,11 @@ namespace HealthCare.Controllers
                         .FirstOrDefaultAsync(x => x.CategoryID == model.CategoryID);
                     if (discountCategory != null)
                     {
-                        model.Discount = discountCategory.DiscountPrice;
+                        model.DiscountCategory = discountCategory.DiscountPrice;
                     }
                     else
                     {
-                        model.Discount = "0"; 
+                        model.DiscountCategory = "0"; 
                     }
                 }
 
@@ -238,9 +242,12 @@ namespace HealthCare.Controllers
                     existingProduct.BarcodeId = model.BarcodeId;
                     existingProduct.Brandname = model.Brandname;
                     existingProduct.Price = model.Price;
-                    existingProduct.Discount = model.Discount;
+                    existingProduct.DiscountCategory = model.DiscountCategory;
+                    existingProduct.SGST = model.SGST;
+                    existingProduct.CGST = model.CGST;
+                    existingProduct.OtherTax= model.OtherTax;
                     decimal price = decimal.Parse(model.Price);
-                    decimal discount = decimal.Parse(model.Discount);
+                    decimal discount = decimal.Parse(model.DiscountCategory);
                     decimal totalAmount = price - (price * discount / 100);
                     existingProduct.TotalAmount = totalAmount.ToString();
 
@@ -256,7 +263,7 @@ namespace HealthCare.Controllers
 
                     // Convert strings to decimals, calculate TotalAmount, and convert back to string
                     decimal price = decimal.Parse(model.Price);
-                    decimal discount = decimal.Parse(model.Discount);
+                    decimal discount = decimal.Parse(model.DiscountCategory);
                     decimal totalAmount = price - (price * discount / 100);
                     model.TotalAmount = totalAmount.ToString();
                     model.LastUpdatedDate = DateTime.Now.ToString();
@@ -867,6 +874,7 @@ namespace HealthCare.Controllers
         {
             BusinessClassBilling business = new BusinessClassBilling(_billingsoftware);
             ViewData["categoryid"] = business.GetCatid();
+            ViewData["discountid"] = business.Getdiscountid();
             ProductMatserModel obj = new ProductMatserModel();
             return View("ProductMaster", obj);
         }
@@ -1850,8 +1858,8 @@ namespace HealthCare.Controllers
                         var billDetail = new BillingDetailsModel
                         {
                             BillID = TempData.Peek("BillID").ToString(),
-                            BillDate= TempData.Peek("BillDate").ToString(),
-                            CustomerNumber= TempData.Peek("CustomerNumber").ToString(),
+                            BillDate = TempData.Peek("BillDate").ToString(),
+                            CustomerNumber = TempData.Peek("CustomerNumber").ToString(),
                             ProductID = selectedProduct.ProductID,
                             ProductName = selectedProduct.ProductName,
                             Price = selectedProduct.TotalAmount,
@@ -1861,7 +1869,20 @@ namespace HealthCare.Controllers
                         _billingsoftware.SHbilldetails.Add(billDetail);
                     }
 
+                    var rackProduct = _billingsoftware.SHRackPartionProduct.FirstOrDefault(r => r.ProductID == selectedProduct.ProductID);
+                    if (rackProduct != null)
+                    {
+                        int currentNoOfItems;
+                        if (int.TryParse(rackProduct.Noofitems, out currentNoOfItems))
+                        {
+                            rackProduct.Noofitems = (currentNoOfItems - quantity).ToString();
+                            rackProduct.LastUpdatedDate = DateTime.Now.ToString();
+                            rackProduct.LastUpdatedUser = User.Claims.First().Value.ToString();
+                            rackProduct.LastUpdatedmachine = Request.HttpContext.Connection.RemoteIpAddress.ToString();
+                        }
+                    }
                     _billingsoftware.SaveChanges();
+                
 
                     return RedirectToAction("CustomerBilling", new
                     {
