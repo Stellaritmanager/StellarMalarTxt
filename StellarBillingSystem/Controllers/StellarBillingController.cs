@@ -50,14 +50,17 @@ namespace HealthCare.Controllers
                     await _billingsoftware.SaveChangesAsync();
 
                     ViewBag.Message = "Category deleted successfully";
+                    model = new CategoryMasterModel();
                     return View("CategoryMaster", model);
                 }
                 else
                 {
                     ViewBag.ErrorMessage = "Category not found";
+                    model = new CategoryMasterModel();
                     return View("CategoryMaster", model);
                 }
-
+              
+             
             }
 
             else if (buttonType == "DeleteRetrieve")
@@ -77,6 +80,7 @@ namespace HealthCare.Controllers
                 else
                 {
                     ViewBag.ErrorMessage = "Category not found";
+                    model = new CategoryMasterModel();
                 }
                 return View("CategoryMaster", model);
             }
@@ -113,6 +117,8 @@ namespace HealthCare.Controllers
 
                 ViewBag.Message = "Saved Successfully";
             }
+            model = new CategoryMasterModel();
+            
             return View("CategoryMaster", model);
         }
 
@@ -142,24 +148,27 @@ namespace HealthCare.Controllers
                 var productToDelete = await _billingsoftware.SHProductMaster.FindAsync(model.ProductID);
                 if (productToDelete != null)
                 {
-                    productToDelete.IsDelete = true; // Mark the product as deleted
+                    productToDelete.IsDelete = true; 
                     await _billingsoftware.SaveChangesAsync();
 
                     ViewBag.Message = "Product deleted successfully";
-                    return View("ProductMaster", model); // Assuming you want to return the view with the same model
+   
                 }
                 else
                 {
                     ViewBag.ErrorMessage = "Product not found";
-                    return View("ProductMaster", model); // Return the view with the model
+                   
                 }
+                model = new ProductMatserModel(); 
+               
+                return View("ProductMaster", model);
             }
             else if (buttonType == "DeleteRetrieve")
             {
                 var productToRetrieve = await _billingsoftware.SHProductMaster.FindAsync(model.ProductID);
                 if (productToRetrieve != null)
                 {
-                    productToRetrieve.IsDelete = false; // Set a specific database value to 0
+                    productToRetrieve.IsDelete = false; 
 
                     await _billingsoftware.SaveChangesAsync();
 
@@ -262,6 +271,9 @@ namespace HealthCare.Controllers
                 ViewBag.Message = "Saved Successfully";
             }
 
+            model = new ProductMatserModel(); 
+         
+
             return View("ProductMaster", model);
         }
 
@@ -340,16 +352,18 @@ namespace HealthCare.Controllers
                 var goddown = await _billingsoftware.SHGodown.FindAsync(model.ProductID, model.DatefofPurchase, model.SupplierInformation);
                 if (goddown != null)
                 {
-                    goddown.IsDelete = true; // Mark the product as deleted
+                    goddown.IsDelete = true;
                     await _billingsoftware.SaveChangesAsync();
 
                     ViewBag.delMessage = "Stock deleted successfully";
-                    return View("GodownModel", model); // Assuming you want to return the view with the same model
+                    model = new GodownModel();
+                    return View("GodownModel", model); 
                 }
                 else
                 {
                     ViewBag.nostockMessage = "Stock not found";
-                    return View("GodownModel", model); // Return the view with the model
+                    model = new GodownModel();
+                    return View("GodownModel", model); 
                 }
             }
 
@@ -374,6 +388,8 @@ namespace HealthCare.Controllers
 
             ViewBag.Message = "Saved Successfully";
 
+            model = new GodownModel();
+          
             return View("GodownModel", model);
 
         }
@@ -418,8 +434,10 @@ namespace HealthCare.Controllers
             await _billingsoftware.SaveChangesAsync();
 
             ViewBag.Message = "Saved Successfully";
+           
+            model = new CustomerMasterModel();
 
-            return View("CustomerMaster", model);
+            return View("CustomerMaster", new CustomerMasterModel());
         }
         public async Task<IActionResult> GetCustomer(string mobileNumber)
         {
@@ -445,6 +463,7 @@ namespace HealthCare.Controllers
             if (string.IsNullOrEmpty(mobileNumber))
             {
                 ViewBag.ErrorMessage = "Mobile number is required";
+
                 return View("CustomerMaster");
             }
 
@@ -472,7 +491,7 @@ namespace HealthCare.Controllers
 
 
 
-        public async Task<IActionResult> DeleteCustomer(string mobileNumber)
+        public async Task<IActionResult> DeleteCustomer(string mobileNumber,CustomerMasterModel model)
         {
             if (string.IsNullOrEmpty(mobileNumber))
             {
@@ -497,8 +516,9 @@ namespace HealthCare.Controllers
             await _billingsoftware.SaveChangesAsync();
 
             ViewBag.Message = "Deleted Successfully";
+            model = new CustomerMasterModel();
 
-            return View("CustomerMaster"); // Redirect to the main view or another appropriate view
+            return View("CustomerMaster",model);
         }
 
 
@@ -532,6 +552,8 @@ namespace HealthCare.Controllers
                     await _billingsoftware.SaveChangesAsync();
 
                     ViewBag.Message = "Discount deleted successfully";
+                    model = new DiscountCategoryMasterModel();
+
                     return View("DiscountCategoryMaster", model);
                 }
                 else
@@ -596,6 +618,9 @@ namespace HealthCare.Controllers
 
                 ViewBag.Message = "Saved Successfully";
             }
+            model = new DiscountCategoryMasterModel();
+
+            
             return View("DiscountCategoryMaster", model);
 
         }
@@ -677,10 +702,13 @@ namespace HealthCare.Controllers
 
         public async Task<IActionResult> AddNetDiscount(NetDiscountMasterModel model)
         {
-            var existingnetdiscount = await _billingsoftware.SHNetDiscountMaster.FindAsync(model.NetDiscount);
+
+            var NetID = "1";
+
+            var existingnetdiscount = await _billingsoftware.SHNetDiscountMaster.FindAsync(NetID);
             if (existingnetdiscount != null)
             {
-
+             
                 existingnetdiscount.NetDiscount = model.NetDiscount;
                 existingnetdiscount.LastUpdatedDate = DateTime.Now.ToString();
                 existingnetdiscount.LastUpdatedUser = User.Claims.First().Value.ToString();
@@ -690,7 +718,7 @@ namespace HealthCare.Controllers
             }
             else
             {
-
+                model.NetID = NetID;
                 model.LastUpdatedDate = DateTime.Now.ToString();
                 model.LastUpdatedUser = User.Claims.First().Value.ToString();
                 model.LastUpdatedmachine = Request.HttpContext.Connection.RemoteIpAddress.ToString();
@@ -701,7 +729,9 @@ namespace HealthCare.Controllers
             await _billingsoftware.SaveChangesAsync();
 
             ViewBag.Message = "Saved Successfully";
+            model = new NetDiscountMasterModel();
 
+            
             return View("NetDiscountMaster", model);
 
         }
@@ -749,10 +779,13 @@ namespace HealthCare.Controllers
 
         public async Task<IActionResult> AddPoints(PointsMasterModel model)
         {
-            var existingpoints = await _billingsoftware.SHPointsMaster.FindAsync(model.PointsID);
+
+            var pointsID = "1";
+
+            var existingpoints = await _billingsoftware.SHPointsMaster.FindAsync(pointsID);
             if (existingpoints != null)
             {
-                existingpoints.PointsID = model.PointsID;
+                
                 existingpoints.NetPrice = model.NetPrice;
                 existingpoints.NetPoints = model.NetPoints;
                 existingpoints.LastUpdatedDate = DateTime.Now.ToString();
@@ -764,6 +797,7 @@ namespace HealthCare.Controllers
             }
             else
             {
+                model.PointsID = pointsID;
                 model.LastUpdatedDate = DateTime.Now.ToString();
                 model.LastUpdatedUser = User.Claims.First().Value.ToString();
                 model.LastUpdatedmachine = Request.HttpContext.Connection.RemoteIpAddress.ToString();
@@ -776,6 +810,10 @@ namespace HealthCare.Controllers
             await _billingsoftware.SaveChangesAsync();
 
             ViewBag.Message = "Saved Successfully";
+
+            model = new PointsMasterModel();
+
+           
 
             return View("PointsMaster", model);
 
@@ -812,6 +850,7 @@ namespace HealthCare.Controllers
             await _billingsoftware.SaveChangesAsync();
 
             ViewBag.Message = "Saved Successfully";
+
 
             return View("RackMaster", model);
 
@@ -886,11 +925,11 @@ namespace HealthCare.Controllers
                     ViewBag.NovalueMessage = "Data Not Found";
                 }
 
-                var models = new RackpartitionViewModel
+                var modelsre = new RackpartitionViewModel
                 {
                     Viewrackpartition = new List<RackPatrionProductModel>()
                 };
-                return View("RackPatrionProduct", models);
+                return View("RackPatrionProduct", modelsre);
             }
 
             else if (buttonType == "Delete")
@@ -914,11 +953,11 @@ namespace HealthCare.Controllers
                     ViewBag.NovalueMessage = "Data Not Found";
                 }
 
-                var models = new RackpartitionViewModel
+                var modelsdel = new RackpartitionViewModel
                 {
                     Viewrackpartition = new List<RackPatrionProductModel>()
                 };
-                return View("RackPatrionProduct", models);
+                return View("RackPatrionProduct", modelsdel);
             }
 
 
@@ -926,11 +965,11 @@ namespace HealthCare.Controllers
             if (recstockgodwomn == null)
             {
                 ViewBag.entergodowmnMessage = "Please enter the Product and Stock in Godown Master";
-                var models = new RackpartitionViewModel
+                var modelgod = new RackpartitionViewModel
                 {
                     Viewrackpartition = new List<RackPatrionProductModel>()
                 };
-                return View("RackPatrionProduct", models);
+                return View("RackPatrionProduct", modelgod);
             }
 
             var existingrackpartition = await _billingsoftware.SHRackPartionProduct.FindAsync(model.PartitionID, model.ProductID);
@@ -948,11 +987,11 @@ namespace HealthCare.Controllers
                         if (currentstock < 0)
                         {
                             ViewBag.stockErrorMessage = "Insufficient stock in Godown.";
-                            var models = new RackpartitionViewModel
+                            var modelsins = new RackpartitionViewModel
                             {
                                 Viewrackpartition = new List<RackPatrionProductModel>()
                             };
-                            return View("RackPatrionProduct", models);
+                            return View("RackPatrionProduct", modelsins);
                         }
 
                         recstockgodwomn.NumberofStocks = currentstock.ToString();
@@ -987,12 +1026,12 @@ namespace HealthCare.Controllers
                         if (currentstock < 0)
                         {
                             ViewBag.stockErrorMessage = "Insufficient stock in Godown.";
-                            var models = new RackpartitionViewModel
+                            var modelsins = new RackpartitionViewModel
                             {
                                 Viewrackpartition = new List<RackPatrionProductModel>()
                             };
 
-                            return View("RackPatrionProduct", models);
+                            return View("RackPatrionProduct", modelsins);
                         }
 
                         recstock.NumberofStocks = currentstock.ToString();
@@ -1021,10 +1060,11 @@ namespace HealthCare.Controllers
                 Noofitems = p.Noofitems
             }).ToList();
 
-            viewmodel.Viewrackpartition = updatedViewModelList;
-
-
-            return View("RackPatrionProduct", viewmodel);
+            var models = new RackpartitionViewModel
+            {
+                Viewrackpartition = new List<RackPatrionProductModel>()
+            };
+            return View("RackPatrionProduct", models);
         }
 
 
@@ -1071,7 +1111,7 @@ namespace HealthCare.Controllers
         }
 
         // Delete Function for Rack PArtition
-        public async Task<IActionResult> Delete(string partitionID, string productID)
+        public async Task<IActionResult> Delete(string partitionID, string productID,RackpartitionViewModel viewmodel,RackPatrionProductModel model)
         {
             BusinessClassBilling business = new BusinessClassBilling(_billingsoftware);
             ViewData["godownproductid"] = business.GetProductid();
@@ -1084,7 +1124,11 @@ namespace HealthCare.Controllers
                 await _billingsoftware.SaveChangesAsync();
             }
             ViewBag.Delete = "Deleted  Successfully.";
-            return View("RackPatrionProduct");
+
+            model = new RackPatrionProductModel();
+            viewmodel.Viewrackpartition = new List<RackPatrionProductModel>();
+
+            return View("RackPatrionProduct", viewmodel);
         }
 
         // staff reg
@@ -1118,12 +1162,14 @@ namespace HealthCare.Controllers
                     await _billingsoftware.SaveChangesAsync();
 
                     ViewBag.delMessage = "StaffID deleted successfully";
-                    return View("StaffAdmin", stafftodelete);
+                    model = new StaffAdminModel();
+                    return View("StaffAdmin", model);
                 }
                 else
                 {
                     ViewBag.delnoMessage = "StaffID not found";
-                    return View("StaffAdmin");
+                    model = new StaffAdminModel();
+                    return View("StaffAdmin", model);
                 }
 
             }
@@ -1218,6 +1264,8 @@ namespace HealthCare.Controllers
             await _billingsoftware.SaveChangesAsync();
 
             ViewBag.Message = "Saved Successfully";
+
+            model = new StaffAdminModel();
             return View("StaffAdmin", model);
 
 
@@ -1256,7 +1304,9 @@ namespace HealthCare.Controllers
                     await _billingsoftware.SaveChangesAsync();
 
                     ViewBag.delMessage = "ResourceTypeID deleted successfully";
-                    return View("ResourceTypeMaster", restodelete);
+                    model = new ResourceTypeMasterModel();
+                   
+                    return View("ResourceTypeMaster", model);
                 }
                 else
                 {
@@ -1315,6 +1365,8 @@ namespace HealthCare.Controllers
             await _billingsoftware.SaveChangesAsync();
 
             ViewBag.Message = "Saved Successfully";
+            model = new ResourceTypeMasterModel();
+
             return View("ResourceTypeMaster", model);
 
 
@@ -1352,12 +1404,16 @@ namespace HealthCare.Controllers
                     await _billingsoftware.SaveChangesAsync();
 
                     ViewBag.delMessage = "RollID deleted successfully";
-                    return View("RoleAccess", roletodelete);
+                    model = new RoleAccessModel();
+
+                    return View("RoleAccess", model);
                 }
                 else
                 {
                     ViewBag.delnoMessage = "RollID not found";
-                    return View("RoleAccess");
+                    model = new RoleAccessModel();
+
+                    return View("RoleAccess", model);
                 }
 
             }
@@ -1412,8 +1468,9 @@ namespace HealthCare.Controllers
             await _billingsoftware.SaveChangesAsync();
 
             ViewBag.Message = "Saved Successfully";
-            return View("RoleAccess", model);
+            model = new RoleAccessModel();
 
+            return View("RoleAccess", model);
         }
 
         public async Task<IActionResult> AddRollmaster(RollAccessMaster model, string buttontype, List<string> SelectedRollNames)
@@ -1449,17 +1506,20 @@ namespace HealthCare.Controllers
                         await _billingsoftware.SaveChangesAsync();
 
                         ViewBag.delMessage = "RollID deleted successfully";
-                        return View("RollAccessMaster", rolltodelete);
+                        model = new RollAccessMaster();
+
+                    
+                        return View("RollAccessMaster", model);
                     }
 
                     else
                     {
                         ViewBag.delnoMessage = "RollID not found";
-                        return View("RollAccessMaster");
+                        model = new RollAccessMaster();
+                        return View("RollAccessMaster",model);
                     }
                 }
-                ViewBag.delnoMessage = "RollID not found";
-                return View("RollAccessMaster");
+                
 
             }
 
@@ -1535,7 +1595,8 @@ namespace HealthCare.Controllers
 
                 ViewBag.Message = "Saved Successfully";
             }
-                return View("RollAccessMaster", model);
+            model = new RollAccessMaster();
+            return View("RollAccessMaster", model);
             
 
         }
@@ -1566,7 +1627,8 @@ namespace HealthCare.Controllers
                     await _billingsoftware.SaveChangesAsync();
 
                     ViewBag.delMessage = "RollID deleted successfully";
-                    return View("RollTypeMaster", rolltypetodelete);
+                    model = new RollTypeMaster();
+                    return View("RollTypeMaster", model);
                 }
                 else
                 {
@@ -1625,6 +1687,8 @@ namespace HealthCare.Controllers
             await _billingsoftware.SaveChangesAsync();
 
             ViewBag.Message = "Saved Successfully";
+
+            model = new RollTypeMaster();
             return View("RollTypeMaster", model);
 
         }
@@ -1660,7 +1724,9 @@ namespace HealthCare.Controllers
                     screentodelete.IsDelete = true;
                     await _billingsoftware.SaveChangesAsync();
                     ViewBag.delMessage = "ScreenId deleted successfully";
-                    return View("ScreenMaster", screentodelete);
+                    model = new ScreenMasterModel();
+                    
+                    return View("ScreenMaster", model);
                 }
                 else
                 {
@@ -1719,6 +1785,7 @@ namespace HealthCare.Controllers
             await _billingsoftware.SaveChangesAsync();
 
             ViewBag.Message = "Saved Successfully";
+            model = new ScreenMasterModel();
             return View("ScreenMaster", model);
 
         }
@@ -1750,6 +1817,16 @@ namespace HealthCare.Controllers
                 if (string.IsNullOrEmpty(SelectedProductID))
                 {
                     ViewBag.notselect = "Please select a product.";
+                    model.Viewproductlist = _billingsoftware.SHProductMaster
+                        .Where(p => p.ProductID.Contains(model.ProductID) || p.BarcodeId.Contains(model.BarcodeID))
+                        .ToList();
+                    return View("ProductList", model);
+                }
+
+                int quantity;
+                if (!int.TryParse(Quantity, out quantity) || quantity <= 0) // Parse and check if Quantity is valid
+                {
+                    ViewBag.enterquantity = "Please enter a valid quantity.";
                     model.Viewproductlist = _billingsoftware.SHProductMaster
                         .Where(p => p.ProductID.Contains(model.ProductID) || p.BarcodeId.Contains(model.BarcodeID))
                         .ToList();
@@ -2070,7 +2147,9 @@ namespace HealthCare.Controllers
 
         public IActionResult CustomerMaster()
         {
-            return View();
+            CustomerMasterModel obj = new CustomerMasterModel();
+
+            return View("CustomerMaster", obj);
         }
 
         public IActionResult DiscountCategoryMaster()
@@ -2093,16 +2172,19 @@ namespace HealthCare.Controllers
 
         public IActionResult NetDiscountMaster()
         {
-            return View();
+            NetDiscountMasterModel par = new NetDiscountMasterModel();
+            return View("NetDiscountMaster", par);
         }
 
         public IActionResult PointsMaster()
         {
-            return View();
+            PointsMasterModel par = new PointsMasterModel();
+            return View("PointsMaster", par);
         }
 
         public IActionResult PointsReedemDetails()
         {
+
             return View();
         }
 

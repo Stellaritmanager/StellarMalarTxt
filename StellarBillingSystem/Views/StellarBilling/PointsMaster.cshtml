@@ -60,15 +60,10 @@
             <div class="card">
                 <div class="card-body " style="background-image: linear-gradient(to right, #FFFFFF 0%, #e0efff 51%, #add5ff 100%);">
 
-                    <div class="form-floating form-floating-outline mb-4">
-                        <input asp-for="PointsID" class="form-control" placeholder="Points ID" required />
-                        <label asp-for="PointsID" class="control-label">Points ID</label>
-                <span asp-validation-for="PointsID" class="text-danger"></span>
-                    </div>
-
+                   
                     <div class="form-floating form-floating-outline mb-4">
 
-                        <input asp-for="NetPrice" class="form-control" placeholder="Net Price" pattern="^\d+$" title="Please enter a valid format. Only numbers are allowed" />
+                        <input asp-for="NetPrice" class="form-control" placeholder="Net Price" value="@Model.NetPrice" pattern="^\d+$" title="Please enter a valid format. Only numbers are allowed" />
                         <label asp-for="NetPrice" class="control-label">Net Price</label>
                 <span asp-validation-for="NetPrice" class="text-danger"></span>
             </div>
@@ -76,7 +71,7 @@
 
                     <div class="form-floating form-floating-outline mb-4">
 
-                        <input asp-for="NetPoints" class="form-control" placeholder="Net Point" pattern="^\d+$" title="Please enter a valid format. Only numbers are allowed" />
+                        <input asp-for="NetPoints" class="form-control" placeholder="Net Point" value="@Model.NetPoints" pattern="^\d+$" title="Please enter a valid format. Only numbers are allowed" />
                         <label asp-for="NetPoints" class="control-label">Net Point</label>
                         <span asp-validation-for="NetPoints" class="text-danger"></span>
                     </div>

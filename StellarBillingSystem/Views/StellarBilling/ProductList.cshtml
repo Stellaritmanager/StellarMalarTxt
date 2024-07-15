@@ -89,7 +89,7 @@
                     </center>
                     <br />
                     <div class="form-floating form-floating-outline mb-4">
-                        <input asp-for="Quantity" class="form-control" placeholder="Quantity" required/>
+                        <input type="Quantity" class="form-control" name="Quantity" placeholder="Quantity" />
                         <label asp-for="Quantity" class="control-label">Quantity</label>
 
 
@@ -153,6 +153,20 @@
         </script>
     }
 
+    @if (ViewBag.notselect != null)
+    {
+        <script>
+            handleMessages("@ViewBag.notselect");
+        </script>
+    }
+
+    @if (ViewBag.enterquantity != null)
+    {
+        <script>
+            handleMessages("@ViewBag.enterquantity");
+        </script>
+    }
+    
 
 
     <div class="row" style="margin-top:40px">
