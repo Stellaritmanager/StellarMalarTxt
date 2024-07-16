@@ -97,7 +97,7 @@ namespace HealthCare.Controllers
                     existingCategory.CategoryID = model.CategoryID;
                     existingCategory.CategoryName = model.CategoryName;
                     existingCategory.LastUpdatedDate = DateTime.Now.ToString();
-                    existingCategory.LastUpdatedUser = /*User.Claims.First().Value.ToString();*/ "Admin";
+                    existingCategory.LastUpdatedUser = User.Claims.First().Value.ToString();
                     existingCategory.LastUpdatedmachine = Request.HttpContext.Connection.RemoteIpAddress.ToString();
 
                     _billingsoftware.Entry(existingCategory).State = EntityState.Modified;
@@ -1816,9 +1816,15 @@ namespace HealthCare.Controllers
 
             if (buttonType == "Search")
             {
-                var productList = _billingsoftware.SHProductMaster
-            .Where(p => p.ProductID.Contains(model.ProductID) || p.BarcodeId.Contains(model.BarcodeID))
-            .ToList();
+                var productList = (from product in _billingsoftware.SHProductMaster
+                                   join rack in _billingsoftware.SHRackPartionProduct
+                                   on product.ProductID equals rack.ProductID
+                                   where (product.ProductID.Contains(model.ProductID) || product.BarcodeId.Contains(model.BarcodeID))
+                                   select new { product, rack })
+                      .AsEnumerable() // Switch to client-side evaluation
+                      .Where(pr => int.Parse(pr.rack.Noofitems) > 0) // Perform the int.Parse on the client side
+                      .Select(pr => pr.product)
+                      .ToList();
 
                 if (productList.Count == 0)
                 {
@@ -1879,23 +1885,10 @@ namespace HealthCare.Controllers
                         };
 
                         _billingsoftware.SHbilldetails.Add(billDetail);
+
                     }
 
-                    var rackProduct = _billingsoftware.SHRackPartionProduct.FirstOrDefault(r => r.ProductID == selectedProduct.ProductID);
-                    if (rackProduct != null)
-                    {
-                        int currentNoOfItems;
-                        if (int.TryParse(rackProduct.Noofitems, out currentNoOfItems))
-                        {
-                            rackProduct.Noofitems = (currentNoOfItems - quantity).ToString();
-                            rackProduct.LastUpdatedDate = DateTime.Now.ToString();
-                            rackProduct.LastUpdatedUser = User.Claims.First().Value.ToString();
-                            rackProduct.LastUpdatedmachine = Request.HttpContext.Connection.RemoteIpAddress.ToString();
-                        }
-                    }
                     _billingsoftware.SaveChanges();
-                
-
                     return RedirectToAction("CustomerBilling", new
                     {
                         billid = TempData.Peek("BillID").ToString(),
@@ -2021,6 +2014,8 @@ namespace HealthCare.Controllers
                     return View("CustomerBilling", promodel);
 
                 }
+
+
 
                     
                      ViewBag.DelMessage = "Deleted Bill Successfully";
