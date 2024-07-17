@@ -2005,7 +2005,37 @@ namespace HealthCare.Controllers
                     Deltbill.IsDelete = true;
                     _billingsoftware.SaveChanges();
 
-                }
+                    var billDetails = _billingsoftware.SHbilldetails
+          .Where(d => d.BillID == billID && !d.IsDelete)
+          .ToList();
+
+                    foreach (var detail in billDetails)
+                    {
+                        // Mark each bill detail as deleted
+                        detail.IsDelete = true;
+
+                        // Update the quantity in the godown
+                        var godownProduct = _billingsoftware.SHGodown
+                            .FirstOrDefault(p => p.ProductID == detail.ProductID && p.IsDelete!=true);
+
+                        if (godownProduct != null)
+                        {
+
+                            if (int.TryParse(godownProduct.NumberofStocks, out int currentNoofItems) &&
+                    int.TryParse(detail.Quantity, out int detailQuantity))
+                            {
+                                godownProduct.NumberofStocks = (currentNoofItems + detailQuantity).ToString();
+
+                             
+                                _billingsoftware.Entry(godownProduct).State = EntityState.Modified;
+                            }
+                        }
+                    }
+
+                    _billingsoftware.SaveChanges();
+                
+
+            }
                 else
                 {
 
