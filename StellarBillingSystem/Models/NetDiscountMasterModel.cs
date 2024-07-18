@@ -6,8 +6,8 @@ public class NetDiscountMasterModel
 	{
 	}
 
-	
-	private String strNetDiscount;
+    private string netID;
+    private String strNetDiscount;
     private String strLastUpdatedDate;
     private String strLastUpdatedUser;
     private String strLastUpdatedmachine;
@@ -17,4 +17,5 @@ public class NetDiscountMasterModel
     public string? LastUpdatedDate { get => strLastUpdatedDate; set => strLastUpdatedDate = value; }
     public string? LastUpdatedUser { get => strLastUpdatedUser; set => strLastUpdatedUser = value; }
     public string? LastUpdatedmachine { get => strLastUpdatedmachine; set => strLastUpdatedmachine = value; }
+    public string NetID { get => netID; set => netID = value; }
 }

@@ -1,0 +1,105 @@
+USE [StellarBilling]
+GO
+/****** Object:  StoredProcedure [dbo].[InsertBillProduct]    Script Date: 10-07-2024 15:41:53 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+-- =============================================
+-- Created on: 24-05-2024
+-- =============================================
+ALTER PROCEDURE [dbo].[InsertBillProduct]
+   @BillID NVARCHAR(50),
+    @BillDate NVARCHAR(50),
+    @CustomerNumber NVARCHAR(50),
+    @TotalPrice NVARCHAR(50),
+    @TotalDiscount NVARCHAR(50),
+    @NetPrice NVARCHAR(50),
+    @LastUpdatedUser NVARCHAR(50),
+    @LastUpdatedDate NVARCHAR(50),
+    @LastUpdatedMachine NVARCHAR(50),
+    @ProductID NVARCHAR(50),
+    @ProductName NVARCHAR(100),
+    @Discount NVARCHAR(50),
+    @Price NVARCHAR(50),
+    @Quantity NVARCHAR(50)
+AS
+BEGIN
+	-- SET NOCOUNT ON added to prevent extra result sets from
+	-- interfering with SELECT statements.
+	SET NOCOUNT ON;
+	DECLARE @CountMaster int
+
+
+	Select @CountMaster = count(*) from SHBillMaster where BillID =@BillID and BillDate =@BillDate
+
+	If(@CountMaster >0)
+	Begin
+	--Update
+	
+        update SHbillmaster
+		SET
+
+         NetPrice = (select convert(varchar,sum(convert(bigint,NetPrice))) from SHbilldetails where BillID=@BillID and IsDelete=0),
+         TotalPrice = (select convert(varchar,sum(convert(bigint,Totalprice))) from SHbilldetails where BillID=@BillID and IsDelete=0),
+         TotalDiscount = (select convert(varchar,sum(convert(bigint,Discount))) from SHbilldetails where BillID=@BillID and IsDelete=0),
+         CustomerNumber = @CustomerNumber,
+         IsDelete = 0,		
+         LastUpdatedUser = @LastUpdatedUser,
+         LastUpdatedDate = @LastUpdatedDate,
+         LastUpdatedMachine = @LastUpdatedMachine
+		 Where  BillID = @BillID and BillDate=@BillDate
+	END
+	ELSE
+	Begin
+	--Insert
+	 INSERT INTO SHBillMaster
+        (
+            BillID, BillDate,NetPrice, TotalPrice, TotalDiscount, CustomerNumber, IsDelete, 
+            LastUpdatedUser, LastUpdatedDate, LastUpdatedMachine
+        )
+        VALUES
+        (
+            @BillID, @BillDate,@NetPrice, @TotalPrice, @TotalDiscount, @CustomerNumber, 0, 
+            @LastUpdatedUser, @LastUpdatedDate, @LastUpdatedMachine
+        );
+	
+	End
+		print 'test'
+	Select @CountMaster = count(*) from SHbilldetails where BillID =@BillID and ProductID =@ProductID
+	
+	print @CountMaster
+
+	If(@CountMaster >0)
+	BEGIN
+        UPDATE SHbilldetails
+        SET 
+            ProductName = @ProductName,
+            Discount = (select Discount from [SHProductMaster] where ProductID=@ProductID) ,
+            Price = @Price,
+            Quantity = @Quantity,
+            NetPrice =  convert(float,@Price)*(convert(bigint,@Quantity)),
+            TotalPrice =convert(float,@Price)*(convert(bigint,@Quantity)),
+            TotalDiscount = @TotalDiscount,
+            IsDelete = 0,
+            LastUpdatedUser = @LastUpdatedUser,
+            LastUpdatedDate = @LastUpdatedDate,
+            LastUpdatedMachine = @LastUpdatedMachine
+		Where 
+		    BillID = @BillID and 
+            ProductID = @ProductID 
+ END
+    ELSE
+    BEGIN
+        INSERT INTO SHbilldetails
+        (
+            BillID, ProductID, ProductName, Discount, Price, Quantity, NetPrice, 
+            TotalPrice, TotalDiscount, IsDelete, LastUpdatedUser, LastUpdatedDate, LastUpdatedMachine
+        )
+        VALUES
+        (
+            @BillID, @ProductID, @ProductName, @Discount, @Price, @Quantity, @NetPrice, 
+            @TotalPrice, @TotalDiscount, 0, @LastUpdatedUser, @LastUpdatedDate, @LastUpdatedMachine
+        );
+    END
+END

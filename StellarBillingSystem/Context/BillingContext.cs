@@ -115,7 +115,7 @@ namespace StellarBillingSystem.Context
 
             modelBuilder.Entity<GodownModel>().HasKey(i => new { i.ProductID,i.DatefofPurchase,i.SupplierInformation});
 
-            modelBuilder.Entity<NetDiscountMasterModel>().HasKey(i => new { i.NetDiscount });
+            modelBuilder.Entity<NetDiscountMasterModel>().HasKey(i => new { i.NetID });
 
             modelBuilder.Entity<VoucherMasterModel>().HasKey(i => new { i.VoucherID });
 

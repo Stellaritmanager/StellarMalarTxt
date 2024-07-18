@@ -72,7 +72,7 @@
                         <div class="col-md-12 col-lg-6">
 
                             <div class="form-floating form-floating-outline mb-4">
-                                <input asp-for="StaffID" value="@Model.StaffID" class="form-control" placeholder="StaffId" />
+                                <input asp-for="StaffID" value="@Model.StaffID" class="form-control" placeholder="Staff ID" required />
                                 <label asp-for="StaffID" class="control-label">Staff ID</label>
                                 <span asp-validation-for="StaffID" class="text-danger"></span>
                             </div>
@@ -95,29 +95,29 @@
                                 }
 
                                 @Html.DropDownListFor(model => model.ResourceTypeID, screenList, "Select Resource ID", new { @class = "form-control" })
-                                <label asp-for="ResourceTypeID" class="control-label"></label>
+                                <label asp-for="ResourceTypeID" class="control-label">Resource TypeID</label>
                                 <span asp-validation-for="ResourceTypeID" class="text-danger"></span>
                             </div>
 
                             <div class="form-floating form-floating-outline mb-4">
-                                <input asp-for="FirstName" value="@Model.FirstName" class="form-control" placeholder="FirstName" />
-                                <label asp-for="FirstName" class="control-label">FirstName</label>
+                                <input asp-for="FirstName" value="@Model.FirstName" class="form-control" placeholder="First Name" pattern="^[A-Za-z\s]+$" title="Customer Name should contain only letters and spaces" />
+                                <label asp-for="FirstName" class="control-label">First Name</label>
                                 <span asp-validation-for="FirstName" class="text-danger"></span>
                             </div>
 
 
                             <div class="form-floating form-floating-outline mb-4">
 
-                                <input asp-for="LastName" value="@Model.LastName" class="form-control" placeholder="LastName" />
-                                <label asp-for="LastName" class="control-label">LastName</label>
+                                <input asp-for="LastName" value="@Model.LastName" class="form-control" placeholder="Last Name" pattern="^[A-Za-z\s]+$" title="Customer Name should contain only letters and spaces" />
+                                <label asp-for="LastName" class="control-label">Last Name</label>
                                 <span asp-validation-for="LastName" class="text-danger"></span>
                             </div>
 
 
                             <div class="form-floating form-floating-outline mb-4">
 
-                                <input asp-for="FullName" value="@Model.FullName" class="form-control" placeholder="FullName" />
-                                <label asp-for="FullName" class="control-label">FullName</label>
+                                <input asp-for="FullName" value="@Model.FullName" class="form-control" placeholder="Full Name" pattern="^[A-Za-z\s]+$" title="Customer Name should contain only letters and spaces" />
+                                <label asp-for="FullName" class="control-label">Full Name</label>
                                 <span asp-validation-for="FullName" class="text-danger"></span>
                             </div>
 
@@ -135,8 +135,8 @@
                             </div>
 
                             <div class="form-floating form-floating-outline mb-4">
-                                <input asp-for="PhoneNumber" value="@Model.PhoneNumber" class="form-control" placeholder="PhoneNumber" />
-                                <label asp-for="PhoneNumber" class="control-label"></label>
+                                <input asp-for="PhoneNumber" value="@Model.PhoneNumber" class="form-control" placeholder="Phone Number" pattern="^\d{10}$" title="Mobile Number should be exactly 10 digits" />
+                                <label asp-for="PhoneNumber" class="control-label">Phone Number</label>
                                 <span asp-validation-for="PhoneNumber" class="text-danger"></span>
                             </div>
 
@@ -299,5 +299,6 @@
                 handleMessages("@ViewBag.noretMessage");
             </script>
         }
+
 
 </form>

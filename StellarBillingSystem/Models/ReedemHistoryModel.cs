@@ -10,6 +10,9 @@
         private String customerNumber;
         private String dateOfReedem;
         private String reedemPoints;
+        private String strPaymentId;
+        private String strPaymentDate;
+        private String strBillId;
         private bool isDelete;
         private String lastupdateduser;
         private String lastupdateddate;
@@ -22,6 +25,9 @@
         public string? Lastupdateduser { get => lastupdateduser; set => lastupdateduser = value; }
         public string? Lastupdateddate { get => lastupdateddate; set => lastupdateddate = value; }
         public string? Lastupdatedmachine { get => lastupdatedmachine; set => lastupdatedmachine = value; }
+        public string? PaymentId { get => strPaymentId; set => strPaymentId = value; }
+        public string? PaymentDate { get => strPaymentDate; set => strPaymentDate = value; }
+        public string? BillId { get => strBillId; set => strBillId = value; }
     }
 
    

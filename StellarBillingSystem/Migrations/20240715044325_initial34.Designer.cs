@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using StellarBillingSystem.Context;
 
@@ -11,9 +12,11 @@ using StellarBillingSystem.Context;
 namespace StellarBillingSystem.Migrations
 {
     [DbContext(typeof(BillingContext))]
-    partial class BillingContextModelSnapshot : ModelSnapshot
+    [Migration("20240715044325_initial34")]
+    partial class initial34
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -312,13 +315,10 @@ namespace StellarBillingSystem.Migrations
                     b.Property<string>("Brandname")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("CGST")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("CategoryID")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("DiscountCategory")
+                    b.Property<string>("Discount")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("IsDelete")
@@ -333,16 +333,10 @@ namespace StellarBillingSystem.Migrations
                     b.Property<string>("LastUpdatedmachine")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("OtherTax")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("Price")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ProductName")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("SGST")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("TotalAmount")

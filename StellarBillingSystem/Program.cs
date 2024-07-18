@@ -5,6 +5,8 @@ using System.Configuration;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddSession();
+
 
 builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
@@ -14,6 +16,10 @@ builder.Services.AddDbContext<BillingContext>(options => options.UseSqlServer(bu
 builder.Services.AddDbContext<BillingContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
+// Add services to the container.
+builder.Services.AddControllersWithViews();
+
+
 builder.Services.AddAuthentication(
     CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>
@@ -22,8 +28,6 @@ builder.Services.AddAuthentication(
         options.ExpireTimeSpan = TimeSpan.FromHours(1);
     }) ;
 
-// Add services to the container.
-builder.Services.AddControllersWithViews();
 
 var app = builder.Build();
 
@@ -35,6 +39,7 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 
+app.UseSession();
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 

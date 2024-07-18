@@ -30,7 +30,7 @@
 </div>
 
 <form asp-controller="StellarBilling" asp-action="AddRackPartition">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+          
 
     <div class="row">
         <div class="col-md-12 col-lg-2">
@@ -49,7 +49,6 @@
     </div>
   
     <br />
-
     <div class="row" style="height:8%">
     </div>
    
@@ -64,7 +63,7 @@
                     <div class="form-floating form-floating-outline mb-4">
 
                         <input asp-for="PartitionID" class="form-control" placeholder="Partition ID" required />
-                        <label asp-for="PartitionID" class="control-label"></label>
+                        <label asp-for="PartitionID" class="control-label">Partition ID</label>
                         <span asp-validation-for="PartitionID" class="text-danger"></span>
             </div>
                     <div class="form-floating form-floating-outline mb-4">
@@ -81,15 +80,18 @@
                         <label asp-for="ProductID" class="control-label">Product ID</label>
                         <span asp-validation-for="ProductID" class="text-danger"></span>
                     </div>
-
+                    <center>
+                    <button type="submit" value="Get" name="buttonType" class="btn btn-primary">Get</button>
+                    </center>
+                    </br >
                     <div class="form-floating form-floating-outline mb-4">
 
-                        <input asp-for="Noofitems" class="form-control" placeholder="No of items "/>
+                        <input type="Noofitems" class="form-control" name="Noofitems" value="@Model.Noofitems" placeholder="No of items " />
                         <label asp-for="Noofitems" class="control-label">No of items</label>
-                        <span asp-validation-for="Noofitems" class="text-danger"></span>
+                        
                     </div>
 
-                    <br />
+                    </br >
 
                 </div>
             </div>
@@ -103,7 +105,7 @@
     <div class="form-group">
         <center>
 
-            <button type="submit" value="Get" name="buttonType" class="btn btn-primary">Get</button>
+            <button type="submit" value="Delete" name="buttonType" class="btn btn-primary">Delete</button>
             <button type="submit" value="Save" name="buttonType" class="btn btn-primary">Save</button>
             <button type="submit"  value="DeleteRetrieve" name="buttonType" class="btn btn-primary">Delete Retrieve</button>
                         </div>
@@ -181,6 +183,47 @@
     }
 
 
+    @if (ViewBag.retMessage != null)
+    {
+        <script>
+            handleMessages("@ViewBag.retMessage");
+        </script>
+    }
+
+    @if (ViewBag.nostockMessage != null)
+    {
+        <script>
+            handleMessages("@ViewBag.nostockMessage");
+        </script>
+    }
+
+    @if (ViewBag.retMessage != null)
+    {
+        <script>
+            handleMessages("@ViewBag.retMessage");
+        </script>
+    }
+    @if (ViewBag.godowmnmessage != null)
+    {
+        <script>
+            handleMessages("@ViewBag.godowmnmessage");
+        </script>
+    }
+    @if (ViewBag.entergodowmnMessage != null)
+    {
+        <script>
+            handleMessages("@ViewBag.entergodowmnMessage");
+        </script>
+    }
+
+    @if (ViewBag.stockErrorMessage != null)
+    {
+        <script>
+            handleMessages("@ViewBag.stockErrorMessage");
+        </script>
+    }
+
+    
     
         </center>
     

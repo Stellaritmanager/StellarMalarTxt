@@ -3,6 +3,9 @@ using Microsoft.CodeAnalysis;
 using Microsoft.EntityFrameworkCore;
 using StellarBillingSystem.Context;
 using StellarBillingSystem.Models;
+using System.Data;
+using Xceed.Document.NET;
+using Xceed.Words.NET;
 
 namespace StellarBillingSystem.Business
 {
@@ -163,6 +166,21 @@ namespace StellarBillingSystem.Business
             return screenid;
         }
 
+        public List<DiscountCategoryMasterModel> Getdiscountid()
+
+        {
+            var discountid = (
+                        from pr in _billingContext.SHDiscountCategory
+                        select new DiscountCategoryMasterModel
+                        {
+                            CategoryID = pr.CategoryID,
+
+                            DiscountPrice = pr.DiscountPrice
+
+                        }).ToList();
+            return discountid;
+        }
+
 
         public List<String> GetRoll(string userid)
         {
@@ -196,7 +214,76 @@ namespace StellarBillingSystem.Business
             return $"{paymentId}_{timestamp}";
         }
 
+        //Procedure to print Bill details
+        public byte[] ModifyBillDoc(string pfilepath,DataTable pbillData)
+        {
+            // Path to your existing Word document
+            string filePath = pfilepath;
 
+            // Open the document
+            using (var document = DocX.Load(filePath))
+            {
+                // Replace placeholders with dynamic data
+                document.ReplaceText("<<custname>>", pbillData.Rows[0]["CustomerName"].ToString());
+                document.ReplaceText("<<custnum>>", pbillData.Rows[0]["CustomerNumber"].ToString());
+                document.ReplaceText("<<billdate>>", pbillData.Rows[0]["BillDate"].ToString());
+                document.ReplaceText("<<billno>>", pbillData.Rows[0]["BillID"].ToString());
+                document.ReplaceText("<<totalamount>>", pbillData.Rows[0]["MasterTotalprice"].ToString());
+
+                //document.ReplaceText("{Placeholder2}", "Dynamic Value 2");
+
+                // Insert a new paragraph
+                //  document.InsertParagraph("This is a new paragraph added to the document.").FontSize(14).Bold();
+
+                // Add a table
+                var table = document.AddTable(pbillData.Rows.Count+1, 6);
+                table.Rows[0].Cells[0].Paragraphs[0].Append("Product ID");
+                table.Rows[0].Cells[1].Paragraphs[0].Append("Product Name");
+                table.Rows[0].Cells[2].Paragraphs[0].Append("Price");
+                table.Rows[0].Cells[3].Paragraphs[0].Append("Quantity");
+                table.Rows[0].Cells[4].Paragraphs[0].Append("Total Discount");
+                table.Rows[0].Cells[5].Paragraphs[0].Append("Net Price");
+
+                int rowcount = 1;
+                //Row data
+                foreach (DataRow objRow in pbillData.Rows)
+                {
+
+                    table.Rows[rowcount].Cells[0].Paragraphs[0].Append(objRow["ProductID"].ToString());
+                    table.Rows[rowcount].Cells[1].Paragraphs[0].Append(objRow["ProductName"].ToString());
+                    table.Rows[rowcount].Cells[2].Paragraphs[0].Append(objRow["Price"].ToString());
+                    table.Rows[rowcount].Cells[3].Paragraphs[0].Append(objRow["Quantity"].ToString());
+                    table.Rows[rowcount].Cells[4].Paragraphs[0].Append(objRow["TotalDiscount"].ToString());
+                    table.Rows[rowcount].Cells[5].Paragraphs[0].Append(objRow["DetailTotalprice"].ToString());
+                    rowcount++;
+                }
+
+                string searchText = "<<billnodet>>";
+                Paragraph paragraph = document.Paragraphs.FirstOrDefault(p => p.Text.Contains(searchText));
+
+                if (paragraph != null)
+                {
+                    paragraph.InsertTableAfterSelf(table);
+                }
+
+                document.ReplaceText("<<billnodet>>", String.Empty);
+
+                // Save the document to a MemoryStream
+                using (MemoryStream memoryStream = new MemoryStream())
+                {
+                    document.SaveAs(memoryStream);
+
+                    // Convert the MemoryStream to a byte array
+                     return memoryStream.ToArray();
+                }
+
+            }
+           return null;
+        }
+        public byte[] PrintBillDetails(DataTable billDetails)
+        {
+            return ModifyBillDoc("..\\StellarBillingSystem\\Templates\\BillTemplate.docx",billDetails);
+        }
 
         /*        public async Task<bool> UpdateProduct(string productId, bool isDelete)
                 {
@@ -256,6 +343,5 @@ namespace StellarBillingSystem.Business
 
 
     }
-
-
+    
 }

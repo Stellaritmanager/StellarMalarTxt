@@ -30,13 +30,6 @@ namespace StellarBillingSystem.Controllers
         }
 
 
-        public IActionResult Index()
-        {
-            return View();
-        }
-
-
-
         public async Task<IActionResult> LogOut()
         {
 
@@ -45,8 +38,10 @@ namespace StellarBillingSystem.Controllers
             return RedirectToAction("Login", "LoginAuthentication");
         }
 
+        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
+
         [HttpPost]
-        public async Task<IActionResult> Login(StaffAdminModel model, string screenid, string rollid)
+        public async Task<IActionResult> Login(StaffAdminModel model)
         {
             var login = await _billingContext.SHStaffAdmin.FindAsync(model.UserName);
 
@@ -60,7 +55,7 @@ namespace StellarBillingSystem.Controllers
 
                     List<Claim> claims = new List<Claim>()
                 {
-                    new Claim(ClaimTypes.NameIdentifier, model.UserName),
+                    new Claim(ClaimTypes.NameIdentifier, login.UserName),
                     new Claim("OtherProperties", "Example Role")
                 };
                     ClaimsIdentity claimsIdentity = new ClaimsIdentity(claims,

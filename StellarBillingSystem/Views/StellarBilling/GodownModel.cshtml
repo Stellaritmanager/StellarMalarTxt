@@ -4,27 +4,55 @@
     ViewData["Title"] = "GodownModel";
     Layout = "~/Views/Shared/_ContentNavbarLayout.cshtml";
 }
+
+<script>
+    function showPopup(message) {
+        var popup = document.getElementById("popupMessage");
+        var popupText = document.getElementById("popupMessageText");
+        var popupOKButton = document.getElementById("popupOKButton");
+
+        popupText.textContent = message; // Set the message text
+        popup.style.display = "block";
+
+        popupOKButton.addEventListener("click", function () {
+            popup.style.display = "none"; // Hide the popup when OK button is clicked
+        });
+    }
+
+    function handleMessages(message) {
+        showPopup(message);
+    }
+</script>
+
+<div id="popupMessage" style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background-color: #f0f0f0; color: black; padding: 30px; border: 10px solid white; border-radius: 10px; z-index: 1000; display: none; text-align: center;">
+    <span id="popupMessageText" style="display: block; margin-bottom: 20px;"></span>
+    <button id="popupOKButton" style="padding: 10px 20px; background-color: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer;">OK</button>
+</div>
+
+
+
 <form asp-controller="StellarBilling">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
 
     <div class="row">
         <div class="col-md-12 col-lg-2">
         </div>
         <div class="col-md-12 col-lg-8">
-            <div class="card" style="height:40px">
-                <div class="card-body " style="background-color:#007bff">
-                    <div style="align-items:center">
-                        <div class="container" style="text-align:center">
-                            <h2 class="centered text-white" style="font-family:'Lucida Bright'">Godown Stock Master</h2>
+            <div class="card">
+                <div style="background-color:#007bff">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <div class="container">
+                            <h2 class="centered text-white" style="font-family:'Lucida Bright';margin-left:27%;">Godown</h2>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+    <br />
 
-
-    <div class="row" style="margin-top:70px">
+    <div class="row" style="height:8%">
     </div>
 
     <div class="row gy-4">
@@ -35,74 +63,89 @@
                 <div class="card-body " style="background-image: linear-gradient(to right, #FFFFFF 0%, #e0efff 51%, #add5ff 100%);">
 
                     <div class="row gy-4">
-                        <div class="col-md-12 col-lg-8">
-                    <div class="form-floating form-floating-outline mb-4">
-                        @{
-                            var screenList = ((IEnumerable<ProductMatserModel>)ViewData["godownproductid"])
-                            .Select(m => new SelectListItem
+                        <div class="col-md-12 col-lg-6">
+                            <div class="form-floating form-floating-outline mb-4">
+                                @{
+                                    var screenList = ((IEnumerable<ProductMatserModel>)ViewData["godownproductid"])
+                                    .Select(m => new SelectListItem
             {
                 Value = m.ProductID.ToString(), // Assuming ScreenId is of type int
                 Text = $"{m.ProductID} - {m.ProductName}"
             });
-                        }
+                                }
 
-                        @Html.DropDownListFor(model => model.ProductID, screenList, "Select Product ID", new { @class = "form-control", @required = "required" })
-                        <label asp-for="ProductID" class="control-label">Product ID</label>
-                        <span asp-validation-for="ProductID" class="text-danger"></span>
+                                @Html.DropDownListFor(model => model.ProductID, screenList, "Select Product ID", new { @class = "form-control", @required = "required" })
+                                <label asp-for="ProductID" class="control-label">Product ID</label>
+                                <span asp-validation-for="ProductID" class="text-danger"></span>
+                            </div>
+
+                        </div>
+
+                        <div class="col-md-12 col-lg-6" style="align-items:center">
+
+                            <div class="form-floating form-floating-outline mb-4">
+
+                                <input asp-for="DatefofPurchase" type="date" value="@Model.DatefofPurchase" class="form-control" placeholder="Date of Purchase" required />
+                                <label asp-for="DatefofPurchase" class="control-label">Date of Purchase</label>
+                                <span asp-validation-for="DatefofPurchase" class="text-danger"></span>
+                            </div>
+
+                        </div>
                     </div>
 
+
+
+                    <div class="row gy-4">
+                        <div class="col-md-12 col-lg-8">
+                            <div class="form-floating form-floating-outline mb-4">
+                                <input asp-for="SupplierInformation" value="@Model.SupplierInformation" class="form-control" placeholder="Supplier Information" required />
+                                <label asp-for="SupplierInformation" class="control-label">Supplier Information</label>
+                                <span asp-validation-for="SupplierInformation" class="text-danger"></span>
+                            </div>
+
                         </div>
-                        <div class="col-md-12 col-lg-1">
-                        </div>
-                        <div class="col-md-12 col-lg-2" style="align-items:center">
-                            <div class="form-group">
+                            <div class="col-md-12 col-lg-4">
+
+                            <div class="form-group" style="width:80px">
                                 <center>
                                     <button type="submit" value="Get" name="buttonType" asp-action="GodDown" class="btn btn-primary">Get</button>
+
                                     @if (ViewBag.getMessage != null)
                                     {
-                                        <div class="alert alert-success">
-                                            @ViewBag.getMessage
-                                        </div>
+                                        <script>
+                                            handleMessages("@ViewBag.getMessage");
+                                        </script>
                                     }
+
+
+
                                     @if (ViewBag.ErrorMessage != null)
                                     {
-                                        <div class="alert alert-success">
-                                            @ViewBag.ErrorMessage
-                                        </div>
+                                        <script>
+                                            handleMessages("@ViewBag.ErrorMessage");
+                                        </script>
                                     }
+
+
+
+
 
                                 </center>
                             </div>
 
 
-                        </div>
+                            </div>                        
                     </div>
+                  
 
 
-
-
-
+                   
                     <div class="form-floating form-floating-outline mb-4">
 
                         <input asp-for="NumberofStocks" value="@Model.NumberofStocks" class="form-control" placeholder="Number of Stocks" />
                         <label asp-for="NumberofStocks" class="control-label">Number of Stocks</label>
-                <span asp-validation-for="NumberofStocks" class="text-danger"></span>
-            </div>
-
-                    <div class="form-floating form-floating-outline mb-4">
-
-                        <input asp-for="DatefofPurchase" type="date" value="@Model.DatefofPurchase" class="form-control" placeholder="Date of Purchase" required/>
-                        <label asp-for="DatefofPurchase"  class="control-label">Date of Purchase</label>
-                        <span asp-validation-for="DatefofPurchase" class="text-danger"></span>
-            </div>
-
-                    <div class="form-floating form-floating-outline mb-4">
-                        <input asp-for="SupplierInformation" value="@Model.SupplierInformation" class="form-control" placeholder="Supplier Information" required/>
-                        <label asp-for="SupplierInformation" class="control-label">Supplier Information</label>
-                        <span asp-validation-for="SupplierInformation" class="text-danger"></span>
-            </div>
-                    <br />
-
+                        <span asp-validation-for="NumberofStocks" class="text-danger"></span>
+                    </div>
 
                 </div>
             </div>
@@ -120,28 +163,44 @@
 
 
             <button type="submit" value="Save" name="buttonType" asp-action="GodDown" class="btn btn-primary">Save</button>
-                            @if (ViewBag.Message != null)
-                            {
-                                <div class="alert alert-success">
-                                    @ViewBag.Message
-                                </div>
-                            }
+
+
+            @if (ViewBag.Message != null)
+            {
+                <script>
+                    handleMessages("@ViewBag.Message");
+                </script>
+            }
+
             <button type="submit" value="Delete" name="buttonType" asp-action="GodDown" class="btn btn-primary">Delete</button>
+
+
             @if (ViewBag.delMessage != null)
             {
-                <div class="alert alert-success">
-                    @ViewBag.delMessage
-                </div>
+                <script>
+                    handleMessages("@ViewBag.delMessage");
+                </script>
             }
+
             @if (ViewBag.nostockMessage != null)
             {
-                <div class="alert alert-success">
-                    @ViewBag.nostockMessage
-                </div>
+                <script>
+                    handleMessages("@ViewBag.nostockMessage");
+                </script>
+            }
+
+            <button type="submit" asp-action="GodDown" value="DeleteRetrieve" name="buttonType" class="btn btn-primary">Delete Retrieve</button>
+
+
+            @if (ViewBag.retMessage != null)
+            {
+                <script>
+                    handleMessages("@ViewBag.retMessage");
+                </script>
             }
 
         </center>
     </div>
 
 
-        </form>
+</form>
