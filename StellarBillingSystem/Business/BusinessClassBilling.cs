@@ -339,6 +339,83 @@ namespace StellarBillingSystem.Business
 
 
 
+        public string GeneratePaymentDescriptionreport(string paymentId)
+        {
+            string timestamp = DateTime.Now.ToString("HH:mm:ss");
+            return $"{paymentId}_{timestamp}";
+        }
+
+        //Procedure to print Bill details
+        public byte[] ModifypaymentDoc(string pfilepath, DataTable pbillData)
+        {
+            // Path to your existing Word document
+            string filePath = pfilepath;
+
+            // Open the document
+            using (var document = DocX.Load(filePath))
+            {
+                // Replace placeholders with dynamic data
+                document.ReplaceText("<<custname>>", pbillData.Rows[0]["CustomerName"].ToString());
+                document.ReplaceText("<<custnum>>", pbillData.Rows[0]["CustomerNumber"].ToString());
+                document.ReplaceText("<<billdate>>", pbillData.Rows[0]["BillDate"].ToString());
+                document.ReplaceText("<<billno>>", pbillData.Rows[0]["BillID"].ToString());
+                document.ReplaceText("<<paymentno>>", pbillData.Rows[0]["PaymentId"].ToString());
+
+                //document.ReplaceText("{Placeholder2}", "Dynamic Value 2");
+
+                // Insert a new paragraph
+                //  document.InsertParagraph("This is a new paragraph added to the document.").FontSize(14).Bold();
+
+                // Add a table
+                var table = document.AddTable(pbillData.Rows.Count + 1, 5);
+                table.Rows[0].Cells[0].Paragraphs[0].Append("Payment Description");
+                table.Rows[0].Cells[1].Paragraphs[0].Append("Payment Mode");
+                table.Rows[0].Cells[2].Paragraphs[0].Append("Payment Transaction Number");
+                table.Rows[0].Cells[3].Paragraphs[0].Append("Payment Amount");
+                table.Rows[0].Cells[4].Paragraphs[0].Append("Payment Date");
+               
+
+                int rowcount = 1;
+                //Row data
+                foreach (DataRow objRow in pbillData.Rows)
+                {
+
+                    table.Rows[rowcount].Cells[0].Paragraphs[0].Append(objRow["PaymentDiscription"].ToString());
+                    table.Rows[rowcount].Cells[1].Paragraphs[0].Append(objRow["PaymentMode"].ToString());
+                    table.Rows[rowcount].Cells[2].Paragraphs[0].Append(objRow["PaymentTransactionNumber"].ToString());
+                    table.Rows[rowcount].Cells[3].Paragraphs[0].Append(objRow["PaymentAmount"].ToString());
+                    table.Rows[rowcount].Cells[4].Paragraphs[0].Append(objRow["PaymentDate"].ToString());
+                    rowcount++;
+                }
+
+                string searchText = "<<paymentnode>>";
+                Paragraph paragraph = document.Paragraphs.FirstOrDefault(p => p.Text.Contains(searchText));
+
+                if (paragraph != null)
+                {
+                    paragraph.InsertTableAfterSelf(table);
+                }
+
+                document.ReplaceText("<<paymentnode>>", String.Empty);
+
+                // Save the document to a MemoryStream
+                using (MemoryStream memoryStream = new MemoryStream())
+                {
+                    document.SaveAs(memoryStream);
+
+                    // Convert the MemoryStream to a byte array
+                    return memoryStream.ToArray();
+                }
+
+            }
+            return null;
+        }
+        public byte[] PrintpaymentDetails(DataTable billDetails)
+        {
+            return ModifypaymentDoc("..\\StellarBillingSystem\\Templates\\Payment Template.docx", billDetails);
+        }
+
+
 
 
 
