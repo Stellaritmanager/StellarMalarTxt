@@ -72,15 +72,12 @@ namespace StellarBillingSystem.Controllers
 
                     var rolldetail = Busreg.GetRoll(model.UserName);
 
-
-
+                    TempData["UserName"] = model.UserName;
                     // Set TempData with the filtered roll details
                     TempData["RollAccess"] = JsonConvert.SerializeObject(rolldetail);
 
-
-
-
-                    return RedirectToAction("Index","Home");
+                    
+                    return RedirectToAction("Index", "Home");
                 }
 
             }
