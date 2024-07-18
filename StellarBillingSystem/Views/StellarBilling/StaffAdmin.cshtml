@@ -34,28 +34,28 @@
 
 <form asp-action="AddStaff" asp-controller="StellarBilling">
     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-
-
-
     <div class="row">
         <div class="col-md-12 col-lg-2">
         </div>
         <div class="col-md-12 col-lg-8">
-            <div class="card">
-                <div style="background-color:#007bff">
-                    <div class="card-header d-flex justify-content-between align-items-center">
-                        <div class="container">
-                            <h2 class="centered text-white" style="font-family:'Lucida Bright';margin-left:27%;">StaffAdmin</h2>
+            <div class="card" style="height:40px">
+                <div class="card-body " style="background-color:#007bff">
+                    <div style="align-items:center">
+                        <div class="container" style="text-align:center">
+                            <h2 class="centered text-white" style="font-family:'Lucida Bright'">StaffAdmin</h2>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+
+  
     <br />
 
     <div class="row" style="height:8%">
     </div>
+  
 
     <div class="row">
         <div class="col-md-12 col-lg-2">
@@ -84,7 +84,7 @@
                     <div class="row">
                         <div class="col-md-12 col-lg-4">
 
-                                                    <div class="form-floating form-floating-outline mb-4">
+                            <div class="form-floating form-floating-outline mb-4">
                                 @{
                                     var screenList = ((IEnumerable<ResourceTypeMasterModel>)ViewData["resoruseid"])
                                     .Select(m => new SelectListItem
@@ -142,75 +142,75 @@
 
                         </div>
 
-                            <div class="col-md-12 col-lg-4">
+                        <div class="col-md-12 col-lg-4">
 
-                                <div class="form-floating form-floating-outline mb-4">
+                            <div class="form-floating form-floating-outline mb-4">
 
-                                    <input asp-for="DateofBirth" value="@Model.DateofBirth" class="form-control" placeholder="DateofBirth" />
-                                    <label asp-for="DateofBirth" class="control-label">DateofBirth</label>
-                                    <span asp-validation-for="DateofBirth" class="text-danger"></span>
+                                <input asp-for="DateofBirth" value="@Model.DateofBirth" class="form-control" placeholder="DateofBirth" />
+                                <label asp-for="DateofBirth" class="control-label">DateofBirth</label>
+                                <span asp-validation-for="DateofBirth" class="text-danger"></span>
+                            </div>
+
+                            <div class="form-floating form-floating-outline mb-4">
+
+                                <input asp-for="Age" value="@Model.Age" class="form-control" placeholder="Age" />
+                                <label asp-for="Age" class="control-label">Age</label>
+                                <span asp-validation-for="Age" class="text-danger"></span>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="control-label">Gender:</label><br />
+                                <div class="form-check form-check-inline">
+                                    <input asp-for="Gender" value="@Model.Gender" class="form-check-input" type="radio" value="Male" id="maleRadio" />
+                                    <label class="form-check-label" for="maleRadio">Male</label>
                                 </div>
-
-                                <div class="form-floating form-floating-outline mb-4">
-
-                                    <input asp-for="Age" value="@Model.Age" class="form-control" placeholder="Age" />
-                                    <label asp-for="Age" class="control-label">Age</label>
-                                    <span asp-validation-for="Age" class="text-danger"></span>
+                                <div class="form-check form-check-inline">
+                                    <input asp-for="Gender" value="@Model.Gender" class="form-check-input" type="radio" value="Female" id="femaleRadio" />
+                                    <label class="form-check-label" for="femaleRadio">Female</label>
                                 </div>
-
-                                <div class="form-group">
-                                    <label class="control-label">Gender:</label><br />
-                                    <div class="form-check form-check-inline">
-                                        <input asp-for="Gender" value="@Model.Gender" class="form-check-input" type="radio" value="Male" id="maleRadio" />
-                                        <label class="form-check-label" for="maleRadio">Male</label>
-                                    </div>
-                                    <div class="form-check form-check-inline">
-                                        <input asp-for="Gender" value="@Model.Gender" class="form-check-input" type="radio" value="Female" id="femaleRadio" />
-                                        <label class="form-check-label" for="femaleRadio">Female</label>
-                                    </div>
-                                    <div class="form-check form-check-inline">
-                                        <input asp-for="Gender" value="@Model.Gender" class="form-check-input" type="radio" value="Other" id="otherRadio" />
-                                        <label class="form-check-label" for="otherRadio">Other</label>
-                                    </div>
-                                    <span asp-validation-for="Gender" class="text-danger"></span>
+                                <div class="form-check form-check-inline">
+                                    <input asp-for="Gender" value="@Model.Gender" class="form-check-input" type="radio" value="Other" id="otherRadio" />
+                                    <label class="form-check-label" for="otherRadio">Other</label>
                                 </div>
-                                <div class="input-group input-group-merge speech-to-text form-floating form-floating-outline mb-4">
-                                    <textarea asp-for="Address1" value="@Model.Address1" class="form-control" placeholder="Address1" aria-describedby="text-to-speech-addon"></textarea>
-                                    <label asp-for="Address1" class="control-label">Address1</label>
-                                    <span class="input-group-text" id="text-to-speech-addon">
-                                        <i class="mdi mdi-microphone-outline cursor-pointer text-to-speech-toggle"></i>
-                                    </span>
+                                <span asp-validation-for="Gender" class="text-danger"></span>
+                            </div>
+                            <div class="input-group input-group-merge speech-to-text form-floating form-floating-outline mb-4">
+                                <textarea asp-for="Address1" value="@Model.Address1" class="form-control" placeholder="Address1" aria-describedby="text-to-speech-addon"></textarea>
+                                <label asp-for="Address1" class="control-label">Address1</label>
+                                <span class="input-group-text" id="text-to-speech-addon">
+                                    <i class="mdi mdi-microphone-outline cursor-pointer text-to-speech-toggle"></i>
+                                </span>
 
-                                    <span asp-validation-for="Address1" class="text-danger"></span>
-                                </div>
+                                <span asp-validation-for="Address1" class="text-danger"></span>
+                            </div>
 
 
 
-                                <div class="form-floating form-floating-outline mb-4">
-                                    <input asp-for="City" value="@Model.City" class="form-control" placeholder="City" />
-                                    <label asp-for="City" class="control-label">City</label>
-                                    <span asp-validation-for="City" class="text-danger"></span>
-                                </div>
+                            <div class="form-floating form-floating-outline mb-4">
+                                <input asp-for="City" value="@Model.City" class="form-control" placeholder="City" />
+                                <label asp-for="City" class="control-label">City</label>
+                                <span asp-validation-for="City" class="text-danger"></span>
+                            </div>
 
-                                <div class="form-floating form-floating-outline mb-4">
-                                    <input asp-for="State" value="@Model.State" class="form-control" placeholder="State" />
-                                    <label asp-for="State" class="control-label">State</label>
-                                    <span asp-validation-for="State" class="text-danger"></span>
-                                </div>
-                                <div class="form-floating form-floating-outline mb-4">
-                                    <input asp-for="Pin" value="@Model.Pin" class="form-control" placeholder="Pin" />
-                                    <label asp-for="Pin" class="control-label">Pin</label>
-                                    <span asp-validation-for="Pin" class="text-danger"></span>
-                                </div>
+                            <div class="form-floating form-floating-outline mb-4">
+                                <input asp-for="State" value="@Model.State" class="form-control" placeholder="State" />
+                                <label asp-for="State" class="control-label">State</label>
+                                <span asp-validation-for="State" class="text-danger"></span>
+                            </div>
+                            <div class="form-floating form-floating-outline mb-4">
+                                <input asp-for="Pin" value="@Model.Pin" class="form-control" placeholder="Pin" />
+                                <label asp-for="Pin" class="control-label">Pin</label>
+                                <span asp-validation-for="Pin" class="text-danger"></span>
+                            </div>
                         </div>
 
                         <div class="col-md-12 col-lg-4">
-                                
-                                <div class="form-floating form-floating-outline mb-4">
+                            <div class="form-floating form-floating-outline mb-4">
                                 <input asp-for="EmailId" value="@Model.EmailId" class="form-control" placeholder="EmailId" />
                                 <label asp-for="EmailId" class="control-label">EmailId</label>
                                 <span asp-validation-for="EmailId" class="text-danger"></span>
                             </div>
+                           
                             <div class="form-floating form-floating-outline mb-4">
                                 <input asp-for="Nationality" value="@Model.Nationality" class="form-control" placeholder="Nationality" />
                                 <label asp-for="Nationality" class="control-label">Nationality</label>
@@ -249,56 +249,55 @@
 
             <div class="form-group">
                 <center>
-                                <button type="submit" style="width:180px" value="Save" class="btn btn-primary">Save</button>
+                    <button type="submit" style="width:180px" value="Save" class="btn btn-primary">Save</button>
 
-                                <button type="submit" style="width:180px" value="Delete" name="buttonType" class="btn btn-primary">Delete</button>
-                                <button type="submit" style="width:180px" value="DeleteRetrieve" name="buttonType" class="btn btn-primary">Delete Retrieve</button>
-                    </center>
-                            </div>
-                            </div>
+                    <button type="submit" style="width:180px" value="Delete" name="buttonType" class="btn btn-primary">Delete</button>
+                    <button type="submit" style="width:180px" value="DeleteRetrieve" name="buttonType" class="btn btn-primary">Delete Retrieve</button>
+                </center>
+            </div>
+        </div>
 
-                            @if (ViewBag.Message != null)
-                            {
-                                <script>
-                                    handleMessages("@ViewBag.Message");
-                                </script>
-                            }
+        @if (ViewBag.Message != null)
+        {
+            <script>
+                handleMessages("@ViewBag.Message");
+            </script>
+        }
 
-                            @if (ViewBag.getMessage != null)
-                            {
-                                <script>
-                                    handleMessages("@ViewBag.getMessage");
-                                </script>
-                            }
+        @if (ViewBag.getMessage != null)
+        {
+            <script>
+                handleMessages("@ViewBag.getMessage");
+            </script>
+        }
 
-                            @if (ViewBag.delMessage != null)
-                            {
-                                <script>
-                                    handleMessages("@ViewBag.delMessage");
-                                </script>
-                            }
+        @if (ViewBag.delMessage != null)
+        {
+            <script>
+                handleMessages("@ViewBag.delMessage");
+            </script>
+        }
 
-                            @if (ViewBag.delnoMessage != null)
-                            {
-                                <script>
-                                    handleMessages("@ViewBag.delnoMessage");
-                                </script>
-                            }
+        @if (ViewBag.delnoMessage != null)
+        {
+            <script>
+                handleMessages("@ViewBag.delnoMessage");
+            </script>
+        }
 
-                            @if (ViewBag.retMessage != null)
-                            {
-                                <script>
-                                    handleMessages("@ViewBag.retMessage");
-                                </script>
+        @if (ViewBag.retMessage != null)
+        {
+            <script>
+                handleMessages("@ViewBag.retMessage");
+            </script>
 
-                            }
+        }
 
-                            @if (ViewBag.noretMessage != null)
-                            {
-                                <script>
-                                    handleMessages("@ViewBag.noretMessage");
-                                </script>
-                            }
+        @if (ViewBag.noretMessage != null)
+        {
+            <script>
+                handleMessages("@ViewBag.noretMessage");
+            </script>
+        }
 
 </form>
-    

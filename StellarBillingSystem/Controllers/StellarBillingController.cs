@@ -1881,7 +1881,7 @@ namespace HealthCare.Controllers
         }
 
 
-        public IActionResult CustomerBilling(string productid, string productname, string price, string quantity, string billid, string SelectedProductID)
+        public IActionResult CustomerBilling(string productid,  string billid)
         {
 
        
