@@ -1915,7 +1915,7 @@ namespace HealthCare.Controllers
             //Code for print the Bill 
             if (buttonType == "Download Bill")
             {
-                String Query = "Select SD.BillID,Convert(varchar(10),SD.BillDate,101) as BillDate,SD.ProductID,Sp.ProductName, SD.Price,SD.Quantity,SD.CustomerNumber as CustomerName, SD.CustomerNumber,\r\nSD.TotalDiscount,SD.Totalprice as DetailTotalprice, SB.Totalprice as MasterTotalprice  from SHbilldetails SD inner join SHbillmaster SB \r\non SD.BillID= SB.BillID\r\ninner join SHProductMaster SP\r\non SD.ProductID = sp.ProductID\r\n where sd.IsDelete=0 AND sd.BillID ='" + BillID+"'";
+                String Query = "Select SD.BillID,Convert(varchar(10),SD.BillDate,101) as BillDate,SD.ProductID,Sp.ProductName, SD.Price,SD.Quantity,SD.CustomerNumber as CustomerName, SD.CustomerNumber,\r\nSD.TotalDiscount,SD.Totalprice as DetailTotalprice, SB.Totalprice as MasterTotalprice  from SHbilldetails SD inner join SHbillmaster SB \r\non SD.BillID= SB.BillID\r\ninner join SHProductMaster SP\r\non SD.ProductID = sp.ProductID\r\n where sd.IsDelete=0 AND sd.BillID ='" + BillID + "'";
 
                 var Table = BusinessClassCommon.DataTable(_billingsoftware, Query);
 
@@ -1945,12 +1945,12 @@ namespace HealthCare.Controllers
 
             if (buttonType == "Get")
             {
-                var billID = model.BillID; 
+                var billID = model.BillID;
                 var billDate = model.BillDate;
-                var customerNumber = model.CustomerNumber; 
+                var customerNumber = model.CustomerNumber;
 
                 var updatedMasterex = _billingsoftware.SHbillmaster.FirstOrDefault(m =>
-                    m.BillID == billID && m.BillDate == billDate && m.CustomerNumber == customerNumber&&m.IsDelete==false);
+                    m.BillID == billID && m.BillDate == billDate && m.CustomerNumber == customerNumber && m.IsDelete == false);
 
                 if (updatedMasterex != null)
                 {
@@ -1984,74 +1984,43 @@ namespace HealthCare.Controllers
 
                     BillProductlistModel promodel = new BillProductlistModel();
                     ViewBag.Getnotfound = "No Data Found For This ID";
-                    
-                    return View("CustomerBilling",promodel);
+
+                    return View("CustomerBilling", promodel);
                 }
-            
- 
+
+
             }
 
             if (buttonType == "Delete Bill")
             {
-                var billID = model.BillID;
-                var billDate = model.BillDate;
-                var customerNumber = model.CustomerNumber;
+                var parameter = new[]
+         {
+    new SqlParameter("@BillID", masterModel.BillID),
+    new SqlParameter("@BillDate", DBNull.Value), // Set to DBNull.Value to indicate empty/null
+    new SqlParameter("@CustomerNumber", DBNull.Value),
+    new SqlParameter("@TotalPrice", DBNull.Value),
+    new SqlParameter("@TotalDiscount", DBNull.Value),
+    new SqlParameter("@NetPrice", DBNull.Value),
+    new SqlParameter("@IsDelete", "Y"), // Assuming isDeleteValue is set to 'Y'
+    new SqlParameter("@LastUpdatedUser", DBNull.Value),
+    new SqlParameter("@LastUpdatedDate", DBNull.Value),
+    new SqlParameter("@LastUpdatedMachine", DBNull.Value),
+    new SqlParameter("@ProductID", DBNull.Value),
+    new SqlParameter("@ProductName", DBNull.Value),
+    new SqlParameter("@Discount", DBNull.Value),
+    new SqlParameter("@Price", DBNull.Value),
+    new SqlParameter("@Quantity", DBNull.Value),
+   };
 
-                var Deltbill = _billingsoftware.SHbillmaster.FirstOrDefault(m =>
-                    m.BillID == billID && m.BillDate == billDate && m.CustomerNumber == customerNumber);
-
-                if (Deltbill != null)
-                {
-                    Deltbill.IsDelete = true;
-                    _billingsoftware.SaveChanges();
-
-                    var billDetails = _billingsoftware.SHbilldetails
-          .Where(d => d.BillID == billID && !d.IsDelete)
-          .ToList();
-
-                    foreach (var detail in billDetails)
-                    {
-                        // Mark each bill detail as deleted
-                        detail.IsDelete = true;
-
-                        // Update the quantity in the godown
-                        var godownProduct = _billingsoftware.SHGodown
-                            .FirstOrDefault(p => p.ProductID == detail.ProductID && p.IsDelete!=true);
-
-                        if (godownProduct != null)
-                        {
-
-                            if (int.TryParse(godownProduct.NumberofStocks, out int currentNoofItems) &&
-                    int.TryParse(detail.Quantity, out int detailQuantity))
-                            {
-                                godownProduct.NumberofStocks = (currentNoofItems + detailQuantity).ToString();
-
-                             
-                                _billingsoftware.Entry(godownProduct).State = EntityState.Modified;
-                            }
-                        }
-                    }
-
-                    _billingsoftware.SaveChanges();
-                
-
-            }
-                else
-                {
-
-                    BillProductlistModel promodel = new BillProductlistModel();
-                    ViewBag.Getnotfound = "No Data Found For This ID";
-                    return View("CustomerBilling", promodel);
-
-                }
+                await _billingsoftware.Database.ExecuteSqlRawAsync("EXEC InsertBillProduct @BillID, @BillDate, @CustomerNumber, @TotalPrice, @TotalDiscount, @NetPrice, @IsDelete, @LastUpdatedUser, @LastUpdatedDate, @LastUpdatedMachine, @ProductID, @ProductName, @Discount, @Price, @Quantity", parameter);
 
 
 
-                    
-                     ViewBag.DelMessage = "Deleted Bill Successfully";
-                     return View("CustomerBilling",model);
-            }
+            ViewBag.DelMessage = "Deleted Bill Successfully";
+            return View("CustomerBilling", model);
 
+        }
+        
 
                 var isDeleteValue = (object)masterModel.IsDelete ?? DBNull.Value;
 
@@ -2063,7 +2032,7 @@ namespace HealthCare.Controllers
         new SqlParameter("@TotalPrice", masterModel.Totalprice ?? (object)DBNull.Value),
         new SqlParameter("@TotalDiscount", masterModel.TotalDiscount ?? (object)DBNull.Value),
         new SqlParameter("@NetPrice", masterModel.NetPrice ?? (object)DBNull.Value),
-       /* new SqlParameter("@IsDelete", isDeleteValue),*/
+       new SqlParameter("@IsDelete", "N"),
         new SqlParameter("@LastUpdatedUser", User.Claims.First().Value.ToString()),
         new SqlParameter("@LastUpdatedDate", DateTime.Now.ToString()),
         new SqlParameter("@LastUpdatedMachine", Request.HttpContext.Connection.RemoteIpAddress.ToString()),
@@ -2074,7 +2043,7 @@ namespace HealthCare.Controllers
         new SqlParameter("@Quantity", detailModel.Quantity ?? (object)DBNull.Value),
 
     };
-            await _billingsoftware.Database.ExecuteSqlRawAsync("EXEC InsertBillProduct @BillID, @BillDate, @CustomerNumber, @TotalPrice,@TotalDiscount,@NetPrice,@LastUpdatedUser, @LastUpdatedDate, @LastUpdatedMachine, @ProductID, @ProductName, @Discount, @Price, @Quantity", parameters);
+            await _billingsoftware.Database.ExecuteSqlRawAsync("EXEC InsertBillProduct @BillID, @BillDate, @CustomerNumber, @TotalPrice,@TotalDiscount,@NetPrice,@IsDelete,@LastUpdatedUser, @LastUpdatedDate, @LastUpdatedMachine, @ProductID, @ProductName, @Discount, @Price, @Quantity", parameters);
             ViewBag.SaveMessage = "save successfully";
 
             var updatedMaster = await _billingsoftware.SHbillmaster
@@ -2108,7 +2077,7 @@ namespace HealthCare.Controllers
 
 
 
-        public IActionResult ProductList(string BillID,string BillDate,string CustomerNumber)
+        public IActionResult ProductList(string BillID,string BillDate,string CustomerNumber,string PaymentId)
         {
             if (string.IsNullOrEmpty(BillID) && TempData["BillID"] != null)
             {
@@ -2356,10 +2325,23 @@ string BillId, string Balance, string BillDate, string PaymentId, string payment
                  billPayment = new List<PaymentTableViewModel>();
              }*/
 
+            if (buttonType == "PaymentReceipt")
+            {
+
+                String Query = "SELECT \r\n    SD.BillID,\r\n    CONVERT(varchar(10), SD.BillDate, 101) AS BillDate,\r\n    SD.PaymentId ,\r\n    SB.PaymentDiscription,\r\n\tSB.PaymentDate,\r\n\tSB.PaymentMode,\r\n\tSB.PaymentAmount, \r\n\tSB.PaymentTransactionNumber, \r\n    SD.CustomerNumber AS CustomerName,\r\n    SD.CustomerNumber\r\n\r\n\r\nFROM \r\n    SHPaymentMaster SD\r\nINNER JOIN \r\n    SHPaymentDetails SB ON SD.PaymentId = SB.PaymentId\r\n\r\nWHERE \r\n    SD.IsDelete = 0 AND  SD.CustomerNumber = '" + CustomerNumber+ "' AND sd.BillId = '"+BillId+"' AND SD.PaymentId='" + PaymentId+"'";
+
+                var Table = BusinessClassCommon.DataTable(_billingsoftware, Query);
+
+                BusinessClassBilling objbilling = new BusinessClassBilling(_billingsoftware);
+
+                return File(objbilling.PrintpaymentDetails(Table), "application/vnd.openxmlformats-officedocument.wordprocessingml.document", "PaymentReport_" + TempData["BillID"] + ".docx");
+
+            }
 
 
 
-            if (buttonType == "AddPayment")
+
+                if (buttonType == "AddPayment")
             {
                 var newDetail = new PaymentDetailsModel
                 {
