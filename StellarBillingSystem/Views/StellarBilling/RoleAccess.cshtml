@@ -108,6 +108,8 @@
                         </div>
                     </div>
                     </br >
+
+
                     <div class="row">
                         <div class="col-md-12 col-lg-4">
                             <div class="form-group">
@@ -120,6 +122,7 @@
                                     <input asp-for="Access" class="form-check-input" type="radio" value="W" id="WriteRadio" />
                                     <label class="form-check-label" for="WriteRadio">Write</label>
                                 </div>
+                                <span asp-validation-for="Access" class="text-danger"></span>
 
                             </div>
                         </div>
