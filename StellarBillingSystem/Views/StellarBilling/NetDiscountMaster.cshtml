@@ -30,7 +30,7 @@
 </div>
 
 <form asp-controller="StellarBilling">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
     <div class="row">
         <div class="col-md-12 col-lg-2">
         </div>
@@ -57,13 +57,30 @@
         <div class="col-md-12 col-lg-8">
             <div class="card">
                 <div class="card-body " style="background-image: linear-gradient(to right, #FFFFFF 0%, #e0efff 51%, #add5ff 100%);">
+                    <div class="row">
+                        <div class="col-md-12 col-lg-9">
+                            <div class="form-floating form-floating-outline mb-4">
 
-                    <div class="form-floating form-floating-outline mb-4">
+                                <input asp-for="NetDiscount" class="form-control" placeholder="Net Discount" value="@Model.NetDiscount" required />
+                                <label asp-for="NetDiscount" class="control-label">Net Discount</label>
+                                <span asp-validation-for="NetDiscount" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="col-md-12 col-lg-3">
+                            <div class="form-group">
+                                <center>
+                                    <button type="submit" value="Create" class="btn btn-primary" asp-action="AddNetDiscount">Save</button>
+                                    @*             @if (ViewBag.Message != null)
+                                    {
+                                    <div class="alert alert-success">
+                                    @ViewBag.Message
+                                    </div>
+                                    } *@
+                                </center>
+                            </div>
 
-                        <input asp-for="NetDiscount" class="form-control" placeholder="Net Discount" value="@Model.NetDiscount" required />
-                        <label asp-for="NetDiscount" class="control-label">Net Discount</label>
-                <span asp-validation-for="NetDiscount" class="text-danger"></span>
-            </div>
+                        </div>
+                    </div>
                     <br />
 
                 </div>
@@ -75,17 +92,7 @@
     </div>
     <br />
 
-    <div class="form-group">
-        <center>
-            <button type="submit" value="Create" class="btn btn-primary" asp-action="AddNetDiscount">Save</button>
-@*             @if (ViewBag.Message != null)
-            {
-                <div class="alert alert-success">
-                    @ViewBag.Message
-                </div>
-            } *@
-        </center>
-    </div>
+
     @if (ViewBag.Message != null)
     {
         <script>
@@ -93,6 +100,6 @@
         </script>
     }
 
-    </form>
-    
+</form>
+
 

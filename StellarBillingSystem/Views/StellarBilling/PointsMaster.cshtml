@@ -30,7 +30,7 @@
 </div>
 
 <form asp-controller="StellarBilling">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
 
     <div class="row">
@@ -53,30 +53,42 @@
 
     <div class="row" style="height:8%">
     </div>
+
     <div class="row gy-4">
         <div class="col-md-12 col-lg-2">
         </div>
         <div class="col-md-12 col-lg-8">
             <div class="card">
                 <div class="card-body " style="background-image: linear-gradient(to right, #FFFFFF 0%, #e0efff 51%, #add5ff 100%);">
+                    <div class="row">
+                        <div class="col-md-12 col-lg-9">
+                            <div class="form-floating form-floating-outline mb-4">
 
-                   
-                    <div class="form-floating form-floating-outline mb-4">
-
-                        <input asp-for="NetPrice" class="form-control" placeholder="Net Price" value="@Model.NetPrice" pattern="^\d+$" title="Please enter a valid format. Only numbers are allowed" />
-                        <label asp-for="NetPrice" class="control-label">Net Price</label>
-                <span asp-validation-for="NetPrice" class="text-danger"></span>
-            </div>
+                                        <input asp-for="NetPrice" class="form-control" placeholder="Net Price" value="@Model.NetPrice" pattern="^\d+$" title="Please enter a valid format. Only numbers are allowed" />
+                                        <label asp-for="NetPrice" class="control-label">Net Price</label>
+                                        <span asp-validation-for="NetPrice" class="text-danger"></span>
+                                    </div>
 
 
-                    <div class="form-floating form-floating-outline mb-4">
+                                    <div class="form-floating form-floating-outline mb-4">
 
-                        <input asp-for="NetPoints" class="form-control" placeholder="Net Point" value="@Model.NetPoints" pattern="^\d+$" title="Please enter a valid format. Only numbers are allowed" />
-                        <label asp-for="NetPoints" class="control-label">Net Point</label>
-                        <span asp-validation-for="NetPoints" class="text-danger"></span>
+                                        <input asp-for="NetPoints" class="form-control" placeholder="Net Point" value="@Model.NetPoints" pattern="^\d+$" title="Please enter a valid format. Only numbers are allowed" />
+                                        <label asp-for="NetPoints" class="control-label">Net Point</label>
+                                        <span asp-validation-for="NetPoints" class="text-danger"></span>
+                                    </div>
+                                </div>
+                           
+                            <div class="col-md-12 col-lg-3">
+
+                                <div class="form-group">
+                                    <center>
+                                        <button type="submit" value="Create" class="btn btn-primary" asp-action="AddPoints">Save</button>
+
+                                </center>
+                            </div>
+
+                        </div>
                     </div>
-
-
                     <br />
 
                 </div>
@@ -88,13 +100,7 @@
     </div>
     <br />
 
-    <div class="form-group">
-        <center>
-            <button type="submit" value="Create" class="btn btn-primary" asp-action="AddPoints">Save</button>
 
-           
-        </center>
-    </div>
     @if (ViewBag.Message != null)
     {
         <script>
@@ -103,4 +109,3 @@
     }
 
 </form>
-
