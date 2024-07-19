@@ -56,10 +56,10 @@
     </div>
 
     <div class="row">
-        @*     <div class="col-md-12 col-lg-1">
+            <div class="col-md-12 col-lg-1">
         </div>
-        *@
-        <div class="col-md-12 col-lg-12">
+       
+        <div class="col-md-12 col-lg-3">
             <div class="card">
                 <div class="card-body " style="background-image: linear-gradient(to right, #FFFFFF 0%, #FFFFFF 51%, #ece5f6 100%);">
                    
@@ -99,7 +99,7 @@
         </div>
 
 
-        <div class="col-md-12 col-lg-4">
+             <div class="col-md-12 col-lg-4">
             <div class="card">
                 <div class="card-body " style="background-image: linear-gradient(to right, #FFFFFF 0%, #FFFFFF 51%, #ece5f6 100%);">
 
@@ -195,9 +195,8 @@
 
                 </div>
             </div>
-            <div class="col-md-12 col-lg-3">
-
-        <div class="form-floating form-floating-outline mb-4">
+        <div class="col-md-12 col-lg-3">
+            <div class="form-floating form-floating-outline mb-4">
             <input asp-for="TotalDiscount" class="form-control" placeholder="TotalDiscount" value="@ViewBag.TotalDiscount" readonly />
             <label asp-for="TotalDiscount" class="control-label">TotalDiscount</label>
 
@@ -205,7 +204,7 @@
                 </div>
 
             </div>
-
+        <center>
         <button type="submit" style="width:180px" value="Save" name="buttonType" class="btn btn-primary">Save</button>
 
         <button type="submit" style="width:180px" value="Delete" name="buttonType" class="btn btn-primary">Delete</button>
@@ -215,10 +214,7 @@
                         <button type="submit" style="width:180px" value="Download Bill" name="buttonType" class="btn btn-primary">Download Bill</button>
                     </center>
                 </div>
-            </div>
-        </div>
-        
-    </div>
+          
     @if (ViewBag.SaveMessage != null)
     {
         <script>
@@ -234,11 +230,5 @@
     }
 
 
-        <div class="col-md-12 col-lg-1" style="height=10%">
-            <div class="form-floating form-floating-outline mb-4">
-            </div>
-        </div>
-
-        <div class="col-md-12 col-lg-4">
-        </div>
+     
 </form>
