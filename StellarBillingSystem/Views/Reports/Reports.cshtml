@@ -2,54 +2,132 @@
 @using NonFactors.Mvc.Grid
 @model DataTable
 
-<!DOCTYPE html>
-<html>
-<head>
-    <title>ReportOutput</title>
-    <style>
+<script>
+    function showPopup(message) {
+        var popup = document.getElementById("popupMessage");
+        var popupText = document.getElementById("popupMessageText");
+        var popupOKButton = document.getElementById("popupOKButton");
 
-        table {
-            border-collapse: collapse;
-            width: 100%;
-            color: #8c62c9;
-        }
+        popupText.textContent = message; // Set the message text
+        popup.style.display = "block";
 
-        th, td {
-            border: 1px solid #ddd;
-            padding: 8px;
-            text-align: left;
-        }
+        popupOKButton.addEventListener("click", function () {
+            popup.style.display = "none"; // Hide the popup when OK button is clicked
+        });
+    }
 
-        th {
-            background-color: #f2f2f2;
-        }
-    </style>
-</head>
-<body>
-
-
-    <form asp-action="GetReports" asp-controller="Reports" method="post">
-        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-
-        <div class="row">
-            <div class="col-md-12 col-lg-2">
-            </div>
-            <div class="col-md-12 col-lg-8">
-                <div class="card" style="height:40px">
-                    <div class="card-body " style="background-color:#007bff">
-                        <div style="align-items:center">
-                            <div class="container" style="text-align:center">
-                                <h2 class="centered text-white" style="font-family:'Lucida Bright'">ReportOutput</h2>
-                            </div>
+    function handleMessages(message) {
+        showPopup(message);
+    }
+</script>
+<div id="popupMessage" style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background-color: #f0f0f0; color: black; padding: 30px; border: 10px solid #9FBCDC; border-radius: 10px; z-index: 1000; display: none; text-align: center;">
+    <span id="popupMessageText" style="display: block; margin-bottom: 10px;"></span>
+    <button id="popupOKButton" style="padding: 10px 20px; background-color: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer;">OK</button>
+</div>
+<form asp-action="GetReports" asp-controller="Reports" method="post">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <div class="row">
+        <div class="col-md-12 col-lg-2">
+        </div>
+        <div class="col-md-12 col-lg-8">
+            <div class="card">
+                <div style="background-color:#007bff">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <div class="container">
+                            <h2 class="centered text-white" style="font-family:'Lucida Bright';margin-left:27%;">ReportOutput</h2>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
+    </div>
+    <br />
 
 
-        <div class="row" style="margin-top:70px">
+    <div class="row gy-4">
+        <div class="col-md-12 col-lg-2">
         </div>
+        <div class="col-md-12 col-lg-8">
+            <div class="card">
+                <div class="card-body " style="background-image: linear-gradient(to right, #FFFFFF 0%, #e0efff 51%, #add5ff 100%);">
+
+
+                    <div class="row gy-4">
+                        <div class="col-md-12 col-lg-12">
+
+
+
+
+                            @{
+                                var reportModels = (IEnumerable<GenericReportModel>)ViewData["reportid"];
+                                var dropdownOptions = new List<SelectListItem>();
+
+                                foreach (var reportModel in reportModels)
+                                {
+                                    dropdownOptions.Add(new SelectListItem
+                {
+                    Value = reportModel.ReportName, // Set the value to the ReportName
+                    Text = reportModel.ReportName
+                });
+                                }
+
+                                var selectedReport = ViewData["selectedReport"] as string; // Get the selected report from ViewData
+                            }
+
+                            <div class="form-floating form-floating-outline mb-4">
+                                @Html.DropDownList("ReportId", dropdownOptions, "Select Report Name", new { @class = "form-control", onchange = "updateHiddenInput(this.value)" })
+                                <label for="ReportId" class="control-label">Report Name</label>
+                                @Html.Hidden("inputValue", selectedReport)
+                            </div>
+
+                            <script>
+                                // Function to update the hidden input value when dropdown selection changes
+                                function updateHiddenInput(value) {
+                                    document.getElementById('inputValue').value = value;
+                                }
+                            </script>
+
+
+                        </div>
+                    </div>
+                    <div class="row gy-4">
+                        <div class="col-md-12 col-lg-6">
+                            <div class="form-floating form-floating-outline mb-4">
+                                <input type="date" class="form-control" id="FromDate" name="FromDate" placeholder="FromDate" />
+                                <label for="FromDate" class="control-label">FromDate</label>
+                            </div>
+
+                        </div>
+
+                        <div class="col-md-12 col-lg-6">
+                            <div class="form-floating form-floating-outline mb-4">
+                                <input type="date" class="form-control" id="ToDate" name="ToDate" placeholder="ToDate" />
+                                <label for="ToDate" class="control-label">ToDate</label>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <div class="col-md-12 col-lg-2">
+                    </div>
+                    <div class="form-group">
+                        <center>
+                            <button type="submit" name="buttonType" value="submit" class="btn btn-primary">GetReport</button>
+
+                        </center>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+    </div>
+
+
+
+    @if (Model != null)
+    {
 
         <div class="row gy-4">
             <div class="col-md-12 col-lg-2">
@@ -58,162 +136,76 @@
                 <div class="card">
                     <div class="card-body " style="background-image: linear-gradient(to right, #FFFFFF 0%, #e0efff 51%, #add5ff 100%);">
 
-                        <div class="row gy-4">
-                            <div class="col-md-12 col-lg-8">
 
-
-
-
-
-                                <div class="row" style="margin-top:70px">
-            <div class="col-md-12 col-lg-2 ">
-            </div>
-
-            <div class="col-md-12 col-lg-7 ">
-                <div class="card">
-                    <div class="card-body " style="background-color:#8c62c9">
-                        <div class="card-header d-flex justify-content-between align-items-center">
-                            <div class="container">
-                                <h2 class="centered text-white" style="font-family:'Lucida Bright'">ReportOutput</h2>
-
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="row" style="height:8%">
-                </div>
-
-                <div class="row">
-
-                    <div class="col-md-12 col-lg-12">
-                        <div class="card">
-                            <div class="card-body " style="background-image: linear-gradient(to right, #FFFFFF 0%, #FFFFFF 51%, #ece5f6 100%);">
-
-
-                                @{
-                                    var reportModels = (IEnumerable<GenericReportModel>)ViewData["reportid"];
-                                    var dropdownOptions = new List<SelectListItem>();
-
-                                    foreach (var reportModel in reportModels)
+                        <h2>HTML Table Generated from DataTable</h2>
+                        <br/>
+                        <table id="dataTable">
+                            <thead>
+                                <tr>
+                                    @foreach (DataColumn column in Model.Columns)
                                     {
-                                        dropdownOptions.Add(new SelectListItem
-                {
-                    Value = reportModel.ReportName, // Set the value to the ReportName
-                    Text = reportModel.ReportName
-                });
+                                        <th>@column.ColumnName</th>
                                     }
-
-                                    var selectedReport = ViewData["selectedReport"] as string; // Get the selected report from ViewData
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (DataRow row in Model.Rows)
+                                {
+                                    <tr>
+                                        @foreach (var cell in row.ItemArray)
+                                        {
+                                            <td>@cell</td>
+                                        }
+                                    </tr>
                                 }
+                            </tbody>
+                        </table>
+                        <br/>
+                        <center>
 
-                                <div class="form-floating form-floating-outline mb-4">
-                                    @Html.DropDownList("ReportId", dropdownOptions, "Select Report Name", new { @class = "form-control", onchange = "updateHiddenInput(this.value)" })
-                                    <label for="ReportId" class="control-label">Report Name</label>
-                                    @Html.Hidden("inputValue", selectedReport)
-                                </div>
-
-                                <script>
-                                    // Function to update the hidden input value when dropdown selection changes
-                                    function updateHiddenInput(value) {
-                                        document.getElementById('inputValue').value = value;
-                                    }
-                                </script>
-
-
-                            </div>
-
-                        </div>
+                            <button class="btn btn-primary" onclick="exportToExcel()">Export to Excel</button>
+                        </center>
                     </div>
-                </div>
-
-                <div class="row" style="height:8%">
-                </div>
-                <div class="form-group">
-                    <center>
-                        <button type="submit" name="buttonType" value="submit" class="btn btn-primary">GetReport</button>
-                       
-                    </center>
-                </div>
-                <div class="col-md-12 col-lg-3">
                 </div>
             </div>
         </div>
 
-        <br />
 
 
+        <script>
+            function exportToExcel() {
+                try {
+                    // Select the table element
+                    var table = document.getElementById('dataTable');
 
+                    // Create a new Excel instance
+                    var excel = new ExcelJS.Workbook();
+                    var sheet = excel.addWorksheet('Sheet 1');
 
-        @if (Model != null)
-        {
-
-            <div class="card">
-                <div class="card-body " style="background-image: linear-gradient(to right, #FFFFFF 0%, #FFFFFF 51%, #ece5f6 100%);">
-
-                    <h2>HTML Table Generated from DataTable</h2>
-                    <table id="dataTable">
-                        <thead>
-                            <tr>
-                                @foreach (DataColumn column in Model.Columns)
-                                {
-                                    <th>@column.ColumnName</th>
-                                }
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach (DataRow row in Model.Rows)
-                            {
-                                <tr>
-                                    @foreach (var cell in row.ItemArray)
-                                    {
-                                        <td>@cell</td>
-                                    }
-                                </tr>
-                            }
-                        </tbody>
-                    </table>
-
-                </div>
-            </div>
-            <button onclick="exportToExcel()">Export to Excel</button>
-
-            <script>
-                function exportToExcel() {
-                    try {
-                        // Select the table element
-                        var table = document.getElementById('dataTable');
-
-                        // Create a new Excel instance
-                        var excel = new ExcelJS.Workbook();
-                        var sheet = excel.addWorksheet('Sheet 1');
-
-                        // Iterate over each row and column in the table to add data to Excel sheet
-                        for (var i = 0; i < table.rows.length; i++) {
-                            var row = sheet.addRow();
-                            var cells = table.rows[i].cells;
-                            for (var j = 0; j < cells.length; j++) {
-                                row.getCell(j + 1).value = cells[j].innerText;
-                            }
+                    // Iterate over each row and column in the table to add data to Excel sheet
+                    for (var i = 0; i < table.rows.length; i++) {
+                        var row = sheet.addRow();
+                        var cells = table.rows[i].cells;
+                        for (var j = 0; j < cells.length; j++) {
+                            row.getCell(j + 1).value = cells[j].innerText;
                         }
-
-                        // Save the workbook as an Excel file
-                        excel.xlsx.writeBuffer().then(function (buffer) {
-                            saveAs(new Blob([buffer], { type: "application/octet-stream" }), 'table_data.xlsx');
-                        });
-                    } catch (error) {
-                        console.error('Export to Excel failed:', error);
-                        alert('Export to Excel failed. Please try again.' + error);
                     }
+
+                    // Save the workbook as an Excel file
+                    excel.xlsx.writeBuffer().then(function (buffer) {
+                        saveAs(new Blob([buffer], { type: "application/octet-stream" }), 'table_data.xlsx');
+                    });
+                } catch (error) {
+                    console.error('Export to Excel failed:', error);
+                    alert('Export to Excel failed. Please try again.' + error);
                 }
-            </script>
-            <!-- Include ExcelJS library -->
-            <script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.4.0/exceljs.min.js"></script>
-            <!-- Include FileSaver.js library for saving Blob objects -->
-            <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+            }
+        </script>
+        <!-- Include ExcelJS library -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.4.0/exceljs.min.js"></script>
+        <!-- Include FileSaver.js library for saving Blob objects -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
 
-        }
+    }
 
-    </form>
-</body>
-</html>
+</form>

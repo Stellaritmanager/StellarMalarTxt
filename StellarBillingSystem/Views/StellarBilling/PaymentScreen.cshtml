@@ -26,8 +26,8 @@
 </script>
 
 
-<div id="popupMessage" style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background-color: #f0f0f0; color: black; padding: 30px; border: 10px solid white; border-radius: 10px; z-index: 1000; display: none; text-align: center;">
-    <span id="popupMessageText" style="display: block; margin-bottom: 20px;"></span>
+<div id="popupMessage" style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background-color: #f0f0f0; color: black; padding: 30px; border: 10px solid #9FBCDC; border-radius: 10px; z-index: 1000; display: none; text-align: center;">
+    <span id="popupMessageText" style="display: block; margin-bottom: 10px;"></span>
     <button id="popupOKButton" style="padding: 10px 20px; background-color: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer;">OK</button>
 </div>
 
@@ -68,12 +68,11 @@
 
                             <div class="form-floating form-floating-outline mb-4">
 
-                                <input type="text" class="form-control" id="BillId" name="BillId" placeholder="BillId" value="@ViewBag.BillId" required/>
+                                <input type="text" class="form-control" id="BillId" name="BillId" placeholder="BillId" value="@ViewBag.BillId" required />
                                 <label for="BillId" class="control-label">Bill ID</label>
                             </div>
                         </div>
-                        <div class="col-md-12 col-lg-1">
-                        </div>
+
                         <div class="col-md-12 col-lg-2" style="align-items:center">
                             <div class="form-group">
                                 <center>
@@ -87,21 +86,27 @@
                         </div>
                     </div>
 
+                    <div class="row gy-4">
+                        <div class="col-md-12 col-lg-6">
 
-                    <div class="form-floating form-floating-outline mb-4">
+                            <div class="form-floating form-floating-outline mb-4">
 
-                        <input type="text" class="form-control" id="Balance" name="Balance" placeholder="Balance" value="@ViewBag.Balance" />
-                        <label for="Balance" class="control-label">Balance</label>
+                                <input type="text" class="form-control" id="Balance" name="Balance" placeholder="Balance" value="@ViewBag.Balance" />
+                                <label for="Balance" class="control-label">Balance</label>
+                            </div>
+
+                        </div>
+                        <div class="col-md-12 col-lg-6">
+                            <div class="form-floating form-floating-outline mb-4">
+
+                                <input type="date" class="form-control" id="BillDate" name="BillDate" placeholder="Bill Date" value="@ViewBag.BillDate" />
+                                <label for="BillDate" class="control-label">Bill Date</label>
+
+                            </div>
+                        </div>
                     </div>
-                    <div class="form-floating form-floating-outline mb-4">
-
-                        <input type="date" class="form-control" id="BillDate" name="BillDate" placeholder="Bill Date" value="@ViewBag.BillDate"  />
-                        <label for="BillDate" class="control-label">Bill Date</label>
-
-                    </div>
-
                     <div class="row">
-                        <div class="col-md-12 col-lg-7">
+                        <div class="col-md-12 col-lg-8">
 
                             <div class="form-floating form-floating-outline mb-4">
 
@@ -113,13 +118,13 @@
                         <div class="col-md-12 col-lg-1">
                         </div>
                         <div class="col-md-12 col-lg-3">
-                            <center>
+                           
                                 <button type="submit" class="btn btn-primary" name="buttonType" value="GetPaymentDetails">GetPaymentDetails </button>
-                            </center>
+                          
                         </div>
-
+                    </div>
                         <div class="row">
-                            <div class="col-md-12 col-lg-7">
+                            <div class="col-md-12 col-lg-8">
 
                                 <div class="form-floating form-floating-outline mb-4">
 
@@ -132,11 +137,12 @@
                             </div>
                             <div class="col-md-12 col-lg-3">
 
-                                <center>
+                               
                                     <button type="submit" class="btn btn-primary" name="buttonType" value="GetPoints">GetPoints </button>
-                                </center>
+                               
 
                             </div>
+                    </div>
                             <div class="row">
                                 <div class="col-md-12 col-lg-8">
 
@@ -150,15 +156,26 @@
                                 </div>
                                 <div class="col-md-12 col-lg-1">
                                 </div>
-                                <div class="col-md-12 col-lg-2">
+                                <div class="col-md-12 col-lg-3">
 
-                                    <center>
+                                   
                                         <button type="submit" class="btn btn-primary" name="buttonType" value="Redeem">Redeem </button>
-                                    </center>
+                                   
                                 </div>
                             </div>
                         </div>
                     </div>
+
+        </div>
+    </div>
+
+    <div class="row gy-4">
+        <div class="col-md-12 col-lg-1">
+        </div>
+        <div class="col-md-12 col-lg-10">
+            <div class="card">
+                <div class="card-body " style="background-image: linear-gradient(to right, #FFFFFF 0%, #e0efff 51%, #add5ff 100%);">
+
                     @if (ViewBag.Slots != null)
                     {
                         <div class="col-md-6">
@@ -188,7 +205,7 @@
                                                 <input type="hidden" name="billDetails[@i].BillID" value="@ViewBag.BillID" /> *@
                                                     </td>
                                                     <td>
-                                                        <input type="date" class="form-control" name="billpayment[@i].PaymentDate" value="@detail.PaymentDate" type="date"/>
+                                                        <input type="date" class="form-control" name="billpayment[@i].PaymentDate" value="@detail.PaymentDate" type="date" />
                                                     </td>
                                                     <td>
                                                         <input type="text" class="form-control" name="billpayment[@i].PaymentDiscription" value="@detail.PaymentDiscription" readonly />
@@ -203,28 +220,23 @@
                                                         <input type="text" class="form-control" name="billpayment[@i].PaymentAmount" value="@detail.PaymentAmount" />
                                                     </td>
 
-                                    </tr>
-                                }
-                            </tbody>
-                        
-                    </table>
-                    
+                                                </tr>
+                                            }
+                                        </tbody>
+
+                                    </table>
+
+                                </div>
+                            </div>
+                        </div>
+                    }
                 </div>
-            </div>
-        </div>
-        }
-    </div>
 
- 
-
- 
-
-                                                
-                
             </div>
         </div>
     </div>
-</br>
+
+       
     <center>
         <div class="row mt-4">
             <div class="col-md-12">
@@ -235,6 +247,8 @@
             </div>
         </div>
     </center>
+
+
     @if (ViewBag.Message != null)
     {
         <script>
