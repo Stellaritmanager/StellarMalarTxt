@@ -2394,11 +2394,13 @@ string BillId, string Balance, string BillDate, string PaymentId, string payment
                 if (exbill != null)
                 {
 
-                    var balanceQuery = "SELECT dbo.GenerateBillID(@BillId)";
-                    var balance = await _billingsoftware.Database
-                        .ExecuteSqlRawAsync(balanceQuery, new SqlParameter("@BillId", masterModel.BillID));
-                    ViewBag.Balance = balance;
+                   
+                        var balance = await businessbill.GetBalanceForBillAsync(model.BillId);
+                        ViewBag.Balance = balance;
+
+                        return View("PaymentScreen"); 
                     
+
                 }
                 else
                 {
@@ -2707,6 +2709,10 @@ string BillId, string Balance, string BillDate, string PaymentId, string payment
 
             return View(model);
         }
+
+
+
+
 
 
 

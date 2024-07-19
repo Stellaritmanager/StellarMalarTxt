@@ -1,5 +1,6 @@
 ﻿
 using Microsoft.CodeAnalysis;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using StellarBillingSystem.Context;
 using StellarBillingSystem.Models;
@@ -415,6 +416,32 @@ namespace StellarBillingSystem.Business
             return ModifypaymentDoc("..\\StellarBillingSystem\\Templates\\Payment Template.docx", billDetails);
         }
 
+
+
+
+        public async Task<int> GetBalanceForBillAsync(string billId)
+        {
+            // Define the output parameter
+            var outputParameter = new SqlParameter("@Balance", SqlDbType.Float)
+            {
+                Direction = ParameterDirection.Output
+            };
+
+            // Execute the SQL command with output parameter
+            var sql = $"EXEC @Balance = dbo.GenerateBillID @BillId";
+            await _billingContext.Database.ExecuteSqlRawAsync(sql, new SqlParameter("@BillId", billId), outputParameter);
+
+            
+            if (outputParameter.Value != DBNull.Value)
+            {
+                return Convert.ToInt32(outputParameter.Value);
+            }
+            else
+            {
+                return 0; 
+            }
+     
+        }
 
 
 
