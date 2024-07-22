@@ -4,6 +4,9 @@ using System.Data;
 using System.Web;
 using Microsoft.Data.SqlClient;
 using DocumentFormat.OpenXml.Office2016.Drawing.ChartDrawing;
+using Microsoft.CodeAnalysis.Elfie.Model;
+using DocumentFormat.OpenXml.ExtendedProperties;
+using Microsoft.CodeAnalysis.FlowAnalysis;
 
 
 namespace StellarBillingSystem.Business
@@ -41,8 +44,11 @@ namespace StellarBillingSystem.Business
             // Your DbContext
             var dbContext = context;
 
+            ///
+
             // Your SQL query
-            string query = sqlQuery;
+            string query = sqlQuery ;
+
 
             // Execute raw SQL query and retrieve data into a DataTable
             DataTable dataTable = new DataTable();
@@ -66,5 +72,63 @@ namespace StellarBillingSystem.Business
 
             return dataTable;
         }
+
+        public static DataTable DataTableReport(DbContext context, string sqlQuery, string Datecolumn, string Fromdate, string Todate,
+                                       params DbParameter[] parameters)
+        {
+
+
+            // Your DbContext
+            var dbContext = context;
+
+            ///
+
+            // Your SQL query
+            string query = sqlQuery;
+
+
+            if (Fromdate!=null&Todate!=null)
+            {
+                sqlQuery = sqlQuery + "and " + Datecolumn + " between '" + Fromdate + "' and '" + Todate +"' ";
+            }
+            else if (Fromdate!=null)
+            {
+                sqlQuery = sqlQuery + "and " + Datecolumn + " >= '"+ Fromdate +"'";
+
+            }
+            else if (Todate!=null)
+            {
+                sqlQuery = sqlQuery + Datecolumn + " <= '" + Todate +"'";
+            }
+          
+            
+            // Execute raw SQL query and retrieve data into a DataTable
+            DataTable dataTable = new DataTable();
+            using (var connection = dbContext.Database.GetDbConnection() as SqlConnection)
+            {
+                if (connection != null)
+                {
+                    connection.Open();
+                            
+                        using (var command = new SqlCommand(query, connection))
+                        {
+                            using (var reader = command.ExecuteReader())
+                            {
+                                if (reader.HasRows)
+                                {
+                                    dataTable.Load(reader);
+                                }
+                            }
+                        }
+                    
+                }
+            }
+
+            return dataTable;
+        }
+
+
+
+
     }
 }

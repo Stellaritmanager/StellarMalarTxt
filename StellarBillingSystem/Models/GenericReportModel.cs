@@ -11,6 +11,7 @@ namespace StellarBillingSystem.Models
         private string reportType;
         private string reportDescription;
         private string reportQuery;
+        private string datecolumn;
 
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int ReportId { get => reportId; set => reportId = value; }
@@ -18,5 +19,6 @@ namespace StellarBillingSystem.Models
         public string ReportType { get => reportType; set => reportType = value; }
         public string ReportDescription { get => reportDescription; set => reportDescription = value; }
         public string ReportQuery { get => reportQuery; set => reportQuery = value; }
+        public string Datecolumn { get => datecolumn; set => datecolumn = value; }
     }
 }

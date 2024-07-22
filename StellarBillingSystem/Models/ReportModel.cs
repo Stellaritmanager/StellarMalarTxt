@@ -13,6 +13,8 @@ public class ReportModel
     private string reportType;
     private string reportDescription;
     private string reportQuery;
+    private string fromDate;
+    private string toDate;
     private string lastUpdateduser;
     private string lastUpdatedmachine;
     private string lastupdateddate;
@@ -26,5 +28,7 @@ public class ReportModel
     public string LastUpdateduser { get => lastUpdateduser; set => lastUpdateduser = value; }
     public string LastUpdatedmachine { get => lastUpdatedmachine; set => lastUpdatedmachine = value; }
     public string Lastupdateddate { get => lastupdateddate; set => lastupdateddate = value; }
+    public string FromDate { get => fromDate; set => fromDate = value; }
+    public string ToDate { get => toDate; set => toDate = value; }
 }
 	

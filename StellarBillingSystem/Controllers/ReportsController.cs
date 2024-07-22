@@ -19,7 +19,7 @@ namespace StellarBillingSystem.Controllers
         }
 
         [HttpPost]
-        public IActionResult GetReports(String inputValue)
+        public IActionResult GetReports(String inputValue,string fromDate,string toDate)
         {
             BusinessClassBilling business = new BusinessClassBilling(_billingContext);
             ViewData["reportid"] = business.GetReportId();
@@ -30,12 +30,13 @@ namespace StellarBillingSystem.Controllers
                                {
                                    ReportName = rep.ReportName,
                                    ReportQuery = rep.ReportQuery,
-                                   ReportDescription = rep.ReportDescription
+                                   ReportDescription = rep.ReportDescription,
+                                   Datecolumn = rep.Datecolumn,
                                }).First();
 
+           
 
-
-            var query = BusinessClassCommon.DataTable(_billingContext, reportQuery.ReportQuery);
+            var query = BusinessClassCommon.DataTableReport(_billingContext, reportQuery.ReportQuery, reportQuery.Datecolumn, fromDate, toDate);
 
 
             return View("Reports", query);
