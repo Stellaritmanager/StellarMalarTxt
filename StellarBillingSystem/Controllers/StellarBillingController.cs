@@ -59,8 +59,8 @@ namespace HealthCare.Controllers
                     model = new CategoryMasterModel();
                     return View("CategoryMaster", model);
                 }
-              
-             
+
+
             }
 
             else if (buttonType == "DeleteRetrieve")
@@ -118,7 +118,7 @@ namespace HealthCare.Controllers
                 ViewBag.Message = "Saved Successfully";
             }
             model = new CategoryMasterModel();
-            
+
             return View("CategoryMaster", model);
         }
 
@@ -149,19 +149,19 @@ namespace HealthCare.Controllers
                 var productToDelete = await _billingsoftware.SHProductMaster.FindAsync(model.ProductID);
                 if (productToDelete != null)
                 {
-                    productToDelete.IsDelete = true; 
+                    productToDelete.IsDelete = true;
                     await _billingsoftware.SaveChangesAsync();
 
                     ViewBag.Message = "Product deleted successfully";
-   
+
                 }
                 else
                 {
                     ViewBag.ErrorMessage = "Product not found";
-                   
+
                 }
-                model = new ProductMatserModel(); 
-               
+                model = new ProductMatserModel();
+
                 return View("ProductMaster", model);
             }
             else if (buttonType == "DeleteRetrieve")
@@ -169,7 +169,7 @@ namespace HealthCare.Controllers
                 var productToRetrieve = await _billingsoftware.SHProductMaster.FindAsync(model.ProductID);
                 if (productToRetrieve != null)
                 {
-                    productToRetrieve.IsDelete = false; 
+                    productToRetrieve.IsDelete = false;
 
                     await _billingsoftware.SaveChangesAsync();
 
@@ -229,7 +229,7 @@ namespace HealthCare.Controllers
                  }*/
 
 
-                
+
                 decimal totalAmount = price - (price * discount / 100);
                 model.TotalAmount = totalAmount.ToString();
 
@@ -252,11 +252,11 @@ namespace HealthCare.Controllers
                     existingProduct.DiscountCategory = model.DiscountCategory;
                     existingProduct.SGST = model.SGST;
                     existingProduct.CGST = model.CGST;
-                    existingProduct.OtherTax= model.OtherTax;
+                    existingProduct.OtherTax = model.OtherTax;
                     existingProduct.Price = model.Price;
                     existingProduct.DiscountCategory = model.DiscountCategory;
                     existingProduct.TotalAmount = model.TotalAmount;
-                   
+
 
                     // existingProduct.TotalAmount = model.TotalAmount - (model.Price * model.Discount / 100 = model.TotalAmount);
                     existingProduct.LastUpdatedDate = DateTime.Now.ToString();
@@ -269,7 +269,7 @@ namespace HealthCare.Controllers
                 {
 
                     // Convert strings to decimals, calculate TotalAmount, and convert back to string
-                   
+
                     model.LastUpdatedDate = DateTime.Now.ToString();
                     model.LastUpdatedUser = User.Claims.First().Value.ToString();
                     model.LastUpdatedmachine = Request.HttpContext.Connection.RemoteIpAddress.ToString();
@@ -282,8 +282,8 @@ namespace HealthCare.Controllers
                 ViewBag.Message = "Saved Successfully";
             }
 
-            model = new ProductMatserModel(); 
-         
+            model = new ProductMatserModel();
+
 
             return View("ProductMaster", model);
         }
@@ -303,7 +303,7 @@ namespace HealthCare.Controllers
 
             if (buttonType == "DeleteRetrieve")
             {
-                var screentoretrieve = await _billingsoftware.SHGodown.FindAsync(model.ProductID,model.DatefofPurchase, model.SupplierInformation);
+                var screentoretrieve = await _billingsoftware.SHGodown.FindAsync(model.ProductID, model.DatefofPurchase, model.SupplierInformation);
                 if (screentoretrieve != null)
                 {
                     screentoretrieve.IsDelete = false;
@@ -327,7 +327,7 @@ namespace HealthCare.Controllers
             }
 
 
-                if (buttonType == "Save")
+            if (buttonType == "Save")
             {
                 var existinggoddown = await _billingsoftware.SHGodown.FindAsync(model.ProductID, model.DatefofPurchase, model.SupplierInformation);
                 if (existinggoddown != null)
@@ -351,10 +351,10 @@ namespace HealthCare.Controllers
                     model.LastUpdatedUser = User.Claims.First().Value.ToString();
                     model.LastUpdatedmachine = Request.HttpContext.Connection.RemoteIpAddress.ToString();
                     _billingsoftware.SHGodown.Add(model);
-                   
+
                 }
 
-                  await  _billingsoftware.SaveChangesAsync();
+                await _billingsoftware.SaveChangesAsync();
                 ViewBag.Message = "saved Successfully";
 
             }
@@ -368,13 +368,13 @@ namespace HealthCare.Controllers
 
                     ViewBag.delMessage = "Stock deleted successfully";
                     model = new GodownModel();
-                    return View("GodownModel", model); 
+                    return View("GodownModel", model);
                 }
                 else
                 {
                     ViewBag.nostockMessage = "Stock not found";
                     model = new GodownModel();
-                    return View("GodownModel", model); 
+                    return View("GodownModel", model);
                 }
             }
 
@@ -400,7 +400,7 @@ namespace HealthCare.Controllers
             ViewBag.Message = "Saved Successfully";
 
             model = new GodownModel();
-          
+
             return View("GodownModel", model);
 
         }
@@ -445,7 +445,7 @@ namespace HealthCare.Controllers
             await _billingsoftware.SaveChangesAsync();
 
             ViewBag.Message = "Saved Successfully";
-           
+
             model = new CustomerMasterModel();
 
             return View("CustomerMaster", new CustomerMasterModel());
@@ -502,7 +502,7 @@ namespace HealthCare.Controllers
 
 
 
-        public async Task<IActionResult> DeleteCustomer(string mobileNumber,CustomerMasterModel model)
+        public async Task<IActionResult> DeleteCustomer(string mobileNumber, CustomerMasterModel model)
         {
             if (string.IsNullOrEmpty(mobileNumber))
             {
@@ -529,7 +529,7 @@ namespace HealthCare.Controllers
             ViewBag.Message = "Deleted Successfully";
             model = new CustomerMasterModel();
 
-            return View("CustomerMaster",model);
+            return View("CustomerMaster", model);
         }
 
 
@@ -631,7 +631,7 @@ namespace HealthCare.Controllers
             }
             model = new DiscountCategoryMasterModel();
 
-            
+
             return View("DiscountCategoryMaster", model);
 
         }
@@ -719,7 +719,7 @@ namespace HealthCare.Controllers
             var existingnetdiscount = await _billingsoftware.SHNetDiscountMaster.FindAsync(NetID);
             if (existingnetdiscount != null)
             {
-             
+
                 existingnetdiscount.NetDiscount = model.NetDiscount;
                 existingnetdiscount.LastUpdatedDate = DateTime.Now.ToString();
                 existingnetdiscount.LastUpdatedUser = User.Claims.First().Value.ToString();
@@ -742,7 +742,7 @@ namespace HealthCare.Controllers
             ViewBag.Message = "Saved Successfully";
             model = new NetDiscountMasterModel();
 
-            
+
             return View("NetDiscountMaster", model);
 
         }
@@ -796,7 +796,7 @@ namespace HealthCare.Controllers
             var existingpoints = await _billingsoftware.SHPointsMaster.FindAsync(pointsID);
             if (existingpoints != null)
             {
-                
+
                 existingpoints.NetPrice = model.NetPrice;
                 existingpoints.NetPoints = model.NetPoints;
                 existingpoints.LastUpdatedDate = DateTime.Now.ToString();
@@ -824,7 +824,7 @@ namespace HealthCare.Controllers
 
             model = new PointsMasterModel();
 
-           
+
 
             return View("PointsMaster", model);
 
@@ -929,8 +929,8 @@ namespace HealthCare.Controllers
                     model.Noofitems = rolltoretrieve.Noofitems;
 
                     ViewBag.retMessage = "Deleted ProductID retrieved successfully";
-                
-                   
+
+
                 }
                 else
                 {
@@ -954,7 +954,7 @@ namespace HealthCare.Controllers
 
                     await _billingsoftware.SaveChangesAsync();
 
-                   
+
 
                     ViewBag.retMessage = "Deleted ProductID  successfully";
 
@@ -1018,7 +1018,7 @@ namespace HealthCare.Controllers
 
                         _billingsoftware.Entry(existingrackpartition).State = EntityState.Modified;
 
-                      
+
 
                         await _billingsoftware.SaveChangesAsync();
                     }
@@ -1123,7 +1123,7 @@ namespace HealthCare.Controllers
         }
 
         // Delete Function for Rack PArtition
-        public async Task<IActionResult> Delete(string partitionID, string productID,RackpartitionViewModel viewmodel,RackPatrionProductModel model)
+        public async Task<IActionResult> Delete(string partitionID, string productID, RackpartitionViewModel viewmodel, RackPatrionProductModel model)
         {
             BusinessClassBilling business = new BusinessClassBilling(_billingsoftware);
             ViewData["godownproductid"] = business.GetProductid();
@@ -1317,7 +1317,7 @@ namespace HealthCare.Controllers
 
                     ViewBag.delMessage = "ResourceTypeID deleted successfully";
                     model = new ResourceTypeMasterModel();
-                   
+
                     return View("ResourceTypeMaster", model);
                 }
                 else
@@ -1520,7 +1520,7 @@ namespace HealthCare.Controllers
                         ViewBag.delMessage = "RollID deleted successfully";
                         model = new RollAccessMaster();
 
-                    
+
                         return View("RollAccessMaster", model);
                     }
 
@@ -1528,10 +1528,10 @@ namespace HealthCare.Controllers
                     {
                         ViewBag.delnoMessage = "RollID not found";
                         model = new RollAccessMaster();
-                        return View("RollAccessMaster",model);
+                        return View("RollAccessMaster", model);
                     }
                 }
-                
+
 
             }
 
@@ -1609,7 +1609,7 @@ namespace HealthCare.Controllers
             }
             model = new RollAccessMaster();
             return View("RollAccessMaster", model);
-            
+
 
         }
 
@@ -1668,7 +1668,7 @@ namespace HealthCare.Controllers
                 }
                 else
                 {
-                    
+
                     ViewBag.noretMessage = "RollID not found";
                 }
                 return View("RollTypeMaster", model);
@@ -1737,7 +1737,7 @@ namespace HealthCare.Controllers
                     await _billingsoftware.SaveChangesAsync();
                     ViewBag.delMessage = "ScreenId deleted successfully";
                     model = new ScreenMasterModel();
-                    
+
                     return View("ScreenMaster", model);
                 }
                 else
@@ -1806,7 +1806,7 @@ namespace HealthCare.Controllers
 
 
         [HttpPost]
-        public IActionResult getproductlist(ProductSelectModel model, string billid, string BillID, string buttonType, string SelectedProductID, string Quantity, string productid, string productname, string unitprice,string billdate,string customernumber)
+        public IActionResult getproductlist(ProductSelectModel model, string billid, string BillID, string buttonType, string SelectedProductID, string Quantity, string productid, string productname, string unitprice, string billdate, string customernumber)
         {
             if (string.IsNullOrEmpty(model.ProductID) && string.IsNullOrEmpty(model.BarcodeID))
             {
@@ -1898,8 +1898,8 @@ namespace HealthCare.Controllers
                         productname = selectedProduct.ProductName,
                         price = selectedProduct.TotalAmount,
                         quantity = Quantity,
-                       
-                        
+
+
                     });
                 }
             }
@@ -1926,10 +1926,7 @@ namespace HealthCare.Controllers
 
             if (buttonType == "Payment")
             {
-                TempData["BillID"] = BillID;
-                TempData["TotalPrice"] = TotalPrice;
-                TempData["CustomerNumber"] = CustomerNumber;
-                return Redirect("PaymentScreen");
+                return RedirectToAction("PaymentScreen", new { BillID = model.BillID });
             }
 
 
@@ -2016,13 +2013,13 @@ namespace HealthCare.Controllers
 
 
 
-            ViewBag.DelMessage = "Deleted Bill Successfully";
-            return View("CustomerBilling", model);
+                ViewBag.DelMessage = "Deleted Bill Successfully";
+                return View("CustomerBilling", model);
 
-        }
-        
+            }
 
-                var isDeleteValue = (object)masterModel.IsDelete ?? DBNull.Value;
+
+            var isDeleteValue = (object)masterModel.IsDelete ?? DBNull.Value;
 
             var parameters = new[]
    {
@@ -2077,7 +2074,7 @@ namespace HealthCare.Controllers
 
 
 
-        public IActionResult ProductList(string BillID,string BillDate,string CustomerNumber,string PaymentId)
+        public IActionResult ProductList(string BillID, string BillDate, string CustomerNumber, string PaymentId)
         {
             if (string.IsNullOrEmpty(BillID) && TempData["BillID"] != null)
             {
@@ -2221,16 +2218,16 @@ namespace HealthCare.Controllers
         }
 
         public IActionResult RackPatrionProduct()
-       {
+        {
             BusinessClassBilling business = new BusinessClassBilling(_billingsoftware);
             ViewData["godownproductid"] = business.GetProductid();
 
             var model = new RackpartitionViewModel
             {
-                Viewrackpartition = new List<RackPatrionProductModel>() 
+                Viewrackpartition = new List<RackPatrionProductModel>()
             };
 
-           
+
 
             return View(model);
         }
@@ -2254,7 +2251,7 @@ namespace HealthCare.Controllers
         public IActionResult CustomerBilling(string productid, string billid, string SelectedProductID)
         {
 
-       
+
             var model = new BillProductlistModel();
 
             // Retrieve selected product
@@ -2271,10 +2268,10 @@ namespace HealthCare.Controllers
                         ProductName = b.ProductName,
                         Price = selectedProduct.TotalAmount,
                         Quantity = b.Quantity,
-                        BillDate=b.BillDate,
-                        CustomerNumber=b.CustomerNumber,
-                        BillID=b.BillID
-                       
+                        BillDate = b.BillDate,
+                        CustomerNumber = b.CustomerNumber,
+                        BillID = b.BillID
+
                     })
                     .FirstOrDefault();
 
@@ -2285,10 +2282,10 @@ namespace HealthCare.Controllers
                     model.ProductName = billDetail.ProductName;
                     model.Price = billDetail.Price;
                     model.Quantity = billDetail.Quantity;
-                    model.BillID=billDetail.BillID;
+                    model.BillID = billDetail.BillID;
                     model.BillDate = billDetail.BillDate;
-                    model.CustomerNumber=billDetail.CustomerNumber;
-                    
+                    model.CustomerNumber = billDetail.CustomerNumber;
+
                 }
                 else
                 {
@@ -2305,7 +2302,7 @@ namespace HealthCare.Controllers
             return View(model);
 
         }
-//PaymentScreen
+        //PaymentScreen
 
         [HttpPost]
         public async Task<IActionResult> AddPayment(PaymentMasterModel model, PaymentDetailsModel detailsmodel, BillingMasterModel masterModel, string buttonType, List<PaymentDetailsModel> billpayment, string selectedSlotId,
@@ -2328,7 +2325,7 @@ string BillId, string Balance, string BillDate, string PaymentId, string payment
             if (buttonType == "PaymentReceipt")
             {
 
-                String Query = "SELECT \r\n    SD.BillID,\r\n    CONVERT(varchar(10), SD.BillDate, 101) AS BillDate,\r\n    SD.PaymentId ,\r\n    SB.PaymentDiscription,\r\n\tSB.PaymentDate,\r\n\tSB.PaymentMode,\r\n\tSB.PaymentAmount, \r\n\tSB.PaymentTransactionNumber, \r\n    SD.CustomerNumber AS CustomerName,\r\n    SD.CustomerNumber\r\n\r\n\r\nFROM \r\n    SHPaymentMaster SD\r\nINNER JOIN \r\n    SHPaymentDetails SB ON SD.PaymentId = SB.PaymentId\r\n\r\nWHERE \r\n    SD.IsDelete = 0 AND  SD.CustomerNumber = '" + CustomerNumber+ "' AND sd.BillId = '"+BillId+"' AND SD.PaymentId='" + PaymentId+"'";
+                String Query = "SELECT \r\n    SD.BillID,\r\n    CONVERT(varchar(10), SD.BillDate, 101) AS BillDate,\r\n    SD.PaymentId ,\r\n    SB.PaymentDiscription,\r\n\tSB.PaymentDate,\r\n\tSB.PaymentMode,\r\n\tSB.PaymentAmount, \r\n\tSB.PaymentTransactionNumber, \r\n    SD.CustomerNumber AS CustomerName,\r\n    SD.CustomerNumber\r\n\r\n\r\nFROM \r\n    SHPaymentMaster SD\r\nINNER JOIN \r\n    SHPaymentDetails SB ON SD.PaymentId = SB.PaymentId\r\n\r\nWHERE \r\n    SD.IsDelete = 0 AND  SD.CustomerNumber = '" + CustomerNumber + "' AND sd.BillId = '" + BillId + "' AND SD.PaymentId='" + PaymentId + "'";
 
                 var Table = BusinessClassCommon.DataTable(_billingsoftware, Query);
 
@@ -2341,22 +2338,22 @@ string BillId, string Balance, string BillDate, string PaymentId, string payment
 
 
 
-                if (buttonType == "AddPayment")
+            if (buttonType == "AddPayment")
             {
                 var newDetail = new PaymentDetailsModel
                 {
                     PaymentId = PaymentId,
-                    PaymentDiscription =businessbill.GeneratePaymentDescription(PaymentId),
+                    PaymentDiscription = businessbill.GeneratePaymentDescription(PaymentId),
                     PaymentDate = string.Empty,
                     PaymentMode = string.Empty,
                     PaymentTransactionNumber = string.Empty,
                     PaymentAmount = string.Empty
 
                 };
-               
+
 
                 _billingsoftware.SHPaymentDetails.Add(newDetail);
-             
+
 
                 _billingsoftware.SaveChanges();
 
@@ -2394,12 +2391,14 @@ string BillId, string Balance, string BillDate, string PaymentId, string payment
                 if (exbill != null)
                 {
 
-                   
-                        var balance = await businessbill.GetBalanceForBillAsync(model.BillId);
-                        ViewBag.Balance = balance;
 
-                        return View("PaymentScreen"); 
+                    var balance = await businessbill.GetBalanceForBillAsync(model.BillId);
+                    ViewBag.Balance = balance;
                     
+
+
+                    return View("PaymentScreen");
+
 
                 }
                 else
@@ -2498,7 +2497,7 @@ string BillId, string Balance, string BillDate, string PaymentId, string payment
             }
 
 
-           
+
 
 
             if (buttonType == "GetPoints")
@@ -2560,7 +2559,7 @@ string BillId, string Balance, string BillDate, string PaymentId, string payment
             }
 
 
-            if(buttonType == "Redeem")
+            if (buttonType == "Redeem")
             {
                 var paymentDetail = billpayment.FirstOrDefault();
 
@@ -2645,7 +2644,7 @@ string BillId, string Balance, string BillDate, string PaymentId, string payment
                 }
                 else
                 {
-                   
+
                     var parameters = new[]
                     {
         new SqlParameter("@BillId", model.BillId),
@@ -2664,7 +2663,7 @@ string BillId, string Balance, string BillDate, string PaymentId, string payment
         new SqlParameter("@LastUpdatedMachine", Request.HttpContext.Connection.RemoteIpAddress.ToString()),
         new SqlParameter("@Reedem", "Y")
     };
-                    
+
                     await _billingsoftware.Database.ExecuteSqlRawAsync("EXEC InsertBillPayment @BillId, @PaymentId, @CustomerNumber, @ReedemPoints, @Balance,@BillDate, @PaymentDiscription, @PaymentMode, @PaymentTransactionNumber, @PaymentAmount, @PaymentDate, @LastUpdatedUser, @LastUpdatedDate, @LastUpdatedMachine,@Reedem", parameters);
                 }
 
@@ -2680,39 +2679,75 @@ string BillId, string Balance, string BillDate, string PaymentId, string payment
 
 
 
-        public IActionResult PaymentScreen(string BillID, string TotalPrice, string CustomerNumber)
+        public IActionResult PaymentScreen(string BillID, string TotalPrice, string CustomerNumber, PaymentTableViewModel model, string billdate)
         {
-            if (string.IsNullOrEmpty(BillID) && TempData["BillID"] != null)
+
+
+            List<PaymentTableViewModel> modelList = new List<PaymentTableViewModel>();
+
+            if (string.IsNullOrEmpty(BillID))
             {
-                BillID = TempData["BillID"].ToString();
-                TotalPrice = TempData["TotalPrice"].ToString();
-                CustomerNumber = TempData["CustomerNumber"].ToString();
+
+                return View(modelList);
             }
 
-            var model = new List<PaymentTableViewModel>(); // Initialize with an empty list or fetch existing payment details if needed
+            var billDetail = _billingsoftware.SHbillmaster
+                   .Where(b => b.BillID == BillID)
+                   .Select(b => new BillingDetailsModel
+                   {
 
-            if (string.IsNullOrEmpty(TotalPrice) && !string.IsNullOrEmpty(BillID))
+                       BillDate = b.BillDate,
+                       CustomerNumber = b.CustomerNumber,
+                       BillID = b.BillID,
+                       Totalprice = b.Totalprice
+
+
+                   })
+                   .FirstOrDefault();
+
+            if (billDetail != null)
             {
-                using (var connection = new SqlConnection("YourConnectionString"))
+             
+                var paymentModel = new PaymentTableViewModel
                 {
-                    connection.Open();
-                    var command = new SqlCommand("SELECT dbo.GenerateBillID(@BillID)", connection);
-                    command.Parameters.AddWithValue("@BillID", BillID);
-                    var balance = command.ExecuteScalar();
-                    TotalPrice = balance?.ToString() ?? "0";
+                    BillDate = billDetail.BillDate,
+                    CustomerNumber = billDetail.CustomerNumber,
+                    BillId = billDetail.BillID,
+                    Balance = billDetail.Totalprice
+                };
+
+                // Add the PaymentTableViewModel to the list
+                modelList.Add(paymentModel);
+
+                
+                ViewBag.BillDate = paymentModel.BillDate;
+                ViewBag.CustomerNumber = paymentModel.CustomerNumber;
+                ViewBag.BillId = paymentModel.BillId;
+                ViewBag.Balance = paymentModel.Balance;
+
+
+                if (!string.IsNullOrEmpty(BillID))
+
+                {
+                    using (var connection = new SqlConnection("Data Source=DESKTOP-L8EIGER\\SQLEXPRESS;Initial Catalog=StellarBilling;Integrated Security=True;Trust Server Certificate=True;"))
+                    {
+                        connection.Open();
+                        var command = new SqlCommand("SELECT dbo.GenerateBillID(@BillID)", connection);
+                        command.Parameters.AddWithValue("@BillID", BillID);
+                        var balance = command.ExecuteScalar();
+                        TotalPrice = balance?.ToString() ?? "0";
+                    }
                 }
+
+
+
+               
             }
 
-            ViewBag.BillId = BillID;
-            ViewBag.CustomerNumber = CustomerNumber;
-            ViewBag.Balance = TotalPrice;
-
-            return View(model);
+            return View(modelList);
         }
 
-
-
-
+       
 
 
 
