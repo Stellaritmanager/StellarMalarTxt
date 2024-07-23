@@ -73,7 +73,7 @@ namespace StellarBillingSystem.Business
             return dataTable;
         }
 
-        public static DataTable DataTableReport(DbContext context, string sqlQuery, string Datecolumn, string Fromdate, string Todate,
+        public static DataTable DataTableReport(DbContext context, string sqlQuery, string Datecolumn, string Fromdate, string Todate,string GroupBy,
                                        params DbParameter[] parameters)
         {
 
@@ -101,7 +101,11 @@ namespace StellarBillingSystem.Business
                 sqlQuery = sqlQuery + Datecolumn + " <= '" + Todate +"'";
             }
           
-            
+           if(GroupBy!= string.Empty)
+            {
+                sqlQuery =sqlQuery+ GroupBy + "";  
+            }
+
             // Execute raw SQL query and retrieve data into a DataTable
             DataTable dataTable = new DataTable();
             using (var connection = dbContext.Database.GetDbConnection() as SqlConnection)
@@ -110,7 +114,7 @@ namespace StellarBillingSystem.Business
                 {
                     connection.Open();
                             
-                        using (var command = new SqlCommand(query, connection))
+                        using (var command = new SqlCommand(sqlQuery, connection))
                         {
                             using (var reader = command.ExecuteReader())
                             {
