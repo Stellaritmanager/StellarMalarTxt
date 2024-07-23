@@ -48,7 +48,11 @@ public class HomeController : Controller
             conn.Open();
             using (SqlCommand cmd = new SqlCommand("SELECT dbo.GetDailySales()", conn))
             {
-                result = (decimal)cmd.ExecuteScalar();
+                var dbResult = cmd.ExecuteScalar();
+                if (dbResult != DBNull.Value)
+                {
+                    result = Convert.ToDecimal(dbResult);
+                }
             }
         }
 
@@ -64,7 +68,11 @@ public class HomeController : Controller
             conn.Open();
             using (SqlCommand cmd = new SqlCommand("SELECT dbo.GetDailyPayments()", conn))
             {
-                result = (decimal)cmd.ExecuteScalar();
+                var dbResult = cmd.ExecuteScalar();
+                if (dbResult != DBNull.Value)
+                {
+                    result = Convert.ToDecimal(dbResult);
+                }
             }
         }
 
@@ -82,5 +90,6 @@ public class HomeController : Controller
         return RedirectToAction("Reports", "Reports");
     }
 
+    
 }
     
