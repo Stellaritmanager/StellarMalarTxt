@@ -27,7 +27,7 @@ public class HomeController : Controller
     {
         string result = string.Empty;
 
-        using (SqlConnection conn = new SqlConnection("Data Source=DESKTOP-L8EIGER\\SQLEXPRESS;Initial Catalog=StellarBilling;Integrated Security=True;Trust Server Certificate=True;"))
+        using (SqlConnection conn = new SqlConnection("Data Source=localhost\\SQLEXPRESS;Initial Catalog=StellarBilling;Integrated Security=True;Trust Server Certificate=True;"))
         {
             conn.Open();
             using (SqlCommand cmd = new SqlCommand("SELECT dbo.CompareDailySales()", conn))
