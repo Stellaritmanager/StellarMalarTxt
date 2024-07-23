@@ -1,4 +1,8 @@
-﻿@{
+﻿@using System.Data
+@using NonFactors.Mvc.Grid
+@model DataTable
+
+@{
     ViewData["Title"] = "Dashboard - Analytics";
 }
 @section VendorStyles {
@@ -68,7 +72,7 @@
                         </div>
                         <span>Payment</span>
                             <h3 class="card-title mb-1" style="font-size: 16px;">₹@ViewBag.DailyPayments</h3>
-                       
+
                     </div>
                     
                 </div>
@@ -79,6 +83,56 @@
     </div>
    
     </div>
+<form action="@Url.Action("GetReports","Home")" method="post">
+
+    @if (Model != null && Model.Rows.Count > 0)
+    {
+
+
+<div>
+        <div class="row gy-4">
+            <div class="col-md-12 col-lg-2">
+            </div>
+            <div class="col-md-12 col-lg-8">
+                <div class="card">
+                    <div class="card-body " style="background-image: linear-gradient(to right, #FFFFFF 0%, #e0efff 51%, #add5ff 100%);">
+
+
+                        <h2>@ViewBag.Reportname</h2>
+                        <br />
+                        <table id="dataTable">
+                            <thead>
+                                <tr>
+                                    @foreach (DataColumn column in Model.Columns)
+                                    {
+                                        <th>@column.ColumnName</th>
+                                    }
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (DataRow row in Model.Rows)
+                                {
+                                    <tr>
+                                        @foreach (var cell in row.ItemArray)
+                                        {
+                                            <td>@cell</td>
+                                        }
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                        <br />
+                        <center>
+
+                            <button class="btn btn-primary" onclick="exportToExcel()">Export to Excel</button>
+                        </center>
+                    </div>
+                </div>
+            </div>
+        </div>
+</div>
+}
+</form>
    
     
 
