@@ -70,7 +70,7 @@ public class HomeController : Controller
     {
         string result = string.Empty;
 
-        using (SqlConnection conn = new SqlConnection("Data Source=DESKTOP-49S4H3N\\SQLEXPRESS;Initial Catalog=StellarBilling;Integrated Security=True;Trust Server Certificate=True;"))
+        using (SqlConnection conn = new SqlConnection("Data Source=DESKTOP-L8EIGER\\SQLEXPRESS;Initial Catalog=StellarBilling;Integrated Security=True;Trust Server Certificate=True;"))
         {
             conn.Open();
             using (SqlCommand cmd = new SqlCommand("SELECT dbo.CompareDailySales()", conn))
@@ -86,7 +86,7 @@ public class HomeController : Controller
     {
         decimal result = 0;
 
-        using (SqlConnection conn = new SqlConnection("Data Source=DESKTOP-49S4H3N\\SQLEXPRESS;Initial Catalog=StellarBilling;Integrated Security=True;Trust Server Certificate=True;"))
+        using (SqlConnection conn = new SqlConnection("Data Source=DESKTOP-L8EIGER\\SQLEXPRESS;Initial Catalog=StellarBilling;Integrated Security=True;Trust Server Certificate=True;"))
         {
             conn.Open();
             using (SqlCommand cmd = new SqlCommand("SELECT dbo.GetDailySales()", conn))
@@ -106,7 +106,7 @@ public class HomeController : Controller
     {
         decimal result = 0;
 
-        using (SqlConnection conn = new SqlConnection("Data Source=DESKTOP-49S4H3N\\SQLEXPRESS;Initial Catalog=StellarBilling;Integrated Security=True;Trust Server Certificate=True;"))
+        using (SqlConnection conn = new SqlConnection("Data Source=DESKTOP-L8EIGER\\SQLEXPRESS;Initial Catalog=StellarBilling;Integrated Security=True;Trust Server Certificate=True;"))
         {
             conn.Open();
             using (SqlCommand cmd = new SqlCommand("SELECT dbo.GetDailyPayments()", conn))
