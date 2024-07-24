@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using StellarBillingSystem.Context;
 
@@ -11,9 +12,11 @@ using StellarBillingSystem.Context;
 namespace StellarBillingSystem.Migrations
 {
     [DbContext(typeof(BillingContext))]
-    partial class BillingContextModelSnapshot : ModelSnapshot
+    [Migration("20240724103009_initial38")]
+    partial class initial38
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -78,61 +81,6 @@ namespace StellarBillingSystem.Migrations
                     b.HasKey("BillID");
 
                     b.ToTable("SHCustomerBilling");
-                });
-
-            modelBuilder.Entity("BranchMasterModel", b =>
-                {
-                    b.Property<string>("BracnchID")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("BranchName")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("Address1")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Address2")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("City")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Country")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("IsDelete")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("IsFranchise")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("LastUpdatedDate")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("PhoneNumber1")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("PhoneNumber2")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("State")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("ZipCode")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("email")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("lastUpdatedMachine")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("lastUpdatedUser")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("BracnchID", "BranchName");
-
-                    b.ToTable("SHBranchMaster");
                 });
 
             modelBuilder.Entity("CategoryMasterModel", b =>
@@ -599,6 +547,52 @@ namespace StellarBillingSystem.Migrations
                     b.HasKey("BillID", "BillDate");
 
                     b.ToTable("SHbillmaster");
+                });
+
+            modelBuilder.Entity("StellarBillingSystem.Models.BranchMasterModel", b =>
+                {
+                    b.Property<string>("BracnchID")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("BranchName")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("Address1")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Address2")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("City")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Country")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsDelete")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("IsFranchise")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PhoneNumber1")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PhoneNumber2")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("State")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ZipCode")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("email")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("BracnchID", "BranchName");
+
+                    b.ToTable("SHBranchMaster");
                 });
 
             modelBuilder.Entity("StellarBillingSystem.Models.GenericReportModel", b =>
