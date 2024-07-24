@@ -14,16 +14,13 @@ public class HomeController : Controller
 {
 
     private BillingContext _billingContext;
+    private readonly IConfiguration _configuration;
 
-    public HomeController(BillingContext billingContext)
+    public HomeController(BillingContext billingContext, IConfiguration configuration)
     {
         _billingContext = billingContext;
-
+        _configuration = configuration;
     }
-
-
-
-
 
 
 
@@ -70,11 +67,14 @@ public class HomeController : Controller
     {
         string result = string.Empty;
 
-        using (SqlConnection conn = new SqlConnection("Data Source=DESKTOP-L8EIGER\\SQLEXPRESS;Initial Catalog=StellarBilling;Integrated Security=True;Trust Server Certificate=True;"))
+        string connectionString = _configuration.GetConnectionString("BillingDBConnection");
+
+        using (SqlConnection conn = new SqlConnection(connectionString))
         {
             conn.Open();
             using (SqlCommand cmd = new SqlCommand("SELECT dbo.CompareDailySales()", conn))
             {
+
                 result = cmd.ExecuteScalar().ToString();
             }
         }
@@ -86,7 +86,9 @@ public class HomeController : Controller
     {
         decimal result = 0;
 
-        using (SqlConnection conn = new SqlConnection("Data Source=DESKTOP-L8EIGER\\SQLEXPRESS;Initial Catalog=StellarBilling;Integrated Security=True;Trust Server Certificate=True;"))
+        string connectionString = _configuration.GetConnectionString("BillingDBConnection");
+
+        using (SqlConnection conn = new SqlConnection(connectionString))
         {
             conn.Open();
             using (SqlCommand cmd = new SqlCommand("SELECT dbo.GetDailySales()", conn))
@@ -106,7 +108,9 @@ public class HomeController : Controller
     {
         decimal result = 0;
 
-        using (SqlConnection conn = new SqlConnection("Data Source=DESKTOP-L8EIGER\\SQLEXPRESS;Initial Catalog=StellarBilling;Integrated Security=True;Trust Server Certificate=True;"))
+        string connectionString = _configuration.GetConnectionString("BillingDBConnection");
+
+        using (SqlConnection conn = new SqlConnection(connectionString))
         {
             conn.Open();
             using (SqlCommand cmd = new SqlCommand("SELECT dbo.GetDailyPayments()", conn))

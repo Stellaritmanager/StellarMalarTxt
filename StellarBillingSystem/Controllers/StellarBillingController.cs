@@ -17,11 +17,16 @@ namespace HealthCare.Controllers
     public class StellarBillingController : Controller
     {
         private BillingContext _billingsoftware;
+        private readonly IConfiguration _configuration;
 
-        public StellarBillingController(BillingContext billingsoftware)
+
+        public StellarBillingController(BillingContext billingsoftware, IConfiguration configuration)
         {
             _billingsoftware = billingsoftware;
+            _configuration = configuration;
         }
+
+       
 
         [HttpPost]
 
@@ -2729,7 +2734,9 @@ string BillId, string Balance, string BillDate, string PaymentId, string payment
                 if (!string.IsNullOrEmpty(BillID))
 
                 {
-                    using (var connection = new SqlConnection("Data Source=DESKTOP-49S4H3N\\SQLEXPRESS;Initial Catalog=StellarBilling;Integrated Security=True;Trust Server Certificate=True;"))
+                    string connectionString = _configuration.GetConnectionString("BillingDBConnection");
+
+                    using (var connection = new SqlConnection(connectionString))
                     {
                         connection.Open();
                         var command = new SqlCommand("SELECT dbo.GenerateBillID(@BillID)", connection);
