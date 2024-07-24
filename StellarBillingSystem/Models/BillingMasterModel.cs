@@ -32,6 +32,6 @@
         public string? CGSTPercentage1 { get => CGSTPercentage; set => CGSTPercentage = value; }
         public string? SGSTPercentage1 { get => SGSTPercentage; set => SGSTPercentage = value; }
         public string? CGSTPercentageAmt1 { get => CGSTPercentageAmt; set => CGSTPercentageAmt = value; }
-        public string? SGSTPerentageAmt1 { get => SGSTPerentageAmt; set => SGSTPerentageAmt = value; }
+        public string? SGSTPerentageAmt1 { get => SGSTPercentageAmt; set => SGSTPercentageAmt = value; }
     }
 }

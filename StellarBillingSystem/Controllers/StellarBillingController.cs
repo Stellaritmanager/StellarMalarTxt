@@ -2413,8 +2413,33 @@ string BillId, string Balance, string BillDate, string PaymentId, string payment
                 {
 
 
-                    var balance = await businessbill.GetBalanceForBillAsync(model.BillId);
-                    ViewBag.Balance = balance;
+                    var billDetail = _billingsoftware.SHbillmaster
+                   .Where(b => b.BillID == BillId)
+                   .Select(b => new BillingDetailsModel
+                   {
+
+                       BillDate = b.BillDate,
+                       CustomerNumber = b.CustomerNumber,
+                       BillID = b.BillID,
+                       Totalprice = b.Totalprice
+
+
+                   })
+                   .FirstOrDefault();
+
+                    if (billDetail != null)
+                    {
+
+                        var paymentModel = new PaymentTableViewModel
+                        {
+                            BillDate = billDetail.BillDate,
+                            CustomerNumber = billDetail.CustomerNumber,
+                            BillId = billDetail.BillID,
+                            Balance = billDetail.Totalprice
+                        };
+
+                        // Add the PaymentTableViewModel to the list
+                        modelList.Add(paymentModel);
 
 
                         ViewBag.BillDate = paymentModel.BillDate;
@@ -2492,6 +2517,7 @@ string BillId, string Balance, string BillDate, string PaymentId, string payment
                     }
                 }
             }
+            
 
 
 
