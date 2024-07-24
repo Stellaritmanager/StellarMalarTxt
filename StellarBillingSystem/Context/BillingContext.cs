@@ -71,6 +71,8 @@ namespace StellarBillingSystem.Context
 
         public DbSet<ReedemHistoryModel>SHReedemHistory { get; set; }
 
+        public DbSet<BranchMasterModel> SHBranchMaster { get; set; }
+
 
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -83,6 +85,8 @@ namespace StellarBillingSystem.Context
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+
+            modelBuilder.Entity<BranchMasterModel>().HasKey(i => new { i.BracnchID, i.BranchName });
 
             modelBuilder.Entity<BillingMasterModel>().HasKey(i => new { i.BillID, i.BillDate });
             modelBuilder.Entity<BillingDetailsModel>().HasKey(i => new { i.BillID, i.ProductID });
