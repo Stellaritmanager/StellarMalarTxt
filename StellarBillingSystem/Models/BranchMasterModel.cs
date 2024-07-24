@@ -1,5 +1,5 @@
-﻿namespace StellarBillingSystem.Models
-{
+﻿using System;
+
     public class BranchMasterModel
     {
         public BranchMasterModel() { }
@@ -32,4 +32,4 @@
         public bool IsDelete { get => isDelete; set => isDelete = value; }
         public string? email { get => stremail; set => stremail = value; }
     }
-}
+

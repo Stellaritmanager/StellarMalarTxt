@@ -42,6 +42,18 @@
         <div>Stock Management</div>
       </a>
 
+
+            <ul class="menu-sub">
+
+                <li class='menu-item@(currentPage == "/StellarBilling/BranchMaster" ? " active" : "")'>
+                    <a asp-controller="StellarBilling" asp-action="BranchMaster" class="menu-link">
+
+                        <div>Branch Master </div>
+                    </a>
+                </li>
+            </ul>
+
+
       @if (rollAccessList != null)
 {
                 @if (rollAccessList.Contains("CategoryMaster"))

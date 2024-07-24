@@ -2107,7 +2107,7 @@ namespace HealthCare.Controllers
 
 
 
-
+        
 
         public IActionResult RollTypeMaster()
         {
@@ -2116,6 +2116,11 @@ namespace HealthCare.Controllers
             return View("RollTypeMaster", rolltype);
         }
 
+        public IActionResult BranchMaster()
+        {
+            
+            return View();
+        }
 
 
 
