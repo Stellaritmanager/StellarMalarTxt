@@ -2398,83 +2398,115 @@ string BillId, string Balance, string BillDate, string PaymentId, string payment
             if (buttonType == "GetBill")
             {
 
+                List<PaymentTableViewModel> modelList = new List<PaymentTableViewModel>();
+
                 var exbill = await _billingsoftware.SHbillmaster.Where(x => x.BillID == BillId).FirstOrDefaultAsync();
                 if (exbill != null)
                 {
 
 
-                    var balance = await businessbill.GetBalanceForBillAsync(model.BillId);
-                    ViewBag.Balance = balance;
-                    
+                    var billDetail = _billingsoftware.SHbillmaster
+                   .Where(b => b.BillID == BillId)
+                   .Select(b => new BillingDetailsModel
+                   {
+
+                       BillDate = b.BillDate,
+                       CustomerNumber = b.CustomerNumber,
+                       BillID = b.BillID,
+                       Totalprice = b.Totalprice
 
 
-                    return View("PaymentScreen");
+                   })
+                   .FirstOrDefault();
 
-
-                }
-                else
-                {
-                    ViewBag.Message = "No details found for the given Bill ID.";
-                }
-
-                var exbilldata = _billingsoftware.SHPaymentMaster.FirstOrDefault(x => x.BillId == masterModel.BillID);
-
-                if (exbilldata != null)
-                {
-
-
-                    var billDetails = await _billingsoftware.SHPaymentMaster
-                 .Where(b => b.BillId == BillId && b.IsDelete == false)
-                 .Select(b => new PaymentTableViewModel
-                 {
-                     PaymentId = b.PaymentId,
-                     BillId = b.BillId,
-                     Balance = b.Balance,
-                     BillDate = b.BillDate,
-                     CustomerNumber = b.CustomerNumber,
-                     ReedemPoints = b.ReedemPoints,
-                     Viewpayment = _billingsoftware.SHPaymentDetails
-                         .Where(d => d.PaymentId == b.PaymentId && d.IsDelete == false)
-                         .Select(d => new PaymentDetailsModel
-                         {
-                             PaymentId = d.PaymentId,
-                             PaymentDiscription = d.PaymentDiscription,
-                             PaymentMode = d.PaymentMode,
-                             PaymentTransactionNumber = d.PaymentTransactionNumber,
-                             PaymentAmount = d.PaymentAmount,
-                             PaymentDate = d.PaymentDate
-                         }).ToList()
-                 })
-                 .ToListAsync();
-
-
-                    var exbilldataa = _billingsoftware.SHPaymentMaster.FirstOrDefault(x => x.BillId == masterModel.BillID);
-
-                    if (exbilldataa != null)
+                    if (billDetail != null)
                     {
-                        if (billDetails.Any())
+
+                        var paymentModel = new PaymentTableViewModel
                         {
-                            var firstBillDetail = billDetails.First();
+                            BillDate = billDetail.BillDate,
+                            CustomerNumber = billDetail.CustomerNumber,
+                            BillId = billDetail.BillID,
+                            Balance = billDetail.Totalprice
+                        };
+
+                        // Add the PaymentTableViewModel to the list
+                        modelList.Add(paymentModel);
 
 
+                        ViewBag.BillDate = paymentModel.BillDate;
+                        ViewBag.CustomerNumber = paymentModel.CustomerNumber;
+                        ViewBag.BillId = paymentModel.BillId;
+                        ViewBag.Balance = paymentModel.Balance;
 
-
-                            ViewBag.PaymentId = firstBillDetail.PaymentId;
-                            ViewBag.BillId = firstBillDetail.BillId;
-                            ViewBag.Balance = firstBillDetail.Balance;
-                            ViewBag.BillDate = firstBillDetail.BillDate;
-                            ViewBag.CustomerNumber = firstBillDetail.CustomerNumber;
-                            //ViewBag.ReedemPoints = firstBillDetail.ReedemPoints;
-                            ViewBag.Slots = firstBillDetail.Viewpayment;
-                        }
-                        else
-                        {
-                            ViewBag.Message = "No details found for the given Bill ID.";
-                        }
+                        return View(modelList);
 
 
                     }
-                    return View("PaymentScreen", billDetails);
+                    else
+                    {
+                        ViewBag.Message = "No details found for the given Bill ID.";
+                    }
+
+                    var exbilldata = _billingsoftware.SHPaymentMaster.FirstOrDefault(x => x.BillId == masterModel.BillID);
+
+                    if (exbilldata != null)
+                    {
+
+
+                        var billDetails = await _billingsoftware.SHPaymentMaster
+                     .Where(b => b.BillId == BillId && b.IsDelete == false)
+                     .Select(b => new PaymentTableViewModel
+                     {
+                         PaymentId = b.PaymentId,
+                         BillId = b.BillId,
+                         Balance = b.Balance,
+                         BillDate = b.BillDate,
+                         CustomerNumber = b.CustomerNumber,
+                         ReedemPoints = b.ReedemPoints,
+                         Viewpayment = _billingsoftware.SHPaymentDetails
+                             .Where(d => d.PaymentId == b.PaymentId && d.IsDelete == false)
+                             .Select(d => new PaymentDetailsModel
+                             {
+                                 PaymentId = d.PaymentId,
+                                 PaymentDiscription = d.PaymentDiscription,
+                                 PaymentMode = d.PaymentMode,
+                                 PaymentTransactionNumber = d.PaymentTransactionNumber,
+                                 PaymentAmount = d.PaymentAmount,
+                                 PaymentDate = d.PaymentDate
+                             }).ToList()
+                     })
+                     .ToListAsync();
+
+
+                        var exbilldataa = _billingsoftware.SHPaymentMaster.FirstOrDefault(x => x.BillId == masterModel.BillID);
+
+                        if (exbilldataa != null)
+                        {
+                            if (billDetails.Any())
+                            {
+                                var firstBillDetail = billDetails.First();
+
+
+
+
+                                ViewBag.PaymentId = firstBillDetail.PaymentId;
+                                ViewBag.BillId = firstBillDetail.BillId;
+                                ViewBag.Balance = firstBillDetail.Balance;
+                                ViewBag.BillDate = firstBillDetail.BillDate;
+                                ViewBag.CustomerNumber = firstBillDetail.CustomerNumber;
+                                //ViewBag.ReedemPoints = firstBillDetail.ReedemPoints;
+                                ViewBag.Slots = firstBillDetail.Viewpayment;
+                            }
+                            else
+                            {
+                                ViewBag.Message = "No details found for the given Bill ID.";
+                            }
+
+
+                        }
+                        return View("PaymentScreen", billDetails);
+                    }
                 }
             }
 
