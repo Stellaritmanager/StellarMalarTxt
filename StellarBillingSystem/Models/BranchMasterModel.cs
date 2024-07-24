@@ -17,8 +17,11 @@
         private string isFranchise;
         private bool isDelete;
         private string stremail;
+    private string strlastUpdatedUser;
+    private string strlastUpdatedMachine;
+    private string strLastUpdatedDate;
 
-        public string BracnchID { get => bracnchID; set => bracnchID = value; }
+    public string BracnchID { get => bracnchID; set => bracnchID = value; }
         public string BranchName { get => branchName; set => branchName = value; }
         public string? PhoneNumber1 { get => phoneNumber1; set => phoneNumber1 = value; }
         public string? PhoneNumber2 { get => phoneNumber2; set => phoneNumber2 = value; }
@@ -31,5 +34,8 @@
         public string? IsFranchise { get => isFranchise; set => isFranchise = value; }
         public bool IsDelete { get => isDelete; set => isDelete = value; }
         public string? email { get => stremail; set => stremail = value; }
-    }
+    public string? lastUpdatedUser { get => strlastUpdatedUser; set => strlastUpdatedUser = value; }
+    public string? lastUpdatedMachine { get => strlastUpdatedMachine; set => strlastUpdatedMachine = value; }
+    public string? LastUpdatedDate { get => strLastUpdatedDate; set => strLastUpdatedDate = value; }
+}
 
