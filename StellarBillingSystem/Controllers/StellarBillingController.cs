@@ -2412,20 +2412,19 @@ string BillId, string Balance, string BillDate, string PaymentId, string payment
                 if (exbill != null)
                 {
 
-
                     var billDetail = _billingsoftware.SHbillmaster
-                   .Where(b => b.BillID == BillId)
-                   .Select(b => new BillingDetailsModel
-                   {
+                                       .Where(b => b.BillID == BillId)
+                                       .Select(b => new BillingDetailsModel
+                                       {
 
-                       BillDate = b.BillDate,
-                       CustomerNumber = b.CustomerNumber,
-                       BillID = b.BillID,
-                       Totalprice = b.Totalprice
+                                           BillDate = b.BillDate,
+                                           CustomerNumber = b.CustomerNumber,
+                                           BillID = b.BillID,
+                                           Totalprice = b.Totalprice
 
 
-                   })
-                   .FirstOrDefault();
+                                       })
+                                       .FirstOrDefault();
 
                     if (billDetail != null)
                     {
@@ -2455,6 +2454,8 @@ string BillId, string Balance, string BillDate, string PaymentId, string payment
                     {
                         ViewBag.Message = "No details found for the given Bill ID.";
                     }
+
+
 
                     var exbilldata = _billingsoftware.SHPaymentMaster.FirstOrDefault(x => x.BillId == masterModel.BillID);
 
