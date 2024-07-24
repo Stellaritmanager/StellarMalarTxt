@@ -2836,7 +2836,7 @@ string BillId, string Balance, string BillDate, string PaymentId, string payment
 
             else if (buttontype == "DeleteRetrieve")
             {
-                var branchdelret = await _billingsoftware.SHBranchMaster.FirstOrDefaultAsync(x => x.BracnchID == model.BracnchID && x.IsDelete == false);
+                var branchdelret = await _billingsoftware.SHBranchMaster.FirstOrDefaultAsync(x => x.BracnchID == model.BracnchID && x.IsDelete == true);
                 if (branchdelret != null)
                 {
                     branchdelret.IsDelete = false;
@@ -2866,6 +2866,11 @@ string BillId, string Balance, string BillDate, string PaymentId, string payment
                 return View("BranchMaster", model);
             }
 
+            if (string.IsNullOrWhiteSpace(model.BranchName))
+            {
+                ViewBag.BMessage = "Please enter Branch Name.";
+                return View("BranchMaster", model);
+            }
 
             var existingBranch = await _billingsoftware.SHBranchMaster.FindAsync(model.BracnchID,model.BranchName);
 
