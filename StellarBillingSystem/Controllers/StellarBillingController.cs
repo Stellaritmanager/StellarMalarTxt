@@ -2003,6 +2003,10 @@ namespace HealthCare.Controllers
     new SqlParameter("@TotalPrice", DBNull.Value),
     new SqlParameter("@TotalDiscount", DBNull.Value),
     new SqlParameter("@NetPrice", DBNull.Value),
+    new SqlParameter("@CGSTPercentage", DBNull.Value),
+     new SqlParameter("@SGSTPercentage", DBNull.Value),
+     new SqlParameter("@CGSTPercentageAmt", DBNull.Value),
+     new SqlParameter("@SGSTPercentageAmt", DBNull.Value),
     new SqlParameter("@IsDelete", "Y"), // Assuming isDeleteValue is set to 'Y'
     new SqlParameter("@LastUpdatedUser", DBNull.Value),
     new SqlParameter("@LastUpdatedDate", DBNull.Value),
@@ -2014,7 +2018,7 @@ namespace HealthCare.Controllers
     new SqlParameter("@Quantity", DBNull.Value),
    };
 
-                await _billingsoftware.Database.ExecuteSqlRawAsync("EXEC InsertBillProduct @BillID, @BillDate, @CustomerNumber, @TotalPrice, @TotalDiscount, @NetPrice, @IsDelete, @LastUpdatedUser, @LastUpdatedDate, @LastUpdatedMachine, @ProductID, @ProductName, @Discount, @Price, @Quantity", parameter);
+                await _billingsoftware.Database.ExecuteSqlRawAsync("EXEC InsertBillProduct @BillID, @BillDate, @CustomerNumber, @TotalPrice, @TotalDiscount, @NetPrice,@CGSTPercentage,@SGSTPercentage,@CGSTPercentageAmt,@SGSTPercentageAmt, @IsDelete, @LastUpdatedUser, @LastUpdatedDate, @LastUpdatedMachine, @ProductID, @ProductName, @Discount, @Price, @Quantity", parameter);
 
 
 
@@ -2034,6 +2038,10 @@ namespace HealthCare.Controllers
         new SqlParameter("@TotalPrice", masterModel.Totalprice ?? (object)DBNull.Value),
         new SqlParameter("@TotalDiscount", masterModel.TotalDiscount ?? (object)DBNull.Value),
         new SqlParameter("@NetPrice", masterModel.NetPrice ?? (object)DBNull.Value),
+         new SqlParameter("@CGSTPercentage", masterModel.NetPrice ?? (object)DBNull.Value),
+     new SqlParameter("@SGSTPercentage",  masterModel.NetPrice ?? (object)DBNull.Value),
+     new SqlParameter("@CGSTPercentageAmt",  masterModel.NetPrice ?? (object)DBNull.Value),
+     new SqlParameter("@SGSTPercentageAmt",  masterModel.NetPrice ?? (object)DBNull.Value),
        new SqlParameter("@IsDelete", "N"),
         new SqlParameter("@LastUpdatedUser", User.Claims.First().Value.ToString()),
         new SqlParameter("@LastUpdatedDate", DateTime.Now.ToString()),
@@ -2045,7 +2053,7 @@ namespace HealthCare.Controllers
         new SqlParameter("@Quantity", detailModel.Quantity ?? (object)DBNull.Value),
 
     };
-            await _billingsoftware.Database.ExecuteSqlRawAsync("EXEC InsertBillProduct @BillID, @BillDate, @CustomerNumber, @TotalPrice,@TotalDiscount,@NetPrice,@IsDelete,@LastUpdatedUser, @LastUpdatedDate, @LastUpdatedMachine, @ProductID, @ProductName, @Discount, @Price, @Quantity", parameters);
+            await _billingsoftware.Database.ExecuteSqlRawAsync("EXEC InsertBillProduct @BillID, @BillDate, @CustomerNumber, @TotalPrice,@TotalDiscount,@NetPrice,@NetPrice,@CGSTPercentage,@SGSTPercentage,@CGSTPercentageAmt,@SGSTPercentageAmt,@IsDelete,@LastUpdatedUser, @LastUpdatedDate, @LastUpdatedMachine, @ProductID, @ProductName, @Discount, @Price, @Quantity", parameters);
             ViewBag.SaveMessage = "save successfully";
 
             var updatedMaster = await _billingsoftware.SHbillmaster
@@ -2404,20 +2412,19 @@ string BillId, string Balance, string BillDate, string PaymentId, string payment
                 if (exbill != null)
                 {
 
-
                     var billDetail = _billingsoftware.SHbillmaster
-                   .Where(b => b.BillID == BillId)
-                   .Select(b => new BillingDetailsModel
-                   {
+                                       .Where(b => b.BillID == BillId)
+                                       .Select(b => new BillingDetailsModel
+                                       {
 
-                       BillDate = b.BillDate,
-                       CustomerNumber = b.CustomerNumber,
-                       BillID = b.BillID,
-                       Totalprice = b.Totalprice
+                                           BillDate = b.BillDate,
+                                           CustomerNumber = b.CustomerNumber,
+                                           BillID = b.BillID,
+                                           Totalprice = b.Totalprice
 
 
-                   })
-                   .FirstOrDefault();
+                                       })
+                                       .FirstOrDefault();
 
                     if (billDetail != null)
                     {
@@ -2447,6 +2454,8 @@ string BillId, string Balance, string BillDate, string PaymentId, string payment
                     {
                         ViewBag.Message = "No details found for the given Bill ID.";
                     }
+
+
 
                     var exbilldata = _billingsoftware.SHPaymentMaster.FirstOrDefault(x => x.BillId == masterModel.BillID);
 
@@ -2509,6 +2518,7 @@ string BillId, string Balance, string BillDate, string PaymentId, string payment
                     }
                 }
             }
+            
 
 
 
@@ -2750,7 +2760,7 @@ string BillId, string Balance, string BillDate, string PaymentId, string payment
 
             if (billDetail != null)
             {
-             
+
                 var paymentModel = new PaymentTableViewModel
                 {
                     BillDate = billDetail.BillDate,
@@ -2762,7 +2772,7 @@ string BillId, string Balance, string BillDate, string PaymentId, string payment
                 // Add the PaymentTableViewModel to the list
                 modelList.Add(paymentModel);
 
-                
+
                 ViewBag.BillDate = paymentModel.BillDate;
                 ViewBag.CustomerNumber = paymentModel.CustomerNumber;
                 ViewBag.BillId = paymentModel.BillId;
@@ -2786,7 +2796,7 @@ string BillId, string Balance, string BillDate, string PaymentId, string payment
 
 
 
-               
+
             }
 
             return View(modelList);
@@ -2874,44 +2884,6 @@ string BillId, string Balance, string BillDate, string PaymentId, string payment
 
             var existingBranch = await _billingsoftware.SHBranchMaster.FindAsync(model.BracnchID,model.BranchName);
 
-            if (existingBranch != null)
-            {
-                existingBranch.BracnchID = model.BracnchID;
-                existingBranch.BranchName = model.BranchName;
-                existingBranch.PhoneNumber1 = model.PhoneNumber1;
-                existingBranch.PhoneNumber2 = model.PhoneNumber2;
-                existingBranch.Address1 = model.Address1;
-                existingBranch.Address2 = model.Address2;
-                existingBranch.Country = model.Country;
-                existingBranch.City = model.City;
-                existingBranch.State = model.State;
-                existingBranch.ZipCode = model.ZipCode;
-                existingBranch.IsFranchise = model.IsFranchise;
-                existingBranch.email = model.email;
-                existingBranch.LastUpdatedDate = DateTime.Now.ToString();
-                existingBranch.lastUpdatedUser = User.Claims.First().Value.ToString();
-                existingBranch.lastUpdatedMachine = Request.HttpContext.Connection.RemoteIpAddress.ToString();
-
-                _billingsoftware.Entry(existingBranch).State = EntityState.Modified;
-
-            }
-            else
-            {
-
-                model.LastUpdatedDate = DateTime.Now.ToString();
-                model.lastUpdatedUser = User.Claims.First().Value.ToString();
-                model.lastUpdatedMachine = Request.HttpContext.Connection.RemoteIpAddress.ToString();
-                _billingsoftware.SHBranchMaster.Add(model);
-            }
-            await _billingsoftware.SaveChangesAsync();
-
-            ViewBag.Message = "Saved Successfully";
-
-            model = new BranchMasterModel();
-            return View("BranchMaster", model);
-
-
-        }
 
 
 
@@ -2921,5 +2893,5 @@ string BillId, string Balance, string BillDate, string PaymentId, string payment
 
 }
 
-    
+
 

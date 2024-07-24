@@ -130,25 +130,27 @@
     {
 
         <div class="row gy-4">
-            <div class="col-md-12 col-lg-2">
+            <div class="col-md-12 col-lg-1">
             </div>
-            <div class="col-md-12 col-lg-8">
+            <div class="col-md-12 col-lg-10">
                 <div class="card">
                     <div class="card-body " style="background-image: linear-gradient(to right, #FFFFFF 0%, #e0efff 51%, #add5ff 100%);">
 
-
-                        <h2>@ViewBag.Reportname</h2>
+                        <center> 
+                            <h2 style="font-family:'Lucida Bright';">@ViewBag.Reportname</h2>
+                        </center>
                         <br/>
-                        <table id="dataTable">
-                            <thead>
+                        <table class="table" style="font-size: 15px;" >
+                            <thead style ="background-color:#007bff">
                                 <tr>
                                     @foreach (DataColumn column in Model.Columns)
                                     {
-                                        <th>@column.ColumnName</th>
+                                        <th style ="font-size: 15px;">@column.ColumnName</th>
                                     }
                                 </tr>
                             </thead>
-                            <tbody>
+                            <tbody style="background-image: linear-gradient(to right, #FFFFFF 0%, #e0efff 51%, #add5ff 100%);">
+                                
                                 @foreach (DataRow row in Model.Rows)
                                 {
                                     <tr>
