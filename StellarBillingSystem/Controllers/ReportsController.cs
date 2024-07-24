@@ -19,10 +19,11 @@ namespace StellarBillingSystem.Controllers
         }
 
         [HttpPost]
-        public IActionResult GetReports(String inputValue)
+        public IActionResult GetReports(String inputValue,string fromDate,string toDate,string GroupBy)
         {
             BusinessClassBilling business = new BusinessClassBilling(_billingContext);
             ViewData["reportid"] = business.GetReportId();
+
            
             var reportQuery = (from rep in _billingContext.ShGenericReport
                                where (rep.ReportName == inputValue)
@@ -30,12 +31,18 @@ namespace StellarBillingSystem.Controllers
                                {
                                    ReportName = rep.ReportName,
                                    ReportQuery = rep.ReportQuery,
-                                   ReportDescription = rep.ReportDescription
+                                   ReportDescription = rep.ReportDescription,
+                                   Datecolumn = rep.Datecolumn,
+                                   GroupBy = rep.GroupBy
                                }).First();
 
+           
+
+            var query = BusinessClassCommon.DataTableReport(_billingContext, reportQuery.ReportQuery, reportQuery.Datecolumn, fromDate, toDate,reportQuery.GroupBy);
 
 
-            var query = BusinessClassCommon.DataTable(_billingContext, reportQuery.ReportQuery);
+
+            ViewBag.Reportname = reportQuery.ReportName;
 
 
             return View("Reports", query);

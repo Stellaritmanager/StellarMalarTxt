@@ -10,6 +10,14 @@ namespace StellarBillingSystem.Controllers;
 public class HomeController : Controller
 {
     
+
+
+
+
+
+
+
+
     public IActionResult Index()
     {
 
@@ -43,12 +51,16 @@ public class HomeController : Controller
     {
         decimal result = 0;
 
-        using (SqlConnection conn = new SqlConnection("Data Source=DESKTOP-L8EIGER\\SQLEXPRESS;Initial Catalog=StellarBilling;Integrated Security=True;Trust Server Certificate=True;"))
+        using (SqlConnection conn = new SqlConnection("Data Source=DESKTOP-49S4H3N\\SQLEXPRESS;Initial Catalog=StellarBilling;Integrated Security=True;Trust Server Certificate=True;"))
         {
             conn.Open();
             using (SqlCommand cmd = new SqlCommand("SELECT dbo.GetDailySales()", conn))
             {
-                result = (decimal)cmd.ExecuteScalar();
+                var dbResult = cmd.ExecuteScalar();
+                if (dbResult != DBNull.Value)
+                {
+                    result = Convert.ToDecimal(dbResult);
+                }
             }
         }
 
@@ -59,12 +71,16 @@ public class HomeController : Controller
     {
         decimal result = 0;
 
-        using (SqlConnection conn = new SqlConnection("Data Source=DESKTOP-L8EIGER\\SQLEXPRESS;Initial Catalog=StellarBilling;Integrated Security=True;Trust Server Certificate=True;"))
+        using (SqlConnection conn = new SqlConnection("Data Source=DESKTOP-49S4H3N\\SQLEXPRESS;Initial Catalog=StellarBilling;Integrated Security=True;Trust Server Certificate=True;"))
         {
             conn.Open();
             using (SqlCommand cmd = new SqlCommand("SELECT dbo.GetDailyPayments()", conn))
             {
-                result = (decimal)cmd.ExecuteScalar();
+                var dbResult = cmd.ExecuteScalar();
+                if (dbResult != DBNull.Value)
+                {
+                    result = Convert.ToDecimal(dbResult);
+                }
             }
         }
 
