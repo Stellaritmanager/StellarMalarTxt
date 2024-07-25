@@ -29,6 +29,7 @@
         private string lastupdatedDate;
         private string lastUpdatedMachine;
         private bool isDelete;
+        private string branchID;
 
 
 
@@ -57,5 +58,6 @@
         public string? LastupdatedDate { get => lastupdatedDate; set => lastupdatedDate = value; }
         public string? LastUpdatedMachine { get => lastUpdatedMachine; set => lastUpdatedMachine = value; }
         public bool IsDelete { get => isDelete; set => isDelete = value; }
+        public string BranchID { get => branchID; set => branchID = value; }
     }
 }

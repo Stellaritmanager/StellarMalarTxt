@@ -18,6 +18,7 @@
         private string lastupdateduser;
         private string lastupdateddate;
         private string lastupdatedmachine;
+        private string branchID;
 
         public string BillID { get => billID; set => billID = value; }
         public string BillDate { get => billDate; set => billDate = value; }
@@ -33,5 +34,6 @@
         public string? SGSTPercentage1 { get => SGSTPercentage; set => SGSTPercentage = value; }
         public string? CGSTPercentageAmt1 { get => CGSTPercentageAmt; set => CGSTPercentageAmt = value; }
         public string? SGSTPerentageAmt1 { get => SGSTPercentageAmt; set => SGSTPercentageAmt = value; }
+        public string BranchID { get => branchID; set => branchID = value; }
     }
 }

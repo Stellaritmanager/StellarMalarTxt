@@ -18,6 +18,7 @@ public class ReportModel
     private string lastUpdateduser;
     private string lastUpdatedmachine;
     private string lastupdateddate;
+    private string branchID;
 
 
     public int ReportId { get => reportId; set => reportId = value; }
@@ -30,5 +31,6 @@ public class ReportModel
     public string Lastupdateddate { get => lastupdateddate; set => lastupdateddate = value; }
     public string FromDate { get => fromDate; set => fromDate = value; }
     public string ToDate { get => toDate; set => toDate = value; }
+    public string BranchID { get => branchID; set => branchID = value; }
 }
 	

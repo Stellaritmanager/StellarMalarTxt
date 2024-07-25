@@ -17,6 +17,7 @@
         private String lastupdateduser;
         private String lastupdateddate;
         private String lastupdatedmachine;
+        private string branchID;
 
         public string CustomerNumber { get => customerNumber; set => customerNumber = value; }
         public string DateOfReedem { get => dateOfReedem; set => dateOfReedem = value; }
@@ -28,6 +29,7 @@
         public string? PaymentId { get => strPaymentId; set => strPaymentId = value; }
         public string? PaymentDate { get => strPaymentDate; set => strPaymentDate = value; }
         public string? BillId { get => strBillId; set => strBillId = value; }
+        public string BranchID { get => branchID; set => branchID = value; }
     }
 
    

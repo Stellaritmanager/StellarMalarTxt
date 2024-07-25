@@ -182,14 +182,31 @@ namespace StellarBillingSystem.Business
             return discountid;
         }
 
+        public List<BranchMasterModel> Getbranch()
 
-        public List<String> GetRoll(string userid)
+        {
+            var branchid = (
+                        from pr in _billingContext.SHBranchMaster
+                        select new BranchMasterModel
+                        {
+                            BracnchID = pr.BracnchID,
+
+                            BranchName = pr.BranchName
+
+                        }).ToList();
+            return branchid;
+        }
+
+
+
+        public List<String> GetRoll(string userid,string BranchID)
         {
             var query = from sm in _billingContext.SHScreenMaster
                         join rac in _billingContext.SHRoleaccessModel on sm.ScreenId equals rac.ScreenID
                         join ram in _billingContext.SHrollaccess on rac.RollID equals ram.RollID
                         join sam in _billingContext.SHStaffAdmin on ram.StaffID equals sam.StaffID
-                        where rac.Authorized == "1" && sam.UserName == userid
+                        join s in _billingContext.SHStaffAdmin on sam.StaffID equals s.StaffID
+                        where rac.Authorized == "1" && sam.UserName == userid && sam.BranchID== BranchID
                         select sm.ScreenName;
 
             var result = query.ToList();

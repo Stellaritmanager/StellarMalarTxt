@@ -88,58 +88,58 @@ namespace StellarBillingSystem.Context
 
             modelBuilder.Entity<BranchMasterModel>().HasKey(i => new { i.BracnchID, i.BranchName });
 
-            modelBuilder.Entity<BillingMasterModel>().HasKey(i => new { i.BillID, i.BillDate });
-            modelBuilder.Entity<BillingDetailsModel>().HasKey(i => new { i.BillID, i.ProductID });
-            modelBuilder.Entity<GenericReportModel>().HasKey(i => new { i.ReportId });
+            modelBuilder.Entity<BillingMasterModel>().HasKey(i => new { i.BillID, i.BillDate,i.BranchID });
+            modelBuilder.Entity<BillingDetailsModel>().HasKey(i => new { i.BillID, i.ProductID,i.BranchID });
+            modelBuilder.Entity<GenericReportModel>().HasKey(i => new { i.ReportId,i.BranchID});
 
-            modelBuilder.Entity<StaffAdminModel>().HasKey(i => new { i.StaffID });
-            modelBuilder.Entity<ResourceTypeMasterModel>().HasKey(i => new { i.ResourceTypeID });
-            modelBuilder.Entity<RollAccessMaster>().HasKey(i => new { i.StaffID, i.RollID });
-            modelBuilder.Entity<RoleAccessModel>().HasKey(i => new { i.RollID,i.ScreenID});
-            modelBuilder.Entity<RollTypeMaster>().HasKey(i => new { i.RollID });
-            modelBuilder.Entity<ScreenMasterModel>().HasKey(i => new { i.ScreenId });
+            modelBuilder.Entity<StaffAdminModel>().HasKey(i => new { i.StaffID,i.BranchID});
+            modelBuilder.Entity<ResourceTypeMasterModel>().HasKey(i => new { i.ResourceTypeID,i.BranchID });
+            modelBuilder.Entity<RollAccessMaster>().HasKey(i => new { i.StaffID, i.RollID,i.BranchID});
+            modelBuilder.Entity<RoleAccessModel>().HasKey(i => new { i.RollID,i.ScreenID,i.BranchID});
+            modelBuilder.Entity<RollTypeMaster>().HasKey(i => new { i.RollID, i.BranchID });
+            modelBuilder.Entity<ScreenMasterModel>().HasKey(i => new { i.ScreenId,i.BranchID });
             modelBuilder.Entity<ScreenNameMasterModel>().HasKey(i => new { i.Id });
             
 
 
-            modelBuilder.Entity<LogsModel>().HasKey(i => new { i.LogID });
-            modelBuilder.Entity<CategoryMasterModel>().HasKey(i => new { i.CategoryID });
+            modelBuilder.Entity<LogsModel>().HasKey(i => new { i.LogID, i.BranchID });
+            modelBuilder.Entity<CategoryMasterModel>().HasKey(i => new { i.CategoryID,i.BranchID });
 
-            modelBuilder.Entity<ProductMatserModel>().HasKey(i => new { i.ProductID });
+            modelBuilder.Entity<ProductMatserModel>().HasKey(i => new { i.ProductID,i.BranchID });
 
-            modelBuilder.Entity<CustomerMasterModel>().HasKey(i => new { i.MobileNumber });
+            modelBuilder.Entity<CustomerMasterModel>().HasKey(i => new { i.MobileNumber, i.BranchID });
 
-            modelBuilder.Entity<DiscountCategoryMasterModel>().HasKey(i => new { i.CategoryID });
+            modelBuilder.Entity<DiscountCategoryMasterModel>().HasKey(i => new { i.CategoryID,i.BranchID });
 
-            modelBuilder.Entity<GSTMasterModel>().HasKey(i => new { i.TaxID });
+            modelBuilder.Entity<GSTMasterModel>().HasKey(i => new { i.TaxID, i.BranchID });
 
-            modelBuilder.Entity<VoucherCustomerDetailModel>().HasKey(i => new { i.VoucherID });
+            modelBuilder.Entity<VoucherCustomerDetailModel>().HasKey(i => new { i.VoucherID, i.BranchID });
 
-            modelBuilder.Entity<BilingSysytemModel>().HasKey(i => new { i.BillID });
+            modelBuilder.Entity<BilingSysytemModel>().HasKey(i => new { i.BillID,i.BranchID });
 
-            modelBuilder.Entity<GodownModel>().HasKey(i => new { i.ProductID,i.DatefofPurchase,i.SupplierInformation});
+            modelBuilder.Entity<GodownModel>().HasKey(i => new { i.ProductID,i.DatefofPurchase,i.SupplierInformation,i.BranchID});
 
-            modelBuilder.Entity<NetDiscountMasterModel>().HasKey(i => new { i.NetID });
+            modelBuilder.Entity<NetDiscountMasterModel>().HasKey(i => new { i.NetID, i.BranchID });
 
-            modelBuilder.Entity<VoucherMasterModel>().HasKey(i => new { i.VoucherID });
+            modelBuilder.Entity<VoucherMasterModel>().HasKey(i => new { i.VoucherID,i.BranchID});
 
-            modelBuilder.Entity<RackPatrionProductModel>().HasKey(i => new { i.PartitionID,i.ProductID });
+            modelBuilder.Entity<RackPatrionProductModel>().HasKey(i => new { i.PartitionID,i.ProductID,i.BranchID});
 
-            modelBuilder.Entity<RackMasterModel>().HasKey(i => new { i.PartitionID, i.RackID });
+            modelBuilder.Entity<RackMasterModel>().HasKey(i => new { i.PartitionID, i.RackID,i.BranchID});
 
-            modelBuilder.Entity<PointsReedemDetailsModel>().HasKey(i => new { i.CustomerID });
+            modelBuilder.Entity<PointsReedemDetailsModel>().HasKey(i => new { i.CustomerID,i.BranchID});
 
-            modelBuilder.Entity<PointsMasterModel>().HasKey(i => new { i.PointsID });
+            modelBuilder.Entity<PointsMasterModel>().HasKey(i => new { i.PointsID, i.BranchID });
 
-            modelBuilder.Entity<ReportModel>().HasKey(i => new {i.ReportId});
+            modelBuilder.Entity<ReportModel>().HasKey(i => new { i.ReportId});
 
             modelBuilder.Entity<SignUpModel>().HasKey(i => new { i.Username });
 
-            modelBuilder.Entity<PaymentMasterModel>().HasKey(i => new { i.BillId, i.PaymentId });
+            modelBuilder.Entity<PaymentMasterModel>().HasKey(i => new { i.BillId, i.PaymentId,i.BranchID});
 
-            modelBuilder.Entity<PaymentDetailsModel>().HasKey(i => new { i.PaymentDiscription, i.PaymentId });
+            modelBuilder.Entity<PaymentDetailsModel>().HasKey(i => new { i.PaymentDiscription, i.PaymentId,i.BranchID });
 
-            modelBuilder.Entity<ReedemHistoryModel>().HasKey(i => new { i.CustomerNumber, i.DateOfReedem });
+            modelBuilder.Entity<ReedemHistoryModel>().HasKey(i => new { i.CustomerNumber, i.DateOfReedem,i.BranchID });
 
 
         }

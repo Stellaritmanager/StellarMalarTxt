@@ -23,6 +23,7 @@ public class BilingSysytemModel
 	private String strLastUpdatedDate;
     private String strLastUpdatedUser;
     private String strLastUpdatedmachine;
+    private string branchID;
 
     public string BillID { get => strBillID; set => strBillID = value; }
     public string? CustomerName { get => strCustomerName; set => strCustomerName = value; }
@@ -41,4 +42,5 @@ public class BilingSysytemModel
     public string? LastUpdatedDate { get => strLastUpdatedDate; set => strLastUpdatedDate = value; }
     public string? LastUpdatedUser { get => strLastUpdatedUser; set => strLastUpdatedUser = value; }
     public string? LastUpdatedmachine { get => strLastUpdatedmachine; set => strLastUpdatedmachine = value; }
+    public string BranchID { get => branchID; set => branchID = value; }
 }

@@ -13,6 +13,7 @@ namespace StellarBillingSystem.Models
         private string reportQuery;
         private string datecolumn;
         private string groupBy;
+        private string branchID;
 
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int ReportId { get => reportId; set => reportId = value; }
@@ -22,5 +23,6 @@ namespace StellarBillingSystem.Models
         public string ReportQuery { get => reportQuery; set => reportQuery = value; }
         public string Datecolumn { get => datecolumn; set => datecolumn = value; }
         public string GroupBy { get => groupBy; set => groupBy = value; }
+        public string BranchID { get => branchID; set => branchID = value; }
     }
 }

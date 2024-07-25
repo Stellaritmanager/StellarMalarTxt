@@ -99,6 +99,21 @@
                             </div>
 
                             <div class="form-floating form-floating-outline mb-4">
+                                @{
+                                    var branchlist = ((IEnumerable<BranchMasterModel>)ViewData["branchid"])
+                                    .Select(m => new SelectListItem
+            {
+                Value = m.BracnchID.ToString(), // Assuming ScreenId is of type int
+                Text = $"{m.BracnchID} - {m.BranchName}"
+            });
+                                }
+
+                                @Html.DropDownListFor(model => model.BranchID, branchlist, "Select Branch ID", new { @class = "form-control" })
+                                <label asp-for="ResourceTypeID" class="control-label">Resource TypeID</label>
+                                <span asp-validation-for="ResourceTypeID" class="text-danger"></span>
+                            </div>
+
+                            <div class="form-floating form-floating-outline mb-4">
                                 <input asp-for="FirstName" value="@Model.FirstName" class="form-control" placeholder="First Name" pattern="^[A-Za-z\s]+$" title="Customer Name should contain only letters and spaces" />
                                 <label asp-for="FirstName" class="control-label">First Name</label>
                                 <span asp-validation-for="FirstName" class="text-danger"></span>
@@ -145,7 +160,7 @@
 
                             <div class="form-floating form-floating-outline mb-4">
 
-                                <input asp-for="DateofBirth" value="@Model.DateofBirth" class="form-control" placeholder="DateofBirth" />
+                                <input asp-for="DateofBirth" type="date" value="@Model.DateofBirth" class="form-control" placeholder="DateofBirth" />
                                 <label asp-for="DateofBirth" class="control-label">DateofBirth</label>
                                 <span asp-validation-for="DateofBirth" class="text-danger"></span>
                             </div>

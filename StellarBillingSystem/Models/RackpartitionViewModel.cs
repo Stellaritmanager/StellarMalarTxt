@@ -7,6 +7,7 @@
         private string partitionID;
         private string productID;
         private string noofitems;
+        private string branchID;
 
         private List<RackPatrionProductModel> viewrackpartition;
 
@@ -14,5 +15,6 @@
         public string ProductID { get => productID; set => productID = value; }
         public List<RackPatrionProductModel> Viewrackpartition { get => viewrackpartition; set => viewrackpartition = value; }
         public string Noofitems { get => noofitems; set => noofitems = value; }
+        public string BranchID { get => branchID; set => branchID = value; }
     }
 }

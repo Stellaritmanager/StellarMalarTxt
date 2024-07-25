@@ -27,6 +27,9 @@ namespace StellarBillingSystem.Migrations
                     b.Property<string>("BillID")
                         .HasColumnType("nvarchar(450)");
 
+                    b.Property<string>("BranchID")
+                        .HasColumnType("nvarchar(450)");
+
                     b.Property<string>("CategoryBasedDiscount")
                         .HasColumnType("nvarchar(max)");
 
@@ -75,7 +78,7 @@ namespace StellarBillingSystem.Migrations
                     b.Property<string>("VoucherNumber")
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("BillID");
+                    b.HasKey("BillID", "BranchID");
 
                     b.ToTable("SHCustomerBilling");
                 });
@@ -140,6 +143,9 @@ namespace StellarBillingSystem.Migrations
                     b.Property<string>("CategoryID")
                         .HasColumnType("nvarchar(450)");
 
+                    b.Property<string>("BranchID")
+                        .HasColumnType("nvarchar(450)");
+
                     b.Property<string>("CategoryName")
                         .HasColumnType("nvarchar(max)");
 
@@ -155,7 +161,7 @@ namespace StellarBillingSystem.Migrations
                     b.Property<string>("LastUpdatedmachine")
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("CategoryID");
+                    b.HasKey("CategoryID", "BranchID");
 
                     b.ToTable("SHCategoryMaster");
                 });
@@ -163,6 +169,9 @@ namespace StellarBillingSystem.Migrations
             modelBuilder.Entity("CustomerMasterModel", b =>
                 {
                     b.Property<string>("MobileNumber")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("BranchID")
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("Address")
@@ -195,7 +204,7 @@ namespace StellarBillingSystem.Migrations
                     b.Property<string>("LastUpdatedmachine")
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("MobileNumber");
+                    b.HasKey("MobileNumber", "BranchID");
 
                     b.ToTable("SHCustomerMaster");
                 });
@@ -203,6 +212,9 @@ namespace StellarBillingSystem.Migrations
             modelBuilder.Entity("DiscountCategoryMasterModel", b =>
                 {
                     b.Property<string>("CategoryID")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("BranchID")
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("DiscountPrice")
@@ -220,7 +232,7 @@ namespace StellarBillingSystem.Migrations
                     b.Property<string>("LastUpdatedmachine")
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("CategoryID");
+                    b.HasKey("CategoryID", "BranchID");
 
                     b.ToTable("SHDiscountCategory");
                 });
@@ -228,6 +240,9 @@ namespace StellarBillingSystem.Migrations
             modelBuilder.Entity("GSTMasterModel", b =>
                 {
                     b.Property<string>("TaxID")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("BranchID")
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("CGST")
@@ -248,7 +263,7 @@ namespace StellarBillingSystem.Migrations
                     b.Property<string>("SGST")
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("TaxID");
+                    b.HasKey("TaxID", "BranchID");
 
                     b.ToTable("SHGSTMaster");
                 });
@@ -262,6 +277,9 @@ namespace StellarBillingSystem.Migrations
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("SupplierInformation")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("BranchID")
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<bool>("IsDelete")
@@ -279,7 +297,7 @@ namespace StellarBillingSystem.Migrations
                     b.Property<string>("NumberofStocks")
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("ProductID", "DatefofPurchase", "SupplierInformation");
+                    b.HasKey("ProductID", "DatefofPurchase", "SupplierInformation", "BranchID");
 
                     b.ToTable("SHGodown");
                 });
@@ -287,6 +305,9 @@ namespace StellarBillingSystem.Migrations
             modelBuilder.Entity("NetDiscountMasterModel", b =>
                 {
                     b.Property<string>("NetID")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("BranchID")
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("LastUpdatedDate")
@@ -301,7 +322,7 @@ namespace StellarBillingSystem.Migrations
                     b.Property<string>("NetDiscount")
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("NetID");
+                    b.HasKey("NetID", "BranchID");
 
                     b.ToTable("SHNetDiscountMaster");
                 });
@@ -309,6 +330,9 @@ namespace StellarBillingSystem.Migrations
             modelBuilder.Entity("PointsMasterModel", b =>
                 {
                     b.Property<string>("PointsID")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("BranchID")
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("LastUpdatedDate")
@@ -326,7 +350,7 @@ namespace StellarBillingSystem.Migrations
                     b.Property<string>("NetPrice")
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("PointsID");
+                    b.HasKey("PointsID", "BranchID");
 
                     b.ToTable("SHPointsMaster");
                 });
@@ -334,6 +358,9 @@ namespace StellarBillingSystem.Migrations
             modelBuilder.Entity("PointsReedemDetailsModel", b =>
                 {
                     b.Property<string>("CustomerID")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("BranchID")
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("ExpiryDate")
@@ -351,7 +378,7 @@ namespace StellarBillingSystem.Migrations
                     b.Property<string>("TotalPoints")
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("CustomerID");
+                    b.HasKey("CustomerID", "BranchID");
 
                     b.ToTable("SHPointsReedemDetails");
                 });
@@ -359,6 +386,9 @@ namespace StellarBillingSystem.Migrations
             modelBuilder.Entity("ProductMatserModel", b =>
                 {
                     b.Property<string>("ProductID")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("BranchID")
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("BarcodeId")
@@ -403,7 +433,7 @@ namespace StellarBillingSystem.Migrations
                     b.Property<string>("TotalAmount")
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("ProductID");
+                    b.HasKey("ProductID", "BranchID");
 
                     b.ToTable("SHProductMaster");
                 });
@@ -414,6 +444,9 @@ namespace StellarBillingSystem.Migrations
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("RackID")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("BranchID")
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("FacilityName")
@@ -428,7 +461,7 @@ namespace StellarBillingSystem.Migrations
                     b.Property<string>("LastUpdatedmachine")
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("PartitionID", "RackID");
+                    b.HasKey("PartitionID", "RackID", "BranchID");
 
                     b.ToTable("SHRackMaster");
                 });
@@ -439,6 +472,9 @@ namespace StellarBillingSystem.Migrations
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("ProductID")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("BranchID")
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<bool>("Isdelete")
@@ -456,7 +492,7 @@ namespace StellarBillingSystem.Migrations
                     b.Property<string>("Noofitems")
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("PartitionID", "ProductID");
+                    b.HasKey("PartitionID", "ProductID", "BranchID");
 
                     b.ToTable("SHRackPartionProduct");
                 });
@@ -468,6 +504,10 @@ namespace StellarBillingSystem.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ReportId"));
+
+                    b.Property<string>("BranchID")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("FromDate")
                         .IsRequired()
@@ -518,6 +558,9 @@ namespace StellarBillingSystem.Migrations
                     b.Property<string>("ProductID")
                         .HasColumnType("nvarchar(450)");
 
+                    b.Property<string>("BranchID")
+                        .HasColumnType("nvarchar(450)");
+
                     b.Property<string>("BillDate")
                         .HasColumnType("nvarchar(max)");
 
@@ -558,7 +601,7 @@ namespace StellarBillingSystem.Migrations
                     b.Property<string>("Totalprice")
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("BillID", "ProductID");
+                    b.HasKey("BillID", "ProductID", "BranchID");
 
                     b.ToTable("SHbilldetails");
                 });
@@ -570,6 +613,15 @@ namespace StellarBillingSystem.Migrations
 
                     b.Property<string>("BillDate")
                         .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("BranchID")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("CGSTPercentage1")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("CGSTPercentageAmt1")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("CustomerNumber")
                         .IsRequired()
@@ -590,13 +642,19 @@ namespace StellarBillingSystem.Migrations
                     b.Property<string>("NetPrice")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("SGSTPercentage1")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("SGSTPerentageAmt1")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("TotalDiscount")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Totalprice")
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("BillID", "BillDate");
+                    b.HasKey("BillID", "BillDate", "BranchID");
 
                     b.ToTable("SHbillmaster");
                 });
@@ -608,6 +666,9 @@ namespace StellarBillingSystem.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ReportId"));
+
+                    b.Property<string>("BranchID")
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("Datecolumn")
                         .IsRequired()
@@ -633,7 +694,7 @@ namespace StellarBillingSystem.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("ReportId");
+                    b.HasKey("ReportId", "BranchID");
 
                     b.ToTable("ShGenericReport");
                 });
@@ -645,6 +706,9 @@ namespace StellarBillingSystem.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("LogID"));
+
+                    b.Property<string>("BranchID")
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<int?>("Att1")
                         .HasColumnType("int");
@@ -667,7 +731,7 @@ namespace StellarBillingSystem.Migrations
                     b.Property<string>("UserName")
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("LogID");
+                    b.HasKey("LogID", "BranchID");
 
                     b.ToTable("SBLogs");
                 });
@@ -678,6 +742,9 @@ namespace StellarBillingSystem.Migrations
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("PaymentId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("BranchID")
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<bool>("IsDelete")
@@ -704,7 +771,7 @@ namespace StellarBillingSystem.Migrations
                     b.Property<string>("PaymentTransactionNumber")
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("PaymentDiscription", "PaymentId");
+                    b.HasKey("PaymentDiscription", "PaymentId", "BranchID");
 
                     b.ToTable("SHPaymentDetails");
                 });
@@ -715,6 +782,9 @@ namespace StellarBillingSystem.Migrations
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("PaymentId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("BranchID")
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("Balance")
@@ -741,7 +811,7 @@ namespace StellarBillingSystem.Migrations
                     b.Property<string>("ReedemPoints")
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("BillId", "PaymentId");
+                    b.HasKey("BillId", "PaymentId", "BranchID");
 
                     b.ToTable("SHPaymentMaster");
                 });
@@ -752,6 +822,9 @@ namespace StellarBillingSystem.Migrations
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("DateOfReedem")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("BranchID")
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("BillId")
@@ -778,7 +851,7 @@ namespace StellarBillingSystem.Migrations
                     b.Property<string>("ReedemPoints")
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("CustomerNumber", "DateOfReedem");
+                    b.HasKey("CustomerNumber", "DateOfReedem", "BranchID");
 
                     b.ToTable("SHReedemHistory");
                 });
@@ -786,6 +859,9 @@ namespace StellarBillingSystem.Migrations
             modelBuilder.Entity("StellarBillingSystem.Models.ResourceTypeMasterModel", b =>
                 {
                     b.Property<string>("ResourceTypeID")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("BranchID")
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<bool>("IsDelete")
@@ -803,7 +879,7 @@ namespace StellarBillingSystem.Migrations
                     b.Property<string>("lastUpdatedUser")
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("ResourceTypeID");
+                    b.HasKey("ResourceTypeID", "BranchID");
 
                     b.ToTable("SHresourceType");
                 });
@@ -814,6 +890,9 @@ namespace StellarBillingSystem.Migrations
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("ScreenID")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("BranchID")
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("Access")
@@ -836,7 +915,7 @@ namespace StellarBillingSystem.Migrations
                     b.Property<string>("lastUpdatedUser")
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("RollID", "ScreenID");
+                    b.HasKey("RollID", "ScreenID", "BranchID");
 
                     b.ToTable("SHRoleaccessModel");
                 });
@@ -847,6 +926,9 @@ namespace StellarBillingSystem.Migrations
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("RollID")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("BranchID")
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<bool>("IsDelete")
@@ -861,7 +943,7 @@ namespace StellarBillingSystem.Migrations
                     b.Property<string>("Lastupdateduser")
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("StaffID", "RollID");
+                    b.HasKey("StaffID", "RollID", "BranchID");
 
                     b.ToTable("SHrollaccess");
                 });
@@ -869,6 +951,9 @@ namespace StellarBillingSystem.Migrations
             modelBuilder.Entity("StellarBillingSystem.Models.RollTypeMaster", b =>
                 {
                     b.Property<string>("RollID")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("BranchID")
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<bool>("IsDelete")
@@ -887,7 +972,7 @@ namespace StellarBillingSystem.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("RollID");
+                    b.HasKey("RollID", "BranchID");
 
                     b.ToTable("SHrollType");
                 });
@@ -895,6 +980,9 @@ namespace StellarBillingSystem.Migrations
             modelBuilder.Entity("StellarBillingSystem.Models.ScreenMasterModel", b =>
                 {
                     b.Property<string>("ScreenId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("BranchID")
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<bool>("IsDelete")
@@ -912,7 +1000,7 @@ namespace StellarBillingSystem.Migrations
                     b.Property<string>("lastUpdatedUser")
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("ScreenId");
+                    b.HasKey("ScreenId", "BranchID");
 
                     b.ToTable("SHScreenMaster");
                 });
@@ -964,6 +1052,9 @@ namespace StellarBillingSystem.Migrations
             modelBuilder.Entity("StellarBillingSystem.Models.StaffAdminModel", b =>
                 {
                     b.Property<string>("StaffID")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("BranchID")
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("Address1")
@@ -1038,7 +1129,7 @@ namespace StellarBillingSystem.Migrations
                     b.Property<string>("UserName")
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("StaffID");
+                    b.HasKey("StaffID", "BranchID");
 
                     b.ToTable("SHStaffAdmin");
                 });
@@ -1046,6 +1137,9 @@ namespace StellarBillingSystem.Migrations
             modelBuilder.Entity("VoucherCustomerDetailModel", b =>
                 {
                     b.Property<string>("VoucherID")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("BranchID")
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("CustomerID")
@@ -1063,7 +1157,7 @@ namespace StellarBillingSystem.Migrations
                     b.Property<string>("LastUpdatedmachine")
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("VoucherID");
+                    b.HasKey("VoucherID", "BranchID");
 
                     b.ToTable("SHVoucherDetails");
                 });
@@ -1071,6 +1165,9 @@ namespace StellarBillingSystem.Migrations
             modelBuilder.Entity("VoucherMasterModel", b =>
                 {
                     b.Property<string>("VoucherID")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("BranchID")
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("ExpiryDate")
@@ -1094,7 +1191,7 @@ namespace StellarBillingSystem.Migrations
                     b.Property<string>("VoucherNumber")
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("VoucherID");
+                    b.HasKey("VoucherID", "BranchID");
 
                     b.ToTable("SHVoucherMaster");
                 });

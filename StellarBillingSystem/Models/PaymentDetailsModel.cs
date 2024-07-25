@@ -18,6 +18,7 @@ namespace StellarBillingSystem.Models
         private String lastupdateduser;
         private String lastupdateddate;
         private String lastupdatedmachine;
+        private string branchID;
 
         public string PaymentId { get => strPaymentId; set => strPaymentId = value; }
         public string PaymentDiscription { get => strPaymentDiscription; set => strPaymentDiscription = value; }
@@ -29,5 +30,6 @@ namespace StellarBillingSystem.Models
         public string? Lastupdateduser { get => lastupdateduser; set => lastupdateduser = value; }
         public string? Lastupdateddate { get => lastupdateddate; set => lastupdateddate = value; }
         public string? Lastupdatedmachine { get => lastupdatedmachine; set => lastupdatedmachine = value; }
+        public string BranchID { get => branchID; set => branchID = value; }
     }
 }

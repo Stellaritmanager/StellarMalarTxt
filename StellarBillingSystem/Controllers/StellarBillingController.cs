@@ -26,15 +26,21 @@ namespace HealthCare.Controllers
             _configuration = configuration;
         }
 
-       
+
 
         [HttpPost]
 
         public async Task<IActionResult> AddCategory(CategoryMasterModel model, string buttonType)
         {
+            if (TempData["BranchID"] != null)
+            {
+                model.BranchID = TempData["BranchID"].ToString();
+                TempData.Keep("BranchID");
+            }
+
             if (buttonType == "Get")
             {
-                var getcategory = await _billingsoftware.SHCategoryMaster.FirstOrDefaultAsync(x => x.CategoryID == model.CategoryID && !x.IsDelete);
+                var getcategory = await _billingsoftware.SHCategoryMaster.FirstOrDefaultAsync(x => x.CategoryID == model.CategoryID && !x.IsDelete &&x.BranchID==model.BranchID);
                 if (getcategory != null)
                 {
                     return View("CategoryMaster", getcategory);
@@ -48,7 +54,7 @@ namespace HealthCare.Controllers
             }
             else if (buttonType == "Delete")
             {
-                var categorytodelete = await _billingsoftware.SHCategoryMaster.FindAsync(model.CategoryID);
+                var categorytodelete = await _billingsoftware.SHCategoryMaster.FindAsync(model.CategoryID,model.BranchID);
                 if (categorytodelete != null)
                 {
                     categorytodelete.IsDelete = true;
@@ -70,7 +76,7 @@ namespace HealthCare.Controllers
 
             else if (buttonType == "DeleteRetrieve")
             {
-                var categorytoretrieve = await _billingsoftware.SHCategoryMaster.FindAsync(model.CategoryID);
+                var categorytoretrieve = await _billingsoftware.SHCategoryMaster.FindAsync(model.CategoryID,model.BranchID);
                 if (categorytoretrieve != null)
                 {
                     categorytoretrieve.IsDelete = false;
@@ -91,7 +97,7 @@ namespace HealthCare.Controllers
             }
             else if (buttonType == "save")
             {
-                var existingCategory = await _billingsoftware.SHCategoryMaster.FindAsync(model.CategoryID);
+                var existingCategory = await _billingsoftware.SHCategoryMaster.FindAsync(model.CategoryID, model.BranchID);
                 if (existingCategory != null)
                 {
                     if (existingCategory.IsDelete)
@@ -110,7 +116,7 @@ namespace HealthCare.Controllers
                 else
                 {
                     model.LastUpdatedDate = DateTime.Now.ToString();
-                    model.LastUpdatedUser = /*User.Claims.First().Value.ToString();*/  "Admin";
+                    model.LastUpdatedUser = User.Claims.First().Value.ToString();;
                     model.LastUpdatedmachine = Request.HttpContext.Connection.RemoteIpAddress.ToString();
 
 
@@ -131,6 +137,8 @@ namespace HealthCare.Controllers
 
         public async Task<IActionResult> AddProduct(ProductMatserModel model, string buttonType)
         {
+
+
             BusinessClassBilling business = new BusinessClassBilling(_billingsoftware);
             ViewData["categoryid"] = business.GetCatid();
             ViewData["discountid"] = business.Getdiscountid();
@@ -1154,6 +1162,7 @@ namespace HealthCare.Controllers
         {
             BusinessClassBilling Busbill = new BusinessClassBilling(_billingsoftware);
             ViewData["resoruseid"] = Busbill.GetResourceid();
+            ViewData["branchid"] = Busbill.Getbranch();
 
 
             if (buttontype == "Get")
@@ -1172,7 +1181,7 @@ namespace HealthCare.Controllers
             }
             else if (buttontype == "Delete")
             {
-                var stafftodelete = await _billingsoftware.SHStaffAdmin.FindAsync(model.StaffID);
+                var stafftodelete = await _billingsoftware.SHStaffAdmin.FindAsync(model.StaffID,model.BranchID);
                 if (stafftodelete != null)
                 {
                     stafftodelete.IsDelete = true;
@@ -1193,7 +1202,7 @@ namespace HealthCare.Controllers
 
             else if (buttontype == "DeleteRetrieve")
             {
-                var stafftoretrieve = await _billingsoftware.SHStaffAdmin.FindAsync(model.StaffID);
+                var stafftoretrieve = await _billingsoftware.SHStaffAdmin.FindAsync(model.StaffID,model.BranchID);
                 if (stafftoretrieve != null)
                 {
                     stafftoretrieve.IsDelete = false;
@@ -1232,7 +1241,7 @@ namespace HealthCare.Controllers
             }
 
 
-            var existingStaffAdmin = await _billingsoftware.SHStaffAdmin.FindAsync(model.StaffID);
+            var existingStaffAdmin = await _billingsoftware.SHStaffAdmin.FindAsync(model.StaffID, model.BranchID);
 
 
             if (string.IsNullOrWhiteSpace(model.UserName) || string.IsNullOrWhiteSpace(model.Password))
@@ -1245,6 +1254,7 @@ namespace HealthCare.Controllers
             {
                 existingStaffAdmin.StaffID = model.StaffID;
                 existingStaffAdmin.ResourceTypeID = model.ResourceTypeID;
+                existingStaffAdmin.BranchID = model.BranchID;
                 existingStaffAdmin.FirstName = model.FirstName;
                 existingStaffAdmin.LastName = model.LastName;
                 existingStaffAdmin.Initial = model.Initial;
@@ -2115,7 +2125,7 @@ namespace HealthCare.Controllers
 
 
 
-        
+
 
         public IActionResult RollTypeMaster()
         {
@@ -2128,7 +2138,7 @@ namespace HealthCare.Controllers
         {
 
             BranchMasterModel par = new BranchMasterModel();
-            return View("BranchMaster",par);
+            return View("BranchMaster", par);
         }
 
 
@@ -2138,6 +2148,7 @@ namespace HealthCare.Controllers
 
             BusinessClassBilling Busbill = new BusinessClassBilling(_billingsoftware);
             ViewData["resoruseid"] = Busbill.GetResourceid();
+            ViewData["branchid"] = Busbill.Getbranch();
 
             StaffAdminModel par = new StaffAdminModel();
 
@@ -2518,7 +2529,7 @@ string BillId, string Balance, string BillDate, string PaymentId, string payment
                     }
                 }
             }
-            
+
 
 
 
@@ -2825,7 +2836,7 @@ string BillId, string Balance, string BillDate, string PaymentId, string payment
             }
             else if (buttontype == "Delete")
             {
-                var branchdel= await _billingsoftware.SHBranchMaster.FirstOrDefaultAsync(x => x.BracnchID == model.BracnchID && x.IsDelete == false);
+                var branchdel = await _billingsoftware.SHBranchMaster.FirstOrDefaultAsync(x => x.BracnchID == model.BracnchID && x.IsDelete == false);
                 if (branchdel != null)
                 {
                     branchdel.IsDelete = true;
@@ -2865,7 +2876,7 @@ string BillId, string Balance, string BillDate, string PaymentId, string payment
                     model.ZipCode = branchdelret.ZipCode;
                     model.IsFranchise = branchdelret.IsFranchise;
                     model.email = branchdelret.email;
-                   
+
 
                     ViewBag.retMessage = "Deleted Branch retrieved successfully";
                 }
@@ -2882,8 +2893,49 @@ string BillId, string Balance, string BillDate, string PaymentId, string payment
                 return View("BranchMaster", model);
             }
 
-            var existingBranch = await _billingsoftware.SHBranchMaster.FindAsync(model.BracnchID,model.BranchName);
+            var existingBranch = await _billingsoftware.SHBranchMaster.FindAsync(model.BracnchID, model.BranchName);
 
+
+
+
+            if (existingBranch != null)
+            {
+                existingBranch.BracnchID = model.BracnchID;
+                existingBranch.BranchName = model.BranchName;
+                existingBranch.PhoneNumber1 = model.PhoneNumber1;
+                existingBranch.PhoneNumber2 = model.PhoneNumber2;
+                existingBranch.Address1 = model.Address1;
+                existingBranch.Address2 = model.Address2;
+                existingBranch.Country = model.Country;
+                existingBranch.City = model.City;
+                existingBranch.State = model.State;
+                existingBranch.ZipCode = model.ZipCode;
+                existingBranch.IsFranchise = model.IsFranchise;
+                existingBranch.email = model.email;
+                existingBranch.LastUpdatedDate = DateTime.Now.ToString();
+                existingBranch.lastUpdatedUser = User.Claims.First().Value.ToString();
+                existingBranch.lastUpdatedMachine = Request.HttpContext.Connection.RemoteIpAddress.ToString();
+
+                _billingsoftware.Entry(existingBranch).State = EntityState.Modified;
+
+            }
+            else
+            {
+
+                model.LastUpdatedDate = DateTime.Now.ToString();
+                model.lastUpdatedUser = User.Claims.First().Value.ToString();
+                model.lastUpdatedMachine = Request.HttpContext.Connection.RemoteIpAddress.ToString();
+                _billingsoftware.SHBranchMaster.Add(model);
+            }
+            await _billingsoftware.SaveChangesAsync();
+
+            ViewBag.Message = "Saved Successfully";
+
+            model = new BranchMasterModel();
+            return View("BranchMaster", model);
+
+
+        }
 
 
 

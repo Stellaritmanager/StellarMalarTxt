@@ -12,6 +12,7 @@
         private string strlastUpdatedUser;
         private string strlastUpdatedMachine;
         private bool isdelete;
+        private string branchID;
 
         public string RollID { get => strRollID; set => strRollID = value; }
         public string ScreenID { get => strScreenID; set => strScreenID = value; }
@@ -21,5 +22,6 @@
         public string? lastUpdatedUser { get => strlastUpdatedUser; set => strlastUpdatedUser = value; }
         public string? lastUpdatedMachine { get => strlastUpdatedMachine; set => strlastUpdatedMachine = value; }
         public bool Isdelete { get => isdelete; set => isdelete = value; }
+        public string BranchID { get => branchID; set => branchID = value; }
     }
 }

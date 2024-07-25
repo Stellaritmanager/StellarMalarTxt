@@ -16,6 +16,7 @@
         private string totalDiscount;
         private string customerNumber;
         private bool isDelete;
+        private string branchID;
         private string lastupdateduser;
         private string lastupdateddate;
         private string lastupdatedmachine;
@@ -42,5 +43,6 @@
         public BillingMasterModel MasterModel { get => masterModel; set => masterModel = value; }
         public BillingDetailsModel DetailModel { get => detailModel; set => detailModel = value; }
         public List<BillingDetailsModel> Viewbillproductlist { get => viewbillproductlist; set => viewbillproductlist = value; }
+        public string BranchID { get => branchID; set => branchID = value; }
     }
 }

@@ -18,6 +18,7 @@ public class CustomerMasterModel
     private String strLastUpdatedDate;
     private String strLastUpdatedUser;
     private String strLastUpdatedmachine;
+    private string branchID;
 
     public string? CustomerID { get => strCustomerID; set => strCustomerID = value; }
     public string? CustomerName { get => strCustomerName; set => strCustomerName = value; }
@@ -30,4 +31,5 @@ public class CustomerMasterModel
     public string? LastUpdatedUser { get => strLastUpdatedUser; set => strLastUpdatedUser = value; }
     public string? LastUpdatedmachine { get => strLastUpdatedmachine; set => strLastUpdatedmachine = value; }
     public bool IsDelete { get => strIsDelete; set => strIsDelete = value; }
+    public string BranchID { get => branchID; set => branchID = value; }
 }

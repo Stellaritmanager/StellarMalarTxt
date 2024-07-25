@@ -42,7 +42,10 @@
         <div>Stock Management</div>
       </a>
 
-
+        @if (rollAccessList != null)
+{
+                @if (rollAccessList.Contains("BranchMaster"))
+                {
             <ul class="menu-sub">
 
                 <li class='menu-item@(currentPage == "/StellarBilling/BranchMaster" ? " active" : "")'>
@@ -52,6 +55,8 @@
                     </a>
                 </li>
             </ul>
+                }
+}
 
 
       @if (rollAccessList != null)
@@ -338,8 +343,11 @@
                     }
                 }
 
+                       @if (rollAccessList != null)
+            {
+                    @if (rollAccessList.Contains("CustomerBilling"))
+                    {
 
-             
                         <ul class="menu-sub">
 
                             <li class='menu-item@(currentPage == "/StellarBilling/PaymentScreen" ? " active" : "")'>
@@ -349,7 +357,8 @@
                                 </a>
                             </li>
                         </ul>
-                  
+                    }
+                }
 
 
             </li>

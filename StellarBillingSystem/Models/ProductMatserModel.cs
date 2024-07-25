@@ -24,8 +24,10 @@ using System;
     private String strLastUpdatedDate;
         private String strLastUpdatedUser;
         private String strLastUpdatedmachine;
+    private string branchID;
 
-        public string ProductID { get => strProductID; set => strProductID = value; }
+
+    public string ProductID { get => strProductID; set => strProductID = value; }
         public string? ProductName { get => strProductName; set => strProductName = value; }
         public string? Brandname { get => strBrandname; set => strBrandname = value; }
         public string? Price { get => strPrice; set => strPrice = value; }
@@ -41,5 +43,6 @@ using System;
     public string? CGST { get => cGST; set => cGST = value; }
     public string? OtherTax { get => otherTax; set => otherTax = value; }
     public string? DiscountCategory { get => strDiscountCategory; set => strDiscountCategory = value; }
+    public string BranchID { get => branchID; set => branchID = value; }
 }
 

@@ -21,6 +21,7 @@
         private string lastupdateduser;
         private string lastupdateddate;
         private string lastupdatedmachine;
+        private string branchID;
 
         public string BillID { get => billID; set => billID = value; }
         public string BillDate { get => billDate; set => billDate = value; }
@@ -36,6 +37,6 @@
         public string Lastupdateduser { get => lastupdateduser; set => lastupdateduser = value; }
         public string Lastupdateddate { get => lastupdateddate; set => lastupdateddate = value; }
         public string Lastupdatedmachine { get => lastupdatedmachine; set => lastupdatedmachine = value; }
-        
+        public string BranchID { get => branchID; set => branchID = value; }
     }
 }

@@ -12,6 +12,7 @@ namespace StellarBillingSystem.Models
         private String logType;
         private int logID;
         private int? att1;
+        private string branchID;
 
         public String? LogMessage { get => logMessage; set => logMessage = value; }
         public String? MachineName { get => machineName; set => machineName = value; }
@@ -23,5 +24,6 @@ namespace StellarBillingSystem.Models
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int LogID { get => logID; set => logID = value; }
         public int? Att1 { get => att1; set => att1 = value; }
+        public string BranchID { get => branchID; set => branchID = value; }
     }
 }

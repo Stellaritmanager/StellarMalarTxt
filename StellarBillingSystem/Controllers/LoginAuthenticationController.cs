@@ -6,6 +6,7 @@ using System.Security.Claims;
 using StellarBillingSystem.Models;
 using Newtonsoft.Json;
 using StellarBillingSystem.Business;
+using Microsoft.EntityFrameworkCore;
 
 namespace StellarBillingSystem.Controllers
 {
@@ -43,7 +44,7 @@ namespace StellarBillingSystem.Controllers
         [HttpPost]
         public async Task<IActionResult> Login(StaffAdminModel model)
         {
-            var login = await _billingContext.SHStaffAdmin.FindAsync(model.UserName);
+            var login = await _billingContext.SHStaffAdmin.FirstOrDefaultAsync(x => x.UserName == model.UserName);
 
             if (login != null)
             {
@@ -70,11 +71,18 @@ namespace StellarBillingSystem.Controllers
 
                     BusinessClassBilling Busreg = new BusinessClassBilling(_billingContext);
 
-                    var rolldetail = Busreg.GetRoll(model.UserName);
+                    var branch = await _billingContext.SHStaffAdmin.FirstOrDefaultAsync(x => x.UserName == model.UserName);
+
+                    var rolldetail = Busreg.GetRoll(model.UserName,branch.BranchID);
 
                     TempData["UserName"] = model.UserName;
+                    TempData["BranchID"] = branch.BranchID;
+
                     // Set TempData with the filtered roll details
                     TempData["RollAccess"] = JsonConvert.SerializeObject(rolldetail);
+                     
+                    
+                   
 
                     
                     return RedirectToAction("Index", "Home");
