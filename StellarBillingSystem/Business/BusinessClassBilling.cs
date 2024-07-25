@@ -80,10 +80,10 @@ namespace StellarBillingSystem.Business
 
 
 
-        public List<RackpartitionViewModel> GetRackview(string partitionID, string productID)
+        public List<RackpartitionViewModel> GetRackview(string partitionID, string productID,string BranchID)
         {
             var result = (from p in _billingContext.SHRackPartionProduct
-                          where p.PartitionID == partitionID && p.ProductID == productID && p.Isdelete == false
+                          where p.PartitionID == partitionID && p.ProductID == productID && p.Isdelete == false && p.BranchID==BranchID
                           select new RackpartitionViewModel
                           {
                               PartitionID = p.PartitionID,
