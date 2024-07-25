@@ -19,106 +19,129 @@
 
 <div class="row">
     <div class="col-lg-8 mb-4 order-0">
-         <form action="@Url.Action("RedirectToReports","Home")" method="post" class="mb-0">
+        <form action="@Url.Action("RedirectToReports","Home")" method="post" class="mb-0">
             <div class="card" style="cursor: pointer;" onclick="this.closest('form').submit();">
-            <div class="d-flex align-items-end row">
-                <div class="col-sm-7">
-                    <div class="card-body">
+                <div class="d-flex align-items-end row">
+                    <div class="col-sm-7">
+                        <div class="card-body">
 
                             <p class="mb-4" style="font-size: 18px; margin-left: 22px;">@ViewBag.SalesMessage</p>
 
-                      
+
+                        </div>
                     </div>
-                </div>
-                <div class="col-sm-5 text-center text-sm-left">
-                    <div class="card-body pb-0 px-0 px-md-4">
-                        <img src="~/img/illustrations/man-with-laptop-light.png" height="140" alt="View Badge User" data-app-dark-img="illustrations/man-with-laptop-dark.png" data-app-light-img="illustrations/man-with-laptop-light.png">
+                    <div class="col-sm-5 text-center text-sm-left">
+                        <div class="card-body pb-0 px-0 px-md-4">
+                            <img src="~/img/illustrations/man-with-laptop-light.png" height="140" alt="View Badge User" data-app-dark-img="illustrations/man-with-laptop-dark.png" data-app-light-img="illustrations/man-with-laptop-light.png">
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
         </form>
     </div>
     <div class="col-lg-4 col-md-4 order-1">
         <div class="row">
             <div class="col-lg-6 col-md-12 col-6 mb-4">
                 <form action="@Url.Action("RedirectToReports","Home")" method="post" class="mb-0">
-            <div class="card" style="cursor: pointer;" onclick="this.closest('form').submit();">
-                
-                    <div class="card-body">
-                        <div class="card-title d-flex align-items-start justify-content-between">
-                            <div class="avatar flex-shrink-0">
-                                <img src="~/img/icons/unicons/chart-success.png" alt="chart success" class="rounded">
+                    <div class="card" style="cursor: pointer;" onclick="this.closest('form').submit();">
+
+                        <div class="card-body">
+                            <div class="card-title d-flex align-items-start justify-content-between">
+                                <div class="avatar flex-shrink-0">
+                                    <img src="~/img/icons/unicons/chart-success.png" alt="chart success" class="rounded">
+                                </div>
+
                             </div>
-                           
-                        </div>
-                        <span class="fw-medium d-block mb-1">Sales</span>
+                            <span class="fw-medium d-block mb-1">Sales</span>
                             <h3 class="card-title mb-2" style="font-size: 16px;">₹@ViewBag.DailySales</h3>
-                       
+
+                        </div>
                     </div>
-                </div>
                 </form>
             </div>
 
             <div class="col-lg-6 col-md-12 col-6 mb-4">
                 <form action="@Url.Action("RedirectToReports","Home")" method="post" class="mb-0">
-            <div class="card" style="cursor: pointer;" onclick="this.closest('form').submit();">
-                    <div class="card-body">
-                        <div class="card-title d-flex align-items-start justify-content-between">
-                            <div class="avatar flex-shrink-0">
-                                <img src="~/img/icons/unicons/wallet-info.png" alt="Credit Card" class="rounded">
+                    <div class="card" style="cursor: pointer;" onclick="this.closest('form').submit();">
+                        <div class="card-body">
+                            <div class="card-title d-flex align-items-start justify-content-between">
+                                <div class="avatar flex-shrink-0">
+                                    <img src="~/img/icons/unicons/wallet-info.png" alt="Credit Card" class="rounded">
+                                </div>
+
                             </div>
-                           
-                        </div>
-                        <span>Payment</span>
+                            <span>Payment</span>
                             <h3 class="card-title mb-1" style="font-size: 16px;">₹@ViewBag.DailyPayments</h3>
 
+                        </div>
+
                     </div>
-                    
-                </div>
                 </form>
             </div>
         </div>
-       
+
     </div>
-   
-    </div>
+
+</div>
 <form action="@Url.Action("GetReports","Home")" method="post">
 
     @if (Model != null && Model.Rows.Count > 0)
     {
 
 
-<div>
+
         <div class="row gy-4">
-            <div class="col-md-12 col-lg-2">
+            <div class="col-md-12 col-lg-0.5">
             </div>
-            <div class="col-md-12 col-lg-8">
+            <div class="col-md-12 col-lg-12">
                 <div class="card">
-                    <div class="card-body " style="background-image: linear-gradient(to right, #FFFFFF 0%, #e0efff 51%, #add5ff 100%);">
+                    <div class="card-body ">
 
 
-                        <h2>@ViewBag.Reportname</h2>
+                        <div class="row">
+                            <div class="col-md-12 col-lg-0.5">
+                            </div>
+                            <div class="col-md-12 col-lg-12">
+                                <div class="card">
+                                    <div class="card-body " style="background-color:#007bff">
+                                        <div style="align-items:center">
+                                            <div class="container" style="text-align:center">
+
+                                                <h2 class="centered text-white" style="font-family:'Lucida Bright';">@ViewBag.Reportname</h2>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
                         <br />
-                        <table id="dataTable">
-                            <thead>
+                        <table id="dataTable" class="table table-sm" style="font-size: 18px;">
+                            <thead style="background-color:#007bff">
                                 <tr>
                                     @foreach (DataColumn column in Model.Columns)
                                     {
-                                        <th>@column.ColumnName</th>
+                                        <th style="font-size: 18px; color:white">@column.ColumnName</th>
                                     }
                                 </tr>
                             </thead>
-                            <tbody>
+
+                            <tbody style="background-image: linear-gradient(to right, #FFFFFF 0%, #e0efff 51%, #add5ff 100%);">
+
                                 @foreach (DataRow row in Model.Rows)
                                 {
+
                                     <tr>
+
                                         @foreach (var cell in row.ItemArray)
                                         {
                                             <td>@cell</td>
                                         }
+
                                     </tr>
+
                                 }
+
                             </tbody>
                         </table>
                         <br />
@@ -130,11 +153,50 @@
                 </div>
             </div>
         </div>
-</div>
-}
-</form>
-   
-    
 
-  
-    
+
+
+        <script>
+            function exportToExcel() {
+                try {
+                    // Select the table element
+                    var table = document.getElementById('dataTable');
+
+                    // Create a new Excel instance
+                    var excel = new ExcelJS.Workbook();
+                    var sheet = excel.addWorksheet('Sheet 1');
+
+                    // Iterate over each row and column in the table to add data to Excel sheet
+                    for (var i = 0; i < table.rows.length; i++) {
+                        var row = sheet.addRow();
+                        var cells = table.rows[i].cells;
+                        for (var j = 0; j < cells.length; j++) {
+                            row.getCell(j + 1).value = cells[j].innerText;
+                        }
+                    }
+
+                    // Save the workbook as an Excel file
+                    excel.xlsx.writeBuffer().then(function (buffer) {
+                        saveAs(new Blob([buffer], { type: "application/octet-stream" }), 'table_data.xlsx');
+                        window.location.href = '@Url.Action("Index", "Home")';
+                    });
+                } catch (error) {
+                    console.error('Export to Excel failed:', error);
+                    alert('Export to Excel failed. Please try again.' + error);
+                }
+            }
+        </script>
+        <!-- Include ExcelJS library -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.4.0/exceljs.min.js"></script>
+        <!-- Include FileSaver.js library for saving Blob objects -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+
+    }
+
+
+</form>
+
+
+
+
+

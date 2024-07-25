@@ -113,22 +113,50 @@ namespace StellarBillingSystem.Business
                 if (connection != null)
                 {
                     connection.Open();
-                            
-                        using (var command = new SqlCommand(sqlQuery, connection))
+                    using (var command = new SqlCommand(sqlQuery, connection))
+                    {
+                        using (var reader = command.ExecuteReader())
                         {
-                            using (var reader = command.ExecuteReader())
+                            if (reader.HasRows)
                             {
-                                if (reader.HasRows)
-                                {
-                                    dataTable.Load(reader);
-                                }
+                                dataTable.Load(reader);
                             }
                         }
-                    
+                    }
                 }
             }
 
+            // Save the original read-only state of each column
+            Dictionary<string, bool> originalReadOnlyState = new Dictionary<string, bool>();
+            foreach (DataColumn column in dataTable.Columns)
+            {
+                originalReadOnlyState[column.ColumnName] = column.ReadOnly;
+                column.ReadOnly = false; // Temporarily make the column writable
+            }
+
+            // Format decimal, double, and float columns to string with two decimal places
+            foreach (DataColumn column in dataTable.Columns)
+            {
+                if (column.DataType == typeof(decimal) || column.DataType == typeof(double) || column.DataType == typeof(float))
+                {
+                    foreach (DataRow row in dataTable.Rows)
+                    {
+                        if (row[column.ColumnName] != DBNull.Value)
+                        {
+                            row[column.ColumnName] = Convert.ToDecimal(row[column.ColumnName]).ToString("F2");
+                        }
+                    }
+                }
+            }
+
+            // Restore the original read-only state of each column
+            foreach (DataColumn column in dataTable.Columns)
+            {
+                column.ReadOnly = originalReadOnlyState[column.ColumnName];
+            }
+
             return dataTable;
+            
         }
 
 

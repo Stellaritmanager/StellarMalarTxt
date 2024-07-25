@@ -130,37 +130,44 @@
     {
 
         <div class="row gy-4">
-            <div class="col-md-12 col-lg-1">
+            <div class="col-md-12 col-lg-0.5">
             </div>
-            <div class="col-md-12 col-lg-10">
+            <div class="col-md-12 col-lg-12">
                 <div class="card">
-                    <div class="card-body " style="background-image: linear-gradient(to right, #FFFFFF 0%, #e0efff 51%, #add5ff 100%);">
+                    <div class="card-body ">
 
                         <center> 
                             <h2 style="font-family:'Lucida Bright';">@ViewBag.Reportname</h2>
                         </center>
                         <br/>
-                        <table class="table" style="font-size: 15px;" >
+                        <table id="dataTable" class="table  table-sm" style="font-size: 15px;">
                             <thead style ="background-color:#007bff">
                                 <tr>
                                     @foreach (DataColumn column in Model.Columns)
                                     {
-                                        <th style ="font-size: 15px;">@column.ColumnName</th>
+                                        <th style="font-size: 15px; color:white">@column.ColumnName</th>
                                     }
                                 </tr>
                             </thead>
+                            
                             <tbody style="background-image: linear-gradient(to right, #FFFFFF 0%, #e0efff 51%, #add5ff 100%);">
-                                
+                              
                                 @foreach (DataRow row in Model.Rows)
                                 {
+                                   
                                     <tr>
+                                       
                                         @foreach (var cell in row.ItemArray)
                                         {
                                             <td>@cell</td>
                                         }
+                                       
                                     </tr>
+                                  
                                 }
+                              
                             </tbody>
+                           
                         </table>
                         <br/>
                         <center>
