@@ -4,6 +4,7 @@ using DocumentFormat.OpenXml.InkML;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using NuGet.Protocol;
@@ -2525,7 +2526,7 @@ string BillId, string Balance, string BillDate, string PaymentId, string payment
             if (buttonType == "PaymentReceipt")
             {
 
-                String Query = "SELECT \r\n    SD.BillID,\r\n    CONVERT(varchar(10), SD.BillDate, 101) AS BillDate,\r\n    SD.PaymentId ,\r\n    SB.PaymentDiscription,\r\n\tSB.PaymentDate,\r\n\tSB.PaymentMode,\r\n\tSB.PaymentAmount, \r\n\tSB.PaymentTransactionNumber, \r\n    SD.CustomerNumber AS CustomerName,\r\n    SD.CustomerNumber\r\n\r\n\r\nFROM \r\n    SHPaymentMaster SD\r\nINNER JOIN \r\n    SHPaymentDetails SB ON SD.PaymentId = SB.PaymentId\r\n\r\nWHERE \r\n    SD.IsDelete = 0 AND  SD.CustomerNumber = '" + CustomerNumber + "' AND sd.BillId = '" + BillId + "' AND SD.PaymentId='" + PaymentId + "'";
+                String Query =  "SELECT \r\n    SD.BillID,\r\n    CONVERT(varchar(10), SD.BillDate, 101) AS BillDate,\r\n    SD.PaymentId,\r\n    SB.PaymentDiscription,\r\n    SB.PaymentDate,\r\n    SB.PaymentMode,\r\n    SB.PaymentAmount, \r\n    SB.PaymentTransactionNumber,\r\n    SD.CustomerNumber AS CustomerName,\r\n    SD.CustomerNumber\r\nFROM \r\n    SHPaymentMaster SD\r\nINNER JOIN \r\n    SHPaymentDetails SB ON SD.PaymentId = SB.PaymentId\r\nWHERE \r\n    SB.IsDelete = 0 \r\n    AND SD.CustomerNumber = '" + CustomerNumber + "' \r\n    AND SD.BillId = '" + BillId + "' \r\n    AND SB.PaymentId = '" + PaymentId + "' \r\n    AND SB.BranchID = '" + model.BranchID + "'";
 
                 var Table = BusinessClassCommon.DataTable(_billingsoftware, Query);
 
@@ -2543,6 +2544,7 @@ string BillId, string Balance, string BillDate, string PaymentId, string payment
                 var newDetail = new PaymentDetailsModel
                 {
                     PaymentId = PaymentId,
+                    BranchID=model.BranchID,
                     PaymentDiscription = businessbill.GeneratePaymentDescription(PaymentId),
                     PaymentDate = string.Empty,
                     PaymentMode = string.Empty,
@@ -2736,6 +2738,8 @@ string BillId, string Balance, string BillDate, string PaymentId, string payment
 
             if (buttonType == "GetPoints")
             {
+               
+
                 // Retrieve RedeemPoints based on CustomerNumber
                 var customer = await _billingsoftware.SHPaymentMaster
                     .FirstOrDefaultAsync(c => c.CustomerNumber == CustomerNumber && c.BranchID==model.BranchID);
@@ -2743,9 +2747,11 @@ string BillId, string Balance, string BillDate, string PaymentId, string payment
                 if (customer != null)
                 {
                     var pointsID = await _billingsoftware.SHPointsMaster
-                        .FromSqlRaw("SELECT dbo.GeneratePointsID(" + CustomerNumber + ") AS PointsID", new SqlParameter("@CustomerNumber", CustomerNumber))
-                        .Select(p => p.PointsID)
-                        .FirstOrDefaultAsync();
+        .FromSqlRaw("SELECT dbo.GeneratePointsID(@CustomerNumber, @BranchID) AS PointsID",
+            new SqlParameter("@CustomerNumber", CustomerNumber),
+            new SqlParameter("@BranchID", model.BranchID))
+        .Select(p => p.PointsID)
+        .FirstOrDefaultAsync();
 
                     ViewBag.CustomerNumber = customer.CustomerNumber;
                     ViewBag.ReedemPoints = pointsID;
@@ -2819,11 +2825,12 @@ string BillId, string Balance, string BillDate, string PaymentId, string payment
         new SqlParameter("@LastUpdatedUser", User.Claims.First().Value.ToString()),
         new SqlParameter("@LastUpdatedDate", DateTime.Now.ToString()),
         new SqlParameter("@LastUpdatedMachine", Request.HttpContext.Connection.RemoteIpAddress.ToString()),
-        new SqlParameter("@Reedem", "Y")
+        new SqlParameter("@Reedem", "Y"),
+        new SqlParameter("@BranchID", model.BranchID ?? (object)DBNull.Value),
     };
 
                 await _billingsoftware.Database.ExecuteSqlRawAsync(
-                    "EXEC InsertBillPayment @BillId, @PaymentId, @CustomerNumber, @ReedemPoints, @Balance,@BillDate, @PaymentDiscription, @PaymentMode, @PaymentTransactionNumber, @PaymentAmount, @PaymentDate, @LastUpdatedUser, @LastUpdatedDate, @LastUpdatedMachine, @Reedem",
+                    "EXEC InsertBillPayment @BillId, @PaymentId, @CustomerNumber, @ReedemPoints, @Balance,@BillDate, @PaymentDiscription, @PaymentMode, @PaymentTransactionNumber, @PaymentAmount, @PaymentDate, @LastUpdatedUser, @LastUpdatedDate, @LastUpdatedMachine, @Reedem,@BranchID",
                     parameters
                 );
 
@@ -2844,7 +2851,7 @@ string BillId, string Balance, string BillDate, string PaymentId, string payment
 
                 // Retrieve updated payment details
                 var billDetailspay = await _billingsoftware.SHPaymentDetails
-                    .Where(b => b.PaymentId == model.PaymentId && b.IsDelete == false)
+                    .Where(b => b.PaymentId == model.PaymentId && b.IsDelete == false && b.BranchID==model.BranchID)
                     .Select(b => new PaymentDetailsModel
                     {
                         PaymentId = b.PaymentId,
@@ -2896,10 +2903,11 @@ string BillId, string Balance, string BillDate, string PaymentId, string payment
         new SqlParameter("@LastUpdatedUser", User.Claims.First().Value.ToString()),
         new SqlParameter("@LastUpdatedDate", DateTime.Now.ToString()),
         new SqlParameter("@LastUpdatedMachine", Request.HttpContext.Connection.RemoteIpAddress.ToString()),
-        new SqlParameter("@Reedem", "Y")
+        new SqlParameter("@Reedem", "Y"),
+        new SqlParameter("@BranchID", model.BranchID ?? (object)DBNull.Value),
     };
 
-                    await _billingsoftware.Database.ExecuteSqlRawAsync("EXEC InsertBillPayment @BillId, @PaymentId, @CustomerNumber, @ReedemPoints, @Balance,@BillDate, @PaymentDiscription, @PaymentMode, @PaymentTransactionNumber, @PaymentAmount, @PaymentDate, @LastUpdatedUser, @LastUpdatedDate, @LastUpdatedMachine,@Reedem", parameters);
+                    await _billingsoftware.Database.ExecuteSqlRawAsync("EXEC InsertBillPayment @BillId, @PaymentId, @CustomerNumber, @ReedemPoints, @Balance,@BillDate, @PaymentDiscription, @PaymentMode, @PaymentTransactionNumber, @PaymentAmount, @PaymentDate, @LastUpdatedUser, @LastUpdatedDate, @LastUpdatedMachine,@Reedem,@BranchID", parameters);
                 }
 
                 _billingsoftware.SaveChanges();
@@ -2919,6 +2927,14 @@ string BillId, string Balance, string BillDate, string PaymentId, string payment
 
 
             List<PaymentTableViewModel> modelList = new List<PaymentTableViewModel>();
+
+
+            if (TempData["BranchID"] != null)
+            {
+                model.BranchID = TempData["BranchID"].ToString();
+                TempData.Keep("BranchID");
+            }
+
 
             if (string.IsNullOrEmpty(BillID))
             {

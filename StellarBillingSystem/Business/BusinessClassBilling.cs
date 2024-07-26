@@ -213,6 +213,21 @@ namespace StellarBillingSystem.Business
             return result;
         }
 
+        public List<String> Getadmin(string userid)
+        {
+            var query = from sm in _billingContext.SHScreenMaster
+                        join rac in _billingContext.SHRoleaccessModel on sm.ScreenId equals rac.ScreenID
+                        join ram in _billingContext.SHrollaccess on rac.RollID equals ram.RollID
+                        join sam in _billingContext.SHStaffAdmin on ram.StaffID equals sam.StaffID
+                        join s in _billingContext.SHStaffAdmin on sam.StaffID equals s.StaffID
+                        where rac.Authorized == "1" && sam.UserName == userid 
+                        select sm.ScreenName;
+
+            var result = query.ToList();
+            return result;
+        }
+
+
         public List<GenericReportModel> GetReportId()
         {
             var reportid = (

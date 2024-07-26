@@ -132,6 +132,12 @@ public class HomeController : Controller
     }
 
 
+    public IActionResult Administration()
+    {
+        return View();
+    }
+
+    
 
     public IActionResult RedirectToReports()
     {
