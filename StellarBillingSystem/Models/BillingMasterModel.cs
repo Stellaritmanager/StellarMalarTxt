@@ -10,10 +10,10 @@
         private string totalprice;
         private string totalDiscount;
         private string netPrice;
-        private string CGSTPercentage;
-        private string SGSTPercentage;
-        private string CGSTPercentageAmt;
-        private string SGSTPercentageAmt;
+        private string cGSTPercentage;
+        private string sGSTPercentage;
+        private string cGSTPercentageAmt;
+        private string sGSTPercentageAmt;
         private bool isDelete;
         private string lastupdateduser;
         private string lastupdateddate;
@@ -30,10 +30,10 @@
         public string? Lastupdateduser { get => lastupdateduser; set => lastupdateduser = value; }
         public string? Lastupdateddate { get => lastupdateddate; set => lastupdateddate = value; }
         public string? Lastupdatedmachine { get => lastupdatedmachine; set => lastupdatedmachine = value; }
-        public string? CGSTPercentage1 { get => CGSTPercentage; set => CGSTPercentage = value; }
-        public string? SGSTPercentage1 { get => SGSTPercentage; set => SGSTPercentage = value; }
-        public string? CGSTPercentageAmt1 { get => CGSTPercentageAmt; set => CGSTPercentageAmt = value; }
-        public string? SGSTPerentageAmt1 { get => SGSTPercentageAmt; set => SGSTPercentageAmt = value; }
-        public string BranchID { get => branchID; set => branchID = value; }
+    public string BranchID { get => branchID; set => branchID = value; }
+        public string? CGSTPercentage { get => cGSTPercentage; set => cGSTPercentage = value; }
+        public string? SGSTPercentage { get => sGSTPercentage; set => sGSTPercentage = value; }
+        public string? CGSTPercentageAmt { get => cGSTPercentageAmt; set => cGSTPercentageAmt = value; }
+        public string? SGSTPercentageAmt { get => sGSTPercentageAmt; set => sGSTPercentageAmt = value; }
     }
 }
