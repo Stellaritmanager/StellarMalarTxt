@@ -6,6 +6,15 @@
     Layout = "~/Views/Shared/_BlankLayout.cshtml";
 }
 
+<script>
+    // Prevent back navigation
+    if (window.history && window.history.pushState) {
+        window.history.pushState(null, null, window.location.href);
+        window.onpopstate = function () {
+            window.history.go(1);
+        };
+    }
+</script>
 
 <div class="container-xxl">
     <div class="authentication-wrapper authentication-basic container-p-y">
