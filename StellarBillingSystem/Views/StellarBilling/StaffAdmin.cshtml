@@ -314,5 +314,12 @@
             </script>
         }
 
+        @if (ViewBag.validateMessage != null)
+        {
+            <script>
+                handleMessages("@ViewBag.validateMessage");
+            </script>
+        }
+
 
 </form>
