@@ -144,13 +144,21 @@ namespace HealthCare.Controllers
                 TempData.Keep("BranchID");
             }
 
+           
+
             BusinessClassBilling business = new BusinessClassBilling(_billingsoftware);
             ViewData["categoryid"] = business.GetCatid();
             ViewData["discountid"] = business.Getdiscountid();
 
             if (buttonType == "Get")
             {
-                var resultpro = await _billingsoftware.SHProductMaster.FirstOrDefaultAsync(x => x.ProductID == model.ProductID && !x.IsDelete&&x.BranchID==model.BranchID);
+                if (model.ProductID ==null && model.BarcodeId==null)
+                {
+                    ViewBag.ValidationMessage = "Please enter either ProductID or BarcodeID.";
+                    return View("ProductMaster", model);
+                }
+
+                var resultpro = await _billingsoftware.SHProductMaster.FirstOrDefaultAsync(x =>( x.ProductID == model.ProductID || x.BarcodeId==model.BarcodeId) && !x.IsDelete && x.BranchID==model.BranchID);
                 if (resultpro != null)
                 {
                     return View("ProductMaster", resultpro);
@@ -164,7 +172,13 @@ namespace HealthCare.Controllers
             }
             else if (buttonType == "Delete")
             {
-                var productToDelete = await _billingsoftware.SHProductMaster.FindAsync(model.ProductID,model.BranchID);
+                if (string.IsNullOrEmpty(model.ProductID) && string.IsNullOrEmpty(model.BarcodeId))
+                {
+                    ViewBag.ValidationMessage = "Please enter either ProductID or BarcodeID.";
+                    return View("ProductMaster", model);
+                }
+
+                var productToDelete = await _billingsoftware.SHProductMaster.FirstOrDefaultAsync(x => (x.ProductID == model.ProductID || x.BarcodeId == model.BarcodeId) && !x.IsDelete && x.BranchID == model.BranchID);
                 if (productToDelete != null)
                 {
                     productToDelete.IsDelete = true;
@@ -184,7 +198,13 @@ namespace HealthCare.Controllers
             }
             else if (buttonType == "DeleteRetrieve")
             {
-                var productToRetrieve = await _billingsoftware.SHProductMaster.FindAsync(model.ProductID,model.BranchID);
+                if (string.IsNullOrEmpty(model.ProductID) && string.IsNullOrEmpty(model.BarcodeId))
+                {
+                    ViewBag.ValidationMessage = "Please enter either ProductID or BarcodeID.";
+                    return View("ProductMaster", model);
+                }
+
+                var productToRetrieve = await _billingsoftware.SHProductMaster.FirstOrDefaultAsync(x => (x.ProductID == model.ProductID || x.BarcodeId == model.BarcodeId) && x.IsDelete==true && x.BranchID == model.BranchID);
                 if (productToRetrieve != null)
                 {
                     productToRetrieve.IsDelete = false;
@@ -215,6 +235,17 @@ namespace HealthCare.Controllers
             }
             else if (buttonType == "Save")
             {
+                if (string.IsNullOrEmpty(model.ProductID))
+                {
+                    ViewBag.ValidationMessage = "Please enter  ProductID";
+                    return View("ProductMaster", model);
+                }
+
+                if (string.IsNullOrEmpty(model.BarcodeId))
+                {
+                    ViewBag.ValidationMessage = "Please enter  BarcodeID.";
+                    return View("ProductMaster", model);
+                }
 
 
                 decimal price;

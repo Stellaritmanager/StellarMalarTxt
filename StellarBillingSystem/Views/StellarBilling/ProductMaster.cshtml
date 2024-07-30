@@ -75,17 +75,17 @@
                         <div class="col-md-12 col-lg-8">
 
                             <div class="form-floating form-floating-outline mb-4">
-                                <input asp-for="ProductID" class="form-control" placeholder="Product ID" required />
+                                <input type="ProductID" class="form-control" placeholder="Product ID" name="ProductID" value="@Model.ProductID" />
                                 <label asp-for="ProductID" class="control-label">Product ID</label>
 
-                                <span asp-validation-for="ProductID" class="text-danger"></span>
+                               
                             </div>
 
-                            <div class="form-floating form-floating-outline mb-4">
-                                <input asp-for="BarcodeId" class="form-control" placeholder="Barcode ID"  />
+                            <div class="form-floating form-floating-outline mb-4"> 
+                                <input asp-for="BarcodeId" class="form-control" placeholder="Barcode ID" value="@Model.BarcodeId"  />
                                 <label asp-for="BarcodeId" class="control-label">Barcode ID</label>
 
-                                <span asp-validation-for="BarcodeId" class="text-danger"></span>
+                               
                             </div>
 
                         </div>
@@ -250,6 +250,13 @@
             handleMessages("@ViewBag.CatErrorMessage");
         </script>
     }
+    @if (ViewBag.ValidationMessage != null)
+    {
+        <script>
+            handleMessages("@ViewBag.ValidationMessage");
+        </script>
+    }
+
 
 </form>
 
