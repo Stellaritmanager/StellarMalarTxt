@@ -69,7 +69,7 @@ namespace HealthCare.Controllers
           
             if (buttonType == "Get")
             {
-                var getcategory = await _billingsoftware.SHCategoryMaster.FirstOrDefaultAsync(x => x.CategoryID == model.CategoryID && !x.IsDelete &&x.BranchID==model.BranchID);
+                var getcategory = await _billingsoftware.SHCategoryMaster.FirstOrDefaultAsync(x => x.CategoryID == model.CategoryID && !x.IsDelete && x.BranchID == model.BranchID);
                 if (getcategory != null)
                 {
                     return View("CategoryMaster", getcategory);
@@ -106,7 +106,7 @@ namespace HealthCare.Controllers
 
             else if (buttonType == "DeleteRetrieve")
             {
-                var categorytoretrieve = await _billingsoftware.SHCategoryMaster.FirstOrDefaultAsync(x => x.CategoryID == model.CategoryID && x.IsDelete==true && x.BranchID == model.BranchID);
+                var categorytoretrieve = await _billingsoftware.SHCategoryMaster.FindAsync(model.CategoryID,model.BranchID);
                 if (categorytoretrieve != null)
                 {
                     categorytoretrieve.IsDelete = false;
@@ -146,7 +146,7 @@ namespace HealthCare.Controllers
                 else
                 {
                     model.LastUpdatedDate = DateTime.Now.ToString();
-                    model.LastUpdatedUser = User.Claims.First().Value.ToString();;
+                    model.LastUpdatedUser = User.Claims.First().Value.ToString(); ;
                     model.LastUpdatedmachine = Request.HttpContext.Connection.RemoteIpAddress.ToString();
 
 
@@ -299,7 +299,7 @@ namespace HealthCare.Controllers
 
                 model.TotalAmount = totalAmount.ToString();
 
-               
+
 
                 var existingProduct = await _billingsoftware.SHProductMaster.FindAsync(model.ProductID, model.BranchID);
                 if (existingProduct != null)
@@ -378,7 +378,7 @@ namespace HealthCare.Controllers
 
             if (buttonType == "DeleteRetrieve")
             {
-                var screentoretrieve = await _billingsoftware.SHGodown.FindAsync(model.ProductID, model.DatefofPurchase, model.SupplierInformation,model.BranchID);
+                var screentoretrieve = await _billingsoftware.SHGodown.FindAsync(model.ProductID, model.DatefofPurchase, model.SupplierInformation, model.BranchID);
                 if (screentoretrieve != null)
                 {
                     screentoretrieve.IsDelete = false;
@@ -404,7 +404,7 @@ namespace HealthCare.Controllers
 
             if (buttonType == "Save")
             {
-                var existinggoddown = await _billingsoftware.SHGodown.FindAsync(model.ProductID, model.DatefofPurchase, model.SupplierInformation,model.BranchID);
+                var existinggoddown = await _billingsoftware.SHGodown.FindAsync(model.ProductID, model.DatefofPurchase, model.SupplierInformation, model.BranchID);
                 if (existinggoddown != null)
                 {
                     if (existinggoddown.IsDelete)
@@ -470,7 +470,7 @@ namespace HealthCare.Controllers
 
             if (buttonType == "Get")
             {
-                var getStock = await _billingsoftware.SHGodown.FirstOrDefaultAsync(x => x.IsDelete == false && x.ProductID == model.ProductID && x.DatefofPurchase == model.DatefofPurchase && x.SupplierInformation == model.SupplierInformation&&x.BranchID==model.BranchID);
+                var getStock = await _billingsoftware.SHGodown.FirstOrDefaultAsync(x => x.IsDelete == false && x.ProductID == model.ProductID && x.DatefofPurchase == model.DatefofPurchase && x.SupplierInformation == model.SupplierInformation && x.BranchID == model.BranchID);
                 if (getStock != null)
                 {
 
@@ -505,7 +505,7 @@ namespace HealthCare.Controllers
             }
 
 
-            var existingCustomer = await _billingsoftware.SHCustomerMaster.FindAsync(model.MobileNumber,model.BranchID);
+            var existingCustomer = await _billingsoftware.SHCustomerMaster.FindAsync(model.MobileNumber, model.BranchID);
             if (existingCustomer != null)
             {
                 if (existingCustomer.IsDelete)
@@ -535,7 +535,7 @@ namespace HealthCare.Controllers
                 model.LastUpdatedmachine = Request.HttpContext.Connection.RemoteIpAddress.ToString();
 
                 _billingsoftware.SHCustomerMaster.Add(model);
-               
+
 
             }
 
@@ -543,9 +543,9 @@ namespace HealthCare.Controllers
 
             ViewBag.Message = "Saved Successfully";
 
-            
 
-            return View("CustomerMaster",model);
+
+            return View("CustomerMaster", model);
         }
         public async Task<IActionResult> GetCustomer(CustomerMasterModel model)
         {
@@ -561,13 +561,13 @@ namespace HealthCare.Controllers
                 return BadRequest("Mobile number is required");
             }
 
-            var customer = await _billingsoftware.SHCustomerMaster.FindAsync(model.MobileNumber,model.BranchID);
+            var customer = await _billingsoftware.SHCustomerMaster.FindAsync(model.MobileNumber, model.BranchID);
 
             if (customer == null)
             {
                 model = new CustomerMasterModel();
                 ViewBag.ErrorMessage = "Mobile Number not found or customer is deleted";
-                return View("CustomerMaster",model ); // Return an empty model if not found or deleted
+                return View("CustomerMaster", model); // Return an empty model if not found or deleted
             }
 
             return View("CustomerMaster", customer);
@@ -590,7 +590,7 @@ namespace HealthCare.Controllers
                 return View("CustomerMaster");
             }
 
-            var customer = await _billingsoftware.SHCustomerMaster.FindAsync(model.MobileNumber,model.BranchID);
+            var customer = await _billingsoftware.SHCustomerMaster.FindAsync(model.MobileNumber, model.BranchID);
             if (customer == null)
             {
                 model = new CustomerMasterModel();
@@ -631,7 +631,7 @@ namespace HealthCare.Controllers
                 return View("Error", new CustomerMasterModel());
             }
 
-            var existingCustomer = await _billingsoftware.SHCustomerMaster.FindAsync(model.MobileNumber,model.BranchID);
+            var existingCustomer = await _billingsoftware.SHCustomerMaster.FindAsync(model.MobileNumber, model.BranchID);
             if (existingCustomer == null)
             {
                 model = new CustomerMasterModel();
@@ -677,7 +677,7 @@ namespace HealthCare.Controllers
 
             if (buttonType == "Get")
             {
-                var getdiscount = await _billingsoftware.SHDiscountCategory.FirstOrDefaultAsync(x => x.CategoryID == model.CategoryID && !x.IsDelete&&x.BranchID==model.BranchID);
+                var getdiscount = await _billingsoftware.SHDiscountCategory.FirstOrDefaultAsync(x => x.CategoryID == model.CategoryID && !x.IsDelete && x.BranchID == model.BranchID);
                 if (getdiscount != null)
                 {
                     return View("DiscountCategoryMaster", getdiscount);
@@ -692,7 +692,7 @@ namespace HealthCare.Controllers
 
             else if (buttonType == "Delete")
             {
-                var deletetodiscount = await _billingsoftware.SHDiscountCategory.FindAsync(model.CategoryID,model.BranchID);
+                var deletetodiscount = await _billingsoftware.SHDiscountCategory.FindAsync(model.CategoryID, model.BranchID);
                 if (deletetodiscount != null)
                 {
                     if (deletetodiscount.IsDelete)
@@ -719,7 +719,7 @@ namespace HealthCare.Controllers
 
             else if (buttonType == "DeleteRetrieve")
             {
-                var discountcategorytoretrieve = await _billingsoftware.SHDiscountCategory.FindAsync(model.CategoryID,model.BranchID);
+                var discountcategorytoretrieve = await _billingsoftware.SHDiscountCategory.FindAsync(model.CategoryID, model.BranchID);
                 if (discountcategorytoretrieve != null)
                 {
                     discountcategorytoretrieve.IsDelete = false;
@@ -741,7 +741,7 @@ namespace HealthCare.Controllers
             else if (buttonType == "save")
             {
 
-                var existingDiscountCategory = await _billingsoftware.SHDiscountCategory.FindAsync(model.CategoryID,model.BranchID);
+                var existingDiscountCategory = await _billingsoftware.SHDiscountCategory.FindAsync(model.CategoryID, model.BranchID);
                 if (existingDiscountCategory != null)
                 {
                     if (existingDiscountCategory.IsDelete)
@@ -866,7 +866,7 @@ namespace HealthCare.Controllers
 
             var NetID = "1";
 
-            var existingnetdiscount = await _billingsoftware.SHNetDiscountMaster.FindAsync(NetID,model.BranchID);
+            var existingnetdiscount = await _billingsoftware.SHNetDiscountMaster.FindAsync(NetID, model.BranchID);
             if (existingnetdiscount != null)
             {
 
@@ -1059,7 +1059,7 @@ namespace HealthCare.Controllers
             if (buttonType == "Get")
             {
 
-                var result = business.GetRackview(model.PartitionID, model.ProductID,model.BranchID);
+                var result = business.GetRackview(model.PartitionID, model.ProductID, model.BranchID);
                 if (result == null || !result.Any())
                 {
                     ViewBag.GetMessage = "No data found.";
@@ -1082,7 +1082,7 @@ namespace HealthCare.Controllers
 
             else if (buttonType == "DeleteRetrieve")
             {
-                var rolltoretrieve = await _billingsoftware.SHRackPartionProduct.FindAsync(model.PartitionID, model.ProductID,model.BranchID);
+                var rolltoretrieve = await _billingsoftware.SHRackPartionProduct.FindAsync(model.PartitionID, model.ProductID, model.BranchID);
                 if (rolltoretrieve != null)
                 {
                     rolltoretrieve.Isdelete = false;
@@ -1112,7 +1112,7 @@ namespace HealthCare.Controllers
 
             else if (buttonType == "Delete")
             {
-                var rolltoretrieve = await _billingsoftware.SHRackPartionProduct.FindAsync(model.PartitionID, model.ProductID,model.BranchID);
+                var rolltoretrieve = await _billingsoftware.SHRackPartionProduct.FindAsync(model.PartitionID, model.ProductID, model.BranchID);
                 if (rolltoretrieve != null)
                 {
                     if (rolltoretrieve.Isdelete)
@@ -1145,7 +1145,7 @@ namespace HealthCare.Controllers
             }
 
 
-            var recstockgodwomn = _billingsoftware.SHGodown.FirstOrDefault(x => x.ProductID == model.ProductID && x.BranchID==model.BranchID);
+            var recstockgodwomn = _billingsoftware.SHGodown.FirstOrDefault(x => x.ProductID == model.ProductID && x.BranchID == model.BranchID);
             if (recstockgodwomn == null)
             {
                 ViewBag.entergodowmnMessage = "Please enter the Product and Stock in Godown Master";
@@ -1209,7 +1209,7 @@ namespace HealthCare.Controllers
                 int newStock;
                 if (int.TryParse(model.Noofitems, out newStock))
                 {
-                    var recstock = _billingsoftware.SHGodown.FirstOrDefault(x => x.ProductID == model.ProductID &&x.BranchID==model.BranchID);
+                    var recstock = _billingsoftware.SHGodown.FirstOrDefault(x => x.ProductID == model.ProductID && x.BranchID == model.BranchID);
                     if (recstock != null)
                     {
                         int totalstock = int.Parse(recstock.NumberofStocks);
@@ -1244,7 +1244,7 @@ namespace HealthCare.Controllers
 
             //Repopulate the table after save 
 
-            var updatedResult = business.GetRackview(model.PartitionID, model.ProductID,model.BranchID);
+            var updatedResult = business.GetRackview(model.PartitionID, model.ProductID, model.BranchID);
             var updatedViewModelList = updatedResult.Select(p => new RackPatrionProductModel
             {
                 ProductID = p.ProductID,
@@ -1261,7 +1261,7 @@ namespace HealthCare.Controllers
 
 
         // Edit Function for RackPartition Table
-        public async Task<IActionResult> Edit(string partitionID, string productID,RackpartitionViewModel model)
+        public async Task<IActionResult> Edit(string partitionID, string productID, RackpartitionViewModel model)
         {
             if (TempData["BranchID"] != null)
             {
@@ -1272,7 +1272,7 @@ namespace HealthCare.Controllers
             BusinessClassBilling business = new BusinessClassBilling(_billingsoftware);
             ViewData["godownproductid"] = business.GetProductid();
 
-            var RackEdit = await _billingsoftware.SHRackPartionProduct.FindAsync(partitionID, productID,model.BranchID);
+            var RackEdit = await _billingsoftware.SHRackPartionProduct.FindAsync(partitionID, productID, model.BranchID);
             if (RackEdit == null)
             {
                 ViewBag.NovalueMessage = "No Data Found";
@@ -1355,7 +1355,7 @@ namespace HealthCare.Controllers
 
             if (buttontype == "Get")
             {
-                var getstaff = await _billingsoftware.SHStaffAdmin.FirstOrDefaultAsync(x => x.StaffID == model.StaffID && x.IsDelete == false&&x.BranchID==model.BranchID);
+                var getstaff = await _billingsoftware.SHStaffAdmin.FirstOrDefaultAsync(x => x.StaffID == model.StaffID && x.IsDelete == false && x.BranchID == model.BranchID);
                 if (getstaff != null)
                 {
                     return View("StaffAdmin", getstaff);
@@ -1369,7 +1369,7 @@ namespace HealthCare.Controllers
             }
             else if (buttontype == "Delete")
             {
-                var stafftodelete = await _billingsoftware.SHStaffAdmin.FindAsync(model.StaffID,model.BranchID);
+                var stafftodelete = await _billingsoftware.SHStaffAdmin.FindAsync(model.StaffID, model.BranchID);
                 if (stafftodelete != null)
                 {
                     stafftodelete.IsDelete = true;
@@ -1390,7 +1390,7 @@ namespace HealthCare.Controllers
 
             else if (buttontype == "DeleteRetrieve")
             {
-                var stafftoretrieve = await _billingsoftware.SHStaffAdmin.FindAsync(model.StaffID,model.BranchID);
+                var stafftoretrieve = await _billingsoftware.SHStaffAdmin.FindAsync(model.StaffID, model.BranchID);
                 if (stafftoretrieve != null)
                 {
                     stafftoretrieve.IsDelete = false;
@@ -1504,7 +1504,7 @@ namespace HealthCare.Controllers
 
             if (buttontype == "Get")
             {
-                var getres = await _billingsoftware.SHresourceType.FirstOrDefaultAsync(x => x.ResourceTypeID == model.ResourceTypeID && x.IsDelete == false&&x.BranchID==model.BranchID);
+                var getres = await _billingsoftware.SHresourceType.FirstOrDefaultAsync(x => x.ResourceTypeID == model.ResourceTypeID && x.IsDelete == false && x.BranchID == model.BranchID);
                 if (getres != null)
                 {
                     return View("ResourceTypeMaster", getres);
@@ -1518,7 +1518,7 @@ namespace HealthCare.Controllers
             }
             else if (buttontype == "Delete")
             {
-                var restodelete = await _billingsoftware.SHresourceType.FindAsync(model.ResourceTypeID,model.BranchID);
+                var restodelete = await _billingsoftware.SHresourceType.FindAsync(model.ResourceTypeID, model.BranchID);
                 if (restodelete != null)
                 {
                     restodelete.IsDelete = true;
@@ -1540,7 +1540,7 @@ namespace HealthCare.Controllers
 
             else if (buttontype == "DeleteRetrieve")
             {
-                var restoretrieve = await _billingsoftware.SHresourceType.FindAsync(model.ResourceTypeID,model.BranchID);
+                var restoretrieve = await _billingsoftware.SHresourceType.FindAsync(model.ResourceTypeID, model.BranchID);
                 if (restoretrieve != null)
                 {
                     restoretrieve.IsDelete = false;
@@ -1562,7 +1562,7 @@ namespace HealthCare.Controllers
             }
 
 
-            var existingres = await _billingsoftware.SHresourceType.FindAsync(model.ResourceTypeID,model.BranchID);
+            var existingres = await _billingsoftware.SHresourceType.FindAsync(model.ResourceTypeID, model.BranchID);
 
             if (existingres != null)
             {
@@ -1611,7 +1611,7 @@ namespace HealthCare.Controllers
 
             if (buttontype == "Get")
             {
-                var getrol = await _billingsoftware.SHRoleaccessModel.FirstOrDefaultAsync(x => x.RollID == model.RollID && x.ScreenID == model.ScreenID && x.Isdelete == false&&x.BranchID==model.BranchID);
+                var getrol = await _billingsoftware.SHRoleaccessModel.FirstOrDefaultAsync(x => x.RollID == model.RollID && x.ScreenID == model.ScreenID && x.Isdelete == false && x.BranchID == model.BranchID);
                 if (getrol != null)
                 {
                     return View("RoleAccess", getrol);
@@ -1625,7 +1625,7 @@ namespace HealthCare.Controllers
             }
             else if (buttontype == "Delete")
             {
-                var roletodelete = await _billingsoftware.SHRoleaccessModel.FindAsync(model.RollID, model.ScreenID,model.BranchID);
+                var roletodelete = await _billingsoftware.SHRoleaccessModel.FindAsync(model.RollID, model.ScreenID, model.BranchID);
                 if (roletodelete != null)
                 {
                     roletodelete.Isdelete = true;
@@ -1648,7 +1648,7 @@ namespace HealthCare.Controllers
 
             else if (buttontype == "DeleteRetrieve")
             {
-                var roltoretrieve = await _billingsoftware.SHRoleaccessModel.FindAsync(model.RollID, model.ScreenID,model.BranchID);
+                var roltoretrieve = await _billingsoftware.SHRoleaccessModel.FindAsync(model.RollID, model.ScreenID, model.BranchID);
                 if (roltoretrieve != null)
                 {
                     roltoretrieve.Isdelete = false;
@@ -1717,7 +1717,7 @@ namespace HealthCare.Controllers
 
             if (buttontype == "Get")
             {
-                var getroll = await _billingsoftware.SHrollaccess.FirstOrDefaultAsync(x => x.StaffID == model.StaffID && x.IsDelete == false&&x.BranchID==model.BranchID);
+                var getroll = await _billingsoftware.SHrollaccess.FirstOrDefaultAsync(x => x.StaffID == model.StaffID && x.IsDelete == false && x.BranchID == model.BranchID);
                 if (getroll != null)
                 {
                     return View("RollAccessMaster", getroll);
@@ -1734,7 +1734,7 @@ namespace HealthCare.Controllers
                 foreach (var rollName in SelectedRollNames)
                 {
 
-                    var rolltodelete = await _billingsoftware.SHrollaccess.FindAsync(model.StaffID, rollName,model.BranchID);
+                    var rolltodelete = await _billingsoftware.SHrollaccess.FindAsync(model.StaffID, rollName, model.BranchID);
                     if (rolltodelete != null)
                     {
                         rolltodelete.IsDelete = true;
@@ -1762,7 +1762,7 @@ namespace HealthCare.Controllers
             {
                 foreach (var rollName in SelectedRollNames)
                 {
-                    var rolltoretrieve = await _billingsoftware.SHrollaccess.FindAsync(model.StaffID, rollName,model.BranchID);
+                    var rolltoretrieve = await _billingsoftware.SHrollaccess.FindAsync(model.StaffID, rollName, model.BranchID);
                     if (rolltoretrieve != null)
                     {
                         rolltoretrieve.IsDelete = false;
@@ -1790,7 +1790,7 @@ namespace HealthCare.Controllers
                 foreach (var rollName in SelectedRollNames)
                 {
 
-                    var existingroll = await _billingsoftware.SHrollaccess.FindAsync(model.StaffID, rollName,model.BranchID);
+                    var existingroll = await _billingsoftware.SHrollaccess.FindAsync(model.StaffID, rollName, model.BranchID);
 
                     if (existingroll != null)
                     {
@@ -1817,7 +1817,7 @@ namespace HealthCare.Controllers
                     {
                         var newAccess = new RollAccessMaster
                         {
-                            BranchID=model.BranchID,
+                            BranchID = model.BranchID,
                             StaffID = model.StaffID,
                             RollID = rollName,
                             LastupdatedDate = DateTime.Now.ToString(),
@@ -1849,7 +1849,7 @@ namespace HealthCare.Controllers
 
             if (buttontype == "Get")
             {
-                var getrolltype = await _billingsoftware.SHrollType.FirstOrDefaultAsync(x => x.RollID == model.RollID && x.IsDelete == false && x.BranchID==model.BranchID);
+                var getrolltype = await _billingsoftware.SHrollType.FirstOrDefaultAsync(x => x.RollID == model.RollID && x.IsDelete == false && x.BranchID == model.BranchID);
                 if (getrolltype != null)
                 {
                     return View("RollTypeMaster", getrolltype);
@@ -1863,7 +1863,7 @@ namespace HealthCare.Controllers
             }
             else if (buttontype == "Delete")
             {
-                var rolltypetodelete = await _billingsoftware.SHrollType.FindAsync(model.RollID,model.BranchID);
+                var rolltypetodelete = await _billingsoftware.SHrollType.FindAsync(model.RollID, model.BranchID);
                 if (rolltypetodelete != null)
                 {
                     rolltypetodelete.IsDelete = true;
@@ -1885,7 +1885,7 @@ namespace HealthCare.Controllers
 
             else if (buttontype == "DeleteRetrieve")
             {
-                var rolltypetoretrieve = await _billingsoftware.SHrollType.FindAsync(model.RollID,model.BranchID);
+                var rolltypetoretrieve = await _billingsoftware.SHrollType.FindAsync(model.RollID, model.BranchID);
                 if (rolltypetoretrieve != null)
                 {
                     rolltypetoretrieve.IsDelete = false;
@@ -1906,7 +1906,7 @@ namespace HealthCare.Controllers
             }
 
 
-            var existingrolltype = await _billingsoftware.SHrollType.FindAsync(model.RollID,model.BranchID);
+            var existingrolltype = await _billingsoftware.SHrollType.FindAsync(model.RollID, model.BranchID);
 
             if (existingrolltype != null)
             {
@@ -1952,7 +1952,7 @@ namespace HealthCare.Controllers
 
             if (buttontype == "Get")
             {
-                var getscreen = await _billingsoftware.SHScreenMaster.FirstOrDefaultAsync(x => x.ScreenId == model.ScreenId && x.IsDelete == false &&  x.BranchID==model.BranchID);
+                var getscreen = await _billingsoftware.SHScreenMaster.FirstOrDefaultAsync(x => x.ScreenId == model.ScreenId && x.IsDelete == false && x.BranchID == model.BranchID);
                 if (getscreen != null)
                 {
                     return View("ScreenMaster", getscreen);
@@ -1968,7 +1968,7 @@ namespace HealthCare.Controllers
 
             else if (buttontype == "Delete")
             {
-                var screentodelete = await _billingsoftware.SHScreenMaster.FindAsync(model.ScreenId,model.BranchID);
+                var screentodelete = await _billingsoftware.SHScreenMaster.FindAsync(model.ScreenId, model.BranchID);
 
                 if (screentodelete != null)
                 {
@@ -1991,7 +1991,7 @@ namespace HealthCare.Controllers
 
             else if (buttontype == "DeleteRetrieve")
             {
-                var screentoretrieve = await _billingsoftware.SHScreenMaster.FindAsync(model.ScreenId,model.BranchID);
+                var screentoretrieve = await _billingsoftware.SHScreenMaster.FindAsync(model.ScreenId, model.BranchID);
                 if (screentoretrieve != null)
                 {
                     screentoretrieve.IsDelete = false;
@@ -2012,7 +2012,7 @@ namespace HealthCare.Controllers
             }
 
 
-            var existingscreen = await _billingsoftware.SHScreenMaster.FindAsync(model.ScreenId,model.BranchID);
+            var existingscreen = await _billingsoftware.SHScreenMaster.FindAsync(model.ScreenId, model.BranchID);
 
             if (existingscreen != null)
             {
@@ -2065,7 +2065,7 @@ namespace HealthCare.Controllers
                 var productList = (from product in _billingsoftware.SHProductMaster
                                    join rack in _billingsoftware.SHRackPartionProduct
                                    on product.ProductID equals rack.ProductID
-                                   where (product.ProductID.Contains(model.ProductID) || product.BarcodeId.Contains(model.BarcodeID)&&product.BranchID==model.BranchID)
+                                   where (product.ProductID.Contains(model.ProductID) || product.BarcodeId.Contains(model.BarcodeID) && product.BranchID == model.BranchID)
                                    select new { product, rack })
                       .AsEnumerable() // Switch to client-side evaluation
                       .Where(pr => int.Parse(pr.rack.Noofitems) > 0) // Perform the int.Parse on the client side
@@ -2124,7 +2124,7 @@ namespace HealthCare.Controllers
                 if (selectedProduct != null)
                 {
                     var existingDetail = _billingsoftware.SHbilldetails.FirstOrDefault(b =>
-               b.BillID == TempData.Peek("BillID").ToString() && b.ProductID == selectedProduct.ProductID && b.BranchID==model.BranchID);
+               b.BillID == TempData.Peek("BillID").ToString() && b.ProductID == selectedProduct.ProductID && b.BranchID == model.BranchID);
 
                     if (existingDetail != null)
                     {
@@ -2136,7 +2136,7 @@ namespace HealthCare.Controllers
 
                         var billDetail = new BillingDetailsModel
                         {
-                            BranchID=model.BranchID,
+                            BranchID = model.BranchID,
                             BillID = TempData.Peek("BillID").ToString(),
                             BillDate = TempData.Peek("BillDate").ToString(),
                             CustomerNumber = TempData.Peek("CustomerNumber").ToString(),
@@ -2216,7 +2216,7 @@ namespace HealthCare.Controllers
                 var customerNumber = model.CustomerNumber;
 
                 var updatedMasterex = _billingsoftware.SHbillmaster.FirstOrDefault(m =>
-                    m.BillID == billID && m.BillDate == billDate && m.CustomerNumber == customerNumber && m.IsDelete == false && m.BranchID==model.BranchID);
+                    m.BillID == billID && m.BillDate == billDate && m.CustomerNumber == customerNumber && m.IsDelete == false && m.BranchID == model.BranchID);
 
                 if (updatedMasterex != null)
                 {
@@ -2225,7 +2225,7 @@ namespace HealthCare.Controllers
                     ViewBag.NetPrice = updatedMasterex.NetPrice;
 
                     var exbillingDetails = _billingsoftware.SHbilldetails
-                        .Where(d => d.BillID == billID && d.BranchID==model.BranchID)
+                        .Where(d => d.BillID == billID && d.BranchID == model.BranchID)
                         .ToList();
 
                     // Prepare the view model to pass to the view
@@ -2271,6 +2271,7 @@ namespace HealthCare.Controllers
      new SqlParameter("@SGSTPercentage", DBNull.Value),
      new SqlParameter("@CGSTPercentageAmt", DBNull.Value),
      new SqlParameter("@SGSTPercentageAmt", DBNull.Value),
+     new SqlParameter("@BranchID", masterModel.BranchID),
     new SqlParameter("@IsDelete", "Y"), // Assuming isDeleteValue is set to 'Y'
     new SqlParameter("@LastUpdatedUser", DBNull.Value),
     new SqlParameter("@LastUpdatedDate", DBNull.Value),
@@ -2282,7 +2283,7 @@ namespace HealthCare.Controllers
     new SqlParameter("@Quantity", DBNull.Value),
    };
 
-                await _billingsoftware.Database.ExecuteSqlRawAsync("EXEC InsertBillProduct @BillID, @BillDate, @CustomerNumber, @TotalPrice, @TotalDiscount, @NetPrice,@CGSTPercentage,@SGSTPercentage,@CGSTPercentageAmt,@SGSTPercentageAmt, @IsDelete, @LastUpdatedUser, @LastUpdatedDate, @LastUpdatedMachine, @ProductID, @ProductName, @Discount, @Price, @Quantity", parameter);
+                await _billingsoftware.Database.ExecuteSqlRawAsync("EXEC InsertBillProduct @BillID, @BillDate, @CustomerNumber, @TotalPrice, @TotalDiscount, @NetPrice,@CGSTPercentage,@SGSTPercentage,@CGSTPercentageAmt,@SGSTPercentageAmt,@BranchID, @IsDelete, @LastUpdatedUser, @LastUpdatedDate, @LastUpdatedMachine, @ProductID, @ProductName, @Discount, @Price, @Quantity", parameter);
 
 
 
@@ -2291,7 +2292,7 @@ namespace HealthCare.Controllers
 
             }
 
-
+                                                                                                                                                                                                               
             var isDeleteValue = (object)masterModel.IsDelete ?? DBNull.Value;
 
             var parameters = new[]
@@ -2306,6 +2307,7 @@ namespace HealthCare.Controllers
      new SqlParameter("@SGSTPercentage",  masterModel.NetPrice ?? (object)DBNull.Value),
      new SqlParameter("@CGSTPercentageAmt",  masterModel.NetPrice ?? (object)DBNull.Value),
      new SqlParameter("@SGSTPercentageAmt",  masterModel.NetPrice ?? (object)DBNull.Value),
+      new SqlParameter("@BranchID", model.BranchID),
        new SqlParameter("@IsDelete", "N"),
         new SqlParameter("@LastUpdatedUser", User.Claims.First().Value.ToString()),
         new SqlParameter("@LastUpdatedDate", DateTime.Now.ToString()),
@@ -2317,7 +2319,7 @@ namespace HealthCare.Controllers
         new SqlParameter("@Quantity", detailModel.Quantity ?? (object)DBNull.Value),
 
     };
-            await _billingsoftware.Database.ExecuteSqlRawAsync("EXEC InsertBillProduct @BillID, @BillDate, @CustomerNumber, @TotalPrice,@TotalDiscount,@NetPrice,@NetPrice,@CGSTPercentage,@SGSTPercentage,@CGSTPercentageAmt,@SGSTPercentageAmt,@IsDelete,@LastUpdatedUser, @LastUpdatedDate, @LastUpdatedMachine, @ProductID, @ProductName, @Discount, @Price, @Quantity", parameters);
+            await _billingsoftware.Database.ExecuteSqlRawAsync("EXEC InsertBillProduct @BillID, @BillDate, @CustomerNumber, @TotalPrice,@TotalDiscount,@NetPrice,@CGSTPercentage,@SGSTPercentage,@CGSTPercentageAmt,@SGSTPercentageAmt,@BranchID,@IsDelete,@LastUpdatedUser, @LastUpdatedDate, @LastUpdatedMachine, @ProductID, @ProductName, @Discount, @Price, @Quantity", parameters);
             ViewBag.SaveMessage = "save successfully";
 
             var updatedMaster = await _billingsoftware.SHbillmaster
@@ -2542,7 +2544,7 @@ namespace HealthCare.Controllers
                 TempData.Keep("BranchID");
             }
 
-           
+
 
             // Retrieve selected product
             var selectedProduct = _billingsoftware.SHProductMaster.FirstOrDefault(p => p.ProductID == productid);
@@ -2551,7 +2553,7 @@ namespace HealthCare.Controllers
             {
                 // Retrieve bill detail for the specified BillID and ProductID
                 var billDetail = _billingsoftware.SHbilldetails
-                    .Where(b => b.BillID == billid && b.ProductID == productid && b.BranchID==model.BranchID)
+                    .Where(b => b.BillID == billid && b.ProductID == productid && b.BranchID == model.BranchID)
                     .Select(b => new BillingDetailsModel
                     {
                         ProductID = b.ProductID,
@@ -2670,7 +2672,7 @@ string BillId, string Balance, string BillDate, string PaymentId, string payment
                     _billingsoftware.SaveChanges();
 
                     ViewBag.Slots = _billingsoftware.SHPaymentDetails
-                        .Where(b => b.PaymentId == PaymentId && b.IsDelete == false &&b.BranchID==model.BranchID)
+                        .Where(b => b.PaymentId == PaymentId && b.IsDelete == false && b.BranchID == model.BranchID)
                         .ToList();
                 }
                 ViewBag.DeleteMessage = "Deleted Successfully";
@@ -2692,7 +2694,7 @@ string BillId, string Balance, string BillDate, string PaymentId, string payment
                 {
 
                     var billDetail = _billingsoftware.SHbillmaster
-                                       .Where(b => b.BillID == BillId && b.BranchID==model.BranchID)
+                                       .Where(b => b.BillID == BillId && b.BranchID == model.BranchID)
                                        .Select(b => new BillingDetailsModel
                                        {
 
@@ -2736,14 +2738,14 @@ string BillId, string Balance, string BillDate, string PaymentId, string payment
 
 
 
-                    var exbilldata = _billingsoftware.SHPaymentMaster.FirstOrDefault(x => x.BillId == masterModel.BillID && x.BranchID==model.BranchID);
+                    var exbilldata = _billingsoftware.SHPaymentMaster.FirstOrDefault(x => x.BillId == masterModel.BillID && x.BranchID == model.BranchID);
 
                     if (exbilldata != null)
                     {
 
 
                         var billDetails = await _billingsoftware.SHPaymentMaster
-                     .Where(b => b.BillId == BillId && b.IsDelete == false && b.BranchID==model.BranchID)
+                     .Where(b => b.BillId == BillId && b.IsDelete == false && b.BranchID == model.BranchID)
                      .Select(b => new PaymentTableViewModel
                      {
                          PaymentId = b.PaymentId,
@@ -2767,7 +2769,7 @@ string BillId, string Balance, string BillDate, string PaymentId, string payment
                      .ToListAsync();
 
 
-                        var exbilldataa = _billingsoftware.SHPaymentMaster.FirstOrDefault(x => x.BillId == masterModel.BillID&&x.BranchID==model.BranchID);
+                        var exbilldataa = _billingsoftware.SHPaymentMaster.FirstOrDefault(x => x.BillId == masterModel.BillID && x.BranchID == model.BranchID);
 
                         if (exbilldataa != null)
                         {
@@ -2806,7 +2808,7 @@ string BillId, string Balance, string BillDate, string PaymentId, string payment
             {
 
                 var billDetailspay = await _billingsoftware.SHPaymentDetails
-        .Where(b => b.PaymentId == PaymentId && b.IsDelete == false && b.BranchID==model.BranchID)
+        .Where(b => b.PaymentId == PaymentId && b.IsDelete == false && b.BranchID == model.BranchID)
         .Select(b => new PaymentDetailsModel
         {
             PaymentId = b.PaymentId,
@@ -2838,7 +2840,7 @@ string BillId, string Balance, string BillDate, string PaymentId, string payment
 
                 // Retrieve RedeemPoints based on CustomerNumber
                 var customer = await _billingsoftware.SHPaymentMaster
-                    .FirstOrDefaultAsync(c => c.CustomerNumber == CustomerNumber && c.BranchID==model.BranchID);
+                    .FirstOrDefaultAsync(c => c.CustomerNumber == CustomerNumber && c.BranchID == model.BranchID);
 
                 if (customer != null)
                 {
@@ -2854,7 +2856,7 @@ string BillId, string Balance, string BillDate, string PaymentId, string payment
 
 
                     var billDetails = await _billingsoftware.SHPaymentMaster
-               .Where(b => b.CustomerNumber == CustomerNumber && b.IsDelete == false && b.BranchID==model.BranchID)
+               .Where(b => b.CustomerNumber == CustomerNumber && b.IsDelete == false && b.BranchID == model.BranchID)
                .Select(b => new PaymentTableViewModel
                {
                    PaymentId = b.PaymentId,
@@ -2863,7 +2865,7 @@ string BillId, string Balance, string BillDate, string PaymentId, string payment
                    CustomerNumber = b.CustomerNumber,
                    ReedemPoints = b.ReedemPoints,
                    Viewpayment = _billingsoftware.SHPaymentDetails
-                       .Where(d => d.PaymentId == b.PaymentId && d.IsDelete == false&&d.BranchID==model.BranchID)
+                       .Where(d => d.PaymentId == b.PaymentId && d.IsDelete == false && d.BranchID == model.BranchID)
                        .Select(d => new PaymentDetailsModel
                        {
                            PaymentId = d.PaymentId,
@@ -2939,7 +2941,7 @@ string BillId, string Balance, string BillDate, string PaymentId, string payment
                     Lastupdateduser = User.Claims.First().Value.ToString(),
                     Lastupdateddate = DateTime.Now.ToString(),
                     Lastupdatedmachine = Request.HttpContext.Connection.RemoteIpAddress.ToString(),
-                    BranchID=model.BranchID
+                    BranchID = model.BranchID
                 };
 
                 _billingsoftware.SHReedemHistory.Add(redeemHistory);

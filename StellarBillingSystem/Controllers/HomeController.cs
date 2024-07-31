@@ -73,7 +73,7 @@ public class HomeController : Controller
         if (TempData["BranchID"] != null)
         {
             branchId = TempData["BranchID"].ToString();
-            TempData.Keep("BranchID");
+            TempData.Keep("BranchID");  
         }
 
         string result = string.Empty;

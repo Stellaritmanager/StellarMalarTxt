@@ -81,7 +81,7 @@
                             }
 
                             <div class="form-floating form-floating-outline mb-4">
-                                @Html.DropDownList("ReportId", dropdownOptions, "Select Report Name", new { @class = "form-control", onchange = "updateHiddenInput(this.value)" })
+                                @Html.DropDownList("ReportId", dropdownOptions, "Select Report Name", new { @class = "form-control", onchange = "updateHiddenInput(this.value)", required = "required" })
                                 <label for="ReportId" class="control-label">Report Name</label>
                                 @Html.Hidden("inputValue", selectedReport)
                             </div>

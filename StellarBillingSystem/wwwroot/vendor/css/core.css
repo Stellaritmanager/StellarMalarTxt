@@ -478,8 +478,11 @@ legend + * {
 ::-webkit-datetime-edit-day-field,
 ::-webkit-datetime-edit-month-field,
 ::-webkit-datetime-edit-year-field {
-  padding: 0;
+    padding: 0;
 }
+
+
+
 
 ::-webkit-inner-spin-button {
   height: auto;
@@ -4144,6 +4147,7 @@ textarea.form-control-lg {
 .popborder{
     border:#fff;
 }
+
 
 
 .pagination {
