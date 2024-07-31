@@ -121,7 +121,7 @@
                                 <tr>
                                     @foreach (DataColumn column in Model.Columns)
                                     {
-                                        <th style="font-size: 18px; color:white">@column.ColumnName</th>
+                                        <th style="font-size: 18px; color:white;border: 1px solid #fff;">@column.ColumnName</th>
                                     }
                                 </tr>
                             </thead>
@@ -135,7 +135,7 @@
 
                                         @foreach (var cell in row.ItemArray)
                                         {
-                                            <td>@cell</td>
+                                            <td style ="border: 1px solid #fff;">@cell</td>
                                         }
 
                                     </tr>
