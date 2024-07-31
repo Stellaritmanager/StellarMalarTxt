@@ -28,9 +28,36 @@ namespace HealthCare.Controllers
         }
 
 
+        [HttpGet]
+        public async Task<IActionResult> GetCategory(CategoryMasterModel model,string buttonType)
+        {
+            if (TempData["BranchID"] != null)
+            {
+                model.BranchID = TempData["BranchID"].ToString();
+                TempData.Keep("BranchID");
+            }
+
+            if (buttonType == "Get")
+            {
+                var getcategory = await _billingsoftware.SHCategoryMaster.FirstOrDefaultAsync(x => x.CategoryID == model.CategoryID && !x.IsDelete && x.BranchID == model.BranchID);
+                if (getcategory != null)
+                {
+                    return View("CategoryMaster", getcategory);
+                }
+                else
+                {
+                    CategoryMasterModel par = new CategoryMasterModel();
+                    ViewBag.ErrorMessage = "No value for this Category ID";
+                    return View("CategoryMaster", par);
+                }
+            }
+
+            return View();
+        }
+
+
 
         [HttpPost]
-
         public async Task<IActionResult> AddCategory(CategoryMasterModel model, string buttonType)
         {
             if (TempData["BranchID"] != null)
@@ -39,6 +66,7 @@ namespace HealthCare.Controllers
                 TempData.Keep("BranchID");
             }
 
+          
             if (buttonType == "Get")
             {
                 var getcategory = await _billingsoftware.SHCategoryMaster.FirstOrDefaultAsync(x => x.CategoryID == model.CategoryID && !x.IsDelete &&x.BranchID==model.BranchID);
@@ -55,7 +83,8 @@ namespace HealthCare.Controllers
             }
             else if (buttonType == "Delete")
             {
-                var categorytodelete = await _billingsoftware.SHCategoryMaster.FindAsync(model.CategoryID,model.BranchID);
+                var categorytodelete = await _billingsoftware.SHCategoryMaster.FirstOrDefaultAsync(x => x.CategoryID == model.CategoryID && !x.IsDelete && x.BranchID == model.BranchID);
+
                 if (categorytodelete != null)
                 {
                     categorytodelete.IsDelete = true;
@@ -77,7 +106,7 @@ namespace HealthCare.Controllers
 
             else if (buttonType == "DeleteRetrieve")
             {
-                var categorytoretrieve = await _billingsoftware.SHCategoryMaster.FindAsync(model.CategoryID,model.BranchID);
+                var categorytoretrieve = await _billingsoftware.SHCategoryMaster.FirstOrDefaultAsync(x => x.CategoryID == model.CategoryID && x.IsDelete==true && x.BranchID == model.BranchID);
                 if (categorytoretrieve != null)
                 {
                     categorytoretrieve.IsDelete = false;
@@ -143,8 +172,6 @@ namespace HealthCare.Controllers
                 model.BranchID = TempData["BranchID"].ToString();
                 TempData.Keep("BranchID");
             }
-
-           
 
             BusinessClassBilling business = new BusinessClassBilling(_billingsoftware);
             ViewData["categoryid"] = business.GetCatid();
@@ -380,6 +407,12 @@ namespace HealthCare.Controllers
                 var existinggoddown = await _billingsoftware.SHGodown.FindAsync(model.ProductID, model.DatefofPurchase, model.SupplierInformation,model.BranchID);
                 if (existinggoddown != null)
                 {
+                    if (existinggoddown.IsDelete)
+                    {
+                        ViewBag.ErrorMessage = "Cannot update. GodowmnID is marked as deleted.";
+                        return View("GodownModel", model);
+                    }
+
                     existinggoddown.ProductID = model.ProductID;
                     existinggoddown.NumberofStocks = model.NumberofStocks;
                     existinggoddown.DatefofPurchase = model.DatefofPurchase;
@@ -412,6 +445,12 @@ namespace HealthCare.Controllers
                 var goddown = await _billingsoftware.SHGodown.FindAsync(model.ProductID, model.DatefofPurchase, model.SupplierInformation, model.BranchID);
                 if (goddown != null)
                 {
+                    if (goddown.IsDelete)
+                    {
+                        ViewBag.ErrorMessage = "Cannot update. GodowmnID is marked as deleted.";
+                        return View("GodownModel", model);
+                    }
+
                     goddown.IsDelete = true;
                     await _billingsoftware.SaveChangesAsync();
 
@@ -600,6 +639,12 @@ namespace HealthCare.Controllers
                 return View("CustomerMaster", model);
             }
 
+            if (existingCustomer.IsDelete)
+            {
+                ViewBag.ErrorMessage = "Cannot update. GodowmnID is marked as deleted.";
+                return View("CustomerMaster", model);
+            }
+
             existingCustomer.IsDelete = true;
             existingCustomer.LastUpdatedDate = DateTime.Now.ToString();
             existingCustomer.LastUpdatedUser = User.Claims.First().Value.ToString();
@@ -650,6 +695,12 @@ namespace HealthCare.Controllers
                 var deletetodiscount = await _billingsoftware.SHDiscountCategory.FindAsync(model.CategoryID,model.BranchID);
                 if (deletetodiscount != null)
                 {
+                    if (deletetodiscount.IsDelete)
+                    {
+                        ViewBag.ErrorMessage = "Cannot update. GodowmnID is marked as deleted.";
+                        return View("DiscountCategoryMaster", model);
+                    }
+
                     deletetodiscount.IsDelete = true;
                     await _billingsoftware.SaveChangesAsync();
 
@@ -818,6 +869,7 @@ namespace HealthCare.Controllers
             var existingnetdiscount = await _billingsoftware.SHNetDiscountMaster.FindAsync(NetID,model.BranchID);
             if (existingnetdiscount != null)
             {
+
                 existingnetdiscount.BranchID = model.BranchID;
                 existingnetdiscount.NetDiscount = model.NetDiscount;
                 existingnetdiscount.LastUpdatedDate = DateTime.Now.ToString();
@@ -1063,6 +1115,12 @@ namespace HealthCare.Controllers
                 var rolltoretrieve = await _billingsoftware.SHRackPartionProduct.FindAsync(model.PartitionID, model.ProductID,model.BranchID);
                 if (rolltoretrieve != null)
                 {
+                    if (rolltoretrieve.Isdelete)
+                    {
+                        ViewBag.ErrorMessage = "Cannot update. Product is marked as deleted.";
+                        return View("RackPatrionProduct", model);
+                    }
+
                     rolltoretrieve.Isdelete = true;
 
 
@@ -1101,6 +1159,13 @@ namespace HealthCare.Controllers
             var existingrackpartition = await _billingsoftware.SHRackPartionProduct.FindAsync(model.PartitionID, model.ProductID, model.BranchID);
             if (existingrackpartition != null)
             {
+                if (existingrackpartition.Isdelete)
+                {
+                    ViewBag.ErrorMessage = "Cannot update. Product is marked as deleted.";
+                    return View("RackPatrionProduct", model);
+                }
+
+
                 int newStock;
                 if (int.TryParse(model.Noofitems, out newStock))
                 {

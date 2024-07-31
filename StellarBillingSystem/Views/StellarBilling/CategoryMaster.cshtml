@@ -35,7 +35,7 @@
 </style>
 
 
-<form asp-controller="StellarBilling" asp-action="AddCategory">
+<form asp-controller="StellarBilling">
     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
 
@@ -79,7 +79,7 @@
                             </div>
                         <div class="col-md-12 col-lg-2" style="align-items:center">
                     <div class="form-group">
-                                <button type="submit" style="width:100px" value="Get" asp-action="AddCategory" name="buttonType" class="btn btn-primary">Get</button>
+                                <button type="submit" style="width:100px" value="Get" asp-action="GetCategory" formmethod="get" name="buttonType" class="btn btn-primary">Get</button>
                     </div>
 
                         </div>
@@ -108,9 +108,9 @@
     <div class="form-group" style="margin-top:30px">
         <center>
 
-            <button type="submit" asp-action="AddCategory" value="save" name="buttonType" class="btn btn-primary">Save</button>
-            <button type="submit" asp-action="AddCategory" value="Delete" name="buttonType" class="btn btn-primary">Delete</button>
-            <button type="submit" asp-action="AddCategory" value="DeleteRetrieve" name="buttonType" class="btn btn-primary">Delete Retrieve</button>
+            <button type="submit" asp-action="AddCategory" value="save" name="buttonType" formmethod="post" class="btn btn-primary">Save</button>
+            <button type="submit" asp-action="AddCategory" value="Delete" name="buttonType"  class="btn btn-primary">Delete</button>
+            <button type="submit" asp-action="AddCategory" value="DeleteRetrieve" name="buttonType"  class="btn btn-primary">Delete Retrieve</button>
 
         </center>
     </div>
