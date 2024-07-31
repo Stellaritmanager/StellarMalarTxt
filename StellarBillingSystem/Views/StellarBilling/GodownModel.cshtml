@@ -24,11 +24,16 @@
     }
 </script>
 
-<div id="popupMessage" style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background-color: #f0f0f0; color: black; padding: 30px; border: 10px solid white; border-radius: 10px; z-index: 1000; display: none; text-align: center;">
-    <span id="popupMessageText" style="display: block; margin-bottom: 20px;"></span>
-    <button id="popupOKButton" style="padding: 10px 20px; background-color: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer;">OK</button>
+<div id="popupMessage" class="dividerblack popborder" style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background-color: #f0f0f0; color: #fff; padding: 30px; border-radius: 10px; z-index: 1000; display: none; text-align: center;">
+    <span id="popupMessageText" style="display: block; margin-bottom: 10px;"></span>
+    <button id="popupOKButton" style="padding: 10px 20px; color: white; border: none; border-radius: 5px; cursor: pointer;">OK</button>
 </div>
 
+<style>
+    .popborder {
+        border: 10px solid #fff;
+    }
+</style>
 
 
 <form asp-controller="StellarBilling">
@@ -40,7 +45,7 @@
         </div>
         <div class="col-md-12 col-lg-8">
             <div class="card">
-                <div style="background-color:#007bff">
+                <div class="card-body dividerblack">
                     <div class="card-header d-flex justify-content-between align-items-center">
                         <div class="container">
                             <h2 class="centered text-white" style="font-family:'Lucida Bright';margin-left:27%;">Godown</h2>
@@ -60,7 +65,7 @@
         </div>
         <div class="col-md-12 col-lg-8">
             <div class="card">
-                <div class="card-body " style="background-image: linear-gradient(to right, #FFFFFF 0%, #e0efff 51%, #add5ff 100%);">
+                <div class="card-body dividerblack">
 
                     <div class="row gy-4">
                         <div class="col-md-12 col-lg-6">

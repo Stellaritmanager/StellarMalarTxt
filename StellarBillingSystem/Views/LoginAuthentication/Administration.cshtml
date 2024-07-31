@@ -1,0 +1,87 @@
+﻿@model AdminModel
+
+
+@{
+    ViewData["Title"] = "Login";
+    Layout = "~/Views/Shared/_BlankLayout.cshtml";
+}
+
+<script>
+    // Prevent back navigation
+    if (window.history && window.history.pushState) {
+        window.history.pushState(null, null, window.location.href);
+        window.onpopstate = function () {
+            window.history.go(1);
+        };
+    }
+</script>
+
+<div class="container-xxl">
+    <div class="authentication-wrapper authentication-basic container-p-y">
+        <div class="authentication-inner">
+            <!-- Register -->
+            <div class="card">
+                <div class="card-body">
+                    <!-- Logo -->
+                    <div class="app-brand justify-content-center">
+                        <a href="/" class="app-brand-link gap-2">
+                       
+                            <center>
+                                <h2>Stellar Billing</h2>
+                            </center>
+                        </a>
+                    </div>
+                    <!-- /Logo -->
+                    <h3 class="mb-2">Welcome to Stellar Billing Administration</h3>
+
+
+                    <form asp-controller="LoginAuthentication" asp-action="admin">
+
+                        <div class="form-floating form-floating-outline mb-4">
+                            <input asp-for="UserName"  class="form-control" placeholder="UserName" />
+                            <label asp-for="UserName" class="control-label">UserName</label>
+                            <span asp-validation-for="UserName" class="text-danger"></span>
+                        </div>
+
+
+                        <div class="form-floating form-floating-outline mb-4">
+                            @{
+                                var branchlist = ((IEnumerable<BranchMasterModel>)ViewData["branchid"])
+                                .Select(m => new SelectListItem
+            {
+                Value = m.BracnchID.ToString(),
+                Text = $"{m.BracnchID} - {m.BranchName}"
+            });
+                            }
+
+                            @Html.DropDownListFor(model => model.BranchID, branchlist, "Select Branch ID", new { @class = "form-control" })
+                            <label asp-for="BranchID" class="control-label">Branch ID</label>
+                            <span asp-validation-for="BranchID" class="text-danger"></span>
+                        </div>
+
+
+                        <div class="mb-3" style="margin-top:20px">
+                            <button class="btn btn-primary d-grid w-100"  type="submit">Sign in</button>
+                            @if (ViewBag.Message != null)
+                            {
+                                <div class="alert alert-danger">
+
+
+                                    @ViewBag.Message
+                                </div>
+                            }
+                        </div>
+                    </form>
+
+                   
+                </div>
+            </div>
+            <!-- /Register -->
+        </div>
+    </div>
+</div>
+
+
+
+
+

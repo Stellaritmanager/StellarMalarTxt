@@ -1,0 +1,19 @@
+USE [StellarBilling]
+GO
+/****** Object:  UserDefinedFunction [dbo].[GetDailySales]    Script Date: 31-07-2024 11:48:00 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+-- Function to get daily sales
+ALTER FUNCTION [dbo].[GetDailySales](@BranchID NVARCHAR(50))
+RETURNS MONEY
+AS
+BEGIN
+    DECLARE @DailySales MONEY;
+    SELECT @DailySales = COALESCE(SUM(CONVERT(MONEY, NetPrice)), 0)
+    FROM SHbillmaster 
+    WHERE CONVERT(DATETIME, BillDate) = CONVERT(DATE, GETDATE())  AND BranchID = @BranchID;
+    RETURN @DailySales;
+END

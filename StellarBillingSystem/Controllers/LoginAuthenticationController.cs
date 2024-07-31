@@ -30,11 +30,31 @@ namespace StellarBillingSystem.Controllers
             return View();
         }
 
+        public IActionResult Administration()
+        {
+
+            Response.Headers["Cache-Control"] = "no-cache, no-store, must-revalidate";
+            Response.Headers["Pragma"] = "no-cache";
+            Response.Headers["Expires"] = "0";
+
+            BusinessClassBilling Busbill = new BusinessClassBilling(_billingContext);
+          
+            ViewData["branchid"] = Busbill.Getbranch();
+            return View();
+
+
+        }
+
+
+      
+
+
 
         public async Task<IActionResult> LogOut()
         {
 
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+           
 
             return RedirectToAction("Login", "LoginAuthentication");
         }
@@ -71,21 +91,30 @@ namespace StellarBillingSystem.Controllers
 
                     BusinessClassBilling Busreg = new BusinessClassBilling(_billingContext);
 
+
+
                     var branch = await _billingContext.SHStaffAdmin.FirstOrDefaultAsync(x => x.UserName == model.UserName);
 
-                    var rolldetail = Busreg.GetRoll(model.UserName,branch.BranchID);
+                    var rolldetail = Busreg.GetRoll(model.UserName, branch.BranchID);
 
                     TempData["UserName"] = model.UserName;
                     TempData["BranchID"] = branch.BranchID;
 
                     // Set TempData with the filtered roll details
                     TempData["RollAccess"] = JsonConvert.SerializeObject(rolldetail);
-                     
-                    
-                   
 
-                    
-                    return RedirectToAction("Index", "Home");
+
+                    if (!string.IsNullOrEmpty(model.UserName) &&
+                     string.Equals(model.UserName, "Kumar@gmail.com", StringComparison.OrdinalIgnoreCase))
+                    {
+                        return RedirectToAction("Administration", "LoginAuthentication");
+                    }
+
+                    else
+                    {
+
+                        return RedirectToAction("Index", "Home");
+                    }
                 }
 
             }
@@ -93,6 +122,33 @@ namespace StellarBillingSystem.Controllers
 
             return View();
 
+
+        }
+
+        public async Task<IActionResult> admin(AdminModel model)
+        {
+
+
+
+            BusinessClassBilling Busreg = new BusinessClassBilling(_billingContext);
+
+          
+            ViewData["branchid"] = Busreg.Getbranch();
+
+
+
+            var rolldetail = Busreg.Getadmin(model.UserName);
+
+            
+
+            TempData["UserName"] = model.UserName;
+            TempData["BranchID"] = model.BranchID;
+
+            // Set TempData with the filtered roll details
+            TempData["RollAccess"] = JsonConvert.SerializeObject(rolldetail);
+
+            return RedirectToAction("Index", "Home");
+
         }
     }
-}
+ }

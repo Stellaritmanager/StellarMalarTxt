@@ -1,6 +1,7 @@
 ﻿using System.Diagnostics;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.CodeAnalysis.Operations;
 using Microsoft.Data.SqlClient;
 using StellarBillingSystem.Business;
 using StellarBillingSystem.Context;
@@ -26,6 +27,8 @@ public class HomeController : Controller
 
     public IActionResult Index(string DashBoard = null, string fromDate = null, string toDate = null, string GroupBy = null)
     {
+
+
         
         string salesMessage = GetSalesComparison();
         decimal dailySales = GetDailySales();
@@ -65,6 +68,14 @@ public class HomeController : Controller
 
     private string GetSalesComparison()
     {
+        string branchId = string.Empty;
+
+        if (TempData["BranchID"] != null)
+        {
+            branchId = TempData["BranchID"].ToString();
+            TempData.Keep("BranchID");
+        }
+
         string result = string.Empty;
 
         string connectionString = _configuration.GetConnectionString("BillingDBConnection");
@@ -72,9 +83,9 @@ public class HomeController : Controller
         using (SqlConnection conn = new SqlConnection(connectionString))
         {
             conn.Open();
-            using (SqlCommand cmd = new SqlCommand("SELECT dbo.CompareDailySales()", conn))
+            using (SqlCommand cmd = new SqlCommand("SELECT dbo.CompareDailySales(@BranchID)", conn))
             {
-
+                cmd.Parameters.AddWithValue("@BranchID", branchId);
                 result = cmd.ExecuteScalar().ToString();
             }
         }
@@ -84,15 +95,28 @@ public class HomeController : Controller
 
     private decimal GetDailySales()
     {
+
+
+        string branchId = string.Empty;
+
+        if (TempData["BranchID"] != null)
+        {
+            branchId = TempData["BranchID"].ToString();
+            TempData.Keep("BranchID");
+        }
+
         decimal result = 0;
+
+
 
         string connectionString = _configuration.GetConnectionString("BillingDBConnection");
 
         using (SqlConnection conn = new SqlConnection(connectionString))
         {
             conn.Open();
-            using (SqlCommand cmd = new SqlCommand("SELECT dbo.GetDailySales()", conn))
+            using (SqlCommand cmd = new SqlCommand("SELECT dbo.GetDailySales(@BranchID)", conn))
             {
+                cmd.Parameters.AddWithValue("@BranchID", branchId);
                 var dbResult = cmd.ExecuteScalar();
                 if (dbResult != DBNull.Value)
                 {
@@ -106,6 +130,16 @@ public class HomeController : Controller
 
     private decimal GetDailyPayments()
     {
+
+
+        string branchId = string.Empty;
+
+        if (TempData["BranchID"] != null)
+        {
+            branchId = TempData["BranchID"].ToString();
+            TempData.Keep("BranchID");
+        }
+
         decimal result = 0;
 
         string connectionString = _configuration.GetConnectionString("BillingDBConnection");
@@ -113,8 +147,9 @@ public class HomeController : Controller
         using (SqlConnection conn = new SqlConnection(connectionString))
         {
             conn.Open();
-            using (SqlCommand cmd = new SqlCommand("SELECT dbo.GetDailyPayments()", conn))
+            using (SqlCommand cmd = new SqlCommand("SELECT dbo.GetDailyPayments(@BranchID)", conn))
             {
+                cmd.Parameters.AddWithValue("@BranchID", branchId);
                 var dbResult = cmd.ExecuteScalar();
                 if (dbResult != DBNull.Value)
                 {
@@ -132,6 +167,12 @@ public class HomeController : Controller
     }
 
 
+    public IActionResult Administration()
+    {
+        return View();
+    }
+
+    
 
     public IActionResult RedirectToReports()
     {
