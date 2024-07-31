@@ -1,0 +1,147 @@
+USE [StellarBilling]
+GO
+/****** Object:  StoredProcedure [dbo].[InsertBillPayment]    Script Date: 31-07-2024 11:44:30 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+-- =============================================
+-- Created on: 24-05-2024
+-- =============================================
+ALTER PROCEDURE [dbo].[InsertBillPayment]
+    @BillId NVARCHAR(50),
+    @PaymentId NVARCHAR(50),
+    @CustomerNumber NVARCHAR(50),
+    @ReedemPoints NVARCHAR(100),
+    @Balance NVARCHAR(50),
+    @BillDate NVARCHAR(50),
+    
+
+    @PaymentDiscription NVARCHAR(100),
+    @PaymentMode NVARCHAR(50),
+    @PaymentTransactionNumber NVARCHAR(50),
+    @PaymentAmount NVARCHAR(50),
+    @PaymentDate NVARCHAR(50),
+   
+    
+    @LastUpdatedUser NVARCHAR(50),
+    @LastUpdatedDate NVARCHAR(50),
+    @LastUpdatedMachine NVARCHAR(50),
+    @Reedem Varchar(1),
+	@BranchID varchar(50)
+
+    
+AS
+BEGIN
+    -- SET NOCOUNT ON added to prevent extra result sets from
+    -- interfering with SELECT statements.
+    SET NOCOUNT ON;
+    DECLARE @CountPayment int
+
+    select @Balance = dbo.GenerateBillID(@BillId)
+
+    Select @CountPayment = count(*) from SHPaymentMaster where BillId =@BillID and PaymentId =@PaymentId and BranchID =@BranchID
+
+    If(@CountPayment >0)
+    Begin
+    --Update
+        IF(@Reedem ='Y')
+        begin
+        update SHPaymentMaster
+        SET
+        
+         CustomerNumber = @CustomerNumber,
+         ReedemPoints = @ReedemPoints,
+         
+         Balance = CONVERT(float, @Balance) - CONVERT(float, dbo.GeneratePointsID(@CustomerNumber,@BranchID)),
+         IsDelete = 0,
+        
+         LastUpdatedUser = @LastUpdatedUser,
+         LastUpdatedDate = @LastUpdatedDate,
+         LastUpdatedMachine = @LastUpdatedMachine,
+		 BranchID=@BranchID
+         where BillId = @BillId and PaymentId = @PaymentId and BranchID = @BranchID
+         end
+         
+         else
+         begin
+            update SHPaymentMaster
+
+        SET
+        
+         CustomerNumber = @CustomerNumber,
+         ReedemPoints = @ReedemPoints,
+         Balance = @Balance,
+         IsDelete = 0,
+        
+         LastUpdatedUser = @LastUpdatedUser,
+         LastUpdatedDate = @LastUpdatedDate,
+         LastUpdatedMachine = @LastUpdatedMachine,
+		 BranchID=@BranchID
+         where BillId = @BillId and PaymentId = @PaymentId and BranchID=@BranchID
+         If(@Reedem='y')
+         begin
+         INSERT INTO SHReedemHistory
+            (
+                CustomerNumber, DateOfReedem, ReedemPoints, PaymentId,PaymentDate,BillId,IsDelete, LastUpdatedUser, LastUpdatedDate, LastUpdatedMachine,BranchID
+            ) 
+            VALUES
+            (
+                @CustomerNumber, @LastUpdatedDate, dbo.GeneratePointsID(@CustomerNumber,@BranchID),@PaymentId ,@PaymentDate,@BillId,0, @LastUpdatedUser, @LastUpdatedDate, @LastUpdatedMachine,@BranchID
+            )
+            End
+         End
+        print 'test'
+    END
+
+    ELSE
+    Begin
+--Insert
+     INSERT INTO SHPaymentMaster
+        (
+            BillId, PaymentId,CustomerNumber, ReedemPoints, Balance, BillDate,IsDelete, 
+            LastUpdatedUser, LastUpdatedDate, LastUpdatedMachine,BranchID
+        )
+        VALUES
+        (
+            @BillID, @PaymentId,@CustomerNumber, @ReedemPoints, @Balance, @BillDate,0, 
+            @LastUpdatedUser, @LastUpdatedDate, @LastUpdatedMachine,@BranchID
+        );
+
+
+    End
+
+    Select @CountPayment = count(*) from SHPaymentDetails where PaymentId =@PaymentId and PaymentDiscription =@PaymentDiscription and BranchID = @BranchID
+    If(@CountPayment >0)
+    BEGIN
+        UPDATE SHPaymentDetails
+        SET 
+
+            
+            PaymentMode = @PaymentMode,
+            PaymentTransactionNumber = @PaymentTransactionNumber,
+            PaymentAmount = @PaymentAmount,
+            PaymentDate = @PaymentDate,
+            IsDelete = 0,
+            LastUpdatedUser = @LastUpdatedUser,
+            LastUpdatedDate = @LastUpdatedDate,
+            LastUpdatedMachine = @LastUpdatedMachine,
+			BranchID=@BranchID
+            where PaymentId = @PaymentId and PaymentDiscription = @PaymentDiscription and BranchID=@BranchID
+
+
+ END
+    ELSE
+    BEGIN
+        INSERT INTO SHPaymentDetails
+        (
+            PaymentId,PaymentDiscription,PaymentMode,PaymentTransactionNumber,PaymentAmount,PaymentDate,
+             IsDelete, LastUpdatedUser, LastUpdatedDate, LastUpdatedMachine,BranchID
+        )
+        VALUES
+        (
+            @PaymentId,@PaymentDiscription,@PaymentMode,@PaymentTransactionNumber,@PaymentAmount,@PaymentDate,
+             0, @LastUpdatedUser, @LastUpdatedDate, @LastUpdatedMachine,@BranchID
+        );
+    END
+END

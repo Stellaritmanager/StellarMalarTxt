@@ -1,0 +1,32 @@
+USE [StellarBilling]
+GO
+/****** Object:  UserDefinedFunction [dbo].[GenerateBillID]    Script Date: 31-07-2024 11:46:30 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+ALTER FUNCTION [dbo].[GenerateBillID](
+    @BillId as Varchar(100)
+)
+RETURNS VARCHAR(50)
+AS
+BEGIN
+
+Declare @BillAmount NVARCHAR(50)
+Declare @Balance NVARCHAR(50)
+Declare @PayAmount NVARCHAR(50)
+
+select @BillAmount = Totalprice from SHbillmaster where BillID = @BillId
+
+
+select @payAmount = PaymentAmount from SHPaymentDetails where PaymentId in (select PaymentId from SHPaymentMaster where BillId = @BillId)
+
+ 
+
+ Select @Balance = (CONVERT(float,@BillAmount))-(CONVERT(float,isnull(@PayAmount,0)))
+
+
+    RETURN @Balance
+
+END

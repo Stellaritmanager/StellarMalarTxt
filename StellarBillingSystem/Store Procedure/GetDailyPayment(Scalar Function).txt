@@ -1,0 +1,19 @@
+USE [StellarBilling]
+GO
+/****** Object:  UserDefinedFunction [dbo].[GetDailyPayments]    Script Date: 31-07-2024 11:47:28 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+-- Function to get daily payments
+ALTER FUNCTION [dbo].[GetDailyPayments] (@BranchID NVARCHAR(50))
+RETURNS MONEY
+AS
+BEGIN
+    DECLARE @DailyPayments MONEY;
+    SELECT @DailyPayments = COALESCE(SUM(CONVERT(MONEY, paymentAmount)), 0)
+    FROM SHPaymentDetails 
+    WHERE CONVERT(DATE, PaymentDate) = CONVERT(DATE, GETDATE())  AND BranchID = @BranchID;
+    RETURN @DailyPayments;
+END

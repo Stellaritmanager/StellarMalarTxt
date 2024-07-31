@@ -120,7 +120,7 @@
                             </div>
 
                             <div class="form-floating form-floating-outline mb-4">
-                                <input asp-for="FirstName" value="@Model.FirstName" class="form-control" placeholder="First Name" pattern="^[A-Za-z\s]+$" title="Customer Name should contain only letters and spaces" />
+                                <input asp-for="FirstName" value="@Model.FirstName" class="form-control" placeholder="First Name" pattern="^[A-Za-z\s]+$" title="staff Name should contain only letters and spaces" />
                                 <label asp-for="FirstName" class="control-label">First Name</label>
                                 <span asp-validation-for="FirstName" class="text-danger"></span>
                             </div>
@@ -128,7 +128,7 @@
 
                             <div class="form-floating form-floating-outline mb-4">
 
-                                <input asp-for="LastName" value="@Model.LastName" class="form-control" placeholder="Last Name" pattern="^[A-Za-z\s]+$" title="Customer Name should contain only letters and spaces" />
+                                <input asp-for="LastName" value="@Model.LastName" class="form-control" placeholder="Last Name" pattern="^[A-Za-z\s]+$" title="staff Name should contain only letters and spaces" />
                                 <label asp-for="LastName" class="control-label">Last Name</label>
                                 <span asp-validation-for="LastName" class="text-danger"></span>
                             </div>
@@ -136,7 +136,7 @@
 
                             <div class="form-floating form-floating-outline mb-4">
 
-                                <input asp-for="FullName" value="@Model.FullName" class="form-control" placeholder="Full Name" pattern="^[A-Za-z\s]+$" title="Customer Name should contain only letters and spaces" />
+                                <input asp-for="FullName" value="@Model.FullName" class="form-control" placeholder="Full Name" pattern="^[A-Za-z\s]+$" title="straff Name should contain only letters and spaces" />
                                 <label asp-for="FullName" class="control-label">Full Name</label>
                                 <span asp-validation-for="FullName" class="text-danger"></span>
                             </div>
@@ -218,7 +218,7 @@
                                 <span asp-validation-for="State" class="text-danger"></span>
                             </div>
                             <div class="form-floating form-floating-outline mb-4">
-                                <input asp-for="Pin" value="@Model.Pin" class="form-control" placeholder="Pin" />
+                                <input asp-for="Pin" value="@Model.Pin" class="form-control" placeholder="Pin" pattern="^\d{6}$" title="Pincode Number should be in correct format" />
                                 <label asp-for="Pin" class="control-label">Pin</label>
                                 <span asp-validation-for="Pin" class="text-danger"></span>
                             </div>
@@ -253,7 +253,7 @@
                                 <span asp-validation-for="IdProofId" class="text-danger"></span>
                             </div>
                             <div class="form-floating form-floating-outline mb-4">
-                                <input asp-for="IdProofName" value="@Model.IdProofName" class="form-control" placeholder="IdProofName" />
+                                <input asp-for="IdProofName" value="@Model.IdProofName" class="form-control" placeholder="IdProofName" pattern="^[A-Za-z\s]+$" title="Staff Name should contain only letters and spaces" />
                                 <label asp-for="IdProofName" class="control-label">IdProofName</label>
                                 <span asp-validation-for="IdProofName" class="text-danger"></span>
                             </div>
