@@ -4137,7 +4137,7 @@ textarea.form-control-lg {
 }
 
 .dividerblack {
-    background-image: linear-gradient(to right, #424566 0%, #373957 51%, #282a42 100%);
+    background-image: linear-gradient(to right,#282a42 0%, #373957 51%,#424566 100%);
 }
 
 .dividercol {
