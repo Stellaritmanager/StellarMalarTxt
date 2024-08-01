@@ -166,5 +166,12 @@
                 </script>
             }
 
+    @if (ViewBag.ErrorMessage != null)
+    {
+        <script>
+            handleMessages("@ViewBag.ErrorMessage");
+        </script>
+    }
+
         </form>
    

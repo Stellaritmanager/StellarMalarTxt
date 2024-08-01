@@ -187,6 +187,7 @@ namespace StellarBillingSystem.Business
         {
             var branchid = (
                         from pr in _billingContext.SHBranchMaster
+                        where pr.IsDelete==false
                         select new BranchMasterModel
                         {
                             BracnchID = pr.BracnchID,

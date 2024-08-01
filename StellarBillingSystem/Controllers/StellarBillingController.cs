@@ -1372,6 +1372,12 @@ namespace HealthCare.Controllers
                 var stafftodelete = await _billingsoftware.SHStaffAdmin.FindAsync(model.StaffID, model.BranchID);
                 if (stafftodelete != null)
                 {
+                    if (stafftodelete.IsDelete)
+                    {
+                        ViewBag.ErrorMessage = "Cannot update. Product is marked as deleted.";
+                        return View("StaffAdmin", model);
+                    }
+
                     stafftodelete.IsDelete = true;
                     await _billingsoftware.SaveChangesAsync();
 
@@ -1440,6 +1446,12 @@ namespace HealthCare.Controllers
 
             if (existingStaffAdmin != null)
             {
+                if (existingStaffAdmin.IsDelete)
+                {
+                    ViewBag.ErrorMessage = "Cannot update. Product is marked as deleted.";
+                    return View("StaffAdmin", model);
+                }
+
                 existingStaffAdmin.StaffID = model.StaffID;
                 existingStaffAdmin.ResourceTypeID = model.ResourceTypeID;
                 existingStaffAdmin.BranchID = model.BranchID;
@@ -1521,6 +1533,12 @@ namespace HealthCare.Controllers
                 var restodelete = await _billingsoftware.SHresourceType.FindAsync(model.ResourceTypeID, model.BranchID);
                 if (restodelete != null)
                 {
+                    if (restodelete.IsDelete)
+                    {
+                        ViewBag.ErrorMessage = "Cannot update. Product is marked as deleted.";
+                        return View("ResourceTypeMaster", model);
+                    }
+
                     restodelete.IsDelete = true;
                     await _billingsoftware.SaveChangesAsync();
 
@@ -1566,6 +1584,12 @@ namespace HealthCare.Controllers
 
             if (existingres != null)
             {
+                if (existingres.IsDelete)
+                {
+                    ViewBag.ErrorMessage = "Cannot update. Product is marked as deleted.";
+                    return View("ResourceTypeMaster", model);
+                }
+
                 existingres.ResourceTypeName = model.ResourceTypeName;
                 existingres.ResourceTypeID = model.ResourceTypeID;
                 existingres.BranchID = model.BranchID;
@@ -1628,6 +1652,12 @@ namespace HealthCare.Controllers
                 var roletodelete = await _billingsoftware.SHRoleaccessModel.FindAsync(model.RollID, model.ScreenID, model.BranchID);
                 if (roletodelete != null)
                 {
+                    if (roletodelete.Isdelete)
+                    {
+                        ViewBag.ErrorMessage = "Cannot update. Product is marked as deleted.";
+                        return View("RoleAccess", model);
+                    }
+
                     roletodelete.Isdelete = true;
                     await _billingsoftware.SaveChangesAsync();
 
@@ -1674,6 +1704,12 @@ namespace HealthCare.Controllers
 
             if (existingrole != null)
             {
+                if (existingrole.Isdelete)
+                {
+                    ViewBag.ErrorMessage = "Cannot update. Product is marked as deleted.";
+                    return View("RoleAccess", model);
+                }
+
                 existingrole.BranchID = model.BranchID;
                 existingrole.RollID = model.RollID;
                 existingrole.ScreenID = model.ScreenID;
@@ -1737,6 +1773,12 @@ namespace HealthCare.Controllers
                     var rolltodelete = await _billingsoftware.SHrollaccess.FindAsync(model.StaffID, rollName, model.BranchID);
                     if (rolltodelete != null)
                     {
+                        if (rolltodelete.IsDelete)
+                        {
+                            ViewBag.ErrorMessage = "Cannot update. Product is marked as deleted.";
+                            return View("RollAccessMaster", model);
+                        }
+
                         rolltodelete.IsDelete = true;
                         await _billingsoftware.SaveChangesAsync();
 
@@ -1795,11 +1837,17 @@ namespace HealthCare.Controllers
                     if (existingroll != null)
                     {
                         var duplicateRoll = _billingsoftware.SHrollaccess
-                     .FirstOrDefault(x => x.RollID == model.RollID && x.StaffID != model.StaffID);
+                     .FirstOrDefault(x => x.RollID == model.RollID && x.StaffID != model.StaffID && x.BranchID==model.BranchID);
 
                         if (duplicateRoll == null)
                         {
                             ViewBag.ErrorMessage = "RollID already exists Cannot update same ID";
+                            return View("RollAccessMaster", model);
+                        }
+
+                        if (existingroll.IsDelete)
+                        {
+                            ViewBag.ErrorMessage = "Cannot update. Product is marked as deleted.";
                             return View("RollAccessMaster", model);
                         }
 
@@ -1866,6 +1914,12 @@ namespace HealthCare.Controllers
                 var rolltypetodelete = await _billingsoftware.SHrollType.FindAsync(model.RollID, model.BranchID);
                 if (rolltypetodelete != null)
                 {
+                    if (rolltypetodelete.IsDelete)
+                    {
+                        ViewBag.ErrorMessage = "Cannot update. Product is marked as deleted.";
+                        return View("RollTypeMaster", model);
+                    }
+
                     rolltypetodelete.IsDelete = true;
                     await _billingsoftware.SaveChangesAsync();
 
@@ -1910,6 +1964,12 @@ namespace HealthCare.Controllers
 
             if (existingrolltype != null)
             {
+                if (existingrolltype.IsDelete)
+                {
+                    ViewBag.ErrorMessage = "Cannot update. Product is marked as deleted.";
+                    return View("RollTypeMaster", model);
+                }
+
                 existingrolltype.BranchID = model.BranchID;
                 existingrolltype.RollID = model.RollID;
                 existingrolltype.RollName = model.RollName;
@@ -1972,6 +2032,13 @@ namespace HealthCare.Controllers
 
                 if (screentodelete != null)
                 {
+                    if (screentodelete.IsDelete)
+                    {
+                        ViewBag.ErrorMessage = "Cannot update. Product is marked as deleted.";
+                        return View("ScreenMaster", model);
+                    }
+
+
                     screentodelete.IsDelete = true;
                     await _billingsoftware.SaveChangesAsync();
                     ViewBag.delMessage = "ScreenId deleted successfully";
@@ -2016,6 +2083,12 @@ namespace HealthCare.Controllers
 
             if (existingscreen != null)
             {
+                if (existingscreen.IsDelete)
+                {
+                    ViewBag.ErrorMessage = "Cannot update. Product is marked as deleted.";
+                    return View("ScreenMaster", model);
+                }
+
                 existingscreen.BranchID = model.BranchID;
                 existingscreen.ScreenId = model.ScreenId;
                 existingscreen.ScreenName = model.ScreenName;
@@ -3124,6 +3197,12 @@ string BillId, string Balance, string BillDate, string PaymentId, string payment
                 var branchdel = await _billingsoftware.SHBranchMaster.FirstOrDefaultAsync(x => x.BracnchID == model.BracnchID && x.IsDelete == false);
                 if (branchdel != null)
                 {
+                    if (branchdel.IsDelete)
+                    {
+                        ViewBag.ErrorMessage = "Cannot update. Product is marked as deleted.";
+                        return View("BranchMaster", model);
+                    }
+
                     branchdel.IsDelete = true;
                     await _billingsoftware.SaveChangesAsync();
 
@@ -3185,6 +3264,12 @@ string BillId, string Balance, string BillDate, string PaymentId, string payment
 
             if (existingBranch != null)
             {
+                if (existingBranch.IsDelete)
+                {
+                    ViewBag.ErrorMessage = "Cannot update. Product is marked as deleted.";
+                    return View("BranchMaster", model);
+                }
+
                 existingBranch.BracnchID = model.BracnchID;
                 existingBranch.BranchName = model.BranchName;
                 existingBranch.PhoneNumber1 = model.PhoneNumber1;
