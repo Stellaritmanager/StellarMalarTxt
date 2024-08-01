@@ -3162,10 +3162,6 @@ string BillId, string Balance, string BillDate, string PaymentId, string payment
                         TotalPrice = balance?.ToString() ?? "0";
                     }
                 }
-
-
-
-
             }
 
             return View(modelList);
