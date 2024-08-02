@@ -125,12 +125,22 @@
 
                         <span asp-validation-for="CustomerName" class="text-danger"></span>
                     </div>
-                    <div class="form-floating form-floating-outline mb-4">
+                  @*   <div class="form-floating form-floating-outline mb-4">
                                 <input asp-for="DateofBirth" type="date" class="form-control" placeholder="Date of Birth" value="@Model.DateofBirth" />
                         <label asp-for="DateofBirth" class="control-label">Date of Birth</label>
 
                         <span asp-validation-for="DateofBirth" class="text-danger"></span>
                     </div>
+ *@
+
+
+                            <div class="form-floating form-floating-outline mb-4 custom-date-picker">
+                                <input asp-for="DateofBirth" type="date" value="@Model.DateofBirth" class="form-control" placeholder="DateofBirth" />
+                                <label asp-for="DateofBirth" class="control-label">Date of Birth</label>
+                                <span asp-validation-for="DateofBirth" class="text-danger"></span>
+                            </div>
+
+
                    
 
          
