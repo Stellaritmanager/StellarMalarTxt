@@ -76,11 +76,23 @@
 
                         <div class="col-md-12 col-lg-6">
 
+                            @* <div class="form-floating form-floating-outline mb-4">
+                                <input asp-for="StaffID" value="@Model.StaffID" class="form-control" placeholder="Staff ID" required />
+                                <label asp-for="StaffID" class="control-label">Staff ID</label>
+                                <span asp-validation-for="StaffID" class="text-danger"></span>
+                            </div> *@
+
+
                             <div class="form-floating form-floating-outline mb-4">
                                 <input asp-for="StaffID" value="@Model.StaffID" class="form-control" placeholder="Staff ID" required />
                                 <label asp-for="StaffID" class="control-label">Staff ID</label>
                                 <span asp-validation-for="StaffID" class="text-danger"></span>
                             </div>
+
+
+
+
+
                         </div>
                         <div class="col-md-12 col-lg-2">
                             <button type="submit" style="width:180px" value="Get" name="buttonType" class="btn btn-primary">Get</button>

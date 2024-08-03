@@ -17,6 +17,7 @@
         private string isFranchise;
         private bool isDelete;
         private string stremail;
+    private string branchInitial;
     private string strlastUpdatedUser;
     private string strlastUpdatedMachine;
     private string strLastUpdatedDate;
@@ -37,5 +38,6 @@
     public string? lastUpdatedUser { get => strlastUpdatedUser; set => strlastUpdatedUser = value; }
     public string? lastUpdatedMachine { get => strlastUpdatedMachine; set => strlastUpdatedMachine = value; }
     public string? LastUpdatedDate { get => strLastUpdatedDate; set => strLastUpdatedDate = value; }
+    public string? BranchInitial { get => branchInitial; set => branchInitial = value; }
 }
 

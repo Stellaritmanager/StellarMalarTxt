@@ -95,10 +95,20 @@ namespace StellarBillingSystem.Controllers
 
                     var branch = await _billingContext.SHStaffAdmin.FirstOrDefaultAsync(x => x.UserName == model.UserName);
 
-                    var rolldetail = Busreg.GetRoll(model.UserName, branch.BranchID);
+                    var rolldetail = Busreg.GetRoll(model.UserName, branch.BranchID); 
+
+                   
+
 
                     TempData["UserName"] = model.UserName;
                     TempData["BranchID"] = branch.BranchID;
+                    
+                   /*//Set branch name and branch intial 
+                    var branchinitial = Busreg.Getbranchinitial(branch.BranchID);
+                    TempData["BranchInitail"] = branchinitial.BranchInitial;
+                    TempData["BranchName"] = branchinitial.BranchName;
+
+                    ViewBag.BranchInitial = branchinitial;*/
 
                     // Set TempData with the filtered roll details
                     TempData["RollAccess"] = JsonConvert.SerializeObject(rolldetail);
@@ -108,6 +118,7 @@ namespace StellarBillingSystem.Controllers
                      string.Equals(model.UserName, "Kumar@gmail.com", StringComparison.OrdinalIgnoreCase))
                     {
                         return RedirectToAction("Administration", "LoginAuthentication");
+
                     }
 
                     else
@@ -115,6 +126,8 @@ namespace StellarBillingSystem.Controllers
 
                         return RedirectToAction("Index", "Home");
                     }
+
+                   
                 }
 
             }

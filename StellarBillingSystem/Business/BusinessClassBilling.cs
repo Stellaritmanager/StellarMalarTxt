@@ -198,6 +198,21 @@ namespace StellarBillingSystem.Business
             return branchid;
         }
 
+        public BranchMasterModel Getbranchinitial(string BranchID)
+
+        {
+            var branchidini = (
+                        from pr in _billingContext.SHBranchMaster
+                        where pr.IsDelete == false && pr.BracnchID == BranchID
+                        select new BranchMasterModel
+                        {
+                            BranchInitial = pr.BranchInitial,
+                            BranchName = pr.BranchName
+                            
+
+                        }).FirstOrDefault();
+            return branchidini;
+        }
          public List<ProductMatserModel> Getproduct(string BranchID)
 
         {
@@ -214,6 +229,7 @@ namespace StellarBillingSystem.Business
 
             return productid;
         }
+
 
         public List<String> GetRoll(string userid,string BranchID)
         {
@@ -242,6 +258,18 @@ namespace StellarBillingSystem.Business
             var result = query.ToList();
             return result;
         }
+
+
+        /*public List<String> Getbranchinitial(string userid, string BranchID)
+        {
+            var query = from sm in _billingContext.SHStaffAdmin
+                        join k in _billingContext.SHBranchMaster on sm.BranchID equals k.BracnchID
+                        where sm.UserName == userid && sm.BranchID == BranchID
+                        select k.BranchInitial;
+
+            var result = query.ToList();
+            return result;
+        }*/
 
 
         public List<GenericReportModel> GetReportId()
