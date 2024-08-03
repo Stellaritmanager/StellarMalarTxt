@@ -10,7 +10,7 @@
 /* scrollbar is not visible by default for legend, hence forcing the visibility */
 .apexcharts-canvas ::-webkit-scrollbar {
   -webkit-appearance: none;
-  width: 6px;
+  width: 10px;
 }
 
 .apexcharts-canvas ::-webkit-scrollbar-thumb {

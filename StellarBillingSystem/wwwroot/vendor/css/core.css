@@ -505,6 +505,18 @@ legend + * {
   -webkit-appearance: none;
 }
 
+.custom-date-picker input[type="date"]::-webkit-calendar-picker-indicator {
+    filter: invert(1); /* Makes the icon appear black in WebKit browsers */
+    cursor: pointer;
+}
+
+/* Additional styles for other elements in the form */
+.custom-date-picker input[type="date"] {
+    /* Optionally, add other input styles here */
+}
+
+
+
 ::-webkit-color-swatch-wrapper {
   padding: 0;
 }

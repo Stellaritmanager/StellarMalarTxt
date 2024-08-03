@@ -198,7 +198,22 @@ namespace StellarBillingSystem.Business
             return branchid;
         }
 
+         public List<ProductMatserModel> Getproduct(string BranchID)
 
+        {
+            var productid = (
+                        from product in _billingContext.SHProductMaster
+                        join rack in _billingContext.SHRackPartionProduct
+                        on product.ProductID equals rack.ProductID
+                        where product.BranchID == BranchID
+                        select new { product, rack })
+                  .AsEnumerable()
+                  .Where(pr => int.Parse(pr.rack.Noofitems) > 0)
+                  .Select(pr => pr.product)
+                  .ToList();
+
+            return productid;
+        }
 
         public List<String> GetRoll(string userid,string BranchID)
         {

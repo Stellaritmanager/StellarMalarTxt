@@ -1,6 +1,7 @@
 ﻿
 using DocumentFormat.OpenXml.Bibliography;
 using DocumentFormat.OpenXml.InkML;
+using DocumentFormat.OpenXml.Office2021.Excel.RichDataWebImage;
 using DocumentFormat.OpenXml.Spreadsheet;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -14,6 +15,7 @@ using StellarBillingSystem.Business;
 using StellarBillingSystem.Context;
 using StellarBillingSystem.Models;
 using System.Data;
+using System.Linq;
 
 namespace HealthCare.Controllers
 {
@@ -31,7 +33,7 @@ namespace HealthCare.Controllers
 
 
         [HttpGet]
-        public async Task<IActionResult> GetCategory(CategoryMasterModel model, string buttonType)
+        public async Task<IActionResult> GetCategory(CategoryMasterModel model,string buttonType)
         {
             if (TempData["BranchID"] != null)
             {
@@ -1343,13 +1345,6 @@ namespace HealthCare.Controllers
         public async Task<IActionResult> AddStaff(StaffAdminModel model, string buttontype)
         {
 
-            if (TempData["BranchID"] != null)
-            {
-                model.BranchID = TempData["BranchID"].ToString();
-                TempData.Keep("BranchID");
-            }
-
-
             BusinessClassBilling Busbill = new BusinessClassBilling(_billingsoftware);
             ViewData["resoruseid"] = Busbill.GetResourceid();
             ViewData["branchid"] = Busbill.Getbranch();
@@ -2120,140 +2115,147 @@ namespace HealthCare.Controllers
         //customer Billing
 
 
+        /* [HttpPost]
+         public IActionResult getproductlist(ProductSelectModel model, string billid, string BillID, string buttonType, string SelectedProductID, string Quantity, string productid, string productname, string unitprice, string billdate, string customernumber)
+         {
+             if (TempData["BranchID"] != null)
+             {
+                 model.BranchID = TempData["BranchID"].ToString();
+                 TempData.Keep("BranchID");
+             }
+
+             if (string.IsNullOrEmpty(model.ProductID) && string.IsNullOrEmpty(model.BarcodeID))
+             {
+                 ViewBag.ValidationMessage = "Please enter either ProductID or BarcodeID.";
+                 return View("ProductList", model);
+             }
+
+             if (buttonType == "Search")
+             {
+                 var productList = (from product in _billingsoftware.SHProductMaster
+                                    join rack in _billingsoftware.SHRackPartionProduct
+                                    on product.ProductID equals rack.ProductID
+                                    where (product.ProductID.Contains(model.ProductID) || product.BarcodeId.Contains(model.BarcodeID) && product.BranchID == model.BranchID)
+                                    select new { product, rack })
+                       .AsEnumerable() // Switch to client-side evaluation
+                       .Where(pr => int.Parse(pr.rack.Noofitems) > 0) // Perform the int.Parse on the client side
+                       .Select(pr => pr.product)
+                       .ToList();
+
+                 if (productList.Count == 0)
+                 {
+                     ViewBag.NotfoundMessage = "No products found.";
+                 }
+
+                 model.Viewproductlist = productList;
+                 model.ProductID = model.ProductID;
+                 model.BarcodeID = model.BarcodeID;
+                 return View("ProductList", model);
+
+             }
+             else if (buttonType == "Load")
+             {
+
+
+
+                 if (string.IsNullOrEmpty(SelectedProductID))
+                 {
+                     ViewBag.notselect = "Please select a product.";
+                     model.Viewproductlist = (from product in _billingsoftware.SHProductMaster
+                                              join rack in _billingsoftware.SHRackPartionProduct
+                                              on product.ProductID equals rack.ProductID
+                                              where (product.ProductID.Contains(model.ProductID) || product.BarcodeId.Contains(model.BarcodeID) && product.BranchID == model.BranchID)
+                                              select new { product, rack })
+                       .AsEnumerable() // Switch to client-side evaluation
+                       .Where(pr => int.Parse(pr.rack.Noofitems) > 0) // Perform the int.Parse on the client side
+                       .Select(pr => pr.product)
+                       .ToList();
+                     return View("ProductList", model);
+                 }
+
+                 int quantity;
+                 if (!int.TryParse(Quantity, out quantity) || quantity <= 0) // Parse and check if Quantity is valid
+                 {
+                     ViewBag.enterquantity = "Please enter a valid quantity.";
+                     model.Viewproductlist = (from product in _billingsoftware.SHProductMaster
+                                              join rack in _billingsoftware.SHRackPartionProduct
+                                              on product.ProductID equals rack.ProductID
+                                              where (product.ProductID.Contains(model.ProductID) || product.BarcodeId.Contains(model.BarcodeID) && product.BranchID == model.BranchID)
+                                              select new { product, rack })
+                       .AsEnumerable() // Switch to client-side evaluation
+                       .Where(pr => int.Parse(pr.rack.Noofitems) > 0) // Perform the int.Parse on the client side
+                       .Select(pr => pr.product)
+                       .ToList();
+
+                     return View("ProductList", model);
+                 }
+
+                 var selectedProduct = _billingsoftware.SHProductMaster.FirstOrDefault(p => p.ProductID == SelectedProductID);
+                 if (selectedProduct != null)
+                 {
+                     var existingDetail = _billingsoftware.SHbilldetails.FirstOrDefault(b =>
+                b.BillID == TempData.Peek("BillID").ToString() && b.ProductID == selectedProduct.ProductID && b.BranchID == model.BranchID);
+
+                     if (existingDetail != null)
+                     {
+                         existingDetail.BranchID = model.BranchID;
+                         existingDetail.Quantity = Quantity;
+                     }
+                     else
+                     {
+
+                         var billDetail = new BillingDetailsModel
+                         {
+                             BranchID = model.BranchID,
+                             BillID = TempData.Peek("BillID").ToString(),
+                             BillDate = TempData.Peek("BillDate").ToString(),
+                             CustomerNumber = TempData.Peek("CustomerNumber").ToString(),
+                             ProductID = selectedProduct.ProductID,
+                             ProductName = selectedProduct.ProductName,
+                             Price = selectedProduct.TotalAmount,
+                             Quantity = Quantity,
+                         };
+
+                         _billingsoftware.SHbilldetails.Add(billDetail);
+
+                     }
+
+                     _billingsoftware.SaveChanges();
+                     return RedirectToAction("CustomerBilling", new
+                     {
+                         billid = TempData.Peek("BillID").ToString(),
+                         billdate = TempData.Peek("BillDate").ToString(),
+                         customernumber = TempData.Peek("CustomerNumber").ToString(),
+                         productid = selectedProduct.ProductID,
+                         productname = selectedProduct.ProductName,
+                         price = selectedProduct.TotalAmount,
+                         quantity = Quantity,
+
+
+                     });
+                 }
+             }
+
+
+             return View("ProductList", model);
+         }*/
+
         [HttpPost]
-        public IActionResult getproductlist(ProductSelectModel model, string billid, string BillID, string buttonType, string SelectedProductID, string Quantity, string productid, string productname, string unitprice, string billdate, string customernumber)
+
+        public async Task<IActionResult> getCustomerBill(BillProductlistModel model, string buttonType, string BillID, string BillDate, string CustomerNumber, string TotalPrice, BillingMasterModel masterModel, BillingDetailsModel detailModel, string Quantity)
         {
+
+
             if (TempData["BranchID"] != null)
             {
                 model.BranchID = TempData["BranchID"].ToString();
                 TempData.Keep("BranchID");
             }
 
-            if (string.IsNullOrEmpty(model.ProductID) && string.IsNullOrEmpty(model.BarcodeID))
-            {
-                ViewBag.ValidationMessage = "Please enter either ProductID or BarcodeID.";
-                return View("ProductList", model);
-            }
 
-            if (buttonType == "Search")
-            {
-                var productList = (from product in _billingsoftware.SHProductMaster
-                                   join rack in _billingsoftware.SHRackPartionProduct
-                                   on product.ProductID equals rack.ProductID
-                                   where (product.ProductID.Contains(model.ProductID) || product.BarcodeId.Contains(model.BarcodeID) && product.BranchID == model.BranchID)
-                                   select new { product, rack })
-                      .AsEnumerable() // Switch to client-side evaluation
-                      .Where(pr => int.Parse(pr.rack.Noofitems) > 0) // Perform the int.Parse on the client side
-                      .Select(pr => pr.product)
-                      .ToList();
+            BusinessClassBilling Busbill = new BusinessClassBilling(_billingsoftware);
+            ViewData["productid"] = Busbill.Getproduct(model.BranchID);
 
-                if (productList.Count == 0)
-                {
-                    ViewBag.NotfoundMessage = "No products found.";
-                }
-
-                model.Viewproductlist = productList;
-                model.ProductID = model.ProductID;
-                model.BarcodeID = model.BarcodeID;
-                return View("ProductList", model);
-
-            }
-            else if (buttonType == "Load")
-            {
-
-
-
-                if (string.IsNullOrEmpty(SelectedProductID))
-                {
-                    ViewBag.notselect = "Please select a product.";
-                    model.Viewproductlist = (from product in _billingsoftware.SHProductMaster
-                                             join rack in _billingsoftware.SHRackPartionProduct
-                                             on product.ProductID equals rack.ProductID
-                                             where (product.ProductID.Contains(model.ProductID) || product.BarcodeId.Contains(model.BarcodeID) && product.BranchID == model.BranchID)
-                                             select new { product, rack })
-                      .AsEnumerable() // Switch to client-side evaluation
-                      .Where(pr => int.Parse(pr.rack.Noofitems) > 0) // Perform the int.Parse on the client side
-                      .Select(pr => pr.product)
-                      .ToList();
-                    return View("ProductList", model);
-                }
-
-                int quantity;
-                if (!int.TryParse(Quantity, out quantity) || quantity <= 0) // Parse and check if Quantity is valid
-                {
-                    ViewBag.enterquantity = "Please enter a valid quantity.";
-                    model.Viewproductlist = (from product in _billingsoftware.SHProductMaster
-                                             join rack in _billingsoftware.SHRackPartionProduct
-                                             on product.ProductID equals rack.ProductID
-                                             where (product.ProductID.Contains(model.ProductID) || product.BarcodeId.Contains(model.BarcodeID) && product.BranchID == model.BranchID)
-                                             select new { product, rack })
-                      .AsEnumerable() // Switch to client-side evaluation
-                      .Where(pr => int.Parse(pr.rack.Noofitems) > 0) // Perform the int.Parse on the client side
-                      .Select(pr => pr.product)
-                      .ToList();
-
-                    return View("ProductList", model);
-                }
-
-                var selectedProduct = _billingsoftware.SHProductMaster.FirstOrDefault(p => p.ProductID == SelectedProductID);
-                if (selectedProduct != null)
-                {
-                    var existingDetail = _billingsoftware.SHbilldetails.FirstOrDefault(b =>
-               b.BillID == TempData.Peek("BillID").ToString() && b.ProductID == selectedProduct.ProductID && b.BranchID == model.BranchID);
-
-                    if (existingDetail != null)
-                    {
-                        existingDetail.BranchID = model.BranchID;
-                        existingDetail.Quantity = Quantity;
-                    }
-                    else
-                    {
-
-                        var billDetail = new BillingDetailsModel
-                        {
-                            BranchID = model.BranchID,
-                            BillID = TempData.Peek("BillID").ToString(),
-                            BillDate = TempData.Peek("BillDate").ToString(),
-                            CustomerNumber = TempData.Peek("CustomerNumber").ToString(),
-                            ProductID = selectedProduct.ProductID,
-                            ProductName = selectedProduct.ProductName,
-                            Price = selectedProduct.TotalAmount,
-                            Quantity = Quantity,
-                        };
-
-                        _billingsoftware.SHbilldetails.Add(billDetail);
-
-                    }
-
-                    _billingsoftware.SaveChanges();
-                    return RedirectToAction("CustomerBilling", new
-                    {
-                        billid = TempData.Peek("BillID").ToString(),
-                        billdate = TempData.Peek("BillDate").ToString(),
-                        customernumber = TempData.Peek("CustomerNumber").ToString(),
-                        productid = selectedProduct.ProductID,
-                        productname = selectedProduct.ProductName,
-                        price = selectedProduct.TotalAmount,
-                        quantity = Quantity,
-
-
-                    });
-                }
-            }
-
-
-            return View("ProductList", model);
-        }
-
-        [HttpPost]
-
-        public async Task<IActionResult> getCustomerBill(BillProductlistModel model, string buttonType, string BillID, string BillDate, string CustomerNumber, string TotalPrice, BillingMasterModel masterModel, BillingDetailsModel detailModel)
-        {
-            if (TempData["BranchID"] != null)
-            {
-                model.BranchID = TempData["BranchID"].ToString();
-                TempData.Keep("BranchID");
-            }
 
 
             //Code for print the Bill 
@@ -2274,15 +2276,106 @@ namespace HealthCare.Controllers
             }
 
 
-            if (buttonType == "Get Product")
+
+            if (buttonType == "Add Product")
             {
 
-                TempData["BillID"] = BillID;
-                TempData["BillDate"] = BillDate;
-                TempData["CustomerNumber"] = CustomerNumber;
+                if (TempData["BranchID"] != null)
+                {
+                    detailModel.BranchID = TempData["BranchID"].ToString();
+                    TempData.Keep("BranchID");
+                }
 
-                return RedirectToAction("ProductList", new { BillID = model.BillID, BillDate = model.BillDate, CustomerNumber = model.CustomerNumber });
+                var productlist = await _billingsoftware.SHProductMaster
+                             .Where(p => p.ProductID == model.ProductID && p.BranchID == model.BranchID)
+                             .Select(p => new BillingDetailsModel
+                             {
+                                 ProductID = p.ProductID,
+                                 ProductName = p.ProductName,
+                                 Price = p.Price,
+                                 Quantity = Quantity,
+                                 NetPrice = model.NetPrice
+
+                             }).ToListAsync();
+
+                var existingbilldetail = await _billingsoftware.SHbilldetails
+            .FirstOrDefaultAsync(x => x.BillID == model.BillID && x.BillDate == model.BillDate && x.CustomerNumber == model.CustomerNumber && x.BranchID == model.BranchID && x.ProductID == model.ProductID);
+
+                if (existingbilldetail != null)
+                {
+                    existingbilldetail.BillID = detailModel.BillID;
+                    existingbilldetail.BillDate = detailModel.BillDate;
+                    existingbilldetail.CustomerNumber = detailModel.CustomerNumber;
+                    existingbilldetail.ProductID = detailModel.ProductID;
+                    existingbilldetail.Discount = detailModel.Discount;
+                    existingbilldetail.Price = detailModel.Price;
+                    existingbilldetail.Quantity = detailModel.Quantity;
+                    existingbilldetail.NetPrice = detailModel.NetPrice;
+                    existingbilldetail.Totalprice = detailModel.Totalprice;
+                    existingbilldetail.TotalDiscount = detailModel.TotalDiscount;
+                    existingbilldetail.ProductName = detailModel.ProductName;
+                    existingbilldetail.BranchID = detailModel.BranchID;
+                    existingbilldetail.Lastupdateddate = DateTime.Now.ToString();
+                    existingbilldetail.Lastupdatedmachine = Request.HttpContext.Connection.RemoteIpAddress.ToString();
+                    existingbilldetail.Lastupdateduser = User.Claims.First().Value.ToString();
+                    _billingsoftware.Entry(existingbilldetail).State = EntityState.Modified;
+                }
+                else
+                {
+                    detailModel.Lastupdateduser = User.Claims.First().Value.ToString();
+                    detailModel.Lastupdatedmachine = Request.HttpContext.Connection.RemoteIpAddress.ToString();
+                    detailModel.Lastupdateddate = DateTime.Now.ToString();
+
+                    var product = productlist.FirstOrDefault();
+                    if (product != null)
+                    {
+                        // Convert strings to numeric types
+                        if (decimal.TryParse(product.Price, out decimal price) && int.TryParse(product.Quantity, out int quantity))
+                        {
+                            // Perform calculation
+                            model.NetPrice = (price * quantity).ToString();
+                        }
+                        else
+                        {
+                            // Handle conversion failure
+                            ModelState.AddModelError("", "Invalid price or quantity format.");
+                            return View("CustomerBilling", model);
+                        }
+
+                        // Set detailModel properties
+                        detailModel.ProductID = product.ProductID;
+                        detailModel.ProductName = product.ProductName;
+                        detailModel.Price = product.Price;
+                        detailModel.Quantity = Quantity;
+                        detailModel.NetPrice = model.NetPrice;
+                        detailModel.BillID = BillID;
+                        detailModel.BillDate = BillDate;
+                        detailModel.CustomerNumber = CustomerNumber;
+                    }
+
+                    _billingsoftware.SHbilldetails.Add(detailModel);
+                }
+
+                await _billingsoftware.SaveChangesAsync();
+
+                productlist = await _billingsoftware.SHbilldetails
+          .Where(d => d.BillID == BillID && d.BillDate == BillDate && d.CustomerNumber == CustomerNumber && d.BranchID == detailModel.BranchID)
+          .Select(d => new BillingDetailsModel
+          {
+              ProductID = d.ProductID,
+              ProductName = d.ProductName,
+              Price = d.Price,
+              Quantity = d.Quantity,
+              NetPrice = d.NetPrice
+          }).ToListAsync();
+
+
+                model.Viewbillproductlist = productlist;
+
+                return View("CustomerBilling", model);
             }
+
+
 
             if (buttonType == "Get")
             {
@@ -2368,56 +2461,102 @@ namespace HealthCare.Controllers
             }
 
 
+            if (buttonType == "Save")
+            {
+
+                if (TempData["BranchID"] != null)
+                {
+                    masterModel.BranchID = TempData["BranchID"].ToString();
+                    TempData.Keep("BranchID");
+                }
+
+            
+                //   var getexistingprice = await _billingsoftware.SHbilldetails.FirstOrDefaultAsync(x => x.BillID == model.BillID && x.BillDate == model.BillDate && x.CustomerNumber == CustomerNumber && x.BranchID == model.BranchID);
+                var getexistingprice = await _billingsoftware.SHbilldetails
+             .Where(x => x.BillID == model.BillID && x.BillDate == model.BillDate && x.CustomerNumber == CustomerNumber && x.BranchID == model.BranchID)
+             .ToListAsync();
+
+                if (getexistingprice!=null )
+                {
+                    var totalPrice = getexistingprice.Sum(x =>
+                    {
+                        decimal price;
+                        return decimal.TryParse(x.Price, out price) ? price : 0;
+                    });
+
+                    var totalNetPrice = getexistingprice.Sum(x =>
+                    {
+                        decimal netPrice;
+                        return decimal.TryParse(x.NetPrice, out netPrice) ? netPrice : 0;
+                    });
+
+
+                    // Retrieve the existing master record
+                    var updateMaster = await _billingsoftware.SHbillmaster
+                        .FirstOrDefaultAsync(m => m.BillID == model.BillID && m.BranchID == model.BranchID && m.BillDate==model.BillDate && m.CustomerNumber==model.CustomerNumber);
+
+                    if (updateMaster != null)
+                    {
+
+                        updateMaster.BillID = masterModel.BillID;
+                        updateMaster.BillDate = masterModel.BillDate;
+                        updateMaster.CustomerNumber = masterModel.CustomerNumber;
+                        updateMaster.Totalprice = totalPrice.ToString("F2");
+                        updateMaster.TotalDiscount = masterModel.TotalDiscount;
+                        updateMaster.NetPrice = totalNetPrice.ToString("F2");
+                        updateMaster.CGSTPercentage = masterModel.CGSTPercentage;
+                        updateMaster.CGSTPercentageAmt = masterModel.CGSTPercentageAmt;
+                        updateMaster.SGSTPercentage = masterModel.SGSTPercentage;
+                        updateMaster.SGSTPercentageAmt = masterModel.SGSTPercentageAmt;
+                        updateMaster.BranchID = masterModel.BranchID;
+                        updateMaster.Lastupdateduser = User.Claims.First().Value.ToString();
+                        updateMaster.Lastupdatedmachine = Request.HttpContext.Connection.RemoteIpAddress.ToString();
+                        updateMaster.Lastupdateddate = DateTime.Now.ToString();
+
+                        _billingsoftware.Entry(updateMaster).State = EntityState.Modified;
+
             var isDeleteValue = (object)masterModel.IsDelete ?? DBNull.Value;
 
-            var parameters = new[]
-   {
-        new SqlParameter("@BillID", masterModel.BillID),
-        new SqlParameter("@BillDate", masterModel.BillDate),
-        new SqlParameter("@CustomerNumber", masterModel.CustomerNumber),
-        new SqlParameter("@TotalPrice", masterModel.Totalprice ?? (object)DBNull.Value),
-        new SqlParameter("@TotalDiscount", masterModel.TotalDiscount ?? (object)DBNull.Value),
-        new SqlParameter("@NetPrice", masterModel.NetPrice ?? (object)DBNull.Value),
-         new SqlParameter("@CGSTPercentage", masterModel.NetPrice ?? (object)DBNull.Value),
-     new SqlParameter("@SGSTPercentage",  masterModel.NetPrice ?? (object)DBNull.Value),
-     new SqlParameter("@CGSTPercentageAmt",  masterModel.NetPrice ?? (object)DBNull.Value),
-     new SqlParameter("@SGSTPercentageAmt",  masterModel.NetPrice ?? (object)DBNull.Value),
-      new SqlParameter("@BranchID", model.BranchID),
-       new SqlParameter("@IsDelete", "N"),
-        new SqlParameter("@LastUpdatedUser", User.Claims.First().Value.ToString()),
-        new SqlParameter("@LastUpdatedDate", DateTime.Now.ToString()),
-        new SqlParameter("@LastUpdatedMachine", Request.HttpContext.Connection.RemoteIpAddress.ToString()),
-        new SqlParameter("@ProductID", detailModel.ProductID),
-        new SqlParameter("@ProductName", detailModel.ProductName ?? (object)DBNull.Value),
-        new SqlParameter("@Discount", detailModel.Discount ?? (object)DBNull.Value),
-        new SqlParameter("@Price", detailModel.Price ?? (object)DBNull.Value),
-        new SqlParameter("@Quantity", detailModel.Quantity ?? (object)DBNull.Value),
+                    }
+                    else
+                    {
+                        masterModel.Totalprice = totalPrice.ToString("F2");
+                        masterModel.NetPrice = totalNetPrice.ToString("F2");
+                        masterModel.Lastupdateduser = User.Claims.First().Value.ToString();
+                        masterModel.Lastupdatedmachine = Request.HttpContext.Connection.RemoteIpAddress.ToString();
+                        masterModel.Lastupdateddate = DateTime.Now.ToString();
 
-    };
-            await _billingsoftware.Database.ExecuteSqlRawAsync("EXEC InsertBillProduct @BillID, @BillDate, @CustomerNumber, @TotalPrice,@TotalDiscount,@NetPrice,@CGSTPercentage,@SGSTPercentage,@CGSTPercentageAmt,@SGSTPercentageAmt,@BranchID,@IsDelete,@LastUpdatedUser, @LastUpdatedDate, @LastUpdatedMachine, @ProductID, @ProductName, @Discount, @Price, @Quantity", parameters);
-            ViewBag.SaveMessage = "save successfully";
+                        _billingsoftware.SHbillmaster.Add(masterModel);
 
-            var updatedMaster = await _billingsoftware.SHbillmaster
-       .Where(m => m.BillID == masterModel.BillID && m.BranchID == model.BranchID)
+                    }
+
+                    _billingsoftware.SaveChanges();
+
+                }
+
+                var updatedMaster = await _billingsoftware.SHbillmaster
+       .Where(m => m.BillID == masterModel.BillID && m.BranchID == model.BranchID && m.BillDate==masterModel.BillDate&&m.CustomerNumber==masterModel.CustomerNumber)
        .FirstOrDefaultAsync();
 
-            if (updatedMaster != null)
-            {
-                ViewBag.TotalPrice = updatedMaster.Totalprice;
-                ViewBag.TotalDiscount = updatedMaster.TotalDiscount;
-                ViewBag.NetPrice = updatedMaster.NetPrice;
+                if (updatedMaster != null)
+                {
+                    ViewBag.TotalPrice = updatedMaster.Totalprice;
+                    ViewBag.TotalDiscount = updatedMaster.TotalDiscount;
+                    ViewBag.NetPrice = updatedMaster.NetPrice;
+                }
+
+
+                var billingDetails = await _billingsoftware.SHbilldetails
+           .Where(d => d.BillID == masterModel.BillID && d.BranchID == model.BranchID && d.BillDate == masterModel.BillDate && d.CustomerNumber == masterModel.CustomerNumber)
+           .ToListAsync();
+
+                model.MasterModel = updatedMaster;
+                model.Viewbillproductlist = billingDetails;
+
+
+                ViewBag.Message = "Saved Successfully";
+               // return View("CustomerBilling", model);
             }
-
-
-            var billingDetails = await _billingsoftware.SHbilldetails
-       .Where(d => d.BillID == masterModel.BillID && d.BranchID == model.BranchID)
-       .ToListAsync();
-
-            model.MasterModel = updatedMaster;
-            model.Viewbillproductlist = billingDetails;
-
-
-            ViewBag.Message = "Saved Successfully";
             return View("CustomerBilling", model);
         }
 
@@ -2619,10 +2758,12 @@ namespace HealthCare.Controllers
                 TempData.Keep("BranchID");
             }
 
+            BusinessClassBilling Busbill = new BusinessClassBilling(_billingsoftware);
+            ViewData["productid"] = Busbill.Getproduct(model.BranchID);
 
 
             // Retrieve selected product
-            var selectedProduct = _billingsoftware.SHProductMaster.FirstOrDefault(p => p.ProductID == productid);
+            var selectedProduct = _billingsoftware.SHProductMaster.FirstOrDefault(p => p.ProductID ==productid);
 
             if (selectedProduct != null)
             {
@@ -3326,6 +3467,16 @@ namespace HealthCare.Controllers
 //                {
 //                    string connectionString = _configuration.GetConnectionString("BillingDBConnection");
 
+                    using (var connection = new SqlConnection(connectionString))
+                    {
+                        connection.Open();
+                        var command = new SqlCommand("SELECT dbo.GenerateBillID(@BillID)", connection);
+                        command.Parameters.AddWithValue("@BillID", BillID);
+                        var balance = command.ExecuteScalar();
+                        TotalPrice = balance?.ToString() ?? "0";
+                    }
+                }
+            }
 //                    using (var connection = new SqlConnection(connectionString))
 //                    {
 //                        connection.Open();
