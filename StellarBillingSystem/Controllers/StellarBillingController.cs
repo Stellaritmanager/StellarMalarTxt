@@ -1343,13 +1343,6 @@ namespace HealthCare.Controllers
         public async Task<IActionResult> AddStaff(StaffAdminModel model, string buttontype)
         {
 
-            if (TempData["BranchID"] != null)
-            {
-                model.BranchID = TempData["BranchID"].ToString();
-                TempData.Keep("BranchID");
-            }
-
-
             BusinessClassBilling Busbill = new BusinessClassBilling(_billingsoftware);
             ViewData["resoruseid"] = Busbill.GetResourceid();
             ViewData["branchid"] = Busbill.Getbranch();
@@ -2550,7 +2543,7 @@ namespace HealthCare.Controllers
 
 
                 var billingDetails = await _billingsoftware.SHbilldetails
-           .Where(d => d.BillID == masterModel.BillID && d.BranchID == model.BranchID && m.BillDate == masterModel.BillDate && m.CustomerNumber == masterModel.CustomerNumber)
+           .Where(d => d.BillID == masterModel.BillID && d.BranchID == model.BranchID && d.BillDate == masterModel.BillDate && d.CustomerNumber == masterModel.CustomerNumber)
            .ToListAsync();
 
                 model.MasterModel = updatedMaster;
