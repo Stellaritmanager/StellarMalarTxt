@@ -1,10 +1,12 @@
 ﻿
 using DocumentFormat.OpenXml.Bibliography;
 using DocumentFormat.OpenXml.InkML;
+using DocumentFormat.OpenXml.Spreadsheet;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Microsoft.CodeAnalysis.Operations;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using NuGet.Protocol;
@@ -29,7 +31,7 @@ namespace HealthCare.Controllers
 
 
         [HttpGet]
-        public async Task<IActionResult> GetCategory(CategoryMasterModel model,string buttonType)
+        public async Task<IActionResult> GetCategory(CategoryMasterModel model, string buttonType)
         {
             if (TempData["BranchID"] != null)
             {
@@ -66,7 +68,7 @@ namespace HealthCare.Controllers
                 TempData.Keep("BranchID");
             }
 
-          
+
             if (buttonType == "Get")
             {
                 var getcategory = await _billingsoftware.SHCategoryMaster.FirstOrDefaultAsync(x => x.CategoryID == model.CategoryID && !x.IsDelete && x.BranchID == model.BranchID);
@@ -106,7 +108,7 @@ namespace HealthCare.Controllers
 
             else if (buttonType == "DeleteRetrieve")
             {
-                var categorytoretrieve = await _billingsoftware.SHCategoryMaster.FindAsync(model.CategoryID,model.BranchID);
+                var categorytoretrieve = await _billingsoftware.SHCategoryMaster.FindAsync(model.CategoryID, model.BranchID);
                 if (categorytoretrieve != null)
                 {
                     categorytoretrieve.IsDelete = false;
@@ -179,13 +181,13 @@ namespace HealthCare.Controllers
 
             if (buttonType == "Get")
             {
-                if (model.ProductID ==null && model.BarcodeId==null)
+                if (model.ProductID == null && model.BarcodeId == null)
                 {
                     ViewBag.ValidationMessage = "Please enter either ProductID or BarcodeID.";
                     return View("ProductMaster", model);
                 }
 
-                var resultpro = await _billingsoftware.SHProductMaster.FirstOrDefaultAsync(x =>( x.ProductID == model.ProductID || x.BarcodeId==model.BarcodeId) && !x.IsDelete && x.BranchID==model.BranchID);
+                var resultpro = await _billingsoftware.SHProductMaster.FirstOrDefaultAsync(x => (x.ProductID == model.ProductID || x.BarcodeId == model.BarcodeId) && !x.IsDelete && x.BranchID == model.BranchID);
                 if (resultpro != null)
                 {
                     return View("ProductMaster", resultpro);
@@ -231,7 +233,7 @@ namespace HealthCare.Controllers
                     return View("ProductMaster", model);
                 }
 
-                var productToRetrieve = await _billingsoftware.SHProductMaster.FirstOrDefaultAsync(x => (x.ProductID == model.ProductID || x.BarcodeId == model.BarcodeId) && x.IsDelete==true && x.BranchID == model.BranchID);
+                var productToRetrieve = await _billingsoftware.SHProductMaster.FirstOrDefaultAsync(x => (x.ProductID == model.ProductID || x.BarcodeId == model.BarcodeId) && x.IsDelete == true && x.BranchID == model.BranchID);
                 if (productToRetrieve != null)
                 {
                     productToRetrieve.IsDelete = false;
@@ -1837,7 +1839,7 @@ namespace HealthCare.Controllers
                     if (existingroll != null)
                     {
                         var duplicateRoll = _billingsoftware.SHrollaccess
-                     .FirstOrDefault(x => x.RollID == model.RollID && x.StaffID != model.StaffID && x.BranchID==model.BranchID);
+                     .FirstOrDefault(x => x.RollID == model.RollID && x.StaffID != model.StaffID && x.BranchID == model.BranchID);
 
                         if (duplicateRoll == null)
                         {
@@ -2268,7 +2270,7 @@ namespace HealthCare.Controllers
 
             if (buttonType == "Payment")
             {
-                return RedirectToAction("PaymentScreen", new { BillID = model.BillID });
+                return RedirectToAction("PaymentBilling", new { BillID = model.BillID });
             }
 
 
@@ -2365,7 +2367,7 @@ namespace HealthCare.Controllers
 
             }
 
-                                                                                                                                                                                                               
+
             var isDeleteValue = (object)masterModel.IsDelete ?? DBNull.Value;
 
             var parameters = new[]
@@ -2667,653 +2669,824 @@ namespace HealthCare.Controllers
             return View(model);
 
         }
-        //PaymentScreen
+
+        public IActionResult PaymentBilling()
+        {
+            PaymentTableViewModel obj = new PaymentTableViewModel();
+            return View(obj);
+
+        }
 
         [HttpPost]
-        public async Task<IActionResult> AddPayment(PaymentMasterModel model, PaymentDetailsModel detailsmodel, BillingMasterModel masterModel, string buttonType, List<PaymentDetailsModel> billpayment, string selectedSlotId,
-string BillId, string Balance, string BillDate, string PaymentId, string paymentdescription, string CustomerNumber, string ReedemPoints, string action)
+        public async Task<IActionResult> PaymentAction(PaymentTableViewModel model, string buttonType, string selectedSlotId)
         {
-
             if (TempData["BranchID"] != null)
             {
                 model.BranchID = TempData["BranchID"].ToString();
                 TempData.Keep("BranchID");
             }
 
-            BusinessClassBilling businessbill = new BusinessClassBilling(_billingsoftware);
 
-            ViewBag.PaymentId = PaymentId;
-            ViewBag.BillId = BillId;
-            ViewBag.Balance = Balance;
-            ViewBag.BillDate = BillDate;
-            ViewBag.CustomerNumber = CustomerNumber;
-            ViewBag.ReedemPoints = ReedemPoints;
+            if (buttonType == "GetBill")
+            {
+                var exbill = await _billingsoftware.SHbillmaster.Where(x => x.BillID == model.BillId && x.BillDate ==model.BillDate && x.BranchID == model.BranchID).FirstOrDefaultAsync();
+                model.Balance = exbill.NetPrice;
+            }
+
+            if(buttonType == "DeletePayment")
+            {
+                //Delete Details from DB
+                //Delete from database
+                var selectedDBpayment = _billingsoftware.SHPaymentDetails.Where(x => x.PaymentId == model.PaymentId && x.BranchID == model.BranchID).ToList();
+                foreach(var item in selectedDBpayment)
+                {
+                    _billingsoftware.SHPaymentDetails.Remove(item);
+                    _billingsoftware.SaveChanges();
+                }
+
+
+                //Delete Master
+                var SelectedPayMas = _billingsoftware.SHPaymentMaster.SingleOrDefault(x =>x.BillId ==model.BillId && x.BillDate == model.BillDate && x.PaymentId == model.PaymentId && x.BranchID == model.BranchID);
+
+                _billingsoftware.SHPaymentMaster.Remove(SelectedPayMas);
+                _billingsoftware.SaveChanges();
+
+            }
+            if(buttonType == "GetPayment")
+            {
+                var selectDBpayment = _billingsoftware.SHPaymentDetails.Where(x => x.PaymentId == model.PaymentId && x.BranchID == model.BranchID).ToList();
+
+                var SelectPayMas = _billingsoftware.SHPaymentMaster.SingleOrDefault(x => x.BillId == model.BillId && x.BillDate == model.BillDate && x.PaymentId == model.PaymentId && x.BranchID == model.BranchID);
+
+                if(model.Viewpayment ==null)
+                    model.Viewpayment = selectDBpayment;
+
+                model.BillDate = SelectPayMas.BillDate;
+                model.PaymentId = SelectPayMas.PaymentId;
+                model.BranchID = SelectPayMas.BranchID;
+                model.Balance = SelectPayMas.Balance;
+                model.BillId = SelectPayMas.BillId;
+
+            }
+
+            if (buttonType == "DeletePaymentDetail")
+            {
+                //Delete from database
+                var selectedDBpayment = _billingsoftware.SHPaymentDetails.SingleOrDefault(x => x.PaymentDiscription == selectedSlotId && x.PaymentId == model.PaymentId && x.BranchID == model.BranchID);
+                if (selectedDBpayment != null)
+                {
+                    _billingsoftware.SHPaymentDetails.Remove(selectedDBpayment);
+                    _billingsoftware.SaveChanges();
+                }
+
+                //Delete from grid
+                var selectedpayment = model.Viewpayment.SingleOrDefault(x => x.PaymentDiscription == selectedSlotId);
+                if (selectedpayment != null)
+                {
+                    model.Viewpayment.Remove(selectedpayment);
+                }            
+
+            }
+
+
+
+            if(buttonType == "Save")
+            {
+                var objbillmaster = new PaymentMasterModel()
+                {
+                    BillDate = model.BillDate,
+                    PaymentId =model.PaymentId,
+                    BranchID =model.BranchID,
+                    Balance = model.Balance,
+                    BillId= model.BillId                   
+                    
+                };
+
+                var objpaymas = _billingsoftware.SHPaymentMaster.Where(x => x.BillId == model.BillId && x.BranchID == model.BranchID && x.PaymentId ==model.PaymentId).FirstOrDefault();
+
+                 if(objpaymas != null)
+                {
+                    objpaymas.BranchID = model.BranchID;
+                    objpaymas.Lastupdateddate = "";
+                    objpaymas.Lastupdateduser = "";
+                    objpaymas.Lastupdatedmachine = "";
+                    objpaymas.Balance = model.Balance;
+                    objpaymas.BillDate = model.BillDate;
+                    objpaymas.BillId = model.BillId;
+
+                    _billingsoftware.Entry(objpaymas).State = EntityState.Modified;
+                }
+                 else
+                {
+                    _billingsoftware.SHPaymentMaster.Add(objbillmaster);
+                }
+
+                _billingsoftware.SaveChanges();
+
+                foreach (var objdetail in model.Viewpayment)
+                {
+                    var obpaydet = _billingsoftware.SHPaymentDetails.Where(x=> x.BranchID==model.BranchID && x.PaymentDiscription ==objdetail.PaymentDiscription&& x.PaymentId == objdetail.PaymentId).FirstOrDefault();
+
+                    if(obpaydet != null)
+                    {
+                        obpaydet.BranchID = model.BranchID;
+                        obpaydet.Lastupdateduser = "";
+                        obpaydet.Lastupdatedmachine = "";
+                        obpaydet.Lastupdatedmachine = "";
+                        obpaydet.PaymentAmount = objdetail.PaymentAmount;
+                        obpaydet.PaymentDate = objdetail.PaymentDate;
+                        obpaydet.PaymentDiscription = objdetail.PaymentDiscription;
+                        obpaydet.PaymentId = objdetail.PaymentId;
+                        obpaydet.PaymentMode = objdetail.PaymentMode;
+                        obpaydet.PaymentTransactionNumber = objdetail.PaymentTransactionNumber;
+
+                        _billingsoftware.Entry(obpaydet).State = EntityState.Modified;
+
+                    }
+                    else
+                    {
+                        objdetail.PaymentId = model.PaymentId;
+                        objdetail.BranchID = model.BranchID;
+                        _billingsoftware.SHPaymentDetails.Add(objdetail);
+                    }
+
+                    _billingsoftware.SaveChanges();
+                }
+                                
+
+            }
+            if (buttonType == "AddPayment")
+            {
+                PaymentDetailsModel objNewPayment = new PaymentDetailsModel();
+                objNewPayment.PaymentDiscription = model.PaymentId + DateTime.Now.ToString();
+                objNewPayment.PaymentId = model.PaymentId;
+                objNewPayment.BranchID = model.BranchID;
+
+                List<PaymentDetailsModel> Objlistpayment = new List<PaymentDetailsModel>();
+                Objlistpayment.Add(objNewPayment);
+
+                if (model.Viewpayment == null)
+                    model.Viewpayment = Objlistpayment;
+                else
+                    model.Viewpayment.Add(objNewPayment);
+
+            }
+
+
+            return View("PaymentBilling",model);
+        }
+    }
+}
+
+
+
+        //PaymentScreen
+
+//        [HttpPost]
+//        public async Task<IActionResult> AddPayment(PaymentMasterModel model, PaymentDetailsModel detailsmodel, BillingMasterModel masterModel, string buttonType, List<PaymentDetailsModel> billpayment, string selectedSlotId,
+//string BillId, string Balance, string BillDate, string PaymentId, string paymentdescription,string action)
+//        {
+
+//            if (TempData["BranchID"] != null)
+//            {
+//                model.BranchID = TempData["BranchID"].ToString();
+//                TempData.Keep("BranchID");
+//            }
+
+//            BusinessClassBilling businessbill = new BusinessClassBilling(_billingsoftware);
+
+//            ViewBag.PaymentId = PaymentId;
+//            ViewBag.BillId = BillId;
+//            ViewBag.Balance = Balance;
+//            ViewBag.BillDate = BillDate;
+//            ViewBag.CustomerNumber = CustomerNumber;
+//            ViewBag.ReedemPoints = ReedemPoints;
 
             /* if (billPayment == null)
              {
                  billPayment = new List<PaymentTableViewModel>();
              }*/
 
-            if (buttonType == "PaymentReceipt")
-            {
+            //if (buttonType == "PaymentReceipt")
+            //{
 
-                String Query =  "SELECT \r\n    SD.BillID,\r\n    CONVERT(varchar(10), SD.BillDate, 101) AS BillDate,\r\n    SD.PaymentId,\r\n    SB.PaymentDiscription,\r\n    SB.PaymentDate,\r\n    SB.PaymentMode,\r\n    SB.PaymentAmount, \r\n    SB.PaymentTransactionNumber,\r\n    SD.CustomerNumber AS CustomerName,\r\n    SD.CustomerNumber\r\nFROM \r\n    SHPaymentMaster SD\r\nINNER JOIN \r\n    SHPaymentDetails SB ON SD.PaymentId = SB.PaymentId\r\nWHERE \r\n    SB.IsDelete = 0 \r\n    AND SD.CustomerNumber = '" + CustomerNumber + "' \r\n    AND SD.BillId = '" + BillId + "' \r\n    AND SB.PaymentId = '" + PaymentId + "' \r\n    AND SB.BranchID = '" + model.BranchID + "'";
+            //    String Query =  "SELECT \r\n    SD.BillID,\r\n    CONVERT(varchar(10), SD.BillDate, 101) AS BillDate,\r\n    SD.PaymentId,\r\n    SB.PaymentDiscription,\r\n    SB.PaymentDate,\r\n    SB.PaymentMode,\r\n    SB.PaymentAmount, \r\n    SB.PaymentTransactionNumber,\r\n    SD.CustomerNumber AS CustomerName,\r\n    SD.CustomerNumber\r\nFROM \r\n    SHPaymentMaster SD\r\nINNER JOIN \r\n    SHPaymentDetails SB ON SD.PaymentId = SB.PaymentId\r\nWHERE \r\n    SB.IsDelete = 0 \r\n    AND SD.CustomerNumber = '" + CustomerNumber + "' \r\n    AND SD.BillId = '" + BillId + "' \r\n    AND SB.PaymentId = '" + PaymentId + "' \r\n    AND SB.BranchID = '" + model.BranchID + "'";
 
-                var Table = BusinessClassCommon.DataTable(_billingsoftware, Query);
+            //    var Table = BusinessClassCommon.DataTable(_billingsoftware, Query);
 
-                BusinessClassBilling objbilling = new BusinessClassBilling(_billingsoftware);
+            //    BusinessClassBilling objbilling = new BusinessClassBilling(_billingsoftware);
 
-                return File(objbilling.PrintpaymentDetails(Table), "application/vnd.openxmlformats-officedocument.wordprocessingml.document", "PaymentReport_" + TempData["BillID"] + ".docx");
+            //    return File(objbilling.PrintpaymentDetails(Table), "application/vnd.openxmlformats-officedocument.wordprocessingml.document", "PaymentReport_" + TempData["BillID"] + ".docx");
 
-            }
-
-
+            //}
 
 
-            if (buttonType == "AddPayment")
-            {
-                var newDetail = new PaymentDetailsModel
-                {
-                    PaymentId = PaymentId,
-                    BranchID=model.BranchID,
-                    PaymentDiscription = businessbill.GeneratePaymentDescription(PaymentId),
-                    PaymentDate = string.Empty,
-                    PaymentMode = string.Empty,
-                    PaymentTransactionNumber = string.Empty,
-                    PaymentAmount = string.Empty
-
-                };
 
 
-                _billingsoftware.SHPaymentDetails.Add(newDetail);
+            //if (buttonType == "AddPayment")
+            //{
+            //    var newDetail = new PaymentDetailsModel
+            //    {
+            //        PaymentId = PaymentId,
+            //        BranchID=model.BranchID,
+            //        PaymentDiscription = businessbill.GeneratePaymentDescription(PaymentId),
+            //        PaymentDate = string.Empty,
+            //        PaymentMode = string.Empty,
+            //        PaymentTransactionNumber = string.Empty,
+            //        PaymentAmount = string.Empty
+
+            //    };
 
 
-                _billingsoftware.SaveChanges();
+            //    _billingsoftware.SHPaymentDetails.Add(newDetail);
 
 
-                ViewBag.Slots = _billingsoftware.SHPaymentDetails.Where(b => b.PaymentId == PaymentId && b.IsDelete == false && b.BranchID == model.BranchID).ToList();
+            //    _billingsoftware.SaveChanges();
 
-            }
-            else if (buttonType == "DeletePayment" && !string.IsNullOrEmpty(selectedSlotId))
-            {
-                var detail = _billingsoftware.SHPaymentDetails
-                    .FirstOrDefault(p => p.PaymentDiscription == selectedSlotId);
 
-                if (detail != null)
-                {
-                    detail.IsDelete = true;
-                    _billingsoftware.SaveChanges();
+            //    ViewBag.Slots = _billingsoftware.SHPaymentDetails.Where(b => b.PaymentId == PaymentId && b.IsDelete == false && b.BranchID == model.BranchID).ToList();
 
-                    ViewBag.Slots = _billingsoftware.SHPaymentDetails
-                        .Where(b => b.PaymentId == PaymentId && b.IsDelete == false && b.BranchID == model.BranchID)
-                        .ToList();
-                }
-                ViewBag.DeleteMessage = "Deleted Successfully";
-                return View("PaymentScreen");
-            }
+            //}
+            //else if (buttonType == "DeletePayment" && !string.IsNullOrEmpty(selectedSlotId))
+            //{
+            //    var detail = _billingsoftware.SHPaymentDetails
+            //        .FirstOrDefault(p => p.PaymentDiscription == selectedSlotId);
+
+            //    if (detail != null)
+            //    {
+            //        detail.IsDelete = true;
+            //        _billingsoftware.SaveChanges();
+
+            //        ViewBag.Slots = _billingsoftware.SHPaymentDetails
+            //            .Where(b => b.PaymentId == PaymentId && b.IsDelete == false && b.BranchID == model.BranchID)
+            //            .ToList();
+            //    }
+            //    ViewBag.DeleteMessage = "Deleted Successfully";
+            //    return View("PaymentScreen");
+            //}
 
 
 
 
                     
 
-            if (buttonType == "GetBill")
-            {
+//            if (buttonType == "GetBill")
+//            {
 
-                List<PaymentTableViewModel> modelList = new List<PaymentTableViewModel>();
+//                List<PaymentTableViewModel> modelList = new List<PaymentTableViewModel>();
 
-                var exbill = await _billingsoftware.SHbillmaster.Where(x => x.BillID == BillId && x.BranchID == model.BranchID).FirstOrDefaultAsync();
-                if (exbill != null)
-                {
+//                var exbill = await _billingsoftware.SHbillmaster.Where(x => x.BillID == BillId && x.BranchID == model.BranchID).FirstOrDefaultAsync();
+//                if (exbill != null)
+//                {
 
-                    var billDetail = _billingsoftware.SHbillmaster
-                                       .Where(b => b.BillID == BillId && b.BranchID == model.BranchID)
-                                       .Select(b => new BillingDetailsModel
-                                       {
+//                    var billDetail = _billingsoftware.SHbillmaster
+//                                       .Where(b => b.BillID == BillId && b.BranchID == model.BranchID)
+//                                       .Select(b => new BillingDetailsModel
+//                                       {
 
-                                           BillDate = b.BillDate,
-                                           CustomerNumber = b.CustomerNumber,
-                                           BillID = b.BillID,
-                                           Totalprice = b.Totalprice
-
-
-                                       })
-                                       .FirstOrDefault();
-
-                    if (billDetail != null)
-                    {
-
-                        var paymentModel = new PaymentTableViewModel
-                        {
-                            BillDate = billDetail.BillDate,
-                            CustomerNumber = billDetail.CustomerNumber,
-                            BillId = billDetail.BillID,
-                            Balance = billDetail.Totalprice
-                        };
-
-                        // Add the PaymentTableViewModel to the list
-                        modelList.Add(paymentModel);
+//                                           BillDate = b.BillDate,
+//                                           CustomerNumber = b.CustomerNumber,
+//                                           BillID = b.BillID,
+//                                           Totalprice = b.Totalprice
 
 
-                        ViewBag.BillDate = paymentModel.BillDate;
-                        ViewBag.CustomerNumber = paymentModel.CustomerNumber;
-                        ViewBag.BillId = paymentModel.BillId;
-                        ViewBag.Balance = paymentModel.Balance;
+//                                       })
+//                                       .FirstOrDefault();
 
-                        return View(modelList);
+//                    if (billDetail != null)
+//                    {
 
+//                        var paymentModel = new PaymentTableViewModel
+//                        {
+//                            BillDate = billDetail.BillDate,
+//                            //CustomerNumber = billDetail.CustomerNumber,
+//                            BillId = billDetail.BillID,
+//                            Balance = billDetail.Totalprice
+//                        };
 
-                    }
-                    else
-                    {
-                        ViewBag.Message = "No details found for the given Bill ID.";
-                    }
-
-
-
-                    var exbilldata = _billingsoftware.SHPaymentMaster.FirstOrDefault(x => x.BillId == masterModel.BillID && x.BranchID == model.BranchID);
-
-                    if (exbilldata != null)
-                    {
+//                        // Add the PaymentTableViewModel to the list
+//                        modelList.Add(paymentModel);
 
 
-                        var billDetails = await _billingsoftware.SHPaymentMaster
-                     .Where(b => b.BillId == BillId && b.IsDelete == false && b.BranchID == model.BranchID)
-                     .Select(b => new PaymentTableViewModel
-                     {
-                         PaymentId = b.PaymentId,
-                         BillId = b.BillId,
-                         Balance = b.Balance,
-                         BillDate = b.BillDate,
-                         CustomerNumber = b.CustomerNumber,
-                         ReedemPoints = b.ReedemPoints,
-                         Viewpayment = _billingsoftware.SHPaymentDetails
-                             .Where(d => d.PaymentId == b.PaymentId && d.IsDelete == false)
-                             .Select(d => new PaymentDetailsModel
-                             {
-                                 PaymentId = d.PaymentId,
-                                 PaymentDiscription = d.PaymentDiscription,
-                                 PaymentMode = d.PaymentMode,
-                                 PaymentTransactionNumber = d.PaymentTransactionNumber,
-                                 PaymentAmount = d.PaymentAmount,
-                                 PaymentDate = d.PaymentDate
-                             }).ToList()
-                     })
-                     .ToListAsync();
+//                        ViewBag.BillDate = paymentModel.BillDate;
+//                        //ViewBag.CustomerNumber = paymentModel.CustomerNumber;
+//                        ViewBag.BillId = paymentModel.BillId;
+//                        ViewBag.Balance = paymentModel.Balance;
+
+//                        return View(modelList);
 
 
-                        var exbilldataa = _billingsoftware.SHPaymentMaster.FirstOrDefault(x => x.BillId == masterModel.BillID && x.BranchID == model.BranchID);
-
-                        if (exbilldataa != null)
-                        {
-                            if (billDetails.Any())
-                            {
-                                var firstBillDetail = billDetails.First();
+//                    }
+//                    else
+//                    {
+//                        ViewBag.Message = "No details found for the given Bill ID.";
+//                    }
 
 
 
+//                    var exbilldata = _billingsoftware.SHPaymentMaster.FirstOrDefault(x => x.BillId == masterModel.BillID && x.BranchID == model.BranchID);
 
-                                ViewBag.PaymentId = firstBillDetail.PaymentId;
-                                ViewBag.BillId = firstBillDetail.BillId;
-                                ViewBag.Balance = firstBillDetail.Balance;
-                                ViewBag.BillDate = firstBillDetail.BillDate;
-                                ViewBag.CustomerNumber = firstBillDetail.CustomerNumber;
-                                //ViewBag.ReedemPoints = firstBillDetail.ReedemPoints;
-                                ViewBag.Slots = firstBillDetail.Viewpayment;
-                            }
-                            else
-                            {
-                                ViewBag.Message = "No details found for the given Bill ID.";
-                            }
+//                    if (exbilldata != null)
+//                    {
 
 
-                        }
-                        return View("PaymentScreen", billDetails);
-                    }
-                }
-            }
+//                        var billDetails = await _billingsoftware.SHPaymentMaster
+//                     .Where(b => b.BillId == BillId && b.IsDelete == false && b.BranchID == model.BranchID)
+//                     .Select(b => new PaymentTableViewModel
+//                     {
+//                         //PaymentId = b.PaymentId,
+//                         BillId = b.BillId,
+//                         Balance = b.Balance,
+//                         BillDate = b.BillDate,
+//                         //CustomerNumber = b.CustomerNumber,
+//                         //ReedemPoints = b.ReedemPoints,
+//                     //    Viewpayment = _billingsoftware.SHPaymentDetails
+//                     //        .Where(d => d.PaymentId == b.PaymentId && d.IsDelete == false)
+//                     //        .Select(d => new PaymentDetailsModel
+//                     //        {
+//                     //            PaymentId = d.PaymentId,
+//                     //            PaymentDiscription = d.PaymentDiscription,
+//                     //            PaymentMode = d.PaymentMode,
+//                     //            PaymentTransactionNumber = d.PaymentTransactionNumber,
+//                     //            PaymentAmount = d.PaymentAmount,
+//                     //            PaymentDate = d.PaymentDate
+//                     //        }).ToList()
+//                     //})
+//                     //.ToListAsync();
+
+
+//                        //var exbilldataa = _billingsoftware.SHPaymentMaster.FirstOrDefault(x => x.BillId == masterModel.BillID && x.BranchID == model.BranchID);
+
+//            //            if (exbilldataa != null)
+//            //            {
+//            //                if (billDetails.Any())
+//            //                {
+//            //                    var firstBillDetail = billDetails.First();
 
 
 
 
+//            //                    ViewBag.PaymentId = firstBillDetail.PaymentId;
+//            //                    ViewBag.BillId = firstBillDetail.BillId;
+//            //                    ViewBag.Balance = firstBillDetail.Balance;
+//            //                    ViewBag.BillDate = firstBillDetail.BillDate;
+//            //                    //ViewBag.CustomerNumber = firstBillDetail.CustomerNumber;
+//            //                    //ViewBag.ReedemPoints = firstBillDetail.ReedemPoints;
+//            //                    ViewBag.Slots = firstBillDetail.Viewpayment;
+//            //                }
+//            //                else
+//            //                {
+//            //                    ViewBag.Message = "No details found for the given Bill ID.";
+//            //                }
 
-            if (buttonType == "GetPaymentDetails")
-            {
 
-                var billDetailspay = await _billingsoftware.SHPaymentDetails
-        .Where(b => b.PaymentId == PaymentId && b.IsDelete == false && b.BranchID == model.BranchID)
-        .Select(b => new PaymentDetailsModel
-        {
-            PaymentId = b.PaymentId,
-            PaymentDiscription = b.PaymentDiscription,
-            PaymentMode = b.PaymentMode,
-            PaymentTransactionNumber = b.PaymentTransactionNumber,
-            PaymentAmount = b.PaymentAmount,
-            PaymentDate = b.PaymentDate
-        })
-        .ToListAsync();
-
-                if (billDetailspay.Any())
-                {
-                    ViewBag.Slots = billDetailspay; // Assign the correct model to ViewBag or ViewData
-                }
-                else
-                {
-                    ViewBag.Message = "No details found for the given Payment ID.";
-                }
-            }
+//            //            }
+//            //            return View("PaymentScreen", billDetails);
+//            //        }
+//            //    }
+//            //}
 
 
 
 
 
-            if (buttonType == "GetPoints")
-            {
+//            if (buttonType == "GetPaymentDetails")
+//            {
+
+//                var billDetailspay = await _billingsoftware.SHPaymentDetails
+//        .Where(b => b.PaymentId == PaymentId && b.IsDelete == false && b.BranchID == model.BranchID)
+//        .Select(b => new PaymentDetailsModel
+//        {
+//            PaymentId = b.PaymentId,
+//            PaymentDiscription = b.PaymentDiscription,
+//            PaymentMode = b.PaymentMode,
+//            PaymentTransactionNumber = b.PaymentTransactionNumber,
+//            PaymentAmount = b.PaymentAmount,
+//            PaymentDate = b.PaymentDate
+//        })
+//        .ToListAsync();
+
+//                if (billDetailspay.Any())
+//                {
+//                    ViewBag.Slots = billDetailspay; // Assign the correct model to ViewBag or ViewData
+//                }
+//                else
+//                {
+//                    ViewBag.Message = "No details found for the given Payment ID.";
+//                }
+//            }
+
+
+
+
+
+//            if (buttonType == "GetPoints")
+//            {
                
 
-                // Retrieve RedeemPoints based on CustomerNumber
-                var customer = await _billingsoftware.SHPaymentMaster
-                    .FirstOrDefaultAsync(c => c.CustomerNumber == CustomerNumber && c.BranchID == model.BranchID);
-
-                if (customer != null)
-                {
-                    var pointsID = await _billingsoftware.SHPointsMaster
-        .FromSqlRaw("SELECT dbo.GeneratePointsID(@CustomerNumber, @BranchID) AS PointsID",
-            new SqlParameter("@CustomerNumber", CustomerNumber),
-            new SqlParameter("@BranchID", model.BranchID))
-        .Select(p => p.PointsID)
-        .FirstOrDefaultAsync();
-
-                    ViewBag.CustomerNumber = customer.CustomerNumber;
-                    ViewBag.ReedemPoints = pointsID;
-
-
-                    var billDetails = await _billingsoftware.SHPaymentMaster
-               .Where(b => b.CustomerNumber == CustomerNumber && b.IsDelete == false && b.BranchID == model.BranchID)
-               .Select(b => new PaymentTableViewModel
-               {
-                   PaymentId = b.PaymentId,
-                   BillId = b.BillId,
-                   Balance = b.Balance,
-                   CustomerNumber = b.CustomerNumber,
-                   ReedemPoints = b.ReedemPoints,
-                   Viewpayment = _billingsoftware.SHPaymentDetails
-                       .Where(d => d.PaymentId == b.PaymentId && d.IsDelete == false && d.BranchID == model.BranchID)
-                       .Select(d => new PaymentDetailsModel
-                       {
-                           PaymentId = d.PaymentId,
-                           PaymentDiscription = d.PaymentDiscription,
-                           PaymentMode = d.PaymentMode,
-                           PaymentTransactionNumber = d.PaymentTransactionNumber,
-                           PaymentAmount = d.PaymentAmount,
-                           PaymentDate = d.PaymentDate
-                       }).ToList()
-               })
-               .ToListAsync();
-
-                    if (billDetails.Any())
-                    {
-                        var firstBillDetail = billDetails.First();
-                        ViewBag.PaymentId = firstBillDetail.PaymentId;
-                        ViewBag.BillId = firstBillDetail.BillId;
-                        ViewBag.Balance = firstBillDetail.Balance;
-                        ViewBag.CustomerNumber = firstBillDetail.CustomerNumber;
-                        ViewBag.ReedemPoints = firstBillDetail.ReedemPoints;
-                        ViewBag.Slots = firstBillDetail.Viewpayment;
-                    }
-                    else
-                    {
-                        ViewBag.Message = "Customer not found.";
-                    }
-                    return View("PaymentScreen");
-                }
-            }
-
-
-            if (buttonType == "Redeem")
-            {
-                var paymentDetail = billpayment.FirstOrDefault();
-
-                if (paymentDetail == null)
-                {
-                    ModelState.AddModelError("", "No payment details provided.");
-                    return View("PaymentScreen");
-                }
-
-                var parameters = new[]
-                {
-        new SqlParameter("@BillId", model.BillId),
-        new SqlParameter("@PaymentId", model.PaymentId),
-        new SqlParameter("@CustomerNumber", model.CustomerNumber ?? (object)DBNull.Value),
-        new SqlParameter("@ReedemPoints", model.ReedemPoints ?? (object)DBNull.Value),
-        new SqlParameter("@Balance", model.Balance ?? (object)DBNull.Value),
-         new SqlParameter("BillDate",model.BillDate?? (object)DBNull.Value),
-        new SqlParameter("@PaymentDiscription", paymentDetail.PaymentDiscription),
-        new SqlParameter("@PaymentMode", paymentDetail.PaymentMode ?? (object)DBNull.Value),
-        new SqlParameter("@PaymentTransactionNumber", paymentDetail.PaymentTransactionNumber ?? (object)DBNull.Value),
-        new SqlParameter("@PaymentAmount", paymentDetail.PaymentAmount ?? (object)DBNull.Value),
-        new SqlParameter("@PaymentDate", paymentDetail.PaymentDate ?? (object)DBNull.Value),
-        new SqlParameter("@LastUpdatedUser", User.Claims.First().Value.ToString()),
-        new SqlParameter("@LastUpdatedDate", DateTime.Now.ToString()),
-        new SqlParameter("@LastUpdatedMachine", Request.HttpContext.Connection.RemoteIpAddress.ToString()),
-        new SqlParameter("@Reedem", "Y"),
-        new SqlParameter("@BranchID", model.BranchID ?? (object)DBNull.Value),
-    };
-
-                await _billingsoftware.Database.ExecuteSqlRawAsync(
-                    "EXEC InsertBillPayment @BillId, @PaymentId, @CustomerNumber, @ReedemPoints, @Balance,@BillDate, @PaymentDiscription, @PaymentMode, @PaymentTransactionNumber, @PaymentAmount, @PaymentDate, @LastUpdatedUser, @LastUpdatedDate, @LastUpdatedMachine, @Reedem,@BranchID",
-                    parameters
-                );
-
-                // Save redeem history
-                var redeemHistory = new ReedemHistoryModel
-                {
-                    CustomerNumber = model.CustomerNumber,
-                    DateOfReedem = DateTime.Now.ToString(), // Adjust as per your requirements
-                    ReedemPoints = model.ReedemPoints, // Adjust as per your requirements
-                    Lastupdateduser = User.Claims.First().Value.ToString(),
-                    Lastupdateddate = DateTime.Now.ToString(),
-                    Lastupdatedmachine = Request.HttpContext.Connection.RemoteIpAddress.ToString(),
-                    BranchID = model.BranchID
-                };
+//                // Retrieve RedeemPoints based on CustomerNumber
+//                var customer = await _billingsoftware.SHPaymentMaster
+//                    .FirstOrDefaultAsync(c => c.CustomerNumber == CustomerNumber && c.BranchID == model.BranchID);
+
+//                if (customer != null)
+//                {
+//                    var pointsID = await _billingsoftware.SHPointsMaster
+//        .FromSqlRaw("SELECT dbo.GeneratePointsID(@CustomerNumber, @BranchID) AS PointsID",
+//            new SqlParameter("@CustomerNumber", CustomerNumber),
+//            new SqlParameter("@BranchID", model.BranchID))
+//        .Select(p => p.PointsID)
+//        .FirstOrDefaultAsync();
+
+//                    ViewBag.CustomerNumber = customer.CustomerNumber;
+//                    ViewBag.ReedemPoints = pointsID;
+
+
+//                    var billDetails = await _billingsoftware.SHPaymentMaster
+//               .Where(b => b.CustomerNumber == CustomerNumber && b.IsDelete == false && b.BranchID == model.BranchID)
+//               .Select(b => new PaymentTableViewModel
+//               {
+//                   PaymentId = b.PaymentId,
+//                   BillId = b.BillId,
+//                   Balance = b.Balance,
+//                   //CustomerNumber = b.CustomerNumber,
+//                   //ReedemPoints = b.ReedemPoints,
+//                   Viewpayment = _billingsoftware.SHPaymentDetails
+//                       .Where(d => d.PaymentId == b.PaymentId && d.IsDelete == false && d.BranchID == model.BranchID)
+//                       .Select(d => new PaymentDetailsModel
+//                       {
+//                           PaymentId = d.PaymentId,
+//                           PaymentDiscription = d.PaymentDiscription,
+//                           PaymentMode = d.PaymentMode,
+//                           PaymentTransactionNumber = d.PaymentTransactionNumber,
+//                           PaymentAmount = d.PaymentAmount,
+//                           PaymentDate = d.PaymentDate
+//                       }).ToList()
+//               })
+//               .ToListAsync();
+
+//                    if (billDetails.Any())
+//                    {
+//                        var firstBillDetail = billDetails.First();
+//                        ViewBag.PaymentId = firstBillDetail.PaymentId;
+//                        ViewBag.BillId = firstBillDetail.BillId;
+//                        ViewBag.Balance = firstBillDetail.Balance;
+//                        //ViewBag.CustomerNumber = firstBillDetail.CustomerNumber;
+//                        //ViewBag.ReedemPoints = firstBillDetail.ReedemPoints;
+//                        ViewBag.Slots = firstBillDetail.Viewpayment;
+//                    }
+//                    else
+//                    {
+//                        ViewBag.Message = "Customer not found.";
+//                    }
+//                    return View("PaymentScreen");
+//                }
+//            }
+
+
+//            if (buttonType == "Redeem")
+//            {
+//                var paymentDetail = billpayment.FirstOrDefault();
+
+//                if (paymentDetail == null)
+//                {
+//                    ModelState.AddModelError("", "No payment details provided.");
+//                    return View("PaymentScreen");
+//                }
+
+//                var parameters = new[]
+//                {
+//        new SqlParameter("@BillId", model.BillId),
+//        new SqlParameter("@PaymentId", model.PaymentId),
+//        new SqlParameter("@CustomerNumber", model.CustomerNumber ?? (object)DBNull.Value),
+//        new SqlParameter("@ReedemPoints", model.ReedemPoints ?? (object)DBNull.Value),
+//        new SqlParameter("@Balance", model.Balance ?? (object)DBNull.Value),
+//         new SqlParameter("BillDate",model.BillDate?? (object)DBNull.Value),
+//        new SqlParameter("@PaymentDiscription", paymentDetail.PaymentDiscription),
+//        new SqlParameter("@PaymentMode", paymentDetail.PaymentMode ?? (object)DBNull.Value),
+//        new SqlParameter("@PaymentTransactionNumber", paymentDetail.PaymentTransactionNumber ?? (object)DBNull.Value),
+//        new SqlParameter("@PaymentAmount", paymentDetail.PaymentAmount ?? (object)DBNull.Value),
+//        new SqlParameter("@PaymentDate", paymentDetail.PaymentDate ?? (object)DBNull.Value),
+//        new SqlParameter("@LastUpdatedUser", User.Claims.First().Value.ToString()),
+//        new SqlParameter("@LastUpdatedDate", DateTime.Now.ToString()),
+//        new SqlParameter("@LastUpdatedMachine", Request.HttpContext.Connection.RemoteIpAddress.ToString()),
+//        new SqlParameter("@Reedem", "Y"),
+//        new SqlParameter("@BranchID", model.BranchID ?? (object)DBNull.Value),
+//    };
+
+//                await _billingsoftware.Database.ExecuteSqlRawAsync(
+//                    "EXEC InsertBillPayment @BillId, @PaymentId, @CustomerNumber, @ReedemPoints, @Balance,@BillDate, @PaymentDiscription, @PaymentMode, @PaymentTransactionNumber, @PaymentAmount, @PaymentDate, @LastUpdatedUser, @LastUpdatedDate, @LastUpdatedMachine, @Reedem,@BranchID",
+//                    parameters
+//                );
+
+//                // Save redeem history
+//                var redeemHistory = new ReedemHistoryModel
+//                {
+//                    CustomerNumber = model.CustomerNumber,
+//                    DateOfReedem = DateTime.Now.ToString(), // Adjust as per your requirements
+//                    ReedemPoints = model.ReedemPoints, // Adjust as per your requirements
+//                    Lastupdateduser = User.Claims.First().Value.ToString(),
+//                    Lastupdateddate = DateTime.Now.ToString(),
+//                    Lastupdatedmachine = Request.HttpContext.Connection.RemoteIpAddress.ToString(),
+//                    BranchID = model.BranchID
+//                };
 
-                _billingsoftware.SHReedemHistory.Add(redeemHistory);
-                await _billingsoftware.SaveChangesAsync();
+//                _billingsoftware.SHReedemHistory.Add(redeemHistory);
+//                await _billingsoftware.SaveChangesAsync();
 
-                // Retrieve updated payment details
-                var billDetailspay = await _billingsoftware.SHPaymentDetails
-                    .Where(b => b.PaymentId == model.PaymentId && b.IsDelete == false && b.BranchID==model.BranchID)
-                    .Select(b => new PaymentDetailsModel
-                    {
-                        PaymentId = b.PaymentId,
-                        PaymentDiscription = b.PaymentDiscription,
-                        PaymentMode = b.PaymentMode,
-                        PaymentTransactionNumber = b.PaymentTransactionNumber,
-                        PaymentAmount = b.PaymentAmount,
-                        PaymentDate = b.PaymentDate
-                    })
-                    .ToListAsync();
+//                // Retrieve updated payment details
+//                var billDetailspay = await _billingsoftware.SHPaymentDetails
+//                    .Where(b => b.PaymentId == model.PaymentId && b.IsDelete == false && b.BranchID==model.BranchID)
+//                    .Select(b => new PaymentDetailsModel
+//                    {
+//                        PaymentId = b.PaymentId,
+//                        PaymentDiscription = b.PaymentDiscription,
+//                        PaymentMode = b.PaymentMode,
+//                        PaymentTransactionNumber = b.PaymentTransactionNumber,
+//                        PaymentAmount = b.PaymentAmount,
+//                        PaymentDate = b.PaymentDate
+//                    })
+//                    .ToListAsync();
 
-                ViewBag.Slots = billDetailspay;
-                ViewBag.ReedemMessage = "Reedem Successfully";
+//                ViewBag.Slots = billDetailspay;
+//                ViewBag.ReedemMessage = "Reedem Successfully";
 
-            }
+//            }
 
 
 
 
 
-            if (buttonType == "Save")
-            {
+//            if (buttonType == "Save")
+//            {
 
-                var paymentDetail = billpayment.FirstOrDefault(p => p.PaymentDiscription == selectedSlotId);
+//                var paymentDetail = billpayment.FirstOrDefault(p => p.PaymentDiscription == selectedSlotId);
 
 
-                if (paymentDetail == null)
-                {
-                    // Handle the case where there is no payment detail to save
-                    ModelState.AddModelError("", "No payment details provided.");
-                    return View("PaymentScreen");
-                }
-                else
-                {
+//                if (paymentDetail == null)
+//                {
+//                    // Handle the case where there is no payment detail to save
+//                    ModelState.AddModelError("", "No payment details provided.");
+//                    return View("PaymentScreen");
+//                }
+//                else
+//                {
 
-                    var parameters = new[]
-                    {
-        new SqlParameter("@BillId", model.BillId),
-        new SqlParameter("@PaymentId", model.PaymentId),
-        new SqlParameter("@CustomerNumber", model.CustomerNumber ?? (object)DBNull.Value),
-        new SqlParameter("@ReedemPoints", model.ReedemPoints ?? (object)DBNull.Value),
-        new SqlParameter("@Balance", model.Balance ?? (object)DBNull.Value),
-        new SqlParameter("BillDate",model.BillDate?? (object)DBNull.Value),
-        new SqlParameter("@PaymentDiscription", paymentDetail.PaymentDiscription),
-        new SqlParameter("@PaymentMode", paymentDetail.PaymentMode ?? (object)DBNull.Value),
-        new SqlParameter("@PaymentTransactionNumber", paymentDetail.PaymentTransactionNumber ?? (object)DBNull.Value),
-        new SqlParameter("@PaymentAmount", paymentDetail.PaymentAmount ?? (object)DBNull.Value),
-        new SqlParameter("@PaymentDate", paymentDetail.PaymentDate ?? (object)DBNull.Value),
-        new SqlParameter("@LastUpdatedUser", User.Claims.First().Value.ToString()),
-        new SqlParameter("@LastUpdatedDate", DateTime.Now.ToString()),
-        new SqlParameter("@LastUpdatedMachine", Request.HttpContext.Connection.RemoteIpAddress.ToString()),
-        new SqlParameter("@Reedem", "Y"),
-        new SqlParameter("@BranchID", model.BranchID ?? (object)DBNull.Value),
-    };
+//                    var parameters = new[]
+//                    {
+//        new SqlParameter("@BillId", model.BillId),
+//        new SqlParameter("@PaymentId", model.PaymentId),
+//        new SqlParameter("@CustomerNumber", model.CustomerNumber ?? (object)DBNull.Value),
+//        new SqlParameter("@ReedemPoints", model.ReedemPoints ?? (object)DBNull.Value),
+//        new SqlParameter("@Balance", model.Balance ?? (object)DBNull.Value),
+//        new SqlParameter("BillDate",model.BillDate?? (object)DBNull.Value),
+//        new SqlParameter("@PaymentDiscription", paymentDetail.PaymentDiscription),
+//        new SqlParameter("@PaymentMode", paymentDetail.PaymentMode ?? (object)DBNull.Value),
+//        new SqlParameter("@PaymentTransactionNumber", paymentDetail.PaymentTransactionNumber ?? (object)DBNull.Value),
+//        new SqlParameter("@PaymentAmount", paymentDetail.PaymentAmount ?? (object)DBNull.Value),
+//        new SqlParameter("@PaymentDate", paymentDetail.PaymentDate ?? (object)DBNull.Value),
+//        new SqlParameter("@LastUpdatedUser", User.Claims.First().Value.ToString()),
+//        new SqlParameter("@LastUpdatedDate", DateTime.Now.ToString()),
+//        new SqlParameter("@LastUpdatedMachine", Request.HttpContext.Connection.RemoteIpAddress.ToString()),
+//        new SqlParameter("@Reedem", "Y"),
+//        new SqlParameter("@BranchID", model.BranchID ?? (object)DBNull.Value),
+//    };
 
-                    await _billingsoftware.Database.ExecuteSqlRawAsync("EXEC InsertBillPayment @BillId, @PaymentId, @CustomerNumber, @ReedemPoints, @Balance,@BillDate, @PaymentDiscription, @PaymentMode, @PaymentTransactionNumber, @PaymentAmount, @PaymentDate, @LastUpdatedUser, @LastUpdatedDate, @LastUpdatedMachine,@Reedem,@BranchID", parameters);
-                }
+//                    await _billingsoftware.Database.ExecuteSqlRawAsync("EXEC InsertBillPayment @BillId, @PaymentId, @CustomerNumber, @ReedemPoints, @Balance,@BillDate, @PaymentDiscription, @PaymentMode, @PaymentTransactionNumber, @PaymentAmount, @PaymentDate, @LastUpdatedUser, @LastUpdatedDate, @LastUpdatedMachine,@Reedem,@BranchID", parameters);
+//                }
 
-                _billingsoftware.SaveChanges();
-                ViewBag.Message = "Saved Successfully";
-                return View("PaymentScreen");
-            }
+//                _billingsoftware.SaveChanges();
+//                ViewBag.Message = "Saved Successfully";
+//                return View("PaymentScreen");
+//            }
 
-            return View("PaymentScreen");
+//            return View("PaymentScreen");
 
-        }
+//        }
 
 
 
 
-        public IActionResult PaymentScreen(string BillID, string TotalPrice, string CustomerNumber, PaymentTableViewModel model, string billdate)
-        {
+//        public IActionResult PaymentScreen(string BillID, string TotalPrice, string CustomerNumber, PaymentTableViewModel model, string billdate)
+//        {
 
 
-            List<PaymentTableViewModel> modelList = new List<PaymentTableViewModel>();
+//            List<PaymentTableViewModel> modelList = new List<PaymentTableViewModel>();
 
 
-            if (TempData["BranchID"] != null)
-            {
-                model.BranchID = TempData["BranchID"].ToString();
-                TempData.Keep("BranchID");
-            }
+//            if (TempData["BranchID"] != null)
+//            {
+//                model.BranchID = TempData["BranchID"].ToString();
+//                TempData.Keep("BranchID");
+//            }
 
 
-            if (string.IsNullOrEmpty(BillID))
-            {
+//            if (string.IsNullOrEmpty(BillID))
+//            {
 
-                return View(modelList);
-            }
+//                return View(modelList);
+//            }
 
-            var billDetail = _billingsoftware.SHbillmaster
-                   .Where(b => b.BillID == BillID && b.BranchID == model.BranchID)
-                   .Select(b => new BillingDetailsModel
-                   {
+//            var billDetail = _billingsoftware.SHbillmaster
+//                   .Where(b => b.BillID == BillID && b.BranchID == model.BranchID)
+//                   .Select(b => new BillingDetailsModel
+//                   {
 
-                       BillDate = b.BillDate,
-                       CustomerNumber = b.CustomerNumber,
-                       BillID = b.BillID,
-                       Totalprice = b.Totalprice
+//                       BillDate = b.BillDate,
+//                       CustomerNumber = b.CustomerNumber,
+//                       BillID = b.BillID,
+//                       Totalprice = b.Totalprice
 
 
-                   })
-                   .FirstOrDefault();
+//                   })
+//                   .FirstOrDefault();
 
-            if (billDetail != null)
-            {
+//            if (billDetail != null)
+//            {
 
-                var paymentModel = new PaymentTableViewModel
-                {
-                    BillDate = billDetail.BillDate,
-                    CustomerNumber = billDetail.CustomerNumber,
-                    BillId = billDetail.BillID,
-                    Balance = billDetail.Totalprice
-                };
-
-                // Add the PaymentTableViewModel to the list
-                modelList.Add(paymentModel);
-
-
-                ViewBag.BillDate = paymentModel.BillDate;
-                ViewBag.CustomerNumber = paymentModel.CustomerNumber;
-                ViewBag.BillId = paymentModel.BillId;
-                ViewBag.Balance = paymentModel.Balance;
-
-
-                if (!string.IsNullOrEmpty(BillID))
-
-                {
-                    string connectionString = _configuration.GetConnectionString("BillingDBConnection");
-
-                    using (var connection = new SqlConnection(connectionString))
-                    {
-                        connection.Open();
-                        var command = new SqlCommand("SELECT dbo.GenerateBillID(@BillID)", connection);
-                        command.Parameters.AddWithValue("@BillID", BillID);
-                        var balance = command.ExecuteScalar();
-                        TotalPrice = balance?.ToString() ?? "0";
-                    }
-                }
+//                var paymentModel = new PaymentTableViewModel
+//                {
+//                    BillDate = billDetail.BillDate,
+//                    //CustomerNumber = billDetail.CustomerNumber,
+//                    BillId = billDetail.BillID,
+//                    Balance = billDetail.Totalprice
+//                };
+
+//                // Add the PaymentTableViewModel to the list
+//                modelList.Add(paymentModel);
+
+
+//                ViewBag.BillDate = paymentModel.BillDate;
+//                //ViewBag.CustomerNumber = paymentModel.CustomerNumber;
+//                ViewBag.BillId = paymentModel.BillId;
+//                ViewBag.Balance = paymentModel.Balance;
+
+
+//                if (!string.IsNullOrEmpty(BillID))
+
+//                {
+//                    string connectionString = _configuration.GetConnectionString("BillingDBConnection");
+
+//                    using (var connection = new SqlConnection(connectionString))
+//                    {
+//                        connection.Open();
+//                        var command = new SqlCommand("SELECT dbo.GenerateBillID(@BillID)", connection);
+//                        command.Parameters.AddWithValue("@BillID", BillID);
+//                        var balance = command.ExecuteScalar();
+//                        TotalPrice = balance?.ToString() ?? "0";
+//                    }
+//                }
 
 
 
 
-            }
+//            }
 
-            return View(modelList);
-        }
+//            return View(modelList);
+//        }
 
 
-        public async Task<IActionResult> GetBranchMaster(BranchMasterModel model, string buttontype)
-        {
-            BusinessClassBilling Busbill = new BusinessClassBilling(_billingsoftware);
-            ViewData["resoruseid"] = Busbill.GetResourceid();
-
-
-            if (buttontype == "Get")
-            {
-                var getbranch = await _billingsoftware.SHBranchMaster.FirstOrDefaultAsync(x => x.BracnchID == model.BracnchID && x.IsDelete == false);
-                if (getbranch != null)
-                {
-                    return View("BranchMaster", getbranch);
-                }
-                else
-                {
-                    BranchMasterModel par = new BranchMasterModel();
-                    ViewBag.getMessage = "No Data found for this Branch ID";
-                    return View("BranchMaster", par);
-                }
-            }
-            else if (buttontype == "Delete")
-            {
-                var branchdel = await _billingsoftware.SHBranchMaster.FirstOrDefaultAsync(x => x.BracnchID == model.BracnchID && x.IsDelete == false);
-                if (branchdel != null)
-                {
-                    if (branchdel.IsDelete)
-                    {
-                        ViewBag.ErrorMessage = "Cannot update. Product is marked as deleted.";
-                        return View("BranchMaster", model);
-                    }
-
-                    branchdel.IsDelete = true;
-                    await _billingsoftware.SaveChangesAsync();
-
-                    ViewBag.delMessage = "Branch deleted successfully";
-                    model = new BranchMasterModel();
-                    return View("BranchMaster", model);
-                }
-                else
-                {
-                    ViewBag.delnoMessage = "Branch not found";
-                    model = new BranchMasterModel();
-                    return View("BranchMaster", model);
-                }
+//        public async Task<IActionResult> GetBranchMaster(BranchMasterModel model, string buttontype)
+//        {
+//            BusinessClassBilling Busbill = new BusinessClassBilling(_billingsoftware);
+//            ViewData["resoruseid"] = Busbill.GetResourceid();
+
+
+//            if (buttontype == "Get")
+//            {
+//                var getbranch = await _billingsoftware.SHBranchMaster.FirstOrDefaultAsync(x => x.BracnchID == model.BracnchID && x.IsDelete == false);
+//                if (getbranch != null)
+//                {
+//                    return View("BranchMaster", getbranch);
+//                }
+//                else
+//                {
+//                    BranchMasterModel par = new BranchMasterModel();
+//                    ViewBag.getMessage = "No Data found for this Branch ID";
+//                    return View("BranchMaster", par);
+//                }
+//            }
+//            else if (buttontype == "Delete")
+//            {
+//                var branchdel = await _billingsoftware.SHBranchMaster.FirstOrDefaultAsync(x => x.BracnchID == model.BracnchID && x.IsDelete == false);
+//                if (branchdel != null)
+//                {
+//                    if (branchdel.IsDelete)
+//                    {
+//                        ViewBag.ErrorMessage = "Cannot update. Product is marked as deleted.";
+//                        return View("BranchMaster", model);
+//                    }
+
+//                    branchdel.IsDelete = true;
+//                    await _billingsoftware.SaveChangesAsync();
+
+//                    ViewBag.delMessage = "Branch deleted successfully";
+//                    model = new BranchMasterModel();
+//                    return View("BranchMaster", model);
+//                }
+//                else
+//                {
+//                    ViewBag.delnoMessage = "Branch not found";
+//                    model = new BranchMasterModel();
+//                    return View("BranchMaster", model);
+//                }
 
-            }
+//            }
 
-            else if (buttontype == "DeleteRetrieve")
-            {
-                var branchdelret = await _billingsoftware.SHBranchMaster.FirstOrDefaultAsync(x => x.BracnchID == model.BracnchID && x.IsDelete == true);
-                if (branchdelret != null)
-                {
-                    branchdelret.IsDelete = false;
+//            else if (buttontype == "DeleteRetrieve")
+//            {
+//                var branchdelret = await _billingsoftware.SHBranchMaster.FirstOrDefaultAsync(x => x.BracnchID == model.BracnchID && x.IsDelete == true);
+//                if (branchdelret != null)
+//                {
+//                    branchdelret.IsDelete = false;
 
-                    await _billingsoftware.SaveChangesAsync();
+//                    await _billingsoftware.SaveChangesAsync();
 
-                    model.BracnchID = branchdelret.BracnchID;
-                    model.BranchName = branchdelret.BranchName;
-                    model.PhoneNumber1 = branchdelret.PhoneNumber1;
-                    model.PhoneNumber2 = branchdelret.PhoneNumber2;
-                    model.Address1 = branchdelret.Address1;
-                    model.Address2 = branchdelret.Address2;
-                    model.Country = branchdelret.Country;
-                    model.City = branchdelret.City;
-                    model.State = branchdelret.State;
-                    model.ZipCode = branchdelret.ZipCode;
-                    model.IsFranchise = branchdelret.IsFranchise;
-                    model.email = branchdelret.email;
+//                    model.BracnchID = branchdelret.BracnchID;
+//                    model.BranchName = branchdelret.BranchName;
+//                    model.PhoneNumber1 = branchdelret.PhoneNumber1;
+//                    model.PhoneNumber2 = branchdelret.PhoneNumber2;
+//                    model.Address1 = branchdelret.Address1;
+//                    model.Address2 = branchdelret.Address2;
+//                    model.Country = branchdelret.Country;
+//                    model.City = branchdelret.City;
+//                    model.State = branchdelret.State;
+//                    model.ZipCode = branchdelret.ZipCode;
+//                    model.IsFranchise = branchdelret.IsFranchise;
+//                    model.email = branchdelret.email;
 
 
-                    ViewBag.retMessage = "Deleted Branch retrieved successfully";
-                }
-                else
-                {
-                    ViewBag.noretMessage = "Branch not found";
-                }
-                return View("BranchMaster", model);
-            }
+//                    ViewBag.retMessage = "Deleted Branch retrieved successfully";
+//                }
+//                else
+//                {
+//                    ViewBag.noretMessage = "Branch not found";
+//                }
+//                return View("BranchMaster", model);
+//            }
 
-            if (string.IsNullOrWhiteSpace(model.BranchName))
-            {
-                ViewBag.BMessage = "Please enter Branch Name.";
-                return View("BranchMaster", model);
-            }
+//            if (string.IsNullOrWhiteSpace(model.BranchName))
+//            {
+//                ViewBag.BMessage = "Please enter Branch Name.";
+//                return View("BranchMaster", model);
+//            }
 
-            var existingBranch = await _billingsoftware.SHBranchMaster.FindAsync(model.BracnchID, model.BranchName);
+//            var existingBranch = await _billingsoftware.SHBranchMaster.FindAsync(model.BracnchID, model.BranchName);
 
 
 
 
-            if (existingBranch != null)
-            {
-                if (existingBranch.IsDelete)
-                {
-                    ViewBag.ErrorMessage = "Cannot update. Product is marked as deleted.";
-                    return View("BranchMaster", model);
-                }
+//            if (existingBranch != null)
+//            {
+//                if (existingBranch.IsDelete)
+//                {
+//                    ViewBag.ErrorMessage = "Cannot update. Product is marked as deleted.";
+//                    return View("BranchMaster", model);
+//                }
 
-                existingBranch.BracnchID = model.BracnchID;
-                existingBranch.BranchName = model.BranchName;
-                existingBranch.PhoneNumber1 = model.PhoneNumber1;
-                existingBranch.PhoneNumber2 = model.PhoneNumber2;
-                existingBranch.Address1 = model.Address1;
-                existingBranch.Address2 = model.Address2;
-                existingBranch.Country = model.Country;
-                existingBranch.City = model.City;
-                existingBranch.State = model.State;
-                existingBranch.ZipCode = model.ZipCode;
-                existingBranch.IsFranchise = model.IsFranchise;
-                existingBranch.email = model.email;
-                existingBranch.LastUpdatedDate = DateTime.Now.ToString();
-                existingBranch.lastUpdatedUser = User.Claims.First().Value.ToString();
-                existingBranch.lastUpdatedMachine = Request.HttpContext.Connection.RemoteIpAddress.ToString();
+//                existingBranch.BracnchID = model.BracnchID;
+//                existingBranch.BranchName = model.BranchName;
+//                existingBranch.PhoneNumber1 = model.PhoneNumber1;
+//                existingBranch.PhoneNumber2 = model.PhoneNumber2;
+//                existingBranch.Address1 = model.Address1;
+//                existingBranch.Address2 = model.Address2;
+//                existingBranch.Country = model.Country;
+//                existingBranch.City = model.City;
+//                existingBranch.State = model.State;
+//                existingBranch.ZipCode = model.ZipCode;
+//                existingBranch.IsFranchise = model.IsFranchise;
+//                existingBranch.email = model.email;
+//                existingBranch.LastUpdatedDate = DateTime.Now.ToString();
+//                existingBranch.lastUpdatedUser = User.Claims.First().Value.ToString();
+//                existingBranch.lastUpdatedMachine = Request.HttpContext.Connection.RemoteIpAddress.ToString();
 
-                _billingsoftware.Entry(existingBranch).State = EntityState.Modified;
+//                _billingsoftware.Entry(existingBranch).State = EntityState.Modified;
 
-            }
-            else
-            {
+//            }
+//            else
+//            {
 
-                model.LastUpdatedDate = DateTime.Now.ToString();
-                model.lastUpdatedUser = User.Claims.First().Value.ToString();
-                model.lastUpdatedMachine = Request.HttpContext.Connection.RemoteIpAddress.ToString();
-                _billingsoftware.SHBranchMaster.Add(model);
-            }
-            await _billingsoftware.SaveChangesAsync();
+//                model.LastUpdatedDate = DateTime.Now.ToString();
+//                model.lastUpdatedUser = User.Claims.First().Value.ToString();
+//                model.lastUpdatedMachine = Request.HttpContext.Connection.RemoteIpAddress.ToString();
+//                _billingsoftware.SHBranchMaster.Add(model);
+//            }
+//            await _billingsoftware.SaveChangesAsync();
 
-            ViewBag.Message = "Saved Successfully";
+//            ViewBag.Message = "Saved Successfully";
 
-            model = new BranchMasterModel();
-            return View("BranchMaster", model);
+//            model = new BranchMasterModel();
+//            return View("BranchMaster", model);
 
 
-        }
+//        }
 
 
 
 
-    }
+//    }
 
 
-}
+//}
 
 
 
