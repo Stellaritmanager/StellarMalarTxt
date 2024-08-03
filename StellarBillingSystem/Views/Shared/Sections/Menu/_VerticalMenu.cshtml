@@ -348,16 +348,13 @@
                     }
                 }
 
-                       @if (rollAccessList != null)
+            @if (rollAccessList != null)
             {
                     @if (rollAccessList.Contains("CustomerBilling"))
                     {
-
-
-
                             <li class='menu-item@(currentPage == "/StellarBilling/PaymentBilling" ? " active" : "")'>
                                 <a asp-controller="StellarBilling" asp-action="PaymentBilling" class="menu-link">
-                        <li class='menu-item@(currentPage == "/PaymentBilling/PaymentScreen" ? " active" : "")'>
+                            <li class='menu-item@(currentPage == "/PaymentBilling/PaymentScreen" ? " active" : "")'>
                                 <a asp-controller="StellarBilling" asp-action="PaymentScreen" class="menu-link">
 
                                     <div>Payment Screen</div>
