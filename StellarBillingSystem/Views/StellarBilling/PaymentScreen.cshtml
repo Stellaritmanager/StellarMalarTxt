@@ -92,7 +92,7 @@
                     </div>
 
                     <div class="row gy-4">
-                        <div class="col-md-12 col-lg-6">
+                        <div class="col-md-12 col-lg-5">
 
                             <div class="form-floating form-floating-outline mb-4">
 
@@ -101,7 +101,7 @@
                             </div>
 
                         </div>
-                        <div class="col-md-12 col-lg-6">
+                        <div class="col-md-12 col-lg-5">
                             <div class="form-floating form-floating-outline mb-4">
 
                                 <input type="date" class="form-control" id="BillDate" name="BillDate" placeholder="Bill Date" value="@ViewBag.BillDate" />
@@ -110,7 +110,8 @@
                             </div>
                         </div>
                     </div>
-                    <div class="row">
+
+                    <div class="row gy-4">
                         <div class="col-md-12 col-lg-8">
 
                             <div class="form-floating form-floating-outline mb-4">
@@ -119,55 +120,34 @@
                                 <label for="PaymentId" class="control-label">Payment ID</label>
 
                             </div>
-                        </div>
-                        <div class="col-md-12 col-lg-1">
-                        </div>
-                        <div class="col-md-12 col-lg-3">
-                           
+ </div>
+                         
+                            <div class="col-md-12 col-lg-2">
+
+
                                 <button type="submit" class="btn btn-primary" name="buttonType" value="GetPaymentDetails">GetPaymentDetails </button>
-                          
+                                    
+
+                            </div>
+
                         </div>
+                    <div class="row gy-4">
+                      
+                        <div class="col-md-12 col-lg-10">
+
+                            <div class="form-floating form-floating-outline mb-4">
+
+                                <input type="text" class="form-control" id="CustomerNumber" name="CustomerNumber" placeholder="Customer Number" value="@ViewBag.CustomerNumber" />
+                                <label for="CustomerNumber" class="control-label">Customer Number</label>
+
+                            </div>
+
+
+                        </div>
+
+                           
                     </div>
-                        <div class="row">
-                            <div class="col-md-12 col-lg-8">
-
-                                <div class="form-floating form-floating-outline mb-4">
-
-                                    <input type="text" class="form-control" id="CustomerNumber" name="CustomerNumber" placeholder="Customer Number" value="@ViewBag.CustomerNumber" />
-                                    <label for="CustomerNumber" class="control-label">Customer Number</label>
-
-                                </div>
-                            </div>
-                            <div class="col-md-12 col-lg-1">
-                            </div>
-                            <div class="col-md-12 col-lg-3">
-
-                               
-                                    <button type="submit" class="btn btn-primary" name="buttonType" value="GetPoints">GetPoints </button>
-                               
-
-                            </div>
-                    </div>
-                            <div class="row">
-                                <div class="col-md-12 col-lg-8">
-
-
-                                    <div class="form-floating form-floating-outline mb-4">
-
-                                        <input type="text" class="form-control" id="ReedemPoints" name="ReedemPoints" placeholder="Redeem Points" value="@ViewBag.ReedemPoints" />
-                                        <label for="ReedemPoints" class="control-label">Redeem Points</label>
-
-                                    </div>
-                                </div>
-                                <div class="col-md-12 col-lg-1">
-                                </div>
-                                <div class="col-md-12 col-lg-3">
-
-                                   
-                                        <button type="submit" class="btn btn-primary" name="buttonType" value="Redeem">Redeem </button>
-                                   
-                                </div>
-                            </div>
+                       
                         </div>
                     </div>
 
