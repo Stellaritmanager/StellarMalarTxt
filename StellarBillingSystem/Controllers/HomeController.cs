@@ -44,7 +44,7 @@ public class HomeController : Controller
             ViewData["reportid"] = business.GetReportId();
 
             var reportQuery = (from rep in _billingContext.ShGenericReport
-                               where rep.ReportName == "DashBoard"
+                               where rep.IsDashboard == true
                                select new GenericReportModel
                                {
                                    ReportName = rep.ReportName,

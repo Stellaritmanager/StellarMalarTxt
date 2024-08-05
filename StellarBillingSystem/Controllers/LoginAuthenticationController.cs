@@ -109,8 +109,8 @@ namespace StellarBillingSystem.Controllers
                     TempData["BranchInitail"] = branchinitial.BranchInitial;
                     TempData["BranchName"] = branchinitial.BranchName;
 
-                    ViewBag.BranchInitial = branchinitial;*/
-
+                    ViewBag.BranchInitial = branchinitial;
+*/
                     // Set TempData with the filtered roll details
                     TempData["RollAccess"] = JsonConvert.SerializeObject(rolldetail);
 

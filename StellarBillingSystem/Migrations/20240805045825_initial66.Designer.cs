@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using StellarBillingSystem.Context;
 
@@ -11,9 +12,11 @@ using StellarBillingSystem.Context;
 namespace StellarBillingSystem.Migrations
 {
     [DbContext(typeof(BillingContext))]
-    partial class BillingContextModelSnapshot : ModelSnapshot
+    [Migration("20240805045825_initial66")]
+    partial class initial66
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -516,6 +519,10 @@ namespace StellarBillingSystem.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("IsDashboard")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("LastUpdatedmachine")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -680,9 +687,6 @@ namespace StellarBillingSystem.Migrations
                     b.Property<string>("GroupBy")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("IsDashboard")
-                        .HasColumnType("bit");
 
                     b.Property<string>("ReportDescription")
                         .IsRequired()
