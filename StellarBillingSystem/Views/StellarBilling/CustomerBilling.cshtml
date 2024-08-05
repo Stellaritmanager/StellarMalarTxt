@@ -165,6 +165,7 @@
                                             <th>Quantity</th>
                                             <th>Discount</th>
                                             <th>Net Price</th>
+                                        <th>Actions</th>
 
                                         </tr>
                                     </thead>
@@ -180,7 +181,9 @@
                                                 <td>@product.Quantity</td>
                                                 <td>@product.Discount</td>
                                                 <td>@product.NetPrice</td>
-
+                                            <td>
+                                                <a href="@Url.Action("DeleteProduct", new { productId = product.ProductID})" class="btn btn-primary">DeleteProduct</a>
+                                            </td>
                                             </tr>
                                         }
                                     </tbody>
