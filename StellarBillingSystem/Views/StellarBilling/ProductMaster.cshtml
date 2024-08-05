@@ -140,6 +140,20 @@
 
                                 <span asp-validation-for="Brandname" class="text-danger"></span>
                             </div>
+                           
+                        <div class="form-floating form-floating-outline mb-4">
+                            <input asp-for="ImeiNumber" value="@Model.ImeiNumber" class="form-control" placeholder="Imei Number" />
+                            <label asp-for="ImeiNumber" class="control-label">Imei Number</label>
+
+                            <span asp-validation-for="ImeiNumber" class="text-danger"></span>
+                        </div>
+
+                            <div class="form-floating form-floating-outline mb-4">
+                                <input asp-for="SerialNumber" value="@Model.SerialNumber" class="form-control" placeholder="Serial Number" />
+                                <label asp-for="SerialNumber" class="control-label">Serial Number</label>
+
+                                <span asp-validation-for="SerialNumber" class="text-danger"></span>
+                            </div>
                             </div>
                             <div class="col-md-12 col-lg-5">
                             <div class="form-floating form-floating-outline mb-4">
