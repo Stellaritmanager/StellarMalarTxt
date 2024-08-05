@@ -2596,7 +2596,46 @@ namespace HealthCare.Controllers
         }
 
 
+        public IActionResult DeleteProduct(string productId,BillProductlistModel model)
+        {
+            if (TempData["BranchID"] != null)
+            {
+                model.BranchID = TempData["BranchID"].ToString();
+                TempData.Keep("BranchID");
+            }
 
+            var product = _billingsoftware.SHbilldetails
+      .Where(p => p.ProductID == productId)
+      .Select(p => new
+      {
+          p.Quantity,
+          p.BranchID,
+          p.IsDelete
+      })
+      .FirstOrDefault();
+
+            if (product != null)
+            {
+                // Update the IsDelete field to true
+                var productToUpdate = _billingsoftware.SHbilldetails
+                    .First(p => p.ProductID == productId && p.BranchID == model.BranchID);
+
+                productToUpdate.IsDelete = true;
+
+                // Update SHRackPartionProduct to add back the quantity
+                var rackProduct = _billingsoftware.SHRackPartionProduct
+                    .FirstOrDefault(r => r.ProductID == productId && r.BranchID == product.BranchID);
+
+                if (rackProduct != null)
+                {
+                    rackProduct.Noofitems += product.Quantity; // Add the quantity back
+                }
+
+                _billingsoftware.SaveChanges();
+            }
+
+            return View("CustomerBilling");
+        }
 
 
 
