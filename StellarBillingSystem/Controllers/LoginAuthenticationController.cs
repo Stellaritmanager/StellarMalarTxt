@@ -104,13 +104,13 @@ namespace StellarBillingSystem.Controllers
                     TempData["UserName"] = model.UserName;
                     TempData["BranchID"] = branch.BranchID;
                     
-                   /*//Set branch name and branch intial 
+                   //Set branch name and branch intial 
                     var branchinitial = Busreg.Getbranchinitial(branch.BranchID);
-                    TempData["BranchInitail"] = branchinitial.BranchInitial;
-                    TempData["BranchName"] = branchinitial.BranchName;
+                   // TempData["BranchInitail"] = branchinitial.BranchInitial;
+                   // TempData["BranchName"] = branchinitial.BranchName;
 
                     ViewBag.BranchInitial = branchinitial;
-*/
+
                     // Set TempData with the filtered roll details
                     TempData["RollAccess"] = JsonConvert.SerializeObject(rolldetail);
 
