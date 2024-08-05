@@ -3,6 +3,7 @@ using DocumentFormat.OpenXml.Bibliography;
 using DocumentFormat.OpenXml.InkML;
 using DocumentFormat.OpenXml.Office2021.Excel.RichDataWebImage;
 using DocumentFormat.OpenXml.Spreadsheet;
+using Humanizer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.CodeAnalysis;
@@ -2901,6 +2902,7 @@ namespace HealthCare.Controllers
                 TempData.Keep("BranchID");
             }
 
+            model.StrBillvalue = BusinessClassCommon.getbalance(_billingsoftware, model.PaymentId, model.BillId,model.BranchID);
 
             if (buttonType == "GetBill")
             {
@@ -2926,6 +2928,10 @@ namespace HealthCare.Controllers
                 _billingsoftware.SHPaymentMaster.Remove(SelectedPayMas);
                 _billingsoftware.SaveChanges();
 
+                //Code here for refresh model
+                PaymentTableViewModel objnew = new PaymentTableViewModel();
+
+                model = objnew;
             }
             if(buttonType == "GetPayment")
             {
@@ -2959,7 +2965,10 @@ namespace HealthCare.Controllers
                 if (selectedpayment != null)
                 {
                     model.Viewpayment.Remove(selectedpayment);
-                }            
+                }
+
+                
+
 
             }
 
@@ -3000,7 +3009,7 @@ namespace HealthCare.Controllers
 
                 foreach (var objdetail in model.Viewpayment)
                 {
-                    var obpaydet = _billingsoftware.SHPaymentDetails.Where(x=> x.BranchID==model.BranchID && x.PaymentDiscription ==objdetail.PaymentDiscription&& x.PaymentId == objdetail.PaymentId).FirstOrDefault();
+                    var obpaydet = _billingsoftware.SHPaymentDetails.Where(x=> x.BranchID==model.BranchID && x.PaymentDiscription ==objdetail.PaymentDiscription && x.PaymentId == model.PaymentId).FirstOrDefault();
 
                     if(obpaydet != null)
                     {
@@ -3016,6 +3025,7 @@ namespace HealthCare.Controllers
                         obpaydet.PaymentTransactionNumber = objdetail.PaymentTransactionNumber;
 
                         _billingsoftware.Entry(obpaydet).State = EntityState.Modified;
+
 
                     }
                     else
