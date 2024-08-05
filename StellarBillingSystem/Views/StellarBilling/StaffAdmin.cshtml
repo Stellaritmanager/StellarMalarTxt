@@ -345,4 +345,11 @@
             </script>
         }
 
+        @if (ViewBag.ExistMessage != null)
+        {
+            <script>
+                handleMessages("@ViewBag.ExistMessage");
+            </script>
+        }
+
 </form>

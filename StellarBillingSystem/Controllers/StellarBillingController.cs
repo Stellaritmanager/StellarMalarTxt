@@ -1352,6 +1352,12 @@ namespace HealthCare.Controllers
 
             if (buttontype == "Get")
             {
+                if (TempData["BranchID"] != null)
+                {
+                    model.BranchID = TempData["BranchID"].ToString();
+                    TempData.Keep("BranchID");
+                }
+
                 var getstaff = await _billingsoftware.SHStaffAdmin.FirstOrDefaultAsync(x => x.StaffID == model.StaffID && x.IsDelete == false && x.BranchID == model.BranchID);
                 if (getstaff != null)
                 {
@@ -1366,6 +1372,12 @@ namespace HealthCare.Controllers
             }
             else if (buttontype == "Delete")
             {
+                if (TempData["BranchID"] != null)
+                {
+                    model.BranchID = TempData["BranchID"].ToString();
+                    TempData.Keep("BranchID");
+                }
+
                 var stafftodelete = await _billingsoftware.SHStaffAdmin.FindAsync(model.StaffID, model.BranchID);
                 if (stafftodelete != null)
                 {
@@ -1393,6 +1405,14 @@ namespace HealthCare.Controllers
 
             else if (buttontype == "DeleteRetrieve")
             {
+
+                if (TempData["BranchID"] != null)
+                {
+                    model.BranchID = TempData["BranchID"].ToString();
+                    TempData.Keep("BranchID");
+                }
+
+               
                 var stafftoretrieve = await _billingsoftware.SHStaffAdmin.FindAsync(model.StaffID, model.BranchID);
                 if (stafftoretrieve != null)
                 {
@@ -1432,58 +1452,73 @@ namespace HealthCare.Controllers
             }
 
 
-            var existingStaffAdmin = await _billingsoftware.SHStaffAdmin.FindAsync(model.StaffID, model.BranchID);
 
+            var staffcheck = await _billingsoftware.SHStaffAdmin.FirstOrDefaultAsync(x => x.StaffID == model.StaffID && x.BranchID == model.BranchID && x.UserName==model.UserName && x.Password == model.Password );
 
-            if (string.IsNullOrWhiteSpace(model.UserName) || string.IsNullOrWhiteSpace(model.Password))
+            if (staffcheck == null)
             {
-                ViewBag.validateMessage = "Username and Password are required.";
-                return View("StaffAdmin", model);
-            }
 
-            if (existingStaffAdmin != null)
-            {
-                if (existingStaffAdmin.IsDelete)
+
+
+                var existingStaffAdmin = await _billingsoftware.SHStaffAdmin.FindAsync(model.StaffID, model.BranchID);
+
+
+                if (string.IsNullOrWhiteSpace(model.UserName) || string.IsNullOrWhiteSpace(model.Password))
                 {
-                    ViewBag.ErrorMessage = "Cannot update. Product is marked as deleted.";
+                    ViewBag.validateMessage = "Username and Password are required.";
                     return View("StaffAdmin", model);
                 }
 
-                existingStaffAdmin.StaffID = model.StaffID;
-                existingStaffAdmin.ResourceTypeID = model.ResourceTypeID;
-                existingStaffAdmin.BranchID = model.BranchID;
-                existingStaffAdmin.FirstName = model.FirstName;
-                existingStaffAdmin.LastName = model.LastName;
-                existingStaffAdmin.Initial = model.Initial;
-                existingStaffAdmin.Prefix = model.Prefix;
-                existingStaffAdmin.Age = model.Age;
-                existingStaffAdmin.DateofBirth = model.DateofBirth;
-                existingStaffAdmin.EmailId = model.EmailId;
-                existingStaffAdmin.Address1 = model.Address1;
-                existingStaffAdmin.City = model.City;
-                existingStaffAdmin.State = model.State;
-                existingStaffAdmin.Pin = model.Pin;
-                existingStaffAdmin.PhoneNumber = model.PhoneNumber;
-                existingStaffAdmin.EmailId = model.EmailId;
-                existingStaffAdmin.Nationality = model.Nationality;
-                existingStaffAdmin.UserName = model.UserName;
-                existingStaffAdmin.Password = model.Password;
-                existingStaffAdmin.IdProofId = model.IdProofId;
-                existingStaffAdmin.IdProofName = model.IdProofName;
-                existingStaffAdmin.LastupdatedDate = DateTime.Now.ToString();
-                existingStaffAdmin.LastupdatedUser = User.Claims.First().Value.ToString();
-                existingStaffAdmin.LastUpdatedMachine = Request.HttpContext.Connection.RemoteIpAddress.ToString();
+                if (existingStaffAdmin != null)
+                {
+                    if (existingStaffAdmin.IsDelete)
+                    {
+                        ViewBag.ErrorMessage = "Cannot update. Product is marked as deleted.";
+                        return View("StaffAdmin", model);
+                    }
 
-                _billingsoftware.Entry(existingStaffAdmin).State = EntityState.Modified;
+                    existingStaffAdmin.StaffID = model.StaffID;
+                    existingStaffAdmin.ResourceTypeID = model.ResourceTypeID;
+                    existingStaffAdmin.BranchID = model.BranchID;
+                    existingStaffAdmin.FirstName = model.FirstName;
+                    existingStaffAdmin.LastName = model.LastName;
+                    existingStaffAdmin.Initial = model.Initial;
+                    existingStaffAdmin.Prefix = model.Prefix;
+                    existingStaffAdmin.Age = model.Age;
+                    existingStaffAdmin.DateofBirth = model.DateofBirth;
+                    existingStaffAdmin.EmailId = model.EmailId;
+                    existingStaffAdmin.Address1 = model.Address1;
+                    existingStaffAdmin.City = model.City;
+                    existingStaffAdmin.State = model.State;
+                    existingStaffAdmin.Pin = model.Pin;
+                    existingStaffAdmin.PhoneNumber = model.PhoneNumber;
+                    existingStaffAdmin.EmailId = model.EmailId;
+                    existingStaffAdmin.Nationality = model.Nationality;
+                    existingStaffAdmin.UserName = model.UserName;
+                    existingStaffAdmin.Password = model.Password;
+                    existingStaffAdmin.IdProofId = model.IdProofId;
+                    existingStaffAdmin.IdProofName = model.IdProofName;
+                    existingStaffAdmin.LastupdatedDate = DateTime.Now.ToString();
+                    existingStaffAdmin.LastupdatedUser = User.Claims.First().Value.ToString();
+                    existingStaffAdmin.LastUpdatedMachine = Request.HttpContext.Connection.RemoteIpAddress.ToString();
 
+                    _billingsoftware.Entry(existingStaffAdmin).State = EntityState.Modified;
+
+                }
+                else
+                {
+
+                    model.LastupdatedDate = DateTime.Now.ToString();
+                    model.LastupdatedUser = User.Claims.First().Value.ToString();
+                    model.LastUpdatedMachine = Request.HttpContext.Connection.RemoteIpAddress.ToString();
+                    _billingsoftware.SHStaffAdmin.Add(model);
+                }
             }
             else
             {
-
-                model.LastupdatedDate = DateTime.Now.ToString();
-                model.LastupdatedUser = User.Claims.First().Value.ToString();
-                model.LastUpdatedMachine = Request.HttpContext.Connection.RemoteIpAddress.ToString();
-                _billingsoftware.SHStaffAdmin.Add(model);
+                StaffAdminModel mod = new StaffAdminModel();
+                ViewBag.ExistMessage="Username and Password Already Exist";
+                return View("StaffAdmin", mod);
             }
             await _billingsoftware.SaveChangesAsync();
 

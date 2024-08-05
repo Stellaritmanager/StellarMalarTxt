@@ -213,7 +213,23 @@ namespace StellarBillingSystem.Business
                         }).FirstOrDefault();
             return branchidini;
         }
-         public List<ProductMatserModel> Getproduct(string BranchID)
+
+        public StaffAdminModel GetadminRT(string Username)
+
+        {
+            var adminRT = (
+                        from pr in _billingContext.SHStaffAdmin
+                        join p in _billingContext.SHresourceType on pr.ResourceTypeID equals p.ResourceTypeID
+                        where pr.IsDelete == false && pr.UserName == Username && p.ResourceTypeName == "Admin"
+                        select new StaffAdminModel
+                        {
+                            UserName = pr.UserName
+
+                        }).FirstOrDefault();
+            return adminRT;
+        }
+
+        public List<ProductMatserModel> Getproduct(string BranchID)
 
         {
             var productid = (
