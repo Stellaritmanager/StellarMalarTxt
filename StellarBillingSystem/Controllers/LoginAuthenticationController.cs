@@ -10,6 +10,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace StellarBillingSystem.Controllers
 {
+    
     public class LoginAuthenticationController : Controller
     {
         private BillingContext _billingContext;
@@ -114,9 +115,10 @@ namespace StellarBillingSystem.Controllers
                     TempData["RollAccess"] = JsonConvert.SerializeObject(rolldetail);
 
 
-                    if (!string.IsNullOrEmpty(model.UserName) &&
-                     string.Equals(model.UserName, "Kumar@gmail.com", StringComparison.OrdinalIgnoreCase))
+                    var user = Busreg.GetadminRT(model.UserName);
+                    if (user != null)
                     {
+                        
                         return RedirectToAction("Administration", "LoginAuthentication");
 
                     }
@@ -138,10 +140,32 @@ namespace StellarBillingSystem.Controllers
 
         }
 
+
+
+        [HttpGet]
+        public IActionResult admin()
+        {
+            BusinessClassBilling Busreg = new BusinessClassBilling(_billingContext);
+            ViewData["branchid"] = Busreg.Getbranch();
+
+            var userName = TempData["UserName"]?.ToString();
+            if (string.IsNullOrEmpty(userName))
+            {
+                return RedirectToAction("Login", "LoginAuthentication");
+            }
+
+            TempData["UserName"] = userName; 
+            return View();
+        }
+
         public async Task<IActionResult> admin(AdminModel model)
         {
 
-
+            var userName = TempData["UserName"]?.ToString();
+            if (string.IsNullOrEmpty(userName))
+            {
+                return RedirectToAction("Login", "LoginAuthentication");
+            }
 
             BusinessClassBilling Busreg = new BusinessClassBilling(_billingContext);
 
@@ -150,11 +174,11 @@ namespace StellarBillingSystem.Controllers
 
 
 
-            var rolldetail = Busreg.Getadmin(model.UserName);
+            var rolldetail = Busreg.Getadmin(userName);
 
             
 
-            TempData["UserName"] = model.UserName;
+            TempData["UserName"] = userName;
             TempData["BranchID"] = model.BranchID;
 
             // Set TempData with the filtered roll details
