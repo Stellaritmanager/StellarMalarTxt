@@ -115,12 +115,14 @@
         <script>
             handleMessages("@ViewBag.Message");
         </script>
+        ViewBag.Message = null;
     }
     @if (ViewBag.ErrorMessage != null)
     {
         <script>
             handleMessages("@ViewBag.ErrorMessage");
         </script>
+        ViewBag.ErrorMessage = null;
     }
 
 </form>

@@ -2334,7 +2334,7 @@ namespace HealthCare.Controllers
                              }).ToListAsync();
 
                 var existingbilldetail = await _billingsoftware.SHbilldetails
-            .FirstOrDefaultAsync(x => x.BillID == model.BillID && x.BillDate == model.BillDate && x.CustomerNumber == model.CustomerNumber && x.BranchID == model.BranchID && x.ProductID == model.ProductID);
+            .FirstOrDefaultAsync(x => x.BillID == model.BillID && x.BillDate == model.BillDate && x.CustomerNumber == model.CustomerNumber && x.BranchID == model.BranchID && x.ProductID == model.ProductID && x.IsDelete==false);
 
                 if (existingbilldetail != null)
                 {
@@ -2361,7 +2361,7 @@ namespace HealthCare.Controllers
                     detailModel.Lastupdatedmachine = Request.HttpContext.Connection.RemoteIpAddress.ToString();
                     detailModel.Lastupdateddate = DateTime.Now.ToString();
 
-                    var product = productlist.FirstOrDefault();
+                    var product = productlist.First();
                     if (product != null)
                     {
                         // Convert strings to numeric types
@@ -2392,6 +2392,19 @@ namespace HealthCare.Controllers
                 }
 
                 await _billingsoftware.SaveChangesAsync();
+
+
+                var rackProduct = _billingsoftware.SHRackPartionProduct
+                   .FirstOrDefault(r => r.ProductID == model.ProductID && r.BranchID == model.BranchID);
+
+                if (rackProduct != null)
+                {
+                    int currentNoofitems = Convert.ToInt32(rackProduct.Noofitems);
+                    int productQuantity = Convert.ToInt32(model.Quantity);
+                    rackProduct.Noofitems = (currentNoofitems - productQuantity).ToString();
+
+                    _billingsoftware.SaveChanges();
+                }
 
                 productlist = await _billingsoftware.SHbilldetails
           .Where(d => d.BillID == BillID && d.BillDate == BillDate && d.CustomerNumber == CustomerNumber && d.BranchID == detailModel.BranchID)
@@ -2428,7 +2441,7 @@ namespace HealthCare.Controllers
                     ViewBag.NetPrice = updatedMasterex.NetPrice;
 
                     var exbillingDetails = _billingsoftware.SHbilldetails
-                        .Where(d => d.BillID == billID && d.BranchID == model.BranchID)
+                        .Where(d => d.BillID == billID && d.BranchID == model.BranchID && d.IsDelete == false && d.BillDate == billDate && d.CustomerNumber == customerNumber)
                         .ToList();
 
                     // Prepare the view model to pass to the view
@@ -2462,35 +2475,43 @@ namespace HealthCare.Controllers
 
             if (buttonType == "Delete Bill")
             {
-                var parameter = new[]
-         {
-    new SqlParameter("@BillID", masterModel.BillID),
-    new SqlParameter("@BillDate", DBNull.Value), // Set to DBNull.Value to indicate empty/null
-    new SqlParameter("@CustomerNumber", DBNull.Value),
-    new SqlParameter("@TotalPrice", DBNull.Value),
-    new SqlParameter("@TotalDiscount", DBNull.Value),
-    new SqlParameter("@NetPrice", DBNull.Value),
-    new SqlParameter("@CGSTPercentage", DBNull.Value),
-     new SqlParameter("@SGSTPercentage", DBNull.Value),
-     new SqlParameter("@CGSTPercentageAmt", DBNull.Value),
-     new SqlParameter("@SGSTPercentageAmt", DBNull.Value),
-     new SqlParameter("@BranchID", masterModel.BranchID),
-    new SqlParameter("@IsDelete", "Y"), // Assuming isDeleteValue is set to 'Y'
-    new SqlParameter("@LastUpdatedUser", DBNull.Value),
-    new SqlParameter("@LastUpdatedDate", DBNull.Value),
-    new SqlParameter("@LastUpdatedMachine", DBNull.Value),
-    new SqlParameter("@ProductID", DBNull.Value),
-    new SqlParameter("@ProductName", DBNull.Value),
-    new SqlParameter("@Discount", DBNull.Value),
-    new SqlParameter("@Price", DBNull.Value),
-    new SqlParameter("@Quantity", DBNull.Value),
-   };
+                var billMaster = _billingsoftware.SHbillmaster.FirstOrDefault(b => b.BillID == model.BillID && !b.IsDelete && b.BillDate == model.BillDate && model.BranchID == model.BranchID);
+                if (billMaster != null)
+                {
+                   
+                    billMaster.IsDelete = true;
 
-                await _billingsoftware.Database.ExecuteSqlRawAsync("EXEC InsertBillProduct @BillID, @BillDate, @CustomerNumber, @TotalPrice, @TotalDiscount, @NetPrice,@CGSTPercentage,@SGSTPercentage,@CGSTPercentageAmt,@SGSTPercentageAmt,@BranchID, @IsDelete, @LastUpdatedUser, @LastUpdatedDate, @LastUpdatedMachine, @ProductID, @ProductName, @Discount, @Price, @Quantity", parameter);
+                    _billingsoftware.SaveChanges();
+                
+                    var billDetails = _billingsoftware.SHbilldetails.Where(b => b.BillID == model.BillID && !b.IsDelete && b.BillDate == model.BillDate && model.BranchID == model.BranchID).ToList();
+                   
+                    foreach (var detail in billDetails)
+                    {
+                        
+                        detail.IsDelete = true;
 
+                        
+                        int productQuantity = Convert.ToInt32(detail.Quantity);
+                        detail.Quantity = "0";
 
+                   
 
-                ViewBag.DelMessage = "Deleted Bill Successfully";
+                        var rackProduct = _billingsoftware.SHRackPartionProduct
+                            .FirstOrDefault(r => r.ProductID == detail.ProductID && r.BranchID == detail.BranchID);
+
+                        if (rackProduct != null)
+                        {
+                            int currentNoofitems = Convert.ToInt32(rackProduct.Noofitems);
+                            rackProduct.Noofitems = (currentNoofitems + productQuantity).ToString();
+                        }
+                    }
+
+                 
+                    _billingsoftware.SaveChanges();
+                }
+
+              
+            ViewBag.DelMessage = "Deleted Bill Successfully";
                 return View("CustomerBilling", model);
 
             }
@@ -2508,7 +2529,7 @@ namespace HealthCare.Controllers
             
                 //   var getexistingprice = await _billingsoftware.SHbilldetails.FirstOrDefaultAsync(x => x.BillID == model.BillID && x.BillDate == model.BillDate && x.CustomerNumber == CustomerNumber && x.BranchID == model.BranchID);
                 var getexistingprice = await _billingsoftware.SHbilldetails
-             .Where(x => x.BillID == model.BillID && x.BillDate == model.BillDate && x.CustomerNumber == CustomerNumber && x.BranchID == model.BranchID)
+             .Where(x => x.BillID == model.BillID && x.BillDate == model.BillDate && x.CustomerNumber == CustomerNumber && x.BranchID == model.BranchID && x.IsDelete == false)
              .ToListAsync();
 
                 if (getexistingprice!=null )
@@ -2550,8 +2571,6 @@ namespace HealthCare.Controllers
 
                         _billingsoftware.Entry(updateMaster).State = EntityState.Modified;
 
-            var isDeleteValue = (object)masterModel.IsDelete ?? DBNull.Value;
-
                     }
                     else
                     {
@@ -2568,6 +2587,9 @@ namespace HealthCare.Controllers
                     _billingsoftware.SaveChanges();
 
                 }
+
+               
+
 
                 var updatedMaster = await _billingsoftware.SHbillmaster
        .Where(m => m.BillID == masterModel.BillID && m.BranchID == model.BranchID && m.BillDate==masterModel.BillDate&&m.CustomerNumber==masterModel.CustomerNumber)
@@ -2628,13 +2650,15 @@ namespace HealthCare.Controllers
 
                 if (rackProduct != null)
                 {
-                    rackProduct.Noofitems += product.Quantity; // Add the quantity back
+                    int currentNoofitems = Convert.ToInt32(rackProduct.Noofitems);
+                    int productQuantity = Convert.ToInt32(product.Quantity);
+                    rackProduct.Noofitems = (currentNoofitems + productQuantity).ToString();
                 }
 
                 _billingsoftware.SaveChanges();
             }
 
-            return View("CustomerBilling");
+            return View("CustomerBilling",model);
         }
 
 
