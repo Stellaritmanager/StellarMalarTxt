@@ -20,7 +20,7 @@
             <span class="app-brand-logo demo">
                 @await Html.PartialAsync("../_Partials/_Macros")
             </span>
-            <span class="app-brand-text demo menu-text fw-bold ms-2">@TempData.Peek("appName")</span>
+            <span class="app-brand-text demo menu-text fw-bold ms-2">@TempData.Peek("BranchName")</span>
         </a>
 
         <a href="javascript:void(0);" class="layout-menu-toggle menu-link text-large ms-auto d-block d-xl-none">
@@ -28,56 +28,56 @@
         </a>
     </div>
 
-    
-<!-- Menu -->
-  @* ! Full version menu-items *@
 
-  
-  <ul class="menu-inner py-1">
-    <!-- Stock Management -->
+    <!-- Menu -->
+    @* ! Full version menu-items *@
+
+
+    <ul class="menu-inner py-1">
+        <!-- Stock Management -->
         <li class='menu-item@(currentPage.EndsWith("/") || currentPage.StartsWith("/StockManagement") ? " active open" : "")'>
-      <a href="javascript:void(0);" class="menu-link menu-toggle">
+            <a href="javascript:void(0);" class="menu-link menu-toggle">
                 <i class="menu-icon tf-icons bx bx-archive-in"></i>
-           
-        <div>Stock Management</div>
-      </a>
+
+                <div>Stock Management</div>
+            </a>
 
             <ul class="menu-sub">
 
-        @if (rollAccessList != null)
-{
-                @if (rollAccessList.Contains("BranchMaster"))
+                @if (rollAccessList != null)
                 {
-           
+                    @if (rollAccessList.Contains("BranchMaster"))
+                    {
+
 
                         <li class='menu-item@(currentPage == "/StockManagement/BranchMaster" ? " active" : "")'>
-                    <a asp-controller="StellarBilling" asp-action="BranchMaster" class="menu-link">
+                            <a asp-controller="StellarBilling" asp-action="BranchMaster" class="menu-link">
 
-                        <div>Branch Master </div>
-                    </a>
-                </li>
-            
+                                <div>Branch Master </div>
+                            </a>
+                        </li>
+
+                    }
                 }
-}
 
 
-      @if (rollAccessList != null)
-{
-                @if (rollAccessList.Contains("CategoryMaster"))
+                @if (rollAccessList != null)
                 {
+                    @if (rollAccessList.Contains("CategoryMaster"))
+                    {
 
                         <li class='menu-item@(currentPage == "/StockManagement/CategoryMaster" ? " active" : "")'>
-                    <a asp-controller="StellarBilling" asp-action="CategoryMaster" class="menu-link">
-                        <div>Category Master</div>
-          </a>
-        </li>
-       
-        }
-}
- @if (rollAccessList != null)
-            {
-                @if (rollAccessList.Contains("ProductMaster"))
+                            <a asp-controller="StellarBilling" asp-action="CategoryMaster" class="menu-link">
+                                <div>Category Master</div>
+                            </a>
+                        </li>
+
+                    }
+                }
+                @if (rollAccessList != null)
                 {
+                    @if (rollAccessList.Contains("ProductMaster"))
+                    {
 
 
                         <li class='menu-item@(currentPage == "/StockManagement/ProductMaster" ? " active" : "")'>
@@ -86,14 +86,14 @@
                                 <div>Product Master</div>
                             </a>
                         </li>
-                   
-                }
-            }
 
-            @if (rollAccessList != null)
-            {
-                @if (rollAccessList.Contains("CustomerMaster"))
+                    }
+                }
+
+                @if (rollAccessList != null)
                 {
+                    @if (rollAccessList.Contains("CustomerMaster"))
+                    {
 
 
                         <li class='menu-item@(currentPage == "/StockManagement/CustomerMaster" ? " active" : "")'>
@@ -102,14 +102,14 @@
                                 <div>Customer Master </div>
                             </a>
                         </li>
-                   
-                }
-            }
 
-             @if (rollAccessList != null)
-            {
-                @if (rollAccessList.Contains("DiscountCategoryMaster"))
+                    }
+                }
+
+                @if (rollAccessList != null)
                 {
+                    @if (rollAccessList.Contains("DiscountCategoryMaster"))
+                    {
 
 
                         <li class='menu-item@(currentPage == "/StockManagement/DiscountCategoryMaster" ? " active" : "")'>
@@ -118,25 +118,25 @@
                                 <div>Discount Category Master</div>
                             </a>
                         </li>
-                   
-                }
-            }
 
-            
-            @*  <ul class="menu-sub">
+                    }
+                }
+
+
+                @*  <ul class="menu-sub">
 
                 <li class='menu-item@(currentPage == "/StellarBilling/VoucherCustomerDetails" ? " active" : "")'>
-                        <a asp-controller="StellarBilling" asp-action="VoucherCustomerDetails" class="menu-link">
+                <a asp-controller="StellarBilling" asp-action="VoucherCustomerDetails" class="menu-link">
 
-                        <div style="color:cornflowerblue">Voucher Customer Details</div>
-                        </a>
-                    </li>
+                <div style="color:cornflowerblue">Voucher Customer Details</div>
+                </a>
+                </li>
                 </ul> *@
 
-            @if (rollAccessList != null)
-            {
-                @if (rollAccessList.Contains("NetDiscountMaster"))
+                @if (rollAccessList != null)
                 {
+                    @if (rollAccessList.Contains("NetDiscountMaster"))
+                    {
 
 
                         <li class='menu-item@(currentPage == "/StockManagement/NetDiscountMaster" ? " active" : "")'>
@@ -145,15 +145,15 @@
                                 <div>Net Discount Master</div>
                             </a>
                         </li>
-                   
-                }
-            }
 
-            
-            @if (rollAccessList != null)
-            {
-                @if (rollAccessList.Contains("PointsMaster"))
+                    }
+                }
+
+
+                @if (rollAccessList != null)
                 {
+                    @if (rollAccessList.Contains("PointsMaster"))
+                    {
 
 
                         <li class='menu-item@(currentPage == "/StockManagement/PointsMaster" ? " active" : "")'>
@@ -162,26 +162,26 @@
                                 <div>Points Master</div>
                             </a>
                         </li>
-                    
+
+                    }
                 }
-            }
-            @*   <ul class="menu-sub">
+                @*   <ul class="menu-sub">
 
                 <li class='menu-item@(currentPage == "/StellarBilling/PointsReedemDetails" ? " active" : "")'>
-                        <a asp-controller="StellarBilling" asp-action="PointsReedemDetails" class="menu-link">
+                <a asp-controller="StellarBilling" asp-action="PointsReedemDetails" class="menu-link">
 
-                        <div style="color:cornflowerblue">Points Reedem Details</div>
-                        </a>
-                    </li>
+                <div style="color:cornflowerblue">Points Reedem Details</div>
+                </a>
+                </li>
                 </ul> *@
 
-           
 
-            
-            @if (rollAccessList != null)
-            {
-                @if (rollAccessList.Contains("RackPatrionProduct"))
+
+
+                @if (rollAccessList != null)
                 {
+                    @if (rollAccessList.Contains("RackPatrionProduct"))
+                    {
 
 
                         <li class='menu-item@(currentPage == "/StockManagement/RackPatrionProduct" ? " active" : "")'>
@@ -190,23 +190,23 @@
                                 <div>Rack Patrion Product</div>
                             </a>
                         </li>
-                   
+
+                    }
                 }
-            }
-            @*  <ul class="menu-sub">
+                @*  <ul class="menu-sub">
 
                 <li class='menu-item@(currentPage == "/StellarBilling/VoucherMaster" ? " active" : "")'>
-                        <a asp-controller="StellarBilling" asp-action="VoucherMaster" class="menu-link">
+                <a asp-controller="StellarBilling" asp-action="VoucherMaster" class="menu-link">
 
-                        <div style="color:cornflowerblue">Voucher Master</div>
-                        </a>
-                    </li>
+                <div style="color:cornflowerblue">Voucher Master</div>
+                </a>
+                </li>
                 </ul> *@
 
-            @if (rollAccessList != null)
-            {
-                @if (rollAccessList.Contains("StaffAdmin"))
+                @if (rollAccessList != null)
                 {
+                    @if (rollAccessList.Contains("StaffAdmin"))
+                    {
 
 
 
@@ -216,13 +216,13 @@
                                 <div>Staff Admin</div>
                             </a>
                         </li>
-                    
+
+                    }
                 }
-            }
-              @if (rollAccessList != null)
-            {
-                @if (rollAccessList.Contains("ResourceTypeMaster"))
+                @if (rollAccessList != null)
                 {
+                    @if (rollAccessList.Contains("ResourceTypeMaster"))
+                    {
 
 
                         <li class='menu-item@(currentPage == "/StockManagement/ResourceTypeMaster" ? " active" : "")'>
@@ -231,14 +231,14 @@
                                 <div>Resource Type Master</div>
                             </a>
                         </li>
-                  
-                }
-            }
 
-             @if (rollAccessList != null)
-            {
-                @if (rollAccessList.Contains("RollAccessMaster"))
+                    }
+                }
+
+                @if (rollAccessList != null)
                 {
+                    @if (rollAccessList.Contains("RollAccessMaster"))
+                    {
 
                         <li class='menu-item@(currentPage == "/StockManagement/RollAccessMaster" ? " active" : "")'>
                             <a asp-controller="StellarBilling" asp-action="RollAccessMaster" class="menu-link">
@@ -246,64 +246,64 @@
                                 <div>Roll Access Master</div>
                             </a>
                         </li>
-                   
+
+                    }
                 }
-            }
 
-              @if (rollAccessList != null)
-            {
-                @if (rollAccessList.Contains("RoleAccess"))
+                @if (rollAccessList != null)
                 {
+                    @if (rollAccessList.Contains("RoleAccess"))
+                    {
 
-           
+
 
                         <li class='menu-item@(currentPage == "/StockManagement/RoleAccess" ? " active" : "")'>
-                    <a asp-controller="StellarBilling" asp-action="RoleAccess" class="menu-link">
+                            <a asp-controller="StellarBilling" asp-action="RoleAccess" class="menu-link">
 
-                        <div>Role Access</div>
-                    </a>
-                </li>
-          
+                                <div>Role Access</div>
+                            </a>
+                        </li>
+
+                    }
                 }
-            }
 
-             @if (rollAccessList != null)
-            {
-                @if (rollAccessList.Contains("RollTypeMaster"))
+                @if (rollAccessList != null)
                 {
+                    @if (rollAccessList.Contains("RollTypeMaster"))
+                    {
 
-            
+
 
                         <li class='menu-item@(currentPage == "/StockManagement/RollTypeMaster" ? " active" : "")'>
-                    <a asp-controller="StellarBilling" asp-action="RollTypeMaster" class="menu-link">
+                            <a asp-controller="StellarBilling" asp-action="RollTypeMaster" class="menu-link">
 
-                        <div>Roll Type Master</div>
-                    </a>
-                </li>
-            
+                                <div>Roll Type Master</div>
+                            </a>
+                        </li>
+
+                    }
                 }
-            }
 
-             @if (rollAccessList != null)
-            {
-                @if (rollAccessList.Contains("ScreenMaster"))
+                @if (rollAccessList != null)
                 {
-            
+                    @if (rollAccessList.Contains("ScreenMaster"))
+                    {
+
 
                         <li class='menu-item@(currentPage == "/StockManagement/ScreenMaster" ? " active" : "")'>
-                    <a asp-controller="StellarBilling" asp-action="ScreenMaster" class="menu-link">
+                            <a asp-controller="StellarBilling" asp-action="ScreenMaster" class="menu-link">
 
-                        <div>Screen Master</div>
-                    </a>
-                </li>
-           
+                                <div>Screen Master</div>
+                            </a>
+                        </li>
+
+                    }
                 }
-            }
 
-             @if (rollAccessList != null)
-            {
-                @if (rollAccessList.Contains("GodownModel"))
+                @if (rollAccessList != null)
                 {
+                    @if (rollAccessList.Contains("GodownModel"))
+                    {
 
 
                         <li class='menu-item@(currentPage == "/StockManagement/GodownModel" ? " active" : "")'>
@@ -312,92 +312,92 @@
                                 <div>Godown Stock Master</div>
                             </a>
                         </li>
-                 
-                  
+
+
+                    }
                 }
-            }
             </ul>
         </li>
-        
 
-       
-            <!-- Billing Screen -->
+
+
+        <!-- Billing Screen -->
         <li class='menu-item@(currentPage.EndsWith("/") || currentPage.StartsWith("/PaymentBilling") ? " active open" : "")'>
-                <a href="javascript:void(0);" class="menu-link menu-toggle">
-                    <i class="menu-icon tf-icons bx bx-credit-card"></i>
-                  
-                    <div>Payment Billing</div>
-                </a>
+            <a href="javascript:void(0);" class="menu-link menu-toggle">
+                <i class="menu-icon tf-icons bx bx-credit-card"></i>
+
+                <div>Payment Billing</div>
+            </a>
 
 
             <ul class="menu-sub">
 
-                  @if (rollAccessList != null)
-            {
+                @if (rollAccessList != null)
+                {
                     @if (rollAccessList.Contains("CustomerBilling"))
                     {
 
 
                         <li class='menu-item@(currentPage == "/PaymentBilling/CustomerBilling" ? " active" : "")'>
-                                <a asp-controller="StellarBilling" asp-action="CustomerBilling" class="menu-link">
+                            <a asp-controller="StellarBilling" asp-action="CustomerBilling" class="menu-link">
 
-                                    <div>Customer Billing</div>
-                                </a>
-                            </li>
-                       
+                                <div>Customer Billing</div>
+                            </a>
+                        </li>
+
                     }
                 }
 
-                       @if (rollAccessList != null)
-            {
+                @if (rollAccessList != null)
+                {
                     @if (rollAccessList.Contains("CustomerBilling"))
                     {
 
 
 
-                        <li class='menu-item@(currentPage == "/PaymentBilling/PaymentScreen" ? " active" : "")'>
-                                <a asp-controller="StellarBilling" asp-action="PaymentScreen" class="menu-link">
+                        <li class='menu-item@(currentPage == "/StellarBilling/PaymentBilling" ? " active" : "")'>
+                            <a asp-controller="StellarBilling" asp-action="PaymentBilling" class="menu-link">
 
-                                    <div>Payment Screen</div>
-                                </a>
-                            </li>
-                       
+                                <div>Payment Screen</div>
+                            </a>
+                        </li>
+
                     }
                 }
-                </ul>
+            </ul>
 
-            </li>
-       
+        </li>
 
 
-       
-            <!-- Report Screen-->
-            <li class='menu-item@(currentPage.EndsWith("/") || currentPage.StartsWith("/Reports/") ? " active open" : "")'>
-                <a href="javascript:void(0);" class="menu-link menu-toggle">
-                    <i class="menu-icon tf-icons bx bx-home-circle"></i>
-                    <div>Reports</div>
-                </a>
 
-                  @if (rollAccessList != null)
+
+        <!-- Report Screen-->
+        <li class='menu-item@(currentPage.EndsWith("/") || currentPage.StartsWith("/Reports/") ? " active open" : "")'>
+            <a href="javascript:void(0);" class="menu-link menu-toggle">
+                <i class="menu-icon tf-icons bx bx-home-circle"></i>
+                <div>Reports</div>
+            </a>
+
+            @if (rollAccessList != null)
             {
-                        @if (rollAccessList.Contains("Reports"))
-                        {
-                            <ul class="menu-sub">
+                @if (rollAccessList.Contains("Reports"))
+                {
+                    <ul class="menu-sub">
 
-                                <li class='menu-item@(currentPage == "/Reports/Reports" ? " active" : "")'>
-                                    <a asp-controller="Reports" asp-action="Reports" class="menu-link">
+                        <li class='menu-item@(currentPage == "/Reports/Reports" ? " active" : "")'>
+                            <a asp-controller="Reports" asp-action="Reports" class="menu-link">
 
-                                        <div>Reports</div>
-                                    </a>
-                                </li>
-                            </ul>
-                        }
-                    }
+                                <div>Reports</div>
+                            </a>
+                        </li>
+                    </ul>
+                }
+            }
 
-            </li>
-           
-        </ul>
-        
-        
+        </li>
+
+    </ul>
+
+
 </aside>
 <!-- / Menu -->

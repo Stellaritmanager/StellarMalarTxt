@@ -2051,6 +2051,32 @@ progress {
   color: #566a7f;
 }
 
+
+/*menu scrollbar*/
+/*.menu-sub {
+    overflow-y: auto;*/ /* Enable vertical scrolling */
+    /*max-height: 400px;*/ /* Set a max height for the submenu */
+/*}*/
+
+    /* Scrollbar styles */
+    /*.menu-sub::-webkit-scrollbar {
+        width: 16px;*/ /* Set the width of the scrollbar */
+    /*}
+
+    .menu-sub::-webkit-scrollbar-track {
+        background: #333;*/ /* Set the background of the scrollbar track */
+    /*}
+
+    .menu-sub::-webkit-scrollbar-thumb {
+        background-color: #fff;*/ /* Set the color of the scrollbar thumb */
+        /*border-radius: 10px;*/ /* Make the scrollbar thumb rounded */
+        /*border: 3px solid #333;*/ /* Add a border around the scrollbar thumb */
+    /*}*/
+
+
+
+
+
 .col-form-label-lg {
   padding-top: calc(0.75rem + var(--bs-border-width));
   padding-bottom: calc(0.75rem + var(--bs-border-width));
