@@ -25,6 +25,8 @@ using System;
         private String strLastUpdatedUser;
         private String strLastUpdatedmachine;
     private string branchID;
+    private string imeiNumber;
+    private string serialNumber;
 
 
     public string ProductID { get => strProductID; set => strProductID = value; }
@@ -44,5 +46,7 @@ using System;
     public string? OtherTax { get => otherTax; set => otherTax = value; }
     public string? DiscountCategory { get => strDiscountCategory; set => strDiscountCategory = value; }
     public string BranchID { get => branchID; set => branchID = value; }
+    public string? ImeiNumber { get => imeiNumber; set => imeiNumber = value; }
+    public string? SerialNumber { get => serialNumber; set => serialNumber = value; }
 }
 
