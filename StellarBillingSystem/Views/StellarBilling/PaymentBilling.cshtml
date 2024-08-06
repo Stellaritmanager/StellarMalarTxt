@@ -107,27 +107,48 @@
                             <div class="form-floating form-floating-outline mb-4">
 
                                 <input type="text" class="form-control" id="Balance" name="Balance" placeholder="Balance" value="@Model.Balance" />
-                                <label for="Balance" class="control-label">Balance</label>
+                                <label for="Balance" class="control-label">BillValue</label>
                             </div>
 
                         </div>
                       
                     </div>
+                 
                     <div class="row gy-4">
                         <div class="col-md-12 col-lg-10">
 
                             <div class="form-floating form-floating-outline mb-4">
-                                <div class="form-floating form-floating-outline mb-4">
 
-                                    <input type="text" class="form-control" id="PaymentId" name="PaymentId" placeholder="Payment ID" value="@Model.PaymentId" />
-                                    <label for="PaymentId" class="control-label">Payment ID</label>
-
-                                </div>
+                                <input type="text" class="form-control" id="BillValue" name="BillValue" value="@Model.StrBillvalue" placeholder="BillValue" />
+                                <label for="BillValue" class="control-label">Balance</label>
                             </div>
 
                         </div>
 
                     </div>
+                    <div class="row gy-4">
+                        <div class="col-md-12 col-lg-10">
+
+                            <div class="form-floating form-floating-outline mb-4">
+
+                                <input type="text" class="form-control" id="PaymentId" name="PaymentId" placeholder="Payment ID" value="@Model.PaymentId" />
+                                <label for="PaymentId" class="control-label">Payment ID</label>
+
+                            </div>
+                        </div>
+                        <div class="col-md-12 col-lg-2">
+                            <div class="form-group">
+                                <center>
+
+                                    <button type="submit" class="btn btn-primary" name="buttonType" value="GetPayment">GetPayment</button>
+                                </center>
+
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <button type="submit" class="btn btn-primary" name="buttonType" value="AddPayment">AddPayment</button>
 
 
 
@@ -205,12 +226,10 @@
     <center>
         <div class="row mt-4">
             <div class="col-md-12">
-                <button type="submit" class="btn btn-primary" name="buttonType" value="AddPayment">AddPayment</button>
                 <button type="submit" class="btn btn-primary" name="buttonType" value="Save">SavePayment</button>
                 <button type="submit" class="btn btn-primary" name="buttonType" value="DeletePaymentDetail">DeletePaymentDetail</button>
                 <button type="submit" class="btn btn-primary" name="buttonType" value="DeletePayment">DeletePayment</button>
-                <button type="submit" class="btn btn-primary" name="buttonType" value="GetPayment">GetPayment</button>
-            </div>
+               </div>
         </div>
     </center>
 
