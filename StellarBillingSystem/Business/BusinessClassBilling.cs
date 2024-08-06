@@ -1,5 +1,6 @@
 ﻿
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.Operations;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using StellarBillingSystem.Context;
@@ -22,10 +23,11 @@ namespace StellarBillingSystem.Business
 
         /*Product Dropdown*/
 
-        public List<CategoryMasterModel> GetCatid()
+        public List<CategoryMasterModel> GetCatid(string BranchID)
         {
             var categoryid = (
                     from pr in _billingContext.SHCategoryMaster
+                    where pr.BranchID == BranchID
                     select new CategoryMasterModel
                     {
                         CategoryID = pr.CategoryID,
@@ -49,10 +51,11 @@ namespace StellarBillingSystem.Business
         }
 
         /*Discount Category*/
-        public List<CategoryMasterModel> GetcategoryID()
+        public List<CategoryMasterModel> GetcategoryID(string BranchID)
         {
             var discountcategoryid = (
                 from pr in _billingContext.SHCategoryMaster
+                where pr.BranchID == BranchID
                 select new CategoryMasterModel
                 {
                     CategoryID = pr.CategoryID,
@@ -66,10 +69,11 @@ namespace StellarBillingSystem.Business
 
         /*Godown*/
 
-        public List<ProductMatserModel> GetProductid()
+        public List<ProductMatserModel> GetProductid(string BranchID)
         {
             var godownproductid = (
                 from pr in _billingContext.SHProductMaster
+                where pr.BranchID == BranchID
                 select new ProductMatserModel
                 {
                     ProductID = pr.ProductID,
@@ -96,10 +100,11 @@ namespace StellarBillingSystem.Business
 
 
 
-        public List<ResourceTypeMasterModel> GetResourceid()
+        public List<ResourceTypeMasterModel> GetResourceid(string BranchID)
         {
             var resoruseid = (
                     from pr in _billingContext.SHresourceType
+                    where pr.BranchID == BranchID
                     select new ResourceTypeMasterModel
                     {
                         ResourceTypeID = pr.ResourceTypeID,
@@ -110,10 +115,11 @@ namespace StellarBillingSystem.Business
             return resoruseid;
         }
 
-        public List<RollTypeMaster> RollAccessType()
+        public List<RollTypeMaster> RollAccessType(string BranchID)
         {
             var rollid = (
                     from pr in _billingContext.SHrollType
+                    where pr.BranchID == BranchID
                     select new RollTypeMaster
                     {
                         RollID = pr.RollID,
@@ -138,10 +144,11 @@ namespace StellarBillingSystem.Business
         }
 
 
-        public List<StaffAdminModel> GetStaffID()
+        public List<StaffAdminModel> GetStaffID(string BranchID)
         {
             var staffid = (
                     from pr in _billingContext.SHStaffAdmin
+                    where pr.BranchID == BranchID
                     select new StaffAdminModel
                     {
                         StaffID = pr.StaffID,
@@ -152,11 +159,12 @@ namespace StellarBillingSystem.Business
             return staffid;
         }
 
-        public List<ScreenMasterModel> GetScreenid()
+        public List<ScreenMasterModel> GetScreenid(String BranchID)
 
         {
             var screenid = (
                         from pr in _billingContext.SHScreenMaster
+                        where pr.BranchID == BranchID
                         select new ScreenMasterModel
                         {
                             ScreenId = pr.ScreenId,
@@ -167,11 +175,12 @@ namespace StellarBillingSystem.Business
             return screenid;
         }
 
-        public List<DiscountCategoryMasterModel> Getdiscountid()
+        public List<DiscountCategoryMasterModel> Getdiscountid(string BranchID)
 
         {
             var discountid = (
                         from pr in _billingContext.SHDiscountCategory
+                        where pr.BranchID == BranchID
                         select new DiscountCategoryMasterModel
                         {
                             CategoryID = pr.CategoryID,
@@ -236,7 +245,7 @@ namespace StellarBillingSystem.Business
                         from product in _billingContext.SHProductMaster
                         join rack in _billingContext.SHRackPartionProduct
                         on product.ProductID equals rack.ProductID
-                        where product.BranchID == BranchID
+                        where product.BranchID == BranchID && rack.BranchID == BranchID
                         select new { product, rack })
                   .AsEnumerable()
                   .Where(pr => int.Parse(pr.rack.Noofitems) > 0)

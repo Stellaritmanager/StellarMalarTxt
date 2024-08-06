@@ -189,8 +189,8 @@ namespace HealthCare.Controllers
             }
 
             BusinessClassBilling business = new BusinessClassBilling(_billingsoftware);
-            ViewData["categoryid"] = business.GetCatid();
-            ViewData["discountid"] = business.Getdiscountid();
+            ViewData["categoryid"] = business.GetCatid(model.BranchID);
+            ViewData["discountid"] = business.Getdiscountid(model.BranchID);
 
             if (buttonType == "Get")
             {
@@ -400,7 +400,7 @@ namespace HealthCare.Controllers
             }
 
             BusinessClassBilling business = new BusinessClassBilling(_billingsoftware);
-            ViewData["godownproductid"] = business.GetProductid();
+            ViewData["godownproductid"] = business.GetProductid(model.BranchID);
 
 
             if (buttonType == "DeleteRetrieve")
@@ -712,7 +712,7 @@ namespace HealthCare.Controllers
 
 
             BusinessClassBilling business = new BusinessClassBilling(_billingsoftware);
-            ViewData["discountcategoryid"] = business.GetcategoryID();
+            ViewData["discountcategoryid"] = business.GetcategoryID(model.BranchID);
 
             if (buttonType == "Get")
             {
@@ -1082,11 +1082,19 @@ namespace HealthCare.Controllers
 
         public IActionResult ProductMaster()
         {
+            var model = new ProductMatserModel();
+
+            if (TempData["BranchID"] != null)
+            {
+                model.BranchID = TempData["BranchID"].ToString();
+                TempData.Keep("BranchID");
+            }
+
             BusinessClassBilling business = new BusinessClassBilling(_billingsoftware);
-            ViewData["categoryid"] = business.GetCatid();
-            ViewData["discountid"] = business.Getdiscountid();
-            ProductMatserModel obj = new ProductMatserModel();
-            return View("ProductMaster", obj);
+            ViewData["categoryid"] = business.GetCatid(model.BranchID);
+            ViewData["discountid"] = business.Getdiscountid(model.BranchID);
+           
+            return View(model);
         }
 
         [HttpPost]
@@ -1101,7 +1109,7 @@ namespace HealthCare.Controllers
 
 
             BusinessClassBilling business = new BusinessClassBilling(_billingsoftware);
-            ViewData["godownproductid"] = business.GetProductid();
+            ViewData["godownproductid"] = business.GetProductid(model.BranchID);
 
             if (buttonType == "Get")
             {
@@ -1325,7 +1333,7 @@ namespace HealthCare.Controllers
             }
 
             BusinessClassBilling business = new BusinessClassBilling(_billingsoftware);
-            ViewData["godownproductid"] = business.GetProductid();
+            ViewData["godownproductid"] = business.GetProductid(model.BranchID);
 
             var RackEdit = await _billingsoftware.SHRackPartionProduct.FindAsync(partitionID, productID, model.BranchID);
             if (RackEdit == null)
@@ -1374,7 +1382,7 @@ namespace HealthCare.Controllers
 
 
             BusinessClassBilling business = new BusinessClassBilling(_billingsoftware);
-            ViewData["godownproductid"] = business.GetProductid();
+            ViewData["godownproductid"] = business.GetProductid(model.BranchID);
 
 
             var rackDel = await _billingsoftware.SHRackPartionProduct.FindAsync(partitionID, productID, viewmodel.BranchID);
@@ -1397,7 +1405,7 @@ namespace HealthCare.Controllers
         {
 
             BusinessClassBilling Busbill = new BusinessClassBilling(_billingsoftware);
-            ViewData["resoruseid"] = Busbill.GetResourceid();
+            ViewData["resoruseid"] = Busbill.GetResourceid(model.BranchID);
             ViewData["branchid"] = Busbill.Getbranch();
 
 
@@ -1728,9 +1736,9 @@ namespace HealthCare.Controllers
             }
 
             BusinessClassBilling businessbill = new BusinessClassBilling(_billingsoftware);
-            ViewData["screenid"] = businessbill.GetScreenid();
-            ViewData["rollid"] = businessbill.RollAccessType();
-            ViewData["staffid"] = businessbill.GetStaffID();
+            ViewData["screenid"] = businessbill.GetScreenid(model.BranchID);
+            ViewData["rollid"] = businessbill.RollAccessType(model.BranchID);
+            ViewData["staffid"] = businessbill.GetStaffID(model.BranchID);
 
             if (buttontype == "Get")
             {
@@ -1854,8 +1862,8 @@ namespace HealthCare.Controllers
             }
 
             BusinessClassBilling Busbill = new BusinessClassBilling(_billingsoftware);
-            ViewData["rollid"] = Busbill.RollAccessType();
-            ViewData["staffid"] = Busbill.GetStaffID();
+            ViewData["rollid"] = Busbill.RollAccessType(model.BranchID);
+            ViewData["staffid"] = Busbill.GetStaffID(model.BranchID);
 
 
             if (buttontype == "Get")
@@ -2700,14 +2708,21 @@ namespace HealthCare.Controllers
 
         public IActionResult StaffAdmin()
         {
+            var model = new StaffAdminModel();
+
+            if (TempData["BranchID"] != null)
+            {
+                model.BranchID = TempData["BranchID"].ToString();
+                TempData.Keep("BranchID");
+            }
 
             BusinessClassBilling Busbill = new BusinessClassBilling(_billingsoftware);
-            ViewData["resoruseid"] = Busbill.GetResourceid();
+            ViewData["resoruseid"] = Busbill.GetResourceid(model.BranchID);
             ViewData["branchid"] = Busbill.Getbranch();
 
-            StaffAdminModel par = new StaffAdminModel();
+          
 
-            return View("StaffAdmin", par);
+            return View(model);
         }
 
         public IActionResult ResourceTypeMaster()
@@ -2719,26 +2734,39 @@ namespace HealthCare.Controllers
 
         public IActionResult RollAccessMaster()
         {
+            var model = new RollAccessMaster();
+
+            if (TempData["BranchID"] != null)
+            {
+                model.BranchID = TempData["BranchID"].ToString();
+                TempData.Keep("BranchID");
+            }
+
             BusinessClassBilling Busbill = new BusinessClassBilling(_billingsoftware);
-            ViewData["rollid"] = Busbill.RollAccessType();
-            ViewData["staffid"] = Busbill.GetStaffID();
+            ViewData["rollid"] = Busbill.RollAccessType(model.BranchID);
+            ViewData["staffid"] = Busbill.GetStaffID(model.BranchID);
 
-
-            RollAccessMaster roll = new RollAccessMaster();
-
-            return View("RollAccessMaster", roll);
+            return View(model);
         }
 
         public IActionResult RoleAccess()
         {
+            var model = new RoleAccessModel();
+
+            if (TempData["BranchID"] != null)
+            {
+                model.BranchID = TempData["BranchID"].ToString();
+                TempData.Keep("BranchID");
+            }
+
             BusinessClassBilling businessbill = new BusinessClassBilling(_billingsoftware);
-            ViewData["screenid"] = businessbill.GetScreenid();
-            ViewData["rollid"] = businessbill.RollAccessType();
-            ViewData["staffid"] = businessbill.GetStaffID();
+            ViewData["screenid"] = businessbill.GetScreenid(model.BranchID);
+            ViewData["rollid"] = businessbill.RollAccessType(model.BranchID);
+            ViewData["staffid"] = businessbill.GetStaffID(model.BranchID);
 
 
-            RoleAccessModel role = new RoleAccessModel();
-            return View("RoleAccess", role);
+           
+            return View(model);
         }
 
         public IActionResult ScreenMaster()
@@ -2763,10 +2791,18 @@ namespace HealthCare.Controllers
 
         public IActionResult DiscountCategoryMaster()
         {
+            var model = new DiscountCategoryMasterModel();
+
+            if (TempData["BranchID"] != null)
+            {
+                model.BranchID = TempData["BranchID"].ToString();
+                TempData.Keep("BranchID");
+            }
+
             BusinessClassBilling business = new BusinessClassBilling(_billingsoftware);
-            ViewData["discountcategoryid"] = business.GetcategoryID();
-            DiscountCategoryMasterModel obj = new DiscountCategoryMasterModel();
-            return View("DiscountCategoryMaster", obj);
+            ViewData["discountcategoryid"] = business.GetcategoryID(model.BranchID);
+           
+            return View(model);
         }
 
         public IActionResult GSTMasterModel()
@@ -2804,15 +2840,18 @@ namespace HealthCare.Controllers
 
         public IActionResult RackPatrionProduct()
         {
-            BusinessClassBilling business = new BusinessClassBilling(_billingsoftware);
-            ViewData["godownproductid"] = business.GetProductid();
+            var model = new RackpartitionViewModel();
 
-            var model = new RackpartitionViewModel
+            if (TempData["BranchID"] != null)
             {
-                Viewrackpartition = new List<RackPatrionProductModel>()
-            };
+                model.BranchID = TempData["BranchID"].ToString();
+                TempData.Keep("BranchID");
+            }
 
+            BusinessClassBilling business = new BusinessClassBilling(_billingsoftware);
+            ViewData["godownproductid"] = business.GetProductid(model.BranchID);
 
+            model.Viewrackpartition = new List<RackPatrionProductModel>();
 
             return View(model);
         }
@@ -2824,11 +2863,20 @@ namespace HealthCare.Controllers
 
         public IActionResult GodownModel()
         {
-            BusinessClassBilling business = new BusinessClassBilling(_billingsoftware);
-            ViewData["godownproductid"] = business.GetProductid();
-            GodownModel res = new GodownModel();
+            var model = new GodownModel();
 
-            return View("GodownModel", res);
+            if (TempData["BranchID"] != null)
+            {
+                model.BranchID = TempData["BranchID"].ToString();
+                TempData.Keep("BranchID");
+            }
+
+
+            BusinessClassBilling business = new BusinessClassBilling(_billingsoftware);
+            ViewData["godownproductid"] = business.GetProductid(model.BranchID);
+           
+
+            return View(model);
 
         }
 
