@@ -73,7 +73,7 @@ namespace StellarBillingSystem.Context
 
         public DbSet<BranchMasterModel> SHBranchMaster { get; set; }
 
-
+        public DbSet<WebErrorsModel> SHWebErrors { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -85,6 +85,10 @@ namespace StellarBillingSystem.Context
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+           
+            modelBuilder.Entity<WebErrorsModel>()
+        .HasKey(i => new { i.ErrodDesc, i.ErrDateTime, i.ScreenName });
+
 
             modelBuilder.Entity<BranchMasterModel>().HasKey(i => new { i.BracnchID, i.BranchName });
 
