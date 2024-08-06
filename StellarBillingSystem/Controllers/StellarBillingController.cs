@@ -1180,8 +1180,13 @@ namespace HealthCare.Controllers
                 {
                     if (rolltoretrieve.Isdelete)
                     {
-                        ViewBag.ErrorMessage = "Cannot update. Product is marked as deleted.";
-                        return View("RackPatrionProduct", model);
+                        ViewBag.ErrorMessage = "ProductID Already Deleted";
+
+                        var modelsre = new RackpartitionViewModel
+                        {
+                            Viewrackpartition = new List<RackPatrionProductModel>()
+                        };
+                        return View("RackPatrionProduct", modelsre);
                     }
 
                     rolltoretrieve.Isdelete = true;
@@ -1225,7 +1230,12 @@ namespace HealthCare.Controllers
                 if (existingrackpartition.Isdelete)
                 {
                     ViewBag.ErrorMessage = "Cannot update. Product is marked as deleted.";
-                    return View("RackPatrionProduct", model);
+                    var modelsins = new RackpartitionViewModel
+                    {
+                        Viewrackpartition = new List<RackPatrionProductModel>()
+                    };
+
+                    return View("RackPatrionProduct", modelsins);
                 }
 
 
@@ -1236,6 +1246,17 @@ namespace HealthCare.Controllers
                     if (int.TryParse(existingrackpartition.Noofitems, out existingstock))
                     {
                         int totalstock = int.Parse(recstockgodwomn.NumberofStocks);
+
+                        if (newStock > totalstock)
+                        {
+                            ViewBag.stockErrorMessage = $"Only {totalstock} Items Available in Godown Stock";
+                            var modelsins = new RackpartitionViewModel
+                            {
+                                Viewrackpartition = new List<RackPatrionProductModel>()
+                            };
+                            return View("RackPatrionProduct", modelsins);
+                        }
+
                         int currentstock = totalstock - newStock;
 
                         if (currentstock < 0)
