@@ -7,6 +7,8 @@ using DocumentFormat.OpenXml.Office2016.Drawing.ChartDrawing;
 using Microsoft.CodeAnalysis.Elfie.Model;
 using DocumentFormat.OpenXml.ExtendedProperties;
 using Microsoft.CodeAnalysis.FlowAnalysis;
+using StellarBillingSystem.Context;
+using Microsoft.IdentityModel.Tokens;
 
 
 namespace StellarBillingSystem.Business
@@ -159,6 +161,24 @@ namespace StellarBillingSystem.Business
             
         }
 
+        public static String getbalance (BillingContext billing,string strPayID,string pBillID,string strBranchid)
+        {
+           var paymentList= billing.SHPaymentDetails.Where(x => x.PaymentId == strPayID && x.IsDelete == false && x.BranchID==strBranchid).Select(x => x.PaymentAmount).ToList();
+
+            Double dblBalance = 0.0;
+
+            foreach(var strpayment in paymentList)
+            {
+                if(!(String.IsNullOrEmpty(strpayment)))
+                    dblBalance = dblBalance + Double.Parse(strpayment);
+            }
+
+            var billamount = billing.SHbillmaster.Where(x => x.BillID == pBillID).Select(x => x.NetPrice).FirstOrDefault();
+
+            dblBalance = Double.Parse(billamount) - dblBalance;
+
+            return dblBalance.ToString();
+        }
 
 
 
