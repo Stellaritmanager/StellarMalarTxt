@@ -188,8 +188,12 @@ namespace HealthCare.Controllers
                     ViewBag.ValidationMessage = "Please enter either ProductID or BarcodeID.";
                     return View("ProductMaster", model);
                 }
+                ProductMatserModel? resultpro;
+                if (model.BarcodeId != null && model.BarcodeId != string.Empty)
+                    resultpro = await _billingsoftware.SHProductMaster.FirstOrDefaultAsync(x => x.BarcodeId == model.BarcodeId && !x.IsDelete && x.BranchID == model.BranchID);
+                else
+                    resultpro = await _billingsoftware.SHProductMaster.FirstOrDefaultAsync(x => x.ProductID == model.ProductID && !x.IsDelete && x.BranchID == model.BranchID);
 
-                var resultpro = await _billingsoftware.SHProductMaster.FirstOrDefaultAsync(x => (x.ProductID == model.ProductID || x.BarcodeId == model.BarcodeId) && !x.IsDelete && x.BranchID == model.BranchID);
                 if (resultpro != null)
                 {
                     return View("ProductMaster", resultpro);
