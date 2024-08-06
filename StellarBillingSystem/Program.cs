@@ -5,6 +5,7 @@ using System.Configuration;
 using Microsoft.Extensions.Configuration;
 using System.Net;
 using System.Security;
+using StellarBillingSystem.Business;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -54,6 +55,9 @@ if (!app.Environment.IsDevelopment())
 
 
 app.UseSession();
+
+app.UseMiddleware<ErrorHandlingMiddleware>();
+
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 

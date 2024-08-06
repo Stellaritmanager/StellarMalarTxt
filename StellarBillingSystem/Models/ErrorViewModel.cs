@@ -4,10 +4,10 @@ namespace StellarBillingSystem.Models
     {
         public string? RequestId { get; set; }
 
-        private string branchID;
+        //private string branchID;
 
         public bool ShowRequestId => !string.IsNullOrEmpty(RequestId);
 
-        public string BranchID { get => branchID; set => branchID = value; }
+        //public string BranchID { get => branchID; set => branchID = value; }
     }
 }
