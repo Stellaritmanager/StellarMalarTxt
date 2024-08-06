@@ -482,7 +482,7 @@ namespace HealthCare.Controllers
                 {
                     if (goddown.IsDelete)
                     {
-                        ViewBag.ErrorMessage = "Cannot update. GodowmnID is marked as deleted.";
+                        ViewBag.ErrorMessage = "Stock Already Deleted";
                         return View("GodownModel", model);
                     }
 
