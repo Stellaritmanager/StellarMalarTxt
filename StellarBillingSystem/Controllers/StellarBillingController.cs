@@ -545,6 +545,8 @@ namespace HealthCare.Controllers
             {
                 if (existingCustomer.IsDelete)
                 {
+                    ViewBag.Message = "Cannot update. Customer Number is marked as deleted.";
+
                     return View("CustomerMaster", model);
                 }
                 existingCustomer.CustomerID = model.CustomerID;
@@ -578,8 +580,6 @@ namespace HealthCare.Controllers
 
             ViewBag.Message = "Saved Successfully";
 
-
-
             return View("CustomerMaster", model);
         }
         public async Task<IActionResult> GetCustomer(CustomerMasterModel model)
@@ -596,12 +596,12 @@ namespace HealthCare.Controllers
                 return BadRequest("Mobile number is required");
             }
 
-            var customer = await _billingsoftware.SHCustomerMaster.FindAsync(model.MobileNumber, model.BranchID);
+            var customer = await _billingsoftware.SHCustomerMaster.FirstOrDefaultAsync(x => x.IsDelete == false && x.MobileNumber == model.MobileNumber && x.BranchID == model.BranchID);
 
             if (customer == null)
             {
                 model = new CustomerMasterModel();
-                ViewBag.ErrorMessage = "Mobile Number not found or customer is deleted";
+                ViewBag.ErrorMessage = "Customer Number not found";
                 return View("CustomerMaster", model); // Return an empty model if not found or deleted
             }
 
@@ -642,7 +642,7 @@ namespace HealthCare.Controllers
 
                 _billingsoftware.Entry(customer).State = EntityState.Modified;
                 await _billingsoftware.SaveChangesAsync();
-                ViewBag.Message = "Retrieve Successfully";
+                ViewBag.Message = "Customer Number Retrieved Successfully";
             }
             else
             {
@@ -680,7 +680,7 @@ namespace HealthCare.Controllers
 
             if (existingCustomer.IsDelete)
             {
-                ViewBag.ErrorMessage = "Cannot update. GodowmnID is marked as deleted.";
+                ViewBag.ErrorMessage = "Customer Number Already Deleted";
                 return View("CustomerMaster", model);
             }
 
@@ -1655,7 +1655,7 @@ namespace HealthCare.Controllers
                 {
                     if (restodelete.IsDelete)
                     {
-                        ViewBag.ErrorMessage = "Cannot update. Product is marked as deleted.";
+                        ViewBag.ErrorMessage = "ResourceTypeID Already Deleted";
                         return View("ResourceTypeMaster", model);
                     }
 
@@ -1782,7 +1782,7 @@ namespace HealthCare.Controllers
                 {
                     if (roletodelete.Isdelete)
                     {
-                        ViewBag.ErrorMessage = "Cannot update. Product is marked as deleted.";
+                        ViewBag.ErrorMessage = "RollID Already Deleted";
                         return View("RoleAccess", model);
                     }
 
@@ -1911,7 +1911,7 @@ namespace HealthCare.Controllers
                     {
                         if (rolltodelete.IsDelete)
                         {
-                            ViewBag.ErrorMessage = "Cannot update. Product is marked as deleted.";
+                            ViewBag.ErrorMessage = "RollID Deleted Succesfully";
                             return View("RollAccessMaster", model);
                         }
 
@@ -2059,7 +2059,7 @@ namespace HealthCare.Controllers
                 {
                     if (rolltypetodelete.IsDelete)
                     {
-                        ViewBag.ErrorMessage = "Cannot update. Product is marked as deleted.";
+                        ViewBag.ErrorMessage = "RollID Already Deleted ";
                         return View("RollTypeMaster", model);
                     }
 
@@ -2186,7 +2186,7 @@ namespace HealthCare.Controllers
                 {
                     if (screentodelete.IsDelete)
                     {
-                        ViewBag.ErrorMessage = "Cannot update. Product is marked as deleted.";
+                        ViewBag.ErrorMessage = "ScreenID Already Deleted";
                         return View("ScreenMaster", model);
                     }
 
@@ -2487,7 +2487,12 @@ namespace HealthCare.Controllers
                 var billMaster = _billingsoftware.SHbillmaster.FirstOrDefault(b => b.BillID == model.BillID && !b.IsDelete && b.BillDate == model.BillDate && model.BranchID == model.BranchID);
                 if (billMaster != null)
                 {
-                   
+                    if (billMaster.IsDelete)
+                    {
+                        ViewBag.DelMessage = "BillID Already Deleted";
+                        return View("CustomerBilling", model);
+                    }
+
                     billMaster.IsDelete = true;
 
                     _billingsoftware.SaveChanges();
@@ -2566,6 +2571,12 @@ namespace HealthCare.Controllers
 
                     if (updateMaster != null)
                     {
+                        if (updateMaster.IsDelete)
+                        {
+                            ViewBag.Message = "Cannot update. Product is marked as deleted.";
+                            return View("CustomerBilling", model);
+                        }
+
 
                         updateMaster.BillID = masterModel.BillID;
                         updateMaster.BillDate = masterModel.BillDate;
@@ -2653,6 +2664,12 @@ namespace HealthCare.Controllers
 
             if (product != null)
             {
+                if (product.IsDelete)
+                {
+                    ViewBag.DelMessage = "BillID Already Deleted";
+                    return View("CustomerBilling", model);
+                }
+
                 // Update the IsDelete field to true
                 var productToUpdate = _billingsoftware.SHbilldetails
                     .First(p => p.ProductID == productId && p.BranchID == model.BranchID);

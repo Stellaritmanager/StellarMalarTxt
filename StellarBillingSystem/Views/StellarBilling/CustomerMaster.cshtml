@@ -1,9 +1,13 @@
 ﻿@model CustomerMasterModel
 
 @{
-    ViewData["Title"] = "Customer Master";
+    ViewData["Title"] = "CustomerMaster";
     Layout = "~/Views/Shared/_ContentNavbarLayout.cshtml";
 }
+
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
 <script>
     function showPopup(message) {
         var popup = document.getElementById("popupMessage");
@@ -18,9 +22,27 @@
         });
     }
 
-    function handleMessages(message) {
-        showPopup(message);
-    }
+    $(document).ready(function () {
+        var message = "@ViewBag.Message";
+        if (message) {
+            showPopup(message);
+        }
+
+        var errorMessage = "@ViewBag.ErrorMessage";
+        if (errorMessage) {
+            showPopup(errorMessage);
+        }
+
+        var delMessage = "@ViewBag.delMessage";
+        if (delMessage) {
+            showPopup(delMessage);
+        }
+
+        var delRetrieve = "@ViewBag.DelRetrieve";
+        if (delRetrieve) {
+            showPopup(delRetrieve);
+        }
+    });
 </script>
 
 <div id="popupMessage" class="dividerblack popborder" style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background-color: #f0f0f0; color: #fff; padding: 30px; border-radius: 10px; z-index: 1000; display: none; text-align: center;">
@@ -33,29 +55,6 @@
         border: 10px solid #fff;
     }
 </style>
-
-<script>
-    function showPopup(message) {
-        var popup = document.getElementById("popupMessage");
-        var popupText = document.getElementById("popupMessageText");
-        var popupOKButton = document.getElementById("popupOKButton");
-
-        popupOKButton.addEventListener("click", function () {
-            popup.style.display = "none"; // Hide the popup when OK button is clicked
-        });
-    }
-
-    function handleMessages(message) {
-        showPopup(message);
-    }
-
-</script>
-
-
-<div id="popupMessage" class="dividerblack" style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background-color: #f0f0f0; color: black; padding: 30px; border: 10px solid white; border-radius: 10px; z-index: 1000; display: none; text-align: center;">
-    <span id="popupMessageText" style="display: block; margin-bottom: 20px;"></span>
-    <button id="popupOKButton" style="padding: 10px 20px; color: white; border: none; border-radius: 5px; cursor: pointer;">OK</button>
-</div>
 
 <form asp-controller="StellarBilling">
     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
@@ -176,7 +175,7 @@
 
                     <div class="form-floating form-floating-outline mb-4">
 
-                                <input asp-for="City" class="form-control" placeholder="City" value="@Model.City" />
+                                <input asp-for="City" class="form-control" placeholder="City" value="@Model.City" pattern="^[A-Za-z\s]+$" title="City Name should contain only letters and spaces" />
                         <label asp-for="City" class="control-label"></label>
 
                         <span asp-validation-for="City" class="text-danger"></span>
@@ -216,33 +215,6 @@
         </div>
         </div> *@
     </div>
-
-    @if (ViewBag.Message != null)
-    {
-        <script>
-            handleMessages("@ViewBag.Message");
-        </script>
-    }
-    @if (ViewBag.ErrorMessage != null)
-    {
-        <script>
-            handleMessages("@ViewBag.ErrorMessage");
-        </script>
-    }
-    @if (ViewBag.delMessage != null)
-    {
-        <script>
-            handleMessages("@ViewBag.delMessage");
-        </script>
-    }
-
-    @if (ViewBag.DelRetrieve != null)
-    {
-        <script>
-            handleMessages("@ViewBag.DelRetrieve");
-        </script>
-    }
-
 
 </form>
 
