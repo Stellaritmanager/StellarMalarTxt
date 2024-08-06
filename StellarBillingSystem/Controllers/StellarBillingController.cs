@@ -736,7 +736,7 @@ namespace HealthCare.Controllers
                 {
                     if (deletetodiscount.IsDelete)
                     {
-                        ViewBag.ErrorMessage = "Cannot update. GodowmnID is marked as deleted.";
+                        ViewBag.ErrorMessage = "Discount Category Not Found";
                         return View("DiscountCategoryMaster", model);
                     }
 
@@ -3118,6 +3118,146 @@ namespace HealthCare.Controllers
 
             return View("PaymentBilling",model);
         }
+
+
+
+        public async Task<IActionResult> GetBranchMaster(BranchMasterModel model, string buttontype)
+        {
+          
+            if (buttontype == "Get")
+            {
+                var getbranch = await _billingsoftware.SHBranchMaster.FirstOrDefaultAsync(x => x.BracnchID == model.BracnchID && x.IsDelete == false);
+                if (getbranch != null)
+                {
+                    return View("BranchMaster", getbranch);
+                }
+                else
+                {
+                    BranchMasterModel par = new BranchMasterModel();
+                    ViewBag.getMessage = "No Data found for this Branch ID";
+                    return View("BranchMaster", par);
+                }
+            }
+            else if (buttontype == "Delete")
+            {
+                var branchdel = await _billingsoftware.SHBranchMaster.FirstOrDefaultAsync(x => x.BracnchID == model.BracnchID && x.IsDelete == false);
+                if (branchdel != null)
+                {
+                    if (branchdel.IsDelete)
+                    {
+                        ViewBag.ErrorMessage = "Cannot update. Product is marked as deleted.";
+                        return View("BranchMaster", model);
+                    }
+
+                    branchdel.IsDelete = true;
+                    await _billingsoftware.SaveChangesAsync();
+
+                    ViewBag.delMessage = "Branch deleted successfully";
+                    model = new BranchMasterModel();
+                    return View("BranchMaster", model);
+                }
+                else
+                {
+                    ViewBag.delnoMessage = "Branch not found";
+                    model = new BranchMasterModel();
+                    return View("BranchMaster", model);
+                }
+
+            }
+
+            else if (buttontype == "DeleteRetrieve")
+            {
+                var branchdelret = await _billingsoftware.SHBranchMaster.FirstOrDefaultAsync(x => x.BracnchID == model.BracnchID && x.IsDelete == true);
+                if (branchdelret != null)
+                {
+                    branchdelret.IsDelete = false;
+
+                    await _billingsoftware.SaveChangesAsync();
+
+                    model.BracnchID = branchdelret.BracnchID;
+                    model.BranchName = branchdelret.BranchName;
+                    model.PhoneNumber1 = branchdelret.PhoneNumber1;
+                    model.PhoneNumber2 = branchdelret.PhoneNumber2;
+                    model.Address1 = branchdelret.Address1;
+                    model.Address2 = branchdelret.Address2;
+                    model.Country = branchdelret.Country;
+                    model.City = branchdelret.City;
+                    model.State = branchdelret.State;
+                    model.ZipCode = branchdelret.ZipCode;
+                    model.IsFranchise = branchdelret.IsFranchise;
+                    model.email = branchdelret.email;
+
+
+                    ViewBag.retMessage = "Deleted Branch retrieved successfully";
+                }
+                else
+                {
+                    ViewBag.noretMessage = "Branch not found";
+                }
+                return View("BranchMaster", model);
+            }
+
+            if (string.IsNullOrWhiteSpace(model.BranchName))
+            {
+                ViewBag.BMessage = "Please enter Branch Name.";
+                return View("BranchMaster", model);
+            }
+
+            var existingBranch = await _billingsoftware.SHBranchMaster.FindAsync(model.BracnchID, model.BranchName);
+
+
+
+
+            if (existingBranch != null)
+            {
+                if (existingBranch.IsDelete)
+                {
+                    ViewBag.ErrorMessage = "Cannot update. Product is marked as deleted.";
+                    return View("BranchMaster", model);
+                }
+
+                existingBranch.BracnchID = model.BracnchID;
+                existingBranch.BranchName = model.BranchName;
+                existingBranch.PhoneNumber1 = model.PhoneNumber1;
+                existingBranch.PhoneNumber2 = model.PhoneNumber2;
+                existingBranch.Address1 = model.Address1;
+                existingBranch.Address2 = model.Address2;
+                existingBranch.Country = model.Country;
+                existingBranch.City = model.City;
+                existingBranch.State = model.State;
+                existingBranch.ZipCode = model.ZipCode;
+                existingBranch.IsFranchise = model.IsFranchise;
+                existingBranch.email = model.email;
+                existingBranch.LastUpdatedDate = DateTime.Now.ToString();
+                existingBranch.lastUpdatedUser = User.Claims.First().Value.ToString();
+                existingBranch.lastUpdatedMachine = Request.HttpContext.Connection.RemoteIpAddress.ToString();
+
+                _billingsoftware.Entry(existingBranch).State = EntityState.Modified;
+
+            }
+            else
+            {
+
+                model.LastUpdatedDate = DateTime.Now.ToString();
+                model.lastUpdatedUser = User.Claims.First().Value.ToString();
+                model.lastUpdatedMachine = Request.HttpContext.Connection.RemoteIpAddress.ToString();
+                _billingsoftware.SHBranchMaster.Add(model);
+            }
+            await _billingsoftware.SaveChangesAsync();
+
+            ViewBag.Message = "Saved Successfully";
+
+            model = new BranchMasterModel();
+            return View("BranchMaster", model);
+
+
+        }
+
+
+
+
     }
+
+
 }
 
