@@ -2452,7 +2452,8 @@ namespace StellarBillingSystem.Controllers
                 var billDate = model.BillDate;
                 var customerNumber = model.CustomerNumber;
 
-                var updatedMasterex = _billingsoftware.SHbilldetails.FirstOrDefault(m =>
+
+                var updatedMasterex = _billingsoftware.SHbillmaster.FirstOrDefault(m =>
                     m.BillID == billID && m.BillDate == billDate && m.CustomerNumber == customerNumber && m.IsDelete == false && m.BranchID == model.BranchID);
 
                 if (updatedMasterex != null)
@@ -2556,30 +2557,34 @@ namespace StellarBillingSystem.Controllers
                     TempData.Keep("BranchID");
                 }
 
-            
-                //   var getexistingprice = await _billingsoftware.SHbilldetails.FirstOrDefaultAsync(x => x.BillID == model.BillID && x.BillDate == model.BillDate && x.CustomerNumber == CustomerNumber && x.BranchID == model.BranchID);
-                var getexistingprice = await _billingsoftware.SHbilldetails
-             .Where(x => x.BillID == model.BillID && x.BillDate == model.BillDate && x.CustomerNumber == CustomerNumber && x.BranchID == model.BranchID && x.IsDelete == false)
-             .ToListAsync();
 
-                if (getexistingprice!=null )
+                /* //   var getexistingprice = await _billingsoftware.SHbilldetails.FirstOrDefaultAsync(x => x.BillID == model.BillID && x.BillDate == model.BillDate && x.CustomerNumber == CustomerNumber && x.BranchID == model.BranchID);
+                 var getexistingprice = await _billingsoftware.SHbilldetails
+              .Where(x => x.BillID == model.BillID && x.BillDate == model.BillDate && x.CustomerNumber == CustomerNumber && x.BranchID == model.BranchID && x.IsDelete == false)
+              .ToListAsync();
+
+                 if (getexistingprice!=null )
+                 {
+                     var totalPrice = getexistingprice.Sum(x =>
+                     {
+                         decimal price;
+                         return decimal.TryParse(x.NetPrice, out price) ? price : 0;
+                     });
+
+                     var totalNetPrice = getexistingprice.Sum(x =>
+                     {
+                         decimal netPrice;
+                         return decimal.TryParse(x.NetPrice, out netPrice) ? netPrice : 0;
+                     });
+ */
+                BusinessClassBilling busbill = new BusinessClassBilling(_billingsoftware);
+                var billingSummary = await busbill.CalculateBillingDetails(BillID, BillDate, CustomerNumber, model.TotalDiscount, model.CGSTPercentage, model.SGSTPercentage);
+                if (billingSummary != null)
                 {
-                    var totalPrice = getexistingprice.Sum(x =>
-                    {
-                        decimal price;
-                        return decimal.TryParse(x.Price, out price) ? price : 0;
-                    });
-
-                    var totalNetPrice = getexistingprice.Sum(x =>
-                    {
-                        decimal netPrice;
-                        return decimal.TryParse(x.NetPrice, out netPrice) ? netPrice : 0;
-                    });
-
 
                     // Retrieve the existing master record
                     var updateMaster = await _billingsoftware.SHbillmaster
-                        .FirstOrDefaultAsync(m => m.BillID == model.BillID && m.BranchID == model.BranchID && m.BillDate==model.BillDate && m.CustomerNumber==model.CustomerNumber);
+                        .FirstOrDefaultAsync(m => m.BillID == model.BillID && m.BranchID == model.BranchID && m.BillDate == model.BillDate && m.CustomerNumber == model.CustomerNumber);
 
                     if (updateMaster != null)
                     {
@@ -2589,17 +2594,18 @@ namespace StellarBillingSystem.Controllers
                             return View("CustomerBilling", model);
                         }
 
+                      
 
                         updateMaster.BillID = masterModel.BillID;
                         updateMaster.BillDate = masterModel.BillDate;
                         updateMaster.CustomerNumber = masterModel.CustomerNumber;
-                        updateMaster.Totalprice = totalPrice.ToString("F2");
+                        updateMaster.Totalprice = billingSummary.Totalprice;
                         updateMaster.TotalDiscount = masterModel.TotalDiscount;
-                        updateMaster.NetPrice = totalNetPrice.ToString("F2");
+                        updateMaster.NetPrice = billingSummary.NetPrice;
                         updateMaster.CGSTPercentage = masterModel.CGSTPercentage;
-                        updateMaster.CGSTPercentageAmt = masterModel.CGSTPercentageAmt;
+                        updateMaster.CGSTPercentageAmt = billingSummary.CGSTPercentageAmt;
                         updateMaster.SGSTPercentage = masterModel.SGSTPercentage;
-                        updateMaster.SGSTPercentageAmt = masterModel.SGSTPercentageAmt;
+                        updateMaster.SGSTPercentageAmt = billingSummary.SGSTPercentageAmt;
                         updateMaster.BranchID = masterModel.BranchID;
                         updateMaster.Lastupdateduser = User.Claims.First().Value.ToString();
                         updateMaster.Lastupdatedmachine = Request.HttpContext.Connection.RemoteIpAddress.ToString();
@@ -2610,8 +2616,10 @@ namespace StellarBillingSystem.Controllers
                     }
                     else
                     {
-                        masterModel.Totalprice = totalPrice.ToString("F2");
-                        masterModel.NetPrice = totalNetPrice.ToString("F2");
+                        masterModel.Totalprice = billingSummary.Totalprice;
+                        masterModel.CGSTPercentageAmt = billingSummary.CGSTPercentageAmt;
+                        masterModel.SGSTPercentageAmt = billingSummary.SGSTPercentageAmt;
+                        masterModel.NetPrice = billingSummary.NetPrice;
                         masterModel.Lastupdateduser = User.Claims.First().Value.ToString();
                         masterModel.Lastupdatedmachine = Request.HttpContext.Connection.RemoteIpAddress.ToString();
                         masterModel.Lastupdateddate = DateTime.Now.ToString();
@@ -2619,7 +2627,7 @@ namespace StellarBillingSystem.Controllers
                         _billingsoftware.SHbillmaster.Add(masterModel);
 
                     }
-
+                
 
                     _billingsoftware.SaveChanges();
 
