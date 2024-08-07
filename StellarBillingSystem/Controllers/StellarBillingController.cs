@@ -20,7 +20,7 @@ using System.Data;
 using System.Linq;
 using System.Security.Cryptography;
 
-namespace HealthCare.Controllers
+namespace StellarBillingSystem.Controllers
 {
     [Authorize]
     public class StellarBillingController : Controller
@@ -3164,12 +3164,15 @@ namespace HealthCare.Controllers
                 TempData.Keep("BranchID");
             }
 
-            model.StrBillvalue = BusinessClassCommon.getbalance(_billingsoftware, model.PaymentId, model.BillId,model.BranchID);
+            model.StrBillvalue = BusinessClassCommon.getbalance(_billingsoftware, model.PaymentId, model.BillId,model.BranchID, model.BillDate);
 
             if (buttonType == "GetBill")
             {
                 var exbill = await _billingsoftware.SHbillmaster.Where(x => x.BillID == model.BillId && x.BillDate ==model.BillDate && x.BranchID == model.BranchID).FirstOrDefaultAsync();
-                model.Balance = exbill.NetPrice;
+                if(exbill!=null)
+                    model.Balance = exbill.NetPrice;
+                else
+                    ViewBag.Message = "Bill ID given was not available, Either it was belongs to different branch,enter correct Bill ID";
             }
 
             if(buttonType == "DeletePayment")
@@ -3195,23 +3198,31 @@ namespace HealthCare.Controllers
 
                 model = objnew;
             }
-            if(buttonType == "GetPayment")
+            if (buttonType == "GetPayment")
             {
                 var selectDBpayment = _billingsoftware.SHPaymentDetails.Where(x => x.PaymentId == model.PaymentId && x.BranchID == model.BranchID).ToList();
 
-                var SelectPayMas = _billingsoftware.SHPaymentMaster.SingleOrDefault(x => x.BillId == model.BillId && x.BillDate == model.BillDate && x.PaymentId == model.PaymentId && x.BranchID == model.BranchID);
 
-                if(model.Viewpayment ==null)
-                    model.Viewpayment = selectDBpayment;
+                var SelectPayMas = _billingsoftware.SHPaymentMaster.SingleOrDefault(x => x.BillId == model.BillId && x.PaymentId == model.PaymentId && x.BranchID == model.BranchID);
 
-                model.BillDate = SelectPayMas.BillDate;
-                model.PaymentId = SelectPayMas.PaymentId;
-                model.BranchID = SelectPayMas.BranchID;
-                model.Balance = SelectPayMas.Balance;
-                model.BillId = SelectPayMas.BillId;
+                if (SelectPayMas != null && selectDBpayment != null)
+                {
 
+                    if (model.Viewpayment == null)
+                        model.Viewpayment = selectDBpayment;
+
+                    model.BillDate = SelectPayMas.BillDate;
+                    model.PaymentId = SelectPayMas.PaymentId;
+                    model.BranchID = SelectPayMas.BranchID;
+                    model.Balance = SelectPayMas.Balance;
+                    model.BillId = SelectPayMas.BillId;
+
+                }
+                else
+                {
+                    ViewBag.Message = "Payment ID given is not available, Either it was belongs to different branch,enter correct Payment ID";
+                }
             }
-
             if (buttonType == "DeletePaymentDetail")
             {
                 //Delete from database
