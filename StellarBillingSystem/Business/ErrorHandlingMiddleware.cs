@@ -36,7 +36,7 @@ namespace StellarBillingSystem.Business
                 context.Session.SetString("ErrorMessage",ex.Message.ToString());
                 context.Session.SetString("ScreenName", context.GetEndpoint().DisplayName.ToString());
 
-                context.Response.Redirect("./Error/Error");
+                context.Response.Redirect("./Error");
                 
             }
         }
