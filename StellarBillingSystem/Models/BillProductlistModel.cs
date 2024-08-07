@@ -28,6 +28,8 @@
         private string sGSTPercentage;
         private string cGSTPercentageAmt;
         private string sGSTPercentageAmt;
+       
+
 
         public string BillID { get => billID; set => billID = value; }
         public string BillDate { get => billDate; set => billDate = value; }

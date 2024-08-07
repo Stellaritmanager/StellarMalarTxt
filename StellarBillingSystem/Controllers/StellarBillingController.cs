@@ -18,6 +18,7 @@ using StellarBillingSystem.Context;
 using StellarBillingSystem.Models;
 using System.Data;
 using System.Linq;
+using System.Security.Cryptography;
 
 namespace HealthCare.Controllers
 {
@@ -2404,6 +2405,7 @@ namespace HealthCare.Controllers
                         detailModel.Price = product.Price;
                         detailModel.Quantity = Quantity;
                         detailModel.NetPrice = model.NetPrice;
+                        detailModel.Totalprice = model.NetPrice;
                         detailModel.BillID = BillID;
                         detailModel.BillDate = BillDate;
                         detailModel.CustomerNumber = CustomerNumber;
@@ -2453,35 +2455,50 @@ namespace HealthCare.Controllers
                 var customerNumber = model.CustomerNumber;
 
 
-                var updatedMasterex = _billingsoftware.SHbillmaster.FirstOrDefault(m =>
-                    m.BillID == billID && m.BillDate == billDate && m.CustomerNumber == customerNumber && m.IsDelete == false && m.BranchID == model.BranchID);
+                var exbillingDetails = _billingsoftware.SHbilldetails
+        .Where(d => d.BillID == billID && d.BranchID == model.BranchID && d.IsDelete == false && d.BillDate == billDate && d.CustomerNumber == customerNumber)
+        .ToList();
 
-                if (updatedMasterex != null)
+                // Check if there are any bill details
+                if (exbillingDetails != null && exbillingDetails.Count > 0)
                 {
-                    ViewBag.TotalPrice = updatedMasterex.Totalprice;
-                    ViewBag.TotalDiscount = updatedMasterex.TotalDiscount;
-                    ViewBag.NetPrice = updatedMasterex.NetPrice;
-                
-                    var exbillingDetails = _billingsoftware.SHbilldetails
-                        .Where(d => d.BillID == billID && d.BranchID == model.BranchID && d.IsDelete == false && d.BillDate == billDate && d.CustomerNumber == customerNumber)
-                        .ToList();
+                    // Retrieve corresponding master record if available
+                    var updatedMasterex = _billingsoftware.SHbillmaster
+                        .FirstOrDefault(m => m.BillID == billID && m.BillDate == billDate && m.CustomerNumber == customerNumber && m.IsDelete == false && m.BranchID == model.BranchID);
 
-                    // Prepare the view model to pass to the view
+                    // Prepare the view model
                     var viewModel = new BillProductlistModel
                     {
-                        MasterModel = new BillingMasterModel
+                        MasterModel = updatedMasterex != null ? new BillingMasterModel
                         {
-                            BillID = billID,
+                            BillID = updatedMasterex.BillID,
                             BillDate = updatedMasterex.BillDate,
-                            CustomerNumber = updatedMasterex.CustomerNumber
-                        },
+                            CustomerNumber = updatedMasterex.CustomerNumber,
+                            Totalprice = updatedMasterex.Totalprice,
+                            TotalDiscount = updatedMasterex.TotalDiscount,
+                            NetPrice = updatedMasterex.NetPrice
+                        } : null,
                         Viewbillproductlist = exbillingDetails,
                         BillID = billID,
-                        BillDate = updatedMasterex.BillDate,
-                        CustomerNumber = updatedMasterex.CustomerNumber
+                        BillDate = billDate,
+                        CustomerNumber = customerNumber
                     };
 
+                    ViewBag.TotalPrice = updatedMasterex?.Totalprice;
+                    ViewBag.TotalDiscount = updatedMasterex?.TotalDiscount;
+                    ViewBag.NetPrice = updatedMasterex?.NetPrice;
+
+
                     return View("CustomerBilling", viewModel);
+                }
+
+            else
+            {
+                BillProductlistModel promodel = new BillProductlistModel();
+                ViewBag.Getnotfound = "No Data Found For This ID";
+
+                return View("CustomerBilling", promodel);
+            }
                 }
                 else
                 {
@@ -2493,7 +2510,7 @@ namespace HealthCare.Controllers
                 }
 
 
-            }
+
 
             if (buttonType == "Delete Bill")
             {
@@ -2558,25 +2575,6 @@ namespace HealthCare.Controllers
                 }
 
 
-                /* //   var getexistingprice = await _billingsoftware.SHbilldetails.FirstOrDefaultAsync(x => x.BillID == model.BillID && x.BillDate == model.BillDate && x.CustomerNumber == CustomerNumber && x.BranchID == model.BranchID);
-                 var getexistingprice = await _billingsoftware.SHbilldetails
-              .Where(x => x.BillID == model.BillID && x.BillDate == model.BillDate && x.CustomerNumber == CustomerNumber && x.BranchID == model.BranchID && x.IsDelete == false)
-              .ToListAsync();
-
-                 if (getexistingprice!=null )
-                 {
-                     var totalPrice = getexistingprice.Sum(x =>
-                     {
-                         decimal price;
-                         return decimal.TryParse(x.NetPrice, out price) ? price : 0;
-                     });
-
-                     var totalNetPrice = getexistingprice.Sum(x =>
-                     {
-                         decimal netPrice;
-                         return decimal.TryParse(x.NetPrice, out netPrice) ? netPrice : 0;
-                     });
- */
                 BusinessClassBilling busbill = new BusinessClassBilling(_billingsoftware);
                 var billingSummary = await busbill.CalculateBillingDetails(BillID, BillDate, CustomerNumber, model.TotalDiscount, model.CGSTPercentage, model.SGSTPercentage);
                 if (billingSummary != null)
@@ -2620,6 +2618,7 @@ namespace HealthCare.Controllers
                         masterModel.CGSTPercentageAmt = billingSummary.CGSTPercentageAmt;
                         masterModel.SGSTPercentageAmt = billingSummary.SGSTPercentageAmt;
                         masterModel.NetPrice = billingSummary.NetPrice;
+                        masterModel.Billby = User.Claims.First().Value.ToString();
                         masterModel.Lastupdateduser = User.Claims.First().Value.ToString();
                         masterModel.Lastupdatedmachine = Request.HttpContext.Connection.RemoteIpAddress.ToString();
                         masterModel.Lastupdateddate = DateTime.Now.ToString();
@@ -2634,10 +2633,48 @@ namespace HealthCare.Controllers
 
                 }
 
-               
+
+                // Save points calculation
+                var checkpoints = await _billingsoftware.SHBillingPoints.FirstOrDefaultAsync(x => x.BillID == model.BillID && x.CustomerNumber == CustomerNumber);
+                var pointsMaster = await _billingsoftware.SHPointsMaster.FirstOrDefaultAsync();
+
+                if (pointsMaster != null)
+                {
+                    decimal netPointsRatio = Convert.ToDecimal(pointsMaster.NetPoints) / Convert.ToDecimal(pointsMaster.NetPrice);
+                    decimal points = Convert.ToDecimal(billingSummary.NetPrice) * netPointsRatio;
+
+                    if (checkpoints != null)
+                    {
+                        // Update existing points record
+                        checkpoints.NetPrice = billingSummary.NetPrice;
+                        checkpoints.Points = points.ToString("F2");
+                        checkpoints.IsUsed = false;
+                        checkpoints.DateofReedem = null;
+
+                        _billingsoftware.Entry(checkpoints).State = EntityState.Modified;
+                    }
+                    else
+                    {
+                        // Add new points record
+                        var billingPoints = new BillingPointsModel
+                        {
+                            BillID = BillID,
+                            CustomerNumber = CustomerNumber,
+                            NetPrice = billingSummary.NetPrice,
+                            Points = points.ToString("F2"),
+                            IsUsed = false,
+                            DateofReedem = null
+                        };
+
+                        _billingsoftware.SHBillingPoints.Add(billingPoints);
+                    }
+
+                    await _billingsoftware.SaveChangesAsync();
+                }
+            
 
 
-                var updatedMaster = await _billingsoftware.SHbillmaster
+            var updatedMaster = await _billingsoftware.SHbillmaster
        .Where(m => m.BillID == masterModel.BillID && m.BranchID == model.BranchID && m.BillDate==masterModel.BillDate&&m.CustomerNumber==masterModel.CustomerNumber)
        .FirstOrDefaultAsync();
 
@@ -2657,10 +2694,81 @@ namespace HealthCare.Controllers
                 model.Viewbillproductlist = billingDetails;
 
 
-                ViewBag.Message = "Saved Successfully";
+                ViewBag.SaveMessage = "Saved Successfully";
+             
              
             }
-            return View("CustomerBilling", model);
+
+            if (buttonType == "Get Points")
+            {
+
+                var billingPoints = await _billingsoftware.SHBillingPoints
+          .Where(bp => bp.CustomerNumber == CustomerNumber && !bp.IsUsed)
+          .ToListAsync();
+
+                var totalPoints = billingPoints.Sum(bp => decimal.TryParse(bp.Points, out decimal pts) ? pts : 0);
+
+                ViewBag.Points = totalPoints.ToString("F2");
+
+
+                var updatedMaster = await _billingsoftware.SHbillmaster
+          .FirstOrDefaultAsync(m => m.BillID == BillID && m.BranchID == model.BranchID && m.BillDate == BillDate && m.CustomerNumber == CustomerNumber);
+
+                if (updatedMaster != null)
+                {
+                    ViewBag.TotalPrice = updatedMaster.Totalprice;
+                    ViewBag.TotalDiscount = updatedMaster.TotalDiscount;
+                    ViewBag.NetPrice = updatedMaster.NetPrice;
+                }
+
+                var billingDetails = await _billingsoftware.SHbilldetails
+                    .Where(d => d.BillID == BillID && d.BranchID == model.BranchID && d.BillDate == BillDate && d.CustomerNumber == CustomerNumber)
+                    .ToListAsync();
+
+                model.MasterModel = updatedMaster;
+                model.Viewbillproductlist = billingDetails;
+
+             
+            }
+
+            if (buttonType == "Reedem Points")
+            {
+
+                var billingPoints = await _billingsoftware.SHBillingPoints
+           .Where(bp => bp.CustomerNumber == CustomerNumber && !bp.IsUsed)
+           .ToListAsync();
+
+                var totalPoints = billingPoints.Sum(bp => decimal.TryParse(bp.Points, out decimal pts) ? pts : 0);
+
+                var updatedMaster = await _billingsoftware.SHbillmaster
+                    .FirstOrDefaultAsync(m => m.BillID == BillID && m.BranchID == model.BranchID && m.BillDate == BillDate && m.CustomerNumber == CustomerNumber);
+
+                if (updatedMaster != null)
+                {
+                    decimal netPrice = decimal.TryParse(updatedMaster.NetPrice, out decimal price) ? price : 0;
+                   var Total =  netPrice - totalPoints;
+
+                    updatedMaster.NetPrice = Total.ToString("F2");
+                    _billingsoftware.Entry(updatedMaster).State = EntityState.Modified;
+                    await _billingsoftware.SaveChangesAsync();
+
+                    ViewBag.NetPrice = updatedMaster.NetPrice;
+                }
+
+                foreach (var point in billingPoints)
+                {
+                    point.IsUsed = true;
+                    point.DateofReedem = DateTime.Now.ToString();
+                    _billingsoftware.Entry(point).State = EntityState.Modified;
+                }
+
+                await _billingsoftware.SaveChangesAsync();
+
+                ViewBag.SaveMessage = "Points Reedem Successfully";
+            }
+
+      
+                return View("CustomerBilling", model);
         }
 
 
@@ -2746,6 +2854,10 @@ namespace HealthCare.Controllers
             }
 
             return View(model);
+
+
+
+
 }
 
 
