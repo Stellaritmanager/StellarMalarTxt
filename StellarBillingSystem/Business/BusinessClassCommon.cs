@@ -91,11 +91,11 @@ namespace StellarBillingSystem.Business
 
             if (Fromdate!=null&Todate!=null)
             {
-                sqlQuery = sqlQuery + "and " + Datecolumn + " between '" + Fromdate + "' and '" + Todate +"' ";
+                sqlQuery = sqlQuery + " and " + Datecolumn + " between '" + Fromdate + "' and '" + Todate +"' ";
             }
             else if (Fromdate!=null)
             {
-                sqlQuery = sqlQuery + "and " + Datecolumn + " >= '"+ Fromdate +"'";
+                sqlQuery = sqlQuery + " and " + Datecolumn + " >= '"+ Fromdate +"'";
 
             }
             else if (Todate!=null)
