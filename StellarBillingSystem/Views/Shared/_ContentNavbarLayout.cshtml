@@ -11,9 +11,11 @@
     ViewData["isFlex"] = (ViewData["isFlex"] ??= false);
     ViewData["isFooter"] = (ViewData["isFooter"] ??= true);
     ViewData["username"] = TempData["username"].ToString();
+    @if (TempData["BranchInitail"] != null && TempData["BranchName"] != null)
+    {
      ViewData["BranchIntial"] = TempData["BranchInitail"].ToString();
      ViewData["BranchName"] = TempData["BranchName"].ToString();
-
+    }   
     @* ViewData["customizerHidden"] = (ViewData["customizerHidden"] ??= "customizer-hide"); *@
 
 
