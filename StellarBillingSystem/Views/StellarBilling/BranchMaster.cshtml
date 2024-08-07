@@ -92,25 +92,20 @@
                                 <span asp-validation-for="PhoneNumber2" class="text-danger"></span>
                             </div>
 
-                            <div class="input-group input-group-merge speech-to-text form-floating form-floating-outline mb-4">
-                                <textarea asp-for="Address1" class="form-control" placeholder="Branch Address1" aria-describedby="text-to-speech-addon"></textarea>
+
+                            <div class="form-floating form-floating-outline mb-4">
+                                <textarea asp-for="Address1" value="@Model.Address1" class="form-control" placeholder="Branch Address1" aria-describedby="text-to-speech-addon"></textarea>
                                 <label asp-for="Address1" class="control-label">Branch Address1</label>
-                                <span class="input-group-text" id="text-to-speech-addon">
-                                    <i class="mdi mdi-microphone-outline cursor-pointer text-to-speech-toggle"></i>
-                                </span>
                                 <span asp-validation-for="Address1" class="text-danger"></span>
                             </div>
 
-                            <div class="input-group input-group-merge speech-to-text form-floating form-floating-outline mb-4">
-                                <textarea asp-for="Address2" class="form-control" placeholder="Branch Address2" aria-describedby="text-to-speech-addon"></textarea>
+
+
+                            <div class="form-floating form-floating-outline mb-4">
+                                <textarea asp-for="Address2" value="@Model.Address2" class="form-control" placeholder="Branch Address2" aria-describedby="text-to-speech-addon"></textarea>
                                 <label asp-for="Address2" class="control-label">Branch Address2</label>
-                                <span class="input-group-text" id="text-to-speech-addon">
-                                    <i class="mdi mdi-microphone-outline cursor-pointer text-to-speech-toggle"></i>
-                                </span>
-                                <span asp-validation-for="Address1" class="text-danger"></span>
+                                <span asp-validation-for="Address2" class="text-danger"></span>
                             </div>
-
-
 
                         </div>
 
