@@ -21,6 +21,7 @@ using System.Linq;
 
 namespace HealthCare.Controllers
 {
+    [Authorize]
     public class StellarBillingController : Controller
     {
         private BillingContext _billingsoftware;
@@ -3336,7 +3337,22 @@ namespace HealthCare.Controllers
 
         }
 
+        public IActionResult Error()
+        {
+            //Record error from context session
+            WebErrorsModel webErrors = new WebErrorsModel();
+            webErrors.ErrDateTime = DateTime.Now.ToString();
+            webErrors.ErrodDesc = HttpContext.Session.GetString("ErrorMessage").ToString();
+            webErrors.Username = User.Claims.First().Value.ToString();
+            webErrors.ScreenName = HttpContext.Session.GetString("ScreenName").ToString();
+            webErrors.MachineName = Request.HttpContext.Connection.RemoteIpAddress.ToString();
 
+            //Saving error into database
+            _billingsoftware.SHWebErrors.Add(webErrors);
+            _billingsoftware.SaveChangesAsync();
+
+            return View(webErrors);
+        }
 
 
     }
