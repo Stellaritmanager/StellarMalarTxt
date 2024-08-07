@@ -1761,6 +1761,9 @@ namespace HealthCare.Controllers
             ViewData["rollid"] = businessbill.RollAccessType(model.BranchID);
             ViewData["staffid"] = businessbill.GetStaffID(model.BranchID);
 
+
+
+
             if (buttontype == "Get")
             {
                 var getrol = await _billingsoftware.SHRoleaccessModel.FirstOrDefaultAsync(x => x.RollID == model.RollID && x.ScreenID == model.ScreenID && x.Isdelete == false && x.BranchID == model.BranchID);
@@ -1887,6 +1890,14 @@ namespace HealthCare.Controllers
             ViewData["staffid"] = Busbill.GetStaffID(model.BranchID);
 
 
+
+
+            if (!SelectedRollNames.Any())
+            {
+                ViewBag.ErrorMessage = "Please select roll.";
+                return View("RollAccessMaster", model);
+            }
+
             if (buttontype == "Get")
             {
                 var getroll = await _billingsoftware.SHrollaccess.FirstOrDefaultAsync(x => x.StaffID == model.StaffID && x.IsDelete == false && x.BranchID == model.BranchID);
@@ -1911,7 +1922,7 @@ namespace HealthCare.Controllers
                     {
                         if (rolltodelete.IsDelete)
                         {
-                            ViewBag.ErrorMessage = "RollID Deleted Succesfully";
+                            ViewBag.ErrorMessage = "RollID Already Deleted";
                             return View("RollAccessMaster", model);
                         }
 
@@ -2440,7 +2451,7 @@ namespace HealthCare.Controllers
                 var billDate = model.BillDate;
                 var customerNumber = model.CustomerNumber;
 
-                var updatedMasterex = _billingsoftware.SHbillmaster.FirstOrDefault(m =>
+                var updatedMasterex = _billingsoftware.SHbilldetails.FirstOrDefault(m =>
                     m.BillID == billID && m.BillDate == billDate && m.CustomerNumber == customerNumber && m.IsDelete == false && m.BranchID == model.BranchID);
 
                 if (updatedMasterex != null)
@@ -2448,7 +2459,7 @@ namespace HealthCare.Controllers
                     ViewBag.TotalPrice = updatedMasterex.Totalprice;
                     ViewBag.TotalDiscount = updatedMasterex.TotalDiscount;
                     ViewBag.NetPrice = updatedMasterex.NetPrice;
-
+                
                     var exbillingDetails = _billingsoftware.SHbilldetails
                         .Where(d => d.BillID == billID && d.BranchID == model.BranchID && d.IsDelete == false && d.BillDate == billDate && d.CustomerNumber == customerNumber)
                         .ToList();
@@ -2644,7 +2655,7 @@ namespace HealthCare.Controllers
         }
 
 
-        public IActionResult DeleteProduct(string productId,BillProductlistModel model)
+        public IActionResult DeleteProduct(string productId,BillProductlistModel model, BillingDetailsModel detailModel,BillingMasterModel master)
         {
             if (TempData["BranchID"] != null)
             {
@@ -2653,7 +2664,7 @@ namespace HealthCare.Controllers
             }
 
             var product = _billingsoftware.SHbilldetails
-      .Where(p => p.ProductID == productId)
+      .Where(p => p.ProductID == productId && p.BranchID == model.BranchID && p.BillID == master.BillID && p.BillDate == master.BillDate && p.CustomerNumber == master.CustomerNumber)
       .Select(p => new
       {
           p.Quantity,
@@ -2674,7 +2685,8 @@ namespace HealthCare.Controllers
                 var productToUpdate = _billingsoftware.SHbilldetails
                     .First(p => p.ProductID == productId && p.BranchID == model.BranchID);
 
-                productToUpdate.IsDelete = true;
+                _billingsoftware.SHbilldetails.Remove(productToUpdate);
+                _billingsoftware.SaveChanges();
 
                 // Update SHRackPartionProduct to add back the quantity
                 var rackProduct = _billingsoftware.SHRackPartionProduct
@@ -2691,8 +2703,41 @@ namespace HealthCare.Controllers
             }
 
             ViewBag.DelMessage = "Deleted Product Successfully";
-            return View("CustomerBilling",model);
-        }
+
+            var billDetail = _billingsoftware.SHbilldetails
+                     .Where(b => b.BillID == model.BillID && b.ProductID == model.ProductID && b.BranchID == model.BranchID && b.IsDelete == false)
+                     .Select(b => new BillingDetailsModel
+                     {
+                         ProductID = b.ProductID,
+                         ProductName = b.ProductName,
+                         Quantity = b.Quantity,
+                         BillDate = b.BillDate,
+                         CustomerNumber = b.CustomerNumber,
+                         BillID = b.BillID
+
+                     })
+                     .FirstOrDefault();
+
+            if (billDetail != null)
+            {
+                model.Viewbillproductlist = new List<BillingDetailsModel> { billDetail };
+                model.ProductID = billDetail.ProductID;
+                model.ProductName = billDetail.ProductName;
+                model.Price = billDetail.Price;
+                model.Quantity = billDetail.Quantity;
+                model.BillID = billDetail.BillID;
+                model.BillDate = billDetail.BillDate;
+                model.CustomerNumber = billDetail.CustomerNumber;
+
+            }
+            else
+            {
+                // Handle case where no detail is found
+                model.Viewbillproductlist = new List<BillingDetailsModel>();
+            }
+
+            return View(model);
+}
 
 
 
