@@ -84,16 +84,16 @@ namespace StellarBillingSystem.Business
 
 
 
-        public List<RackpartitionViewModel> GetRackview(string partitionID, string productID,string BranchID)
+        public List<RackpartitionViewModel> GetRackview(string partitionID, string productID, string BranchID)
         {
             var result = (from p in _billingContext.SHRackPartionProduct
-                          where p.PartitionID == partitionID && p.ProductID == productID && p.Isdelete == false && p.BranchID==BranchID
+                          where p.PartitionID == partitionID && p.ProductID == productID && p.Isdelete == false && p.BranchID == BranchID
                           select new RackpartitionViewModel
                           {
                               PartitionID = p.PartitionID,
                               ProductID = p.ProductID,
-                               Noofitems= p.Noofitems
-        
+                              Noofitems = p.Noofitems
+
                           }).ToList();
             return result;
         }
@@ -168,7 +168,7 @@ namespace StellarBillingSystem.Business
                         select new ScreenMasterModel
                         {
                             ScreenId = pr.ScreenId,
-                            
+
                             ScreenName = pr.ScreenName
 
                         }).ToList();
@@ -196,7 +196,7 @@ namespace StellarBillingSystem.Business
         {
             var branchid = (
                         from pr in _billingContext.SHBranchMaster
-                        where pr.IsDelete==false
+                        where pr.IsDelete == false
                         select new BranchMasterModel
                         {
                             BracnchID = pr.BracnchID,
@@ -217,7 +217,7 @@ namespace StellarBillingSystem.Business
                         {
                             BranchInitial = pr.BranchInitial,
                             BranchName = pr.BranchName
-                            
+
 
                         }).FirstOrDefault();
             return branchidini;
@@ -256,14 +256,14 @@ namespace StellarBillingSystem.Business
         }
 
 
-        public List<String> GetRoll(string userid,string BranchID)
+        public List<String> GetRoll(string userid, string BranchID)
         {
             var query = from sm in _billingContext.SHScreenMaster
                         join rac in _billingContext.SHRoleaccessModel on sm.ScreenId equals rac.ScreenID
                         join ram in _billingContext.SHrollaccess on rac.RollID equals ram.RollID
                         join sam in _billingContext.SHStaffAdmin on ram.StaffID equals sam.StaffID
                         join s in _billingContext.SHStaffAdmin on sam.StaffID equals s.StaffID
-                        where rac.Authorized == "1" && sam.UserName == userid && sam.BranchID== BranchID
+                        where rac.Authorized == "1" && sam.UserName == userid && sam.BranchID == BranchID
                         select sm.ScreenName;
 
             var result = query.ToList();
@@ -277,7 +277,7 @@ namespace StellarBillingSystem.Business
                         join ram in _billingContext.SHrollaccess on rac.RollID equals ram.RollID
                         join sam in _billingContext.SHStaffAdmin on ram.StaffID equals sam.StaffID
                         join s in _billingContext.SHStaffAdmin on sam.StaffID equals s.StaffID
-                        where rac.Authorized == "1" && sam.UserName == userid 
+                        where rac.Authorized == "1" && sam.UserName == userid
                         select sm.ScreenName;
 
             var result = query.ToList();
@@ -317,7 +317,7 @@ namespace StellarBillingSystem.Business
         }
 
         //Procedure to print Bill details
-        public byte[] ModifyBillDoc(string pfilepath,DataTable pbillData)
+        public byte[] ModifyBillDoc(string pfilepath, DataTable pbillData)
         {
             // Path to your existing Word document
             string filePath = pfilepath;
@@ -338,7 +338,7 @@ namespace StellarBillingSystem.Business
                 //  document.InsertParagraph("This is a new paragraph added to the document.").FontSize(14).Bold();
 
                 // Add a table
-                var table = document.AddTable(pbillData.Rows.Count+1, 6);
+                var table = document.AddTable(pbillData.Rows.Count + 1, 6);
                 table.Rows[0].Cells[0].Paragraphs[0].Append("Product ID");
                 table.Rows[0].Cells[1].Paragraphs[0].Append("Product Name");
                 table.Rows[0].Cells[2].Paragraphs[0].Append("Price");
@@ -376,15 +376,15 @@ namespace StellarBillingSystem.Business
                     document.SaveAs(memoryStream);
 
                     // Convert the MemoryStream to a byte array
-                     return memoryStream.ToArray();
+                    return memoryStream.ToArray();
                 }
 
             }
-           return null;
+            return null;
         }
         public byte[] PrintBillDetails(DataTable billDetails)
         {
-            return ModifyBillDoc("..\\StellarBillingSystem\\Templates\\BillTemplate.docx",billDetails);
+            return ModifyBillDoc("..\\StellarBillingSystem\\Templates\\BillTemplate.docx", billDetails);
         }
 
         /*        public async Task<bool> UpdateProduct(string productId, bool isDelete)
@@ -475,7 +475,7 @@ namespace StellarBillingSystem.Business
                 table.Rows[0].Cells[2].Paragraphs[0].Append("Payment Transaction Number");
                 table.Rows[0].Cells[3].Paragraphs[0].Append("Payment Amount");
                 table.Rows[0].Cells[4].Paragraphs[0].Append("Payment Date");
-               
+
 
                 int rowcount = 1;
                 //Row data
@@ -532,21 +532,59 @@ namespace StellarBillingSystem.Business
             var sql = $"EXEC @Balance = dbo.GenerateBillID @BillId";
             await _billingContext.Database.ExecuteSqlRawAsync(sql, new SqlParameter("@BillId", billId), outputParameter);
 
-            
+
             if (outputParameter.Value != DBNull.Value)
             {
                 return Convert.ToInt32(outputParameter.Value);
             }
             else
             {
-                return 0; 
+                return 0;
             }
-     
+
         }
 
 
+        public async Task<BillingMasterModel> CalculateBillingDetails(string billID, string billDate, string customerNumber, string discount, string cgstPercentage, string sgstPercentage)
+        {
+            
+            var billingDetails = await _billingContext.SHbilldetails
+                .Where(x => x.BillID == billID && x.BillDate == billDate && x.CustomerNumber == customerNumber && !x.IsDelete)
+                .ToListAsync();
 
+            if (billingDetails == null || !billingDetails.Any())
+            {
+              
+                return null;
+            }
 
+            // Calculate total price
+            decimal totalPrice = billingDetails.Sum(x => decimal.TryParse(x.NetPrice, out decimal price) ? price : 0);
+
+            // Convert percentage and discount from string to decimal
+            decimal discountDecimal = decimal.TryParse(discount, out decimal discountValue) ? discountValue : 0;
+            decimal cgstPercentageDecimal = decimal.TryParse(cgstPercentage, out decimal cgstPercentageValue) ? cgstPercentageValue : 0;
+            decimal sgstPercentageDecimal = decimal.TryParse(sgstPercentage, out decimal sgstPercentageValue) ? sgstPercentageValue : 0;
+
+            // Calculate CGST and SGST amounts
+            decimal cgstAmount = (totalPrice * cgstPercentageDecimal) / 100;
+            decimal sgstAmount = (totalPrice * sgstPercentageDecimal) / 100;
+
+            // Calculate total after applying CGST and SGST
+            decimal totalWithTaxes = totalPrice + cgstAmount + sgstAmount;
+
+            // Calculate final net price after applying discount
+            decimal netPrice = totalWithTaxes - discountDecimal;
+
+            return new BillingMasterModel
+            {
+                Totalprice = totalPrice.ToString("F2"),
+                CGSTPercentageAmt = cgstAmount.ToString("F2"),
+                SGSTPercentageAmt = sgstAmount.ToString("F2"),
+                TotalDiscount = discountDecimal.ToString("F2"),
+                NetPrice = netPrice.ToString("F2")
+            };
+        }
     }
-    
-}
+
+   }

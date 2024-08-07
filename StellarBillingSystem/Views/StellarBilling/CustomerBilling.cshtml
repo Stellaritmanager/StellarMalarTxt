@@ -221,15 +221,15 @@
                         <div class="col-md-12 col-lg-6">
                                                                                                                                                                                                                                                                                                                     
                             <div class="form-floating form-floating-outline mb-4">
-                                <input type="NetPrice" class="form-control" name="NetPrice" placeholder="Net Price"  />
-                                <label asp-for="NetPrice" class="control-label">CGST%</label>
+                                <input type="CGSTPercentage" class="form-control" name="CGSTPercentage" placeholder="CGSTPercentage" value="@Model.CGSTPercentage" />
+                                <label asp-for="CGSTPercentage" class="control-label">CGST%</label>
                             </div>
 
                         </div>
                         <div class="col-md-12 col-lg-6">
                             <div class="form-floating form-floating-outline mb-4">
-                                <input type="NetPrice" class="form-control" name="NetPrice" placeholder="Net Price"   />
-                                <label asp-for="NetPrice" class="control-label"></label>
+                                <input type="CGSTPercentageAmt" class="form-control" name="CGSTPercentageAmt" placeholder="CGSTPercentageAmt" value="@Model.CGSTPercentageAmt" />
+                                <label asp-for="CGSTPercentageAmt" class="control-label">Net Price</label>
                             </div>
                         </div>
                     </div>
@@ -237,15 +237,15 @@
                         <div class="col-md-12 col-lg-6">
 
                             <div class="form-floating form-floating-outline mb-4">
-                                <input type="NetPrice" class="form-control" name="NetPrice" placeholder="Net Price"  />
-                                <label asp-for="NetPrice" class="control-label">SGST%</label>
+                                <input type="SGSTPercentage" class="form-control" name="SGSTPercentage" placeholder="SGSTPercentage" value="@Model.SGSTPercentage" />
+                                <label asp-for="SGSTPercentage" class="control-label">SGST%</label>
                             </div>
 
                         </div>
                         <div class="col-md-12 col-lg-6">
                             <div class="form-floating form-floating-outline mb-4">
-                                <input type="NetPrice" class="form-control" name="NetPrice" placeholder="Net Price"  />
-                                <label asp-for="NetPrice" class="control-label"></label>
+                                <input type="SGSTPercentageAmt" class="form-control" name="SGSTPercentageAmt" placeholder="SGSTPercentageAmt" value="@Model.SGSTPercentageAmt" />
+                                <label asp-for="SGSTPercentageAmt" class="control-label">Net Price</label>
                             </div>
                         </div>
                 </div>
@@ -253,7 +253,7 @@
                 <div class="col-md-12 col-lg-3">
 
                     <div class="form-floating form-floating-outline mb-4">
-                        <input type="TotalDiscount" class="form-control" name="TotalDiscount" placeholder="Total Discount" value="@ViewBag.TotalDiscount" readonly />
+                        <input type="TotalDiscount" class="form-control" name="TotalDiscount" placeholder="Total Discount" value="@ViewBag.TotalDiscount" />
                         <label asp-for="TotalDiscount" class="control-label">Total Discount</label>
 
                     </div>
