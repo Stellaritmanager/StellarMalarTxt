@@ -3240,10 +3240,10 @@ namespace StellarBillingSystem.Controllers
             }
             if (buttonType == "GetPayment")
             {
-                var selectDBpayment = _billingsoftware.SHPaymentDetails.Where(x => x.PaymentId == model.PaymentId && x.BranchID == model.BranchID).ToList();
+                var selectDBpayment = _billingsoftware.SHPaymentDetails.Where(x => x.PaymentId == model.PaymentId && x.BranchID == model.BranchID ).ToList();
 
 
-                var SelectPayMas = _billingsoftware.SHPaymentMaster.SingleOrDefault(x => x.BillId == model.BillId && x.PaymentId == model.PaymentId && x.BranchID == model.BranchID);
+                var SelectPayMas = _billingsoftware.SHPaymentMaster.SingleOrDefault(x => x.BillId == model.BillId && x.PaymentId == model.PaymentId && x.BranchID == model.BranchID && x.BillDate == model.BillDate);
 
                 if (SelectPayMas != null && selectDBpayment != null)
                 {
@@ -3294,12 +3294,12 @@ namespace StellarBillingSystem.Controllers
                     BillDate = model.BillDate,
                     PaymentId =model.PaymentId,
                     BranchID =model.BranchID,
-                    Balance = model.Balance,
+                    Balance = model.StrBillvalue,
                     BillId= model.BillId                   
                     
                 };
 
-                var objpaymas = _billingsoftware.SHPaymentMaster.Where(x => x.BillId == model.BillId && x.BranchID == model.BranchID && x.PaymentId ==model.PaymentId).FirstOrDefault();
+                var objpaymas = _billingsoftware.SHPaymentMaster.Where(x => x.BillId == model.BillId && x.BranchID == model.BranchID && x.PaymentId ==model.PaymentId && x.BillDate==model.BillDate).FirstOrDefault();
 
                  if(objpaymas != null)
                 {
@@ -3307,7 +3307,7 @@ namespace StellarBillingSystem.Controllers
                     objpaymas.Lastupdateddate = "";
                     objpaymas.Lastupdateduser = "";
                     objpaymas.Lastupdatedmachine = "";
-                    objpaymas.Balance = model.Balance;
+                    objpaymas.Balance = model.StrBillvalue;
                     objpaymas.BillDate = model.BillDate;
                     objpaymas.BillId = model.BillId;
 
