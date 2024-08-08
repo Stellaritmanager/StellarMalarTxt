@@ -24,6 +24,13 @@
         private BillingDetailsModel detailModel;
         private List<BillingDetailsModel> viewbillproductlist;
 
+        private string cGSTPercentage;
+        private string sGSTPercentage;
+        private string cGSTPercentageAmt;
+        private string sGSTPercentageAmt;
+       
+
+
         public string BillID { get => billID; set => billID = value; }
         public string BillDate { get => billDate; set => billDate = value; }
         public string ProductID { get => productID; set => productID = value; }
@@ -44,5 +51,9 @@
         public BillingDetailsModel DetailModel { get => detailModel; set => detailModel = value; }
         public List<BillingDetailsModel> Viewbillproductlist { get => viewbillproductlist; set => viewbillproductlist = value; }
         public string BranchID { get => branchID; set => branchID = value; }
+        public string? CGSTPercentage { get => cGSTPercentage; set => cGSTPercentage = value; }
+        public string? SGSTPercentage { get => sGSTPercentage; set => sGSTPercentage = value; }
+        public string? CGSTPercentageAmt { get => cGSTPercentageAmt; set => cGSTPercentageAmt = value; }
+        public string? SGSTPercentageAmt { get => sGSTPercentageAmt; set => sGSTPercentageAmt = value; }
     }
 }

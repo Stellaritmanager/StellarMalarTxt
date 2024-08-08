@@ -91,11 +91,11 @@ namespace StellarBillingSystem.Business
 
             if (Fromdate!=null&Todate!=null)
             {
-                sqlQuery = sqlQuery + "and " + Datecolumn + " between '" + Fromdate + "' and '" + Todate +"' ";
+                sqlQuery = sqlQuery + " and " + Datecolumn + " between '" + Fromdate + "' and '" + Todate +"' ";
             }
             else if (Fromdate!=null)
             {
-                sqlQuery = sqlQuery + "and " + Datecolumn + " >= '"+ Fromdate +"'";
+                sqlQuery = sqlQuery + " and " + Datecolumn + " >= '"+ Fromdate +"'";
 
             }
             else if (Todate!=null)
@@ -161,7 +161,7 @@ namespace StellarBillingSystem.Business
             
         }
 
-        public static String getbalance (BillingContext billing,string strPayID,string pBillID,string strBranchid)
+        public static String getbalance (BillingContext billing,string strPayID,string pBillID,string strBranchid,string pbillDate)
         {
            var paymentList= billing.SHPaymentDetails.Where(x => x.PaymentId == strPayID && x.IsDelete == false && x.BranchID==strBranchid).Select(x => x.PaymentAmount).ToList();
 
@@ -173,9 +173,13 @@ namespace StellarBillingSystem.Business
                     dblBalance = dblBalance + Double.Parse(strpayment);
             }
 
-            var billamount = billing.SHbillmaster.Where(x => x.BillID == pBillID).Select(x => x.NetPrice).FirstOrDefault();
+            var billamount = billing.SHbillmaster.Where(x => x.BillID == pBillID &&x.BillDate == pbillDate && x.BranchID ==strBranchid).Select(x => x.NetPrice).FirstOrDefault();
 
-            dblBalance = Double.Parse(billamount) - dblBalance;
+            if(billamount != null)
+                dblBalance = Double.Parse(billamount) - dblBalance;
+
+            dblBalance = Math.Round(dblBalance, 2);
+       
 
             return dblBalance.ToString();
         }

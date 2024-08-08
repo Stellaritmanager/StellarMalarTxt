@@ -18,9 +18,11 @@ using StellarBillingSystem.Context;
 using StellarBillingSystem.Models;
 using System.Data;
 using System.Linq;
+using System.Security.Cryptography;
 
-namespace HealthCare.Controllers
+namespace StellarBillingSystem.Controllers
 {
+    [Authorize]
     public class StellarBillingController : Controller
     {
         private BillingContext _billingsoftware;
@@ -482,7 +484,7 @@ namespace HealthCare.Controllers
                 {
                     if (goddown.IsDelete)
                     {
-                        ViewBag.ErrorMessage = "Cannot update. GodowmnID is marked as deleted.";
+                        ViewBag.ErrorMessage = "Stock Already Deleted";
                         return View("GodownModel", model);
                     }
 
@@ -545,6 +547,8 @@ namespace HealthCare.Controllers
             {
                 if (existingCustomer.IsDelete)
                 {
+                    ViewBag.Message = "Cannot update. Customer Number is marked as deleted.";
+
                     return View("CustomerMaster", model);
                 }
                 existingCustomer.CustomerID = model.CustomerID;
@@ -578,8 +582,6 @@ namespace HealthCare.Controllers
 
             ViewBag.Message = "Saved Successfully";
 
-
-
             return View("CustomerMaster", model);
         }
         public async Task<IActionResult> GetCustomer(CustomerMasterModel model)
@@ -596,12 +598,12 @@ namespace HealthCare.Controllers
                 return BadRequest("Mobile number is required");
             }
 
-            var customer = await _billingsoftware.SHCustomerMaster.FindAsync(model.MobileNumber, model.BranchID);
+            var customer = await _billingsoftware.SHCustomerMaster.FirstOrDefaultAsync(x => x.IsDelete == false && x.MobileNumber == model.MobileNumber && x.BranchID == model.BranchID);
 
             if (customer == null)
             {
                 model = new CustomerMasterModel();
-                ViewBag.ErrorMessage = "Mobile Number not found or customer is deleted";
+                ViewBag.ErrorMessage = "Customer Number not found";
                 return View("CustomerMaster", model); // Return an empty model if not found or deleted
             }
 
@@ -642,7 +644,7 @@ namespace HealthCare.Controllers
 
                 _billingsoftware.Entry(customer).State = EntityState.Modified;
                 await _billingsoftware.SaveChangesAsync();
-                ViewBag.Message = "Retrieve Successfully";
+                ViewBag.Message = "Customer Number Retrieved Successfully";
             }
             else
             {
@@ -680,7 +682,7 @@ namespace HealthCare.Controllers
 
             if (existingCustomer.IsDelete)
             {
-                ViewBag.ErrorMessage = "Cannot update. GodowmnID is marked as deleted.";
+                ViewBag.ErrorMessage = "Customer Number Already Deleted";
                 return View("CustomerMaster", model);
             }
 
@@ -736,7 +738,7 @@ namespace HealthCare.Controllers
                 {
                     if (deletetodiscount.IsDelete)
                     {
-                        ViewBag.ErrorMessage = "Cannot update. GodowmnID is marked as deleted.";
+                        ViewBag.ErrorMessage = "Discount Category Not Found";
                         return View("DiscountCategoryMaster", model);
                     }
 
@@ -1180,8 +1182,13 @@ namespace HealthCare.Controllers
                 {
                     if (rolltoretrieve.Isdelete)
                     {
-                        ViewBag.ErrorMessage = "Cannot update. Product is marked as deleted.";
-                        return View("RackPatrionProduct", model);
+                        ViewBag.ErrorMessage = "ProductID Already Deleted";
+
+                        var modelsre = new RackpartitionViewModel
+                        {
+                            Viewrackpartition = new List<RackPatrionProductModel>()
+                        };
+                        return View("RackPatrionProduct", modelsre);
                     }
 
                     rolltoretrieve.Isdelete = true;
@@ -1225,7 +1232,12 @@ namespace HealthCare.Controllers
                 if (existingrackpartition.Isdelete)
                 {
                     ViewBag.ErrorMessage = "Cannot update. Product is marked as deleted.";
-                    return View("RackPatrionProduct", model);
+                    var modelsins = new RackpartitionViewModel
+                    {
+                        Viewrackpartition = new List<RackPatrionProductModel>()
+                    };
+
+                    return View("RackPatrionProduct", modelsins);
                 }
 
 
@@ -1236,6 +1248,17 @@ namespace HealthCare.Controllers
                     if (int.TryParse(existingrackpartition.Noofitems, out existingstock))
                     {
                         int totalstock = int.Parse(recstockgodwomn.NumberofStocks);
+
+                        if (newStock > totalstock)
+                        {
+                            ViewBag.stockErrorMessage = $"Only {totalstock} Items Available in Godown Stock";
+                            var modelsins = new RackpartitionViewModel
+                            {
+                                Viewrackpartition = new List<RackPatrionProductModel>()
+                            };
+                            return View("RackPatrionProduct", modelsins);
+                        }
+
                         int currentstock = totalstock - newStock;
 
                         if (currentstock < 0)
@@ -1634,7 +1657,7 @@ namespace HealthCare.Controllers
                 {
                     if (restodelete.IsDelete)
                     {
-                        ViewBag.ErrorMessage = "Cannot update. Product is marked as deleted.";
+                        ViewBag.ErrorMessage = "ResourceTypeID Already Deleted";
                         return View("ResourceTypeMaster", model);
                     }
 
@@ -1740,6 +1763,9 @@ namespace HealthCare.Controllers
             ViewData["rollid"] = businessbill.RollAccessType(model.BranchID);
             ViewData["staffid"] = businessbill.GetStaffID(model.BranchID);
 
+
+
+
             if (buttontype == "Get")
             {
                 var getrol = await _billingsoftware.SHRoleaccessModel.FirstOrDefaultAsync(x => x.RollID == model.RollID && x.ScreenID == model.ScreenID && x.Isdelete == false && x.BranchID == model.BranchID);
@@ -1761,7 +1787,7 @@ namespace HealthCare.Controllers
                 {
                     if (roletodelete.Isdelete)
                     {
-                        ViewBag.ErrorMessage = "Cannot update. Product is marked as deleted.";
+                        ViewBag.ErrorMessage = "RollID Already Deleted";
                         return View("RoleAccess", model);
                     }
 
@@ -1866,6 +1892,14 @@ namespace HealthCare.Controllers
             ViewData["staffid"] = Busbill.GetStaffID(model.BranchID);
 
 
+
+
+            if (!SelectedRollNames.Any())
+            {
+                ViewBag.ErrorMessage = "Please select roll.";
+                return View("RollAccessMaster", model);
+            }
+
             if (buttontype == "Get")
             {
                 var getroll = await _billingsoftware.SHrollaccess.FirstOrDefaultAsync(x => x.StaffID == model.StaffID && x.IsDelete == false && x.BranchID == model.BranchID);
@@ -1890,7 +1924,7 @@ namespace HealthCare.Controllers
                     {
                         if (rolltodelete.IsDelete)
                         {
-                            ViewBag.ErrorMessage = "Cannot update. Product is marked as deleted.";
+                            ViewBag.ErrorMessage = "RollID Already Deleted";
                             return View("RollAccessMaster", model);
                         }
 
@@ -2038,7 +2072,7 @@ namespace HealthCare.Controllers
                 {
                     if (rolltypetodelete.IsDelete)
                     {
-                        ViewBag.ErrorMessage = "Cannot update. Product is marked as deleted.";
+                        ViewBag.ErrorMessage = "RollID Already Deleted ";
                         return View("RollTypeMaster", model);
                     }
 
@@ -2165,7 +2199,7 @@ namespace HealthCare.Controllers
                 {
                     if (screentodelete.IsDelete)
                     {
-                        ViewBag.ErrorMessage = "Cannot update. Product is marked as deleted.";
+                        ViewBag.ErrorMessage = "ScreenID Already Deleted";
                         return View("ScreenMaster", model);
                     }
 
@@ -2322,7 +2356,7 @@ namespace HealthCare.Controllers
                              }).ToListAsync();
 
                 var existingbilldetail = await _billingsoftware.SHbilldetails
-            .FirstOrDefaultAsync(x => x.BillID == model.BillID && x.BillDate == model.BillDate && x.CustomerNumber == model.CustomerNumber && x.BranchID == model.BranchID && x.ProductID == model.ProductID && x.IsDelete==false);
+            .FirstOrDefaultAsync(x => x.BillID == model.BillID && x.BillDate == model.BillDate && x.CustomerNumber == model.CustomerNumber && x.BranchID == model.BranchID && x.ProductID == model.ProductID && x.IsDelete == false);
 
                 if (existingbilldetail != null)
                 {
@@ -2361,7 +2395,7 @@ namespace HealthCare.Controllers
                         else
                         {
                             // Handle conversion failure
-                            ViewBag.Getnotfound =  "Invalid Quantity format ";
+                            ViewBag.Getnotfound = "Invalid Quantity format ";
                             return View("CustomerBilling", model);
                         }
 
@@ -2371,6 +2405,7 @@ namespace HealthCare.Controllers
                         detailModel.Price = product.Price;
                         detailModel.Quantity = Quantity;
                         detailModel.NetPrice = model.NetPrice;
+                        detailModel.Totalprice = model.NetPrice;
                         detailModel.BillID = BillID;
                         detailModel.BillDate = BillDate;
                         detailModel.CustomerNumber = CustomerNumber;
@@ -2419,54 +2454,65 @@ namespace HealthCare.Controllers
                 var billDate = model.BillDate;
                 var customerNumber = model.CustomerNumber;
 
-                var updatedMasterex = _billingsoftware.SHbillmaster.FirstOrDefault(m =>
-                    m.BillID == billID && m.BillDate == billDate && m.CustomerNumber == customerNumber && m.IsDelete == false && m.BranchID == model.BranchID);
 
-                if (updatedMasterex != null)
+                var exbillingDetails = _billingsoftware.SHbilldetails
+        .Where(d => d.BillID == billID && d.BranchID == model.BranchID && d.IsDelete == false && d.BillDate == billDate && d.CustomerNumber == customerNumber)
+        .ToList();
+
+                // Check if there are any bill details
+                if (exbillingDetails != null && exbillingDetails.Count > 0)
                 {
-                    ViewBag.TotalPrice = updatedMasterex.Totalprice;
-                    ViewBag.TotalDiscount = updatedMasterex.TotalDiscount;
-                    ViewBag.NetPrice = updatedMasterex.NetPrice;
+                    // Retrieve corresponding master record if available
+                    var updatedMasterex = _billingsoftware.SHbillmaster
+                        .FirstOrDefault(m => m.BillID == billID && m.BillDate == billDate && m.CustomerNumber == customerNumber && m.IsDelete == false && m.BranchID == model.BranchID);
 
-                    var exbillingDetails = _billingsoftware.SHbilldetails
-                        .Where(d => d.BillID == billID && d.BranchID == model.BranchID && d.IsDelete == false && d.BillDate == billDate && d.CustomerNumber == customerNumber)
-                        .ToList();
-
-                    // Prepare the view model to pass to the view
+                    // Prepare the view model
                     var viewModel = new BillProductlistModel
                     {
-                        MasterModel = new BillingMasterModel
+                        MasterModel = updatedMasterex != null ? new BillingMasterModel
                         {
-                            BillID = billID,
+                            BillID = updatedMasterex.BillID,
                             BillDate = updatedMasterex.BillDate,
-                            CustomerNumber = updatedMasterex.CustomerNumber
-                        },
+                            CustomerNumber = updatedMasterex.CustomerNumber,
+                            Totalprice = updatedMasterex.Totalprice,
+                            TotalDiscount = updatedMasterex.TotalDiscount,
+                            NetPrice = updatedMasterex.NetPrice
+                        } : null,
                         Viewbillproductlist = exbillingDetails,
                         BillID = billID,
-                        BillDate = updatedMasterex.BillDate,
-                        CustomerNumber = updatedMasterex.CustomerNumber
+                        BillDate = billDate,
+                        CustomerNumber = customerNumber
                     };
+
+                    ViewBag.TotalPrice = updatedMasterex?.Totalprice;
+                    ViewBag.TotalDiscount = updatedMasterex?.TotalDiscount;
+                    ViewBag.NetPrice = updatedMasterex?.NetPrice;
+
 
                     return View("CustomerBilling", viewModel);
                 }
+
                 else
                 {
-
                     BillProductlistModel promodel = new BillProductlistModel();
                     ViewBag.Getnotfound = "No Data Found For This ID";
 
                     return View("CustomerBilling", promodel);
                 }
-
-
             }
+            
 
             if (buttonType == "Delete Bill")
             {
                 var billMaster = _billingsoftware.SHbillmaster.FirstOrDefault(b => b.BillID == model.BillID && !b.IsDelete && b.BillDate == model.BillDate && model.BranchID == model.BranchID);
                 if (billMaster != null)
                 {
-                   
+                    if (billMaster.IsDelete)
+                    {
+                        ViewBag.DelMessage = "BillID Already Deleted";
+                        return View("CustomerBilling", model);
+                    }
+
                     billMaster.IsDelete = true;
 
                     _billingsoftware.SaveChanges();
@@ -2518,44 +2564,36 @@ namespace HealthCare.Controllers
                     TempData.Keep("BranchID");
                 }
 
-            
-                //   var getexistingprice = await _billingsoftware.SHbilldetails.FirstOrDefaultAsync(x => x.BillID == model.BillID && x.BillDate == model.BillDate && x.CustomerNumber == CustomerNumber && x.BranchID == model.BranchID);
-                var getexistingprice = await _billingsoftware.SHbilldetails
-             .Where(x => x.BillID == model.BillID && x.BillDate == model.BillDate && x.CustomerNumber == CustomerNumber && x.BranchID == model.BranchID && x.IsDelete == false)
-             .ToListAsync();
 
-                if (getexistingprice!=null )
+                BusinessClassBilling busbill = new BusinessClassBilling(_billingsoftware);
+                var billingSummary = await busbill.CalculateBillingDetails(BillID, BillDate, CustomerNumber, model.TotalDiscount, model.CGSTPercentage, model.SGSTPercentage);
+                if (billingSummary != null)
                 {
-                    var totalPrice = getexistingprice.Sum(x =>
-                    {
-                        decimal price;
-                        return decimal.TryParse(x.Price, out price) ? price : 0;
-                    });
-
-                    var totalNetPrice = getexistingprice.Sum(x =>
-                    {
-                        decimal netPrice;
-                        return decimal.TryParse(x.NetPrice, out netPrice) ? netPrice : 0;
-                    });
-
 
                     // Retrieve the existing master record
                     var updateMaster = await _billingsoftware.SHbillmaster
-                        .FirstOrDefaultAsync(m => m.BillID == model.BillID && m.BranchID == model.BranchID && m.BillDate==model.BillDate && m.CustomerNumber==model.CustomerNumber);
+                        .FirstOrDefaultAsync(m => m.BillID == model.BillID && m.BranchID == model.BranchID && m.BillDate == model.BillDate && m.CustomerNumber == model.CustomerNumber);
 
                     if (updateMaster != null)
                     {
+                        if (updateMaster.IsDelete)
+                        {
+                            ViewBag.Message = "Cannot update. Product is marked as deleted.";
+                            return View("CustomerBilling", model);
+                        }
+
+                      
 
                         updateMaster.BillID = masterModel.BillID;
                         updateMaster.BillDate = masterModel.BillDate;
                         updateMaster.CustomerNumber = masterModel.CustomerNumber;
-                        updateMaster.Totalprice = totalPrice.ToString("F2");
+                        updateMaster.Totalprice = billingSummary.Totalprice;
                         updateMaster.TotalDiscount = masterModel.TotalDiscount;
-                        updateMaster.NetPrice = totalNetPrice.ToString("F2");
+                        updateMaster.NetPrice = billingSummary.NetPrice;
                         updateMaster.CGSTPercentage = masterModel.CGSTPercentage;
-                        updateMaster.CGSTPercentageAmt = masterModel.CGSTPercentageAmt;
+                        updateMaster.CGSTPercentageAmt = billingSummary.CGSTPercentageAmt;
                         updateMaster.SGSTPercentage = masterModel.SGSTPercentage;
-                        updateMaster.SGSTPercentageAmt = masterModel.SGSTPercentageAmt;
+                        updateMaster.SGSTPercentageAmt = billingSummary.SGSTPercentageAmt;
                         updateMaster.BranchID = masterModel.BranchID;
                         updateMaster.Lastupdateduser = User.Claims.First().Value.ToString();
                         updateMaster.Lastupdatedmachine = Request.HttpContext.Connection.RemoteIpAddress.ToString();
@@ -2566,8 +2604,11 @@ namespace HealthCare.Controllers
                     }
                     else
                     {
-                        masterModel.Totalprice = totalPrice.ToString("F2");
-                        masterModel.NetPrice = totalNetPrice.ToString("F2");
+                        masterModel.Totalprice = billingSummary.Totalprice;
+                        masterModel.CGSTPercentageAmt = billingSummary.CGSTPercentageAmt;
+                        masterModel.SGSTPercentageAmt = billingSummary.SGSTPercentageAmt;
+                        masterModel.NetPrice = billingSummary.NetPrice;
+                        masterModel.Billby = User.Claims.First().Value.ToString();
                         masterModel.Lastupdateduser = User.Claims.First().Value.ToString();
                         masterModel.Lastupdatedmachine = Request.HttpContext.Connection.RemoteIpAddress.ToString();
                         masterModel.Lastupdateddate = DateTime.Now.ToString();
@@ -2575,17 +2616,55 @@ namespace HealthCare.Controllers
                         _billingsoftware.SHbillmaster.Add(masterModel);
 
                     }
-
+                
 
                     _billingsoftware.SaveChanges();
 
 
                 }
 
-               
+
+                // Save points calculation
+                var checkpoints = await _billingsoftware.SHBillingPoints.FirstOrDefaultAsync(x => x.BillID == model.BillID && x.CustomerNumber == CustomerNumber);
+                var pointsMaster = await _billingsoftware.SHPointsMaster.FirstOrDefaultAsync();
+
+                if (pointsMaster != null)
+                {
+                    decimal netPointsRatio = Convert.ToDecimal(pointsMaster.NetPoints) / Convert.ToDecimal(pointsMaster.NetPrice);
+                    decimal points = Convert.ToDecimal(billingSummary.NetPrice) * netPointsRatio;
+
+                    if (checkpoints != null)
+                    {
+                        // Update existing points record
+                        checkpoints.NetPrice = billingSummary.NetPrice;
+                        checkpoints.Points = points.ToString("F2");
+                        checkpoints.IsUsed = false;
+                        checkpoints.DateofReedem = null;
+
+                        _billingsoftware.Entry(checkpoints).State = EntityState.Modified;
+                    }
+                    else
+                    {
+                        // Add new points record
+                        var billingPoints = new BillingPointsModel
+                        {
+                            BillID = BillID,
+                            CustomerNumber = CustomerNumber,
+                            NetPrice = billingSummary.NetPrice,
+                            Points = points.ToString("F2"),
+                            IsUsed = false,
+                            DateofReedem = null
+                        };
+
+                        _billingsoftware.SHBillingPoints.Add(billingPoints);
+                    }
+
+                    await _billingsoftware.SaveChangesAsync();
+                }
+            
 
 
-                var updatedMaster = await _billingsoftware.SHbillmaster
+            var updatedMaster = await _billingsoftware.SHbillmaster
        .Where(m => m.BillID == masterModel.BillID && m.BranchID == model.BranchID && m.BillDate==masterModel.BillDate&&m.CustomerNumber==masterModel.CustomerNumber)
        .FirstOrDefaultAsync();
 
@@ -2605,14 +2684,85 @@ namespace HealthCare.Controllers
                 model.Viewbillproductlist = billingDetails;
 
 
-                ViewBag.Message = "Saved Successfully";
+                ViewBag.SaveMessage = "Saved Successfully";
+             
              
             }
-            return View("CustomerBilling", model);
+
+            if (buttonType == "Get Points")
+            {
+
+                var billingPoints = await _billingsoftware.SHBillingPoints
+          .Where(bp => bp.CustomerNumber == CustomerNumber && !bp.IsUsed)
+          .ToListAsync();
+
+                var totalPoints = billingPoints.Sum(bp => decimal.TryParse(bp.Points, out decimal pts) ? pts : 0);
+
+                ViewBag.Points = totalPoints.ToString("F2");
+
+
+                var updatedMaster = await _billingsoftware.SHbillmaster
+          .FirstOrDefaultAsync(m => m.BillID == BillID && m.BranchID == model.BranchID && m.BillDate == BillDate && m.CustomerNumber == CustomerNumber);
+
+                if (updatedMaster != null)
+                {
+                    ViewBag.TotalPrice = updatedMaster.Totalprice;
+                    ViewBag.TotalDiscount = updatedMaster.TotalDiscount;
+                    ViewBag.NetPrice = updatedMaster.NetPrice;
+                }
+
+                var billingDetails = await _billingsoftware.SHbilldetails
+                    .Where(d => d.BillID == BillID && d.BranchID == model.BranchID && d.BillDate == BillDate && d.CustomerNumber == CustomerNumber)
+                    .ToListAsync();
+
+                model.MasterModel = updatedMaster;
+                model.Viewbillproductlist = billingDetails;
+
+             
+            }
+
+            if (buttonType == "Reedem Points")
+            {
+
+                var billingPoints = await _billingsoftware.SHBillingPoints
+           .Where(bp => bp.CustomerNumber == CustomerNumber && !bp.IsUsed)
+           .ToListAsync();
+
+                var totalPoints = billingPoints.Sum(bp => decimal.TryParse(bp.Points, out decimal pts) ? pts : 0);
+
+                var updatedMaster = await _billingsoftware.SHbillmaster
+                    .FirstOrDefaultAsync(m => m.BillID == BillID && m.BranchID == model.BranchID && m.BillDate == BillDate && m.CustomerNumber == CustomerNumber);
+
+                if (updatedMaster != null)
+                {
+                    decimal netPrice = decimal.TryParse(updatedMaster.NetPrice, out decimal price) ? price : 0;
+                   var Total =  netPrice - totalPoints;
+
+                    updatedMaster.NetPrice = Total.ToString("F2");
+                    _billingsoftware.Entry(updatedMaster).State = EntityState.Modified;
+                    await _billingsoftware.SaveChangesAsync();
+
+                    ViewBag.NetPrice = updatedMaster.NetPrice;
+                }
+
+                foreach (var point in billingPoints)
+                {
+                    point.IsUsed = true;
+                    point.DateofReedem = DateTime.Now.ToString();
+                    _billingsoftware.Entry(point).State = EntityState.Modified;
+                }
+
+                await _billingsoftware.SaveChangesAsync();
+
+                ViewBag.SaveMessage = "Points Reedem Successfully";
+            }
+
+      
+                return View("CustomerBilling", model);
         }
 
 
-        public IActionResult DeleteProduct(string productId,BillProductlistModel model)
+        public IActionResult DeleteProduct(string productId,BillProductlistModel model, BillingDetailsModel detailModel,BillingMasterModel master)
         {
             if (TempData["BranchID"] != null)
             {
@@ -2621,7 +2771,7 @@ namespace HealthCare.Controllers
             }
 
             var product = _billingsoftware.SHbilldetails
-      .Where(p => p.ProductID == productId)
+      .Where(p => p.ProductID == productId && p.BranchID == model.BranchID && p.BillID == master.BillID && p.BillDate == master.BillDate && p.CustomerNumber == master.CustomerNumber)
       .Select(p => new
       {
           p.Quantity,
@@ -2632,11 +2782,18 @@ namespace HealthCare.Controllers
 
             if (product != null)
             {
+                if (product.IsDelete)
+                {
+                    ViewBag.DelMessage = "BillID Already Deleted";
+                    return View("CustomerBilling", model);
+                }
+
                 // Update the IsDelete field to true
                 var productToUpdate = _billingsoftware.SHbilldetails
                     .First(p => p.ProductID == productId && p.BranchID == model.BranchID);
 
-                productToUpdate.IsDelete = true;
+                _billingsoftware.SHbilldetails.Remove(productToUpdate);
+                _billingsoftware.SaveChanges();
 
                 // Update SHRackPartionProduct to add back the quantity
                 var rackProduct = _billingsoftware.SHRackPartionProduct
@@ -2653,8 +2810,45 @@ namespace HealthCare.Controllers
             }
 
             ViewBag.DelMessage = "Deleted Product Successfully";
-            return View("CustomerBilling",model);
-        }
+
+            var billDetail = _billingsoftware.SHbilldetails
+                     .Where(b => b.BillID == model.BillID && b.ProductID == model.ProductID && b.BranchID == model.BranchID && b.IsDelete == false)
+                     .Select(b => new BillingDetailsModel
+                     {
+                         ProductID = b.ProductID,
+                         ProductName = b.ProductName,
+                         Quantity = b.Quantity,
+                         BillDate = b.BillDate,
+                         CustomerNumber = b.CustomerNumber,
+                         BillID = b.BillID
+
+                     })
+                     .FirstOrDefault();
+
+            if (billDetail != null)
+            {
+                model.Viewbillproductlist = new List<BillingDetailsModel> { billDetail };
+                model.ProductID = billDetail.ProductID;
+                model.ProductName = billDetail.ProductName;
+                model.Price = billDetail.Price;
+                model.Quantity = billDetail.Quantity;
+                model.BillID = billDetail.BillID;
+                model.BillDate = billDetail.BillDate;
+                model.CustomerNumber = billDetail.CustomerNumber;
+
+            }
+            else
+            {
+                // Handle case where no detail is found
+                model.Viewbillproductlist = new List<BillingDetailsModel>();
+            }
+
+            return View(model);
+
+
+
+
+}
 
 
 
@@ -2960,12 +3154,15 @@ namespace HealthCare.Controllers
                 TempData.Keep("BranchID");
             }
 
-            model.StrBillvalue = BusinessClassCommon.getbalance(_billingsoftware, model.PaymentId, model.BillId,model.BranchID);
+            model.StrBillvalue = BusinessClassCommon.getbalance(_billingsoftware, model.PaymentId, model.BillId,model.BranchID, model.BillDate);
 
             if (buttonType == "GetBill")
             {
                 var exbill = await _billingsoftware.SHbillmaster.Where(x => x.BillID == model.BillId && x.BillDate ==model.BillDate && x.BranchID == model.BranchID).FirstOrDefaultAsync();
-                model.Balance = exbill.NetPrice;
+                if(exbill!=null)
+                    model.Balance = exbill.NetPrice;
+                else
+                    ViewBag.Message = "Bill ID given was not available, Either it was belongs to different branch,enter correct Bill ID";
             }
 
             if(buttonType == "DeletePayment")
@@ -2991,23 +3188,31 @@ namespace HealthCare.Controllers
 
                 model = objnew;
             }
-            if(buttonType == "GetPayment")
+            if (buttonType == "GetPayment")
             {
                 var selectDBpayment = _billingsoftware.SHPaymentDetails.Where(x => x.PaymentId == model.PaymentId && x.BranchID == model.BranchID).ToList();
 
-                var SelectPayMas = _billingsoftware.SHPaymentMaster.SingleOrDefault(x => x.BillId == model.BillId && x.BillDate == model.BillDate && x.PaymentId == model.PaymentId && x.BranchID == model.BranchID);
 
-                if(model.Viewpayment ==null)
-                    model.Viewpayment = selectDBpayment;
+                var SelectPayMas = _billingsoftware.SHPaymentMaster.SingleOrDefault(x => x.BillId == model.BillId && x.PaymentId == model.PaymentId && x.BranchID == model.BranchID);
 
-                model.BillDate = SelectPayMas.BillDate;
-                model.PaymentId = SelectPayMas.PaymentId;
-                model.BranchID = SelectPayMas.BranchID;
-                model.Balance = SelectPayMas.Balance;
-                model.BillId = SelectPayMas.BillId;
+                if (SelectPayMas != null && selectDBpayment != null)
+                {
 
+                    if (model.Viewpayment == null)
+                        model.Viewpayment = selectDBpayment;
+
+                    model.BillDate = SelectPayMas.BillDate;
+                    model.PaymentId = SelectPayMas.PaymentId;
+                    model.BranchID = SelectPayMas.BranchID;
+                    model.Balance = SelectPayMas.Balance;
+                    model.BillId = SelectPayMas.BillId;
+
+                }
+                else
+                {
+                    ViewBag.Message = "Payment ID given is not available, Either it was belongs to different branch,enter correct Payment ID";
+                }
             }
-
             if (buttonType == "DeletePaymentDetail")
             {
                 //Delete from database
@@ -3118,6 +3323,161 @@ namespace HealthCare.Controllers
 
             return View("PaymentBilling",model);
         }
+
+
+
+        public async Task<IActionResult> GetBranchMaster(BranchMasterModel model, string buttontype)
+        {
+          
+            if (buttontype == "Get")
+            {
+                var getbranch = await _billingsoftware.SHBranchMaster.FirstOrDefaultAsync(x => x.BracnchID == model.BracnchID && x.IsDelete == false);
+                if (getbranch != null)
+                {
+                    return View("BranchMaster", getbranch);
+                }
+                else
+                {
+                    BranchMasterModel par = new BranchMasterModel();
+                    ViewBag.getMessage = "No Data found for this Branch ID";
+                    return View("BranchMaster", par);
+                }
+            }
+            else if (buttontype == "Delete")
+            {
+                var branchdel = await _billingsoftware.SHBranchMaster.FirstOrDefaultAsync(x => x.BracnchID == model.BracnchID && x.IsDelete == false);
+                if (branchdel != null)
+                {
+                    if (branchdel.IsDelete)
+                    {
+                        ViewBag.ErrorMessage = "Cannot update. Product is marked as deleted.";
+                        return View("BranchMaster", model);
+                    }
+
+                    branchdel.IsDelete = true;
+                    await _billingsoftware.SaveChangesAsync();
+
+                    ViewBag.delMessage = "Branch deleted successfully";
+                    model = new BranchMasterModel();
+                    return View("BranchMaster", model);
+                }
+                else
+                {
+                    ViewBag.delnoMessage = "Branch not found";
+                    model = new BranchMasterModel();
+                    return View("BranchMaster", model);
+                }
+
+            }
+
+            else if (buttontype == "DeleteRetrieve")
+            {
+                var branchdelret = await _billingsoftware.SHBranchMaster.FirstOrDefaultAsync(x => x.BracnchID == model.BracnchID && x.IsDelete == true);
+                if (branchdelret != null)
+                {
+                    branchdelret.IsDelete = false;
+
+                    await _billingsoftware.SaveChangesAsync();
+
+                    model.BracnchID = branchdelret.BracnchID;
+                    model.BranchName = branchdelret.BranchName;
+                    model.PhoneNumber1 = branchdelret.PhoneNumber1;
+                    model.PhoneNumber2 = branchdelret.PhoneNumber2;
+                    model.Address1 = branchdelret.Address1;
+                    model.Address2 = branchdelret.Address2;
+                    model.Country = branchdelret.Country;
+                    model.City = branchdelret.City;
+                    model.State = branchdelret.State;
+                    model.ZipCode = branchdelret.ZipCode;
+                    model.IsFranchise = branchdelret.IsFranchise;
+                    model.email = branchdelret.email;
+
+
+                    ViewBag.retMessage = "Deleted Branch retrieved successfully";
+                }
+                else
+                {
+                    ViewBag.noretMessage = "Branch not found";
+                }
+                return View("BranchMaster", model);
+            }
+
+            if (string.IsNullOrWhiteSpace(model.BranchName))
+            {
+                ViewBag.BMessage = "Please enter Branch Name.";
+                return View("BranchMaster", model);
+            }
+
+            var existingBranch = await _billingsoftware.SHBranchMaster.FindAsync(model.BracnchID, model.BranchName);
+
+
+
+
+            if (existingBranch != null)
+            {
+                if (existingBranch.IsDelete)
+                {
+                    ViewBag.ErrorMessage = "Cannot update. Product is marked as deleted.";
+                    return View("BranchMaster", model);
+                }
+
+                existingBranch.BracnchID = model.BracnchID;
+                existingBranch.BranchName = model.BranchName;
+                existingBranch.PhoneNumber1 = model.PhoneNumber1;
+                existingBranch.PhoneNumber2 = model.PhoneNumber2;
+                existingBranch.Address1 = model.Address1;
+                existingBranch.Address2 = model.Address2;
+                existingBranch.Country = model.Country;
+                existingBranch.City = model.City;
+                existingBranch.State = model.State;
+                existingBranch.ZipCode = model.ZipCode;
+                existingBranch.IsFranchise = model.IsFranchise;
+                existingBranch.email = model.email;
+                existingBranch.LastUpdatedDate = DateTime.Now.ToString();
+                existingBranch.lastUpdatedUser = User.Claims.First().Value.ToString();
+                existingBranch.lastUpdatedMachine = Request.HttpContext.Connection.RemoteIpAddress.ToString();
+
+                _billingsoftware.Entry(existingBranch).State = EntityState.Modified;
+
+            }
+            else
+            {
+
+                model.LastUpdatedDate = DateTime.Now.ToString();
+                model.lastUpdatedUser = User.Claims.First().Value.ToString();
+                model.lastUpdatedMachine = Request.HttpContext.Connection.RemoteIpAddress.ToString();
+                _billingsoftware.SHBranchMaster.Add(model);
+            }
+            await _billingsoftware.SaveChangesAsync();
+
+            ViewBag.Message = "Saved Successfully";
+
+            model = new BranchMasterModel();
+            return View("BranchMaster", model);
+
+
+        }
+
+        public IActionResult Error()
+        {
+            //Record error from context session
+            WebErrorsModel webErrors = new WebErrorsModel();
+            webErrors.ErrDateTime = DateTime.Now.ToString();
+            webErrors.ErrodDesc = HttpContext.Session.GetString("ErrorMessage").ToString();
+            webErrors.Username = User.Claims.First().Value.ToString();
+            webErrors.ScreenName = HttpContext.Session.GetString("ScreenName").ToString();
+            webErrors.MachineName = Request.HttpContext.Connection.RemoteIpAddress.ToString();
+
+            //Saving error into database
+            _billingsoftware.SHWebErrors.Add(webErrors);
+            _billingsoftware.SaveChangesAsync();
+
+            return View(webErrors);
+        }
+
+
     }
+
+
 }
 

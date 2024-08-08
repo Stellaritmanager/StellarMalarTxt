@@ -3,7 +3,7 @@ using StellarBillingSystem.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace HealthCare.Controllers
+namespace StellarBillingSystem.Controllers
 {
     [Authorize]
     public class ErrorController : Controller

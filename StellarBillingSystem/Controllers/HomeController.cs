@@ -7,39 +7,38 @@ using StellarBillingSystem.Business;
 using StellarBillingSystem.Context;
 using StellarBillingSystem.Models;
 
-namespace StellarBillingSystem.Controllers;
-
-
-[Authorize]
-public class HomeController : Controller
+namespace StellarBillingSystem.Controllers
 {
-
-    private BillingContext _billingContext;
-    private readonly IConfiguration _configuration;
-
-    public HomeController(BillingContext billingContext, IConfiguration configuration)
-    {
-        _billingContext = billingContext;
-        _configuration = configuration;
-    }
-
-
-
-    public IActionResult Index(string DashBoard = null, string fromDate = null, string toDate = null, string GroupBy = null)
+    [Authorize]
+    public class HomeController : Controller
     {
 
+        private BillingContext _billingContext;
+        private readonly IConfiguration _configuration;
 
-        
-        string salesMessage = GetSalesComparison();
-        decimal dailySales = GetDailySales();
-        decimal dailyPayments = GetDailyPayments();
+        public HomeController(BillingContext billingContext, IConfiguration configuration)
+        {
+            _billingContext = billingContext;
+            _configuration = configuration;
+        }
 
-        ViewBag.SalesMessage = salesMessage;
-        ViewBag.DailySales = dailySales.ToString("F2");
-        ViewBag.DailyPayments = dailyPayments.ToString("F2");
 
-        
-        
+        [ResponseCache(Location = ResponseCacheLocation.None, NoStore = true)]
+        public IActionResult Index(string DashBoard = null, string fromDate = null, string toDate = null, string GroupBy = null)
+        {
+
+
+
+            string salesMessage = GetSalesComparison();
+            decimal dailySales = GetDailySales();
+            decimal dailyPayments = GetDailyPayments();
+
+            ViewBag.SalesMessage = salesMessage;
+            ViewBag.DailySales = dailySales.ToString("F2");
+            ViewBag.DailyPayments = dailyPayments.ToString("F2");
+
+
+
             BusinessClassBilling business = new BusinessClassBilling(_billingContext);
             ViewData["reportid"] = business.GetReportId();
 
@@ -60,126 +59,126 @@ public class HomeController : Controller
                 ViewBag.Reportname = reportQuery.ReportName;
                 return View(query);
             }
-        
-
-        return View();
-    }
 
 
-    private string GetSalesComparison()
-    {
-        string branchId = string.Empty;
-
-        if (TempData["BranchID"] != null)
-        {
-            branchId = TempData["BranchID"].ToString();
-            TempData.Keep("BranchID");  
+            return View();
         }
 
-        string result = string.Empty;
 
-        string connectionString = _configuration.GetConnectionString("BillingDBConnection");
-
-        using (SqlConnection conn = new SqlConnection(connectionString))
+        private string GetSalesComparison()
         {
-            conn.Open();
-            using (SqlCommand cmd = new SqlCommand("SELECT dbo.CompareDailySales(@BranchID)", conn))
+            string branchId = string.Empty;
+
+            if (TempData["BranchID"] != null)
             {
-                cmd.Parameters.AddWithValue("@BranchID", branchId);
-                result = cmd.ExecuteScalar().ToString();
+                branchId = TempData["BranchID"].ToString();
+                TempData.Keep("BranchID");
             }
-        }
 
-        return result;
-    }
+            string result = string.Empty;
 
-    private decimal GetDailySales()
-    {
+            string connectionString = _configuration.GetConnectionString("BillingDBConnection");
 
-
-        string branchId = string.Empty;
-
-        if (TempData["BranchID"] != null)
-        {
-            branchId = TempData["BranchID"].ToString();
-            TempData.Keep("BranchID");
-        }
-
-        decimal result = 0;
-
-
-
-        string connectionString = _configuration.GetConnectionString("BillingDBConnection");
-
-        using (SqlConnection conn = new SqlConnection(connectionString))
-        {
-            conn.Open();
-            using (SqlCommand cmd = new SqlCommand("SELECT dbo.GetDailySales(@BranchID)", conn))
+            using (SqlConnection conn = new SqlConnection(connectionString))
             {
-                cmd.Parameters.AddWithValue("@BranchID", branchId);
-                var dbResult = cmd.ExecuteScalar();
-                if (dbResult != DBNull.Value)
+                conn.Open();
+                using (SqlCommand cmd = new SqlCommand("SELECT dbo.CompareDailySales(@BranchID)", conn))
                 {
-                    result = Convert.ToDecimal(dbResult);
+                    cmd.Parameters.AddWithValue("@BranchID", branchId);
+                    result = cmd.ExecuteScalar().ToString();
                 }
             }
+
+            return result;
         }
 
-        return result;
-    }
-
-    private decimal GetDailyPayments()
-    {
-
-
-        string branchId = string.Empty;
-
-        if (TempData["BranchID"] != null)
+        private decimal GetDailySales()
         {
-            branchId = TempData["BranchID"].ToString();
-            TempData.Keep("BranchID");
-        }
 
-        decimal result = 0;
 
-        string connectionString = _configuration.GetConnectionString("BillingDBConnection");
+            string branchId = string.Empty;
 
-        using (SqlConnection conn = new SqlConnection(connectionString))
-        {
-            conn.Open();
-            using (SqlCommand cmd = new SqlCommand("SELECT dbo.GetDailyPayments(@BranchID)", conn))
+            if (TempData["BranchID"] != null)
             {
-                cmd.Parameters.AddWithValue("@BranchID", branchId);
-                var dbResult = cmd.ExecuteScalar();
-                if (dbResult != DBNull.Value)
+                branchId = TempData["BranchID"].ToString();
+                TempData.Keep("BranchID");
+            }
+
+            decimal result = 0;
+
+
+
+            string connectionString = _configuration.GetConnectionString("BillingDBConnection");
+
+            using (SqlConnection conn = new SqlConnection(connectionString))
+            {
+                conn.Open();
+                using (SqlCommand cmd = new SqlCommand("SELECT dbo.GetDailySales(@BranchID)", conn))
                 {
-                    result = Convert.ToDecimal(dbResult);
+                    cmd.Parameters.AddWithValue("@BranchID", branchId);
+                    var dbResult = cmd.ExecuteScalar();
+                    if (dbResult != DBNull.Value)
+                    {
+                        result = Convert.ToDecimal(dbResult);
+                    }
                 }
             }
+
+            return result;
         }
 
-        return result;
+        private decimal GetDailyPayments()
+        {
+
+
+            string branchId = string.Empty;
+
+            if (TempData["BranchID"] != null)
+            {
+                branchId = TempData["BranchID"].ToString();
+                TempData.Keep("BranchID");
+            }
+
+            decimal result = 0;
+
+            string connectionString = _configuration.GetConnectionString("BillingDBConnection");
+
+            using (SqlConnection conn = new SqlConnection(connectionString))
+            {
+                conn.Open();
+                using (SqlCommand cmd = new SqlCommand("SELECT dbo.GetDailyPayments(@BranchID)", conn))
+                {
+                    cmd.Parameters.AddWithValue("@BranchID", branchId);
+                    var dbResult = cmd.ExecuteScalar();
+                    if (dbResult != DBNull.Value)
+                    {
+                        result = Convert.ToDecimal(dbResult);
+                    }
+                }
+            }
+
+            return result;
+        }
+
+        public IActionResult Privacy()
+        {
+            return View();
+        }
+
+
+        public IActionResult Administration()
+        {
+            return View();
+        }
+
+
+
+        public IActionResult RedirectToReports()
+        {
+
+            return RedirectToAction("Reports", "Reports");
+        }
     }
-
-    public IActionResult Privacy()
-    {
-        return View();
-    }
-
-
-    public IActionResult Administration()
-    {
-        return View();
-    }
-
-    
-
-    public IActionResult RedirectToReports()
-    {
-       
-        return RedirectToAction("Reports", "Reports");
-    }
-
     
 }
     

@@ -48,7 +48,7 @@
                     <div style="align-items:center">
                     <div class="card-header d-flex justify-content-between align-items-center">
                         <div class="container">
-                            <h2 class="centered text-white" style="font-family:'Lucida Bright';margin-left:27%;">Rack Partition Product</h2>
+                            <h2 class="centered text-white" style="font-family:'Lucida Bright';margin-left:16%;">Rack Partition Product</h2>
                         </div>
                     </div>
                 </div>
@@ -113,9 +113,11 @@
         <div class="col-md-12 col-lg-2">
         </div>
     </div>
+   
     <br />
 
     <div class="form-group">
+        <br />
         <center>
 
             <button type="submit" value="Delete" name="buttonType" class="btn btn-primary">Delete</button>
@@ -167,12 +169,21 @@
             </div>
         </div>
     }
+    </div>
+    
     @if (ViewBag.Message != null)
     {
         <script>
             handleMessages("@ViewBag.Message");
         </script>
     }
+
+        @if (ViewBag.ErrorMessage != null)
+        {
+            <script>
+                handleMessages("@ViewBag.ErrorMessage");
+            </script>
+        }
 
     @if (ViewBag.Delete != null)
     {
