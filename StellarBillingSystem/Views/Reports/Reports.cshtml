@@ -127,8 +127,7 @@
 
         </div>
     </div>
-    </div>
-
+   
 
 
     @if (Model != null)
@@ -139,14 +138,15 @@
             </div>
             <div class="col-md-12 col-lg-12">
                 <div class="card">
-                    <div class="card-body">
+                    <div class="card-body ">
+                        <div class="table-responsive">
 
                         <center>
                             <h2 class="centered text-white" style="font-family:'Lucida Bright';">@ViewBag.Reportname</h2>
                         </center>
                         <br/>
                         <table id="dataTable" class="table table-dark" style="font-size: 15px;">
-                            <thead class="card-body dividerblack">
+                            <thead>
                                 <tr>
                                     @foreach (DataColumn column in Model.Columns)
                                     {
@@ -155,7 +155,7 @@
                                 </tr>
                             </thead>
 
-                            <tbody class="card-body dividerblack">
+                            <tbody >
                               
                                 @foreach (DataRow row in Model.Rows)
                                 {
@@ -183,7 +183,7 @@
                 </div>
             </div>
         </div>
-
+        </div>
 
 
         <script>
