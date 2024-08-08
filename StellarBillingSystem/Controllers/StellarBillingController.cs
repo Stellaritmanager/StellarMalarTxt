@@ -2356,7 +2356,7 @@ namespace StellarBillingSystem.Controllers
                              }).ToListAsync();
 
                 var existingbilldetail = await _billingsoftware.SHbilldetails
-            .FirstOrDefaultAsync(x => x.BillID == model.BillID && x.BillDate == model.BillDate && x.CustomerNumber == model.CustomerNumber && x.BranchID == model.BranchID && x.ProductID == model.ProductID && x.IsDelete==false);
+            .FirstOrDefaultAsync(x => x.BillID == model.BillID && x.BillDate == model.BillDate && x.CustomerNumber == model.CustomerNumber && x.BranchID == model.BranchID && x.ProductID == model.ProductID && x.IsDelete == false);
 
                 if (existingbilldetail != null)
                 {
@@ -2395,7 +2395,7 @@ namespace StellarBillingSystem.Controllers
                         else
                         {
                             // Handle conversion failure
-                            ViewBag.Getnotfound =  "Invalid Quantity format ";
+                            ViewBag.Getnotfound = "Invalid Quantity format ";
                             return View("CustomerBilling", model);
                         }
 
@@ -2492,25 +2492,15 @@ namespace StellarBillingSystem.Controllers
                     return View("CustomerBilling", viewModel);
                 }
 
-            else
-            {
-                BillProductlistModel promodel = new BillProductlistModel();
-                ViewBag.Getnotfound = "No Data Found For This ID";
-
-                return View("CustomerBilling", promodel);
-            }
-                }
                 else
                 {
-
                     BillProductlistModel promodel = new BillProductlistModel();
                     ViewBag.Getnotfound = "No Data Found For This ID";
 
                     return View("CustomerBilling", promodel);
                 }
-
-
-
+            }
+            
 
             if (buttonType == "Delete Bill")
             {
