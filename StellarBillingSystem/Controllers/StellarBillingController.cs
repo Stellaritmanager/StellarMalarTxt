@@ -2341,6 +2341,22 @@ namespace StellarBillingSystem.Controllers
                     return View("CustomerBilling", model);
                 }
 
+                //Check  ProductID
+
+                var existingProductInBillDetails = await _billingsoftware.SHbilldetails
+                     .FirstOrDefaultAsync(x => x.ProductID == model.ProductID
+                                  && x.BillID == model.BillID
+                                  && x.BillDate == model.BillDate
+                                  && x.CustomerNumber == model.CustomerNumber
+                                  && x.BranchID == model.BranchID
+                                  && x.IsDelete == false);
+
+                if (existingProductInBillDetails != null)
+                {
+                    // ProductID already exists in billdetails
+                    ViewBag.Getnotfound = "You cannot Add the same product";
+                    return View("CustomerBilling", model);
+                }
 
 
                 var productlist = await _billingsoftware.SHProductMaster
@@ -2487,6 +2503,8 @@ namespace StellarBillingSystem.Controllers
                     ViewBag.TotalPrice = updatedMasterex?.Totalprice;
                     ViewBag.TotalDiscount = updatedMasterex?.TotalDiscount;
                     ViewBag.NetPrice = updatedMasterex?.NetPrice;
+                    ViewBag.CGSTPercentage = updatedMasterex?.CGSTPercentage;
+                    ViewBag.SGSTPercentage = updatedMasterex?.SGSTPercentage;
 
 
                     return View("CustomerBilling", viewModel);
@@ -2692,9 +2710,15 @@ namespace StellarBillingSystem.Controllers
             if (buttonType == "Get Points")
             {
 
-                var billingPoints = await _billingsoftware.SHBillingPoints
-          .Where(bp => bp.CustomerNumber == CustomerNumber && !bp.IsUsed)
-          .ToListAsync();
+                var billingPoints = await (from bp in _billingsoftware.SHBillingPoints
+                                           join bm in _billingsoftware.SHbillmaster
+                                           on bp.CustomerNumber equals bm.CustomerNumber
+                                           where bp.CustomerNumber == CustomerNumber
+                                                 && !bp.IsUsed
+                                                 && bm.IsDelete == false
+                                           select bp)
+                                .ToListAsync();
+
 
                 var totalPoints = billingPoints.Sum(bp => decimal.TryParse(bp.Points, out decimal pts) ? pts : 0);
 
@@ -2702,17 +2726,20 @@ namespace StellarBillingSystem.Controllers
 
 
                 var updatedMaster = await _billingsoftware.SHbillmaster
-          .FirstOrDefaultAsync(m => m.BillID == BillID && m.BranchID == model.BranchID && m.BillDate == BillDate && m.CustomerNumber == CustomerNumber);
+          .FirstOrDefaultAsync(m => m.BillID == BillID && m.BranchID == model.BranchID && m.BillDate == BillDate && m.CustomerNumber == CustomerNumber && m.IsDelete == false);
 
                 if (updatedMaster != null)
                 {
                     ViewBag.TotalPrice = updatedMaster.Totalprice;
                     ViewBag.TotalDiscount = updatedMaster.TotalDiscount;
                     ViewBag.NetPrice = updatedMaster.NetPrice;
+                    ViewBag.CGSTPercentage = updatedMaster.CGSTPercentage;
+                    ViewBag.SGSTPercentage = updatedMaster.SGSTPercentage;
+
                 }
 
                 var billingDetails = await _billingsoftware.SHbilldetails
-                    .Where(d => d.BillID == BillID && d.BranchID == model.BranchID && d.BillDate == BillDate && d.CustomerNumber == CustomerNumber)
+                    .Where(d => d.BillID == BillID && d.BranchID == model.BranchID && d.BillDate == BillDate && d.CustomerNumber == CustomerNumber && d.IsDelete == false)
                     .ToListAsync();
 
                 model.MasterModel = updatedMaster;
@@ -2731,7 +2758,7 @@ namespace StellarBillingSystem.Controllers
                 var totalPoints = billingPoints.Sum(bp => decimal.TryParse(bp.Points, out decimal pts) ? pts : 0);
 
                 var updatedMaster = await _billingsoftware.SHbillmaster
-                    .FirstOrDefaultAsync(m => m.BillID == BillID && m.BranchID == model.BranchID && m.BillDate == BillDate && m.CustomerNumber == CustomerNumber);
+                    .FirstOrDefaultAsync(m => m.BillID == BillID && m.BranchID == model.BranchID && m.BillDate == BillDate && m.CustomerNumber == CustomerNumber && m.IsDelete == false);
 
                 if (updatedMaster != null)
                 {
@@ -2742,7 +2769,14 @@ namespace StellarBillingSystem.Controllers
                     _billingsoftware.Entry(updatedMaster).State = EntityState.Modified;
                     await _billingsoftware.SaveChangesAsync();
 
+                    
+                    ViewBag.TotalPrice = updatedMaster.Totalprice;
+                    ViewBag.TotalDiscount = updatedMaster.TotalDiscount;
                     ViewBag.NetPrice = updatedMaster.NetPrice;
+                    ViewBag.CGSTPercentage = updatedMaster.CGSTPercentage;
+                    ViewBag.SGSTPercentage = updatedMaster.SGSTPercentage;
+
+
                 }
 
                 foreach (var point in billingPoints)
@@ -2750,20 +2784,28 @@ namespace StellarBillingSystem.Controllers
                     point.IsUsed = true;
                     point.DateofReedem = DateTime.Now.ToString();
                     _billingsoftware.Entry(point).State = EntityState.Modified;
+
+                    ViewBag.SaveMessage = "Points Reedem Successfully";
+
                 }
 
                 await _billingsoftware.SaveChangesAsync();
 
-                ViewBag.SaveMessage = "Points Reedem Successfully";
+                
             }
 
-      
+               
                 return View("CustomerBilling", model);
         }
 
 
         public IActionResult DeleteProduct(string productId, string billID, string billDate, string customerNumber,BillProductlistModel model)
         {
+
+            BusinessClassBilling Busbill = new BusinessClassBilling(_billingsoftware);
+            ViewData["productid"] = Busbill.Getproduct(model.BranchID);
+
+
             if (TempData["BranchID"] != null)
             {
                 model.BranchID = TempData["BranchID"].ToString();
@@ -2810,9 +2852,12 @@ namespace StellarBillingSystem.Controllers
                 ViewBag.DelMessage = "Deleted Product Successfully";
             }
 
-          
+            //var deleteitem = model.Viewbillproductlist.Where(x => x.ProductID == productId && x.BillID == billID && x.BillDate == billDate && x.BranchID == model.BranchID).FirstOrDefault();
+            //model.Viewbillproductlist.Remove(deleteitem);
+
+
             var billDetail = _billingsoftware.SHbilldetails
-        .Where(b => b.BillID == billID && b.ProductID == productId && b.BranchID == model.BranchID && b.BillDate == billDate && b.CustomerNumber == customerNumber)
+        .Where(b => b.BillID == billID  && b.BranchID == model.BranchID && b.BillDate == billDate && b.CustomerNumber == customerNumber)
         .Select(b => new BillingDetailsModel
         {
             ProductID = b.ProductID,
@@ -2823,18 +2868,11 @@ namespace StellarBillingSystem.Controllers
             CustomerNumber = b.CustomerNumber,
             BillID = b.BillID
         })
-        .FirstOrDefault();
+        .ToList();
 
             if (billDetail != null)
             {
-                model.Viewbillproductlist = new List<BillingDetailsModel> { billDetail };
-                model.ProductID = billDetail.ProductID;
-                model.ProductName = billDetail.ProductName;
-                model.Price = billDetail.Price;
-                model.Quantity = billDetail.Quantity;
-                model.BillID = billDetail.BillID;
-                model.BillDate = billDetail.BillDate;
-                model.CustomerNumber = billDetail.CustomerNumber;
+                model.Viewbillproductlist = billDetail;
             }
             else
             {
@@ -2842,9 +2880,9 @@ namespace StellarBillingSystem.Controllers
                 model.Viewbillproductlist = new List<BillingDetailsModel>();
             }
 
+          
+
             return View("CustomerBilling", model);
-
-
 
 
 }
