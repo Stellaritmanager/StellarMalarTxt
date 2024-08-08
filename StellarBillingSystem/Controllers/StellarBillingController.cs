@@ -2762,7 +2762,7 @@ namespace StellarBillingSystem.Controllers
         }
 
 
-        public IActionResult DeleteProduct(string productId,BillProductlistModel model, BillingDetailsModel detailModel,BillingMasterModel master)
+        public IActionResult DeleteProduct(string productId, string billID, string billDate, string customerNumber,BillProductlistModel model)
         {
             if (TempData["BranchID"] != null)
             {
@@ -2771,7 +2771,7 @@ namespace StellarBillingSystem.Controllers
             }
 
             var product = _billingsoftware.SHbilldetails
-      .Where(p => p.ProductID == productId && p.BranchID == model.BranchID && p.BillID == master.BillID && p.BillDate == master.BillDate && p.CustomerNumber == master.CustomerNumber)
+      .Where(p => p.ProductID == productId && p.BranchID == model.BranchID && p.BillID == billID && p.BillDate == billDate && p.CustomerNumber == customerNumber)
       .Select(p => new
       {
           p.Quantity,
@@ -2790,7 +2790,7 @@ namespace StellarBillingSystem.Controllers
 
                 // Update the IsDelete field to true
                 var productToUpdate = _billingsoftware.SHbilldetails
-                    .First(p => p.ProductID == productId && p.BranchID == model.BranchID);
+                    .First(p => p.ProductID == productId && p.BranchID == model.BranchID && p.BillID == billID && p.BillDate == billDate && p.CustomerNumber == customerNumber);
 
                 _billingsoftware.SHbilldetails.Remove(productToUpdate);
                 _billingsoftware.SaveChanges();
@@ -2807,23 +2807,23 @@ namespace StellarBillingSystem.Controllers
                 }
 
                 _billingsoftware.SaveChanges();
+                ViewBag.DelMessage = "Deleted Product Successfully";
             }
 
-            ViewBag.DelMessage = "Deleted Product Successfully";
-
+          
             var billDetail = _billingsoftware.SHbilldetails
-                     .Where(b => b.BillID == model.BillID && b.ProductID == model.ProductID && b.BranchID == model.BranchID && b.IsDelete == false)
-                     .Select(b => new BillingDetailsModel
-                     {
-                         ProductID = b.ProductID,
-                         ProductName = b.ProductName,
-                         Quantity = b.Quantity,
-                         BillDate = b.BillDate,
-                         CustomerNumber = b.CustomerNumber,
-                         BillID = b.BillID
-
-                     })
-                     .FirstOrDefault();
+        .Where(b => b.BillID == billID && b.ProductID == productId && b.BranchID == model.BranchID && b.BillDate == billDate && b.CustomerNumber == customerNumber)
+        .Select(b => new BillingDetailsModel
+        {
+            ProductID = b.ProductID,
+            ProductName = b.ProductName,
+            Price = b.Price, // Assuming you want to use the price from the database
+            Quantity = b.Quantity,
+            BillDate = b.BillDate,
+            CustomerNumber = b.CustomerNumber,
+            BillID = b.BillID
+        })
+        .FirstOrDefault();
 
             if (billDetail != null)
             {
@@ -2835,7 +2835,6 @@ namespace StellarBillingSystem.Controllers
                 model.BillID = billDetail.BillID;
                 model.BillDate = billDetail.BillDate;
                 model.CustomerNumber = billDetail.CustomerNumber;
-
             }
             else
             {
@@ -2843,7 +2842,7 @@ namespace StellarBillingSystem.Controllers
                 model.Viewbillproductlist = new List<BillingDetailsModel>();
             }
 
-            return View(model);
+            return View("CustomerBilling", model);
 
 
 
@@ -3088,9 +3087,8 @@ namespace StellarBillingSystem.Controllers
             BusinessClassBilling Busbill = new BusinessClassBilling(_billingsoftware);
             ViewData["productid"] = Busbill.Getproduct(model.BranchID);
 
-
             // Retrieve selected product
-            var selectedProduct = _billingsoftware.SHProductMaster.FirstOrDefault(p => p.ProductID ==productid);
+            var selectedProduct = _billingsoftware.SHProductMaster.FirstOrDefault(p => p.ProductID == productid);
 
             if (selectedProduct != null)
             {
@@ -3106,7 +3104,6 @@ namespace StellarBillingSystem.Controllers
                         BillDate = b.BillDate,
                         CustomerNumber = b.CustomerNumber,
                         BillID = b.BillID
-
                     })
                     .FirstOrDefault();
 
@@ -3120,7 +3117,6 @@ namespace StellarBillingSystem.Controllers
                     model.BillID = billDetail.BillID;
                     model.BillDate = billDetail.BillDate;
                     model.CustomerNumber = billDetail.CustomerNumber;
-
                 }
                 else
                 {
@@ -3135,7 +3131,6 @@ namespace StellarBillingSystem.Controllers
             }
 
             return View(model);
-
         }
 
         public IActionResult PaymentBilling()

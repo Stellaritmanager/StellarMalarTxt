@@ -79,7 +79,7 @@
                         <div class="col-md-12 col-lg-3">
  
                             <div class="form-floating form-floating-outline mb-4 custom-date-picker">
-                                <input asp-for="BillDate" type="date" value="@Model.BillDate" class="form-control" placeholder="BillDate" required />
+                                <input asp-for="BillDate" type="date" value="@Model.BillDate" class="form-control" name="BillDate" placeholder="BillDate" required />
                                 <label asp-for="BillDate" class="control-label">Bill Date</label>
                                 <span asp-validation-for="BillDate" class="text-danger"></span>
                             </div>
@@ -182,7 +182,7 @@
                                                 <td>@product.Discount</td>
                                                 <td>@product.NetPrice</td>
                                             <td>
-                                                <a href="@Url.Action("DeleteProduct", new { productId = product.ProductID})" class="btn btn-primary">DeleteProduct</a>
+                                                <a href="@Url.Action("DeleteProduct", new { productId = product.ProductID, billID = Model.BillID, billDate = Model.BillDate, customerNumber = Model.CustomerNumber })" class="btn btn-primary">Delete Product</a>
                                             </td>
                                             </tr>
                                         }
