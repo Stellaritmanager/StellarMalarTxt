@@ -382,9 +382,15 @@ namespace StellarBillingSystem.Business
             }
             return null;
         }
-        public byte[] PrintBillDetails(DataTable billDetails)
+        public byte[] PrintBillDetails(DataTable billDetails,string BranchID)
         {
-            return ModifyBillDoc("..\\StellarBillingSystem\\Templates\\BillTemplate.docx", billDetails);
+            // Determine the template name based on the BranchID
+            string templateName = BranchID == "B_1" ? "BillTemplate Branch1.docx" : "BillTemplate Branch2.docx";
+
+            // Combine the template path
+            string templatePath = Path.Combine("..\\StellarBillingSystem\\Templates", templateName);
+
+            return ModifyBillDoc(templatePath, billDetails);
         }
 
         /*        public async Task<bool> UpdateProduct(string productId, bool isDelete)
