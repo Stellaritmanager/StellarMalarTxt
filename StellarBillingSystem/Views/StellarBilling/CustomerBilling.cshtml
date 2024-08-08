@@ -170,8 +170,24 @@
                                         </tr>
                                     </thead>
                                     <tbody>
+                                    @for (int i = 0; i < Model.Viewbillproductlist.Count; i++)
+                                    {
+                                        <tr>
 
-                                        @foreach (var product in Model.Viewbillproductlist)
+                                            <td>@Model.Viewbillproductlist[i].ProductID</td>
+                                            <td>@Model.Viewbillproductlist[i].ProductName</td>
+                                            <td>@Model.Viewbillproductlist[i].Price</td>
+                                            <td>@Model.Viewbillproductlist[i].Quantity</td>
+                                            <td>@Model.Viewbillproductlist[i].Discount</td>
+                                            <td>@Model.Viewbillproductlist[i].NetPrice</td>
+                                            <td>
+                                                <a href="@Url.Action("DeleteProduct", new { productId = @Model.Viewbillproductlist[i].ProductID, billID = @Model.Viewbillproductlist[i].BillID, billDate = @Model.Viewbillproductlist[i].BillDate, customerNumber = @Model.Viewbillproductlist[i].CustomerNumber })" class="btn btn-primary">Delete Product</a>
+                                            </td>
+                                        </tr>
+
+
+                                    }
+                                       @*  @foreach (var product in Model.Viewbillproductlist)
                                         {
                                             <tr>
 
@@ -185,7 +201,7 @@
                                                 <a href="@Url.Action("DeleteProduct", new { productId = product.ProductID, billID = Model.BillID, billDate = Model.BillDate, customerNumber = Model.CustomerNumber })" class="btn btn-primary">Delete Product</a>
                                             </td>
                                             </tr>
-                                        }
+                                        } *@
                                     </tbody>
                                 </table>
 
@@ -221,14 +237,14 @@
                         <div class="col-md-12 col-lg-6">
                                                                                                                                                                                                                                                                                                                     
                             <div class="form-floating form-floating-outline mb-4">
-                                <input type="CGSTPercentage" class="form-control" name="CGSTPercentage" placeholder="CGSTPercentage" value="@Model.CGSTPercentage" />
+                                <input type="CGSTPercentage" class="form-control" name="CGSTPercentage" placeholder="CGSTPercentage" value="@ViewBag.CGSTPercentage" />
                                 <label asp-for="CGSTPercentage" class="control-label">CGST%</label>
                             </div>
 
                         </div>
                         <div class="col-md-12 col-lg-6">
                             <div class="form-floating form-floating-outline mb-4">
-                                <input type="CGSTPercentageAmt" class="form-control" name="CGSTPercentageAmt" placeholder="CGSTPercentageAmt" value="@Model.CGSTPercentageAmt" />
+                                <input type="CGSTPercentageAmt" class="form-control" name="CGSTPercentageAmt" placeholder="CGSTPercentageAmt" value="@ViewBag.CGSTPercentageAmt" />
                                 <label asp-for="CGSTPercentageAmt" class="control-label">Net Price</label>
                             </div>
                         </div>
@@ -237,14 +253,14 @@
                         <div class="col-md-12 col-lg-6">
 
                             <div class="form-floating form-floating-outline mb-4">
-                                <input type="SGSTPercentage" class="form-control" name="SGSTPercentage" placeholder="SGSTPercentage" value="@Model.SGSTPercentage" />
+                                <input type="SGSTPercentage" class="form-control" name="SGSTPercentage" placeholder="SGSTPercentage" value="@ViewBag.SGSTPercentage" />
                                 <label asp-for="SGSTPercentage" class="control-label">SGST%</label>
                             </div>
 
                         </div>
                         <div class="col-md-12 col-lg-6">
                             <div class="form-floating form-floating-outline mb-4">
-                                <input type="SGSTPercentageAmt" class="form-control" name="SGSTPercentageAmt" placeholder="SGSTPercentageAmt" value="@Model.SGSTPercentageAmt" />
+                                <input type="SGSTPercentageAmt" class="form-control" name="SGSTPercentageAmt" placeholder="SGSTPercentageAmt" value="@ViewBag.SGSTPercentageAmt" />
                                 <label asp-for="SGSTPercentageAmt" class="control-label">Net Price</label>
                             </div>
                         </div>
