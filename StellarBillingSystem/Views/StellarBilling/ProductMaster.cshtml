@@ -173,7 +173,7 @@
                             </div>
                             <div class="col-md-12 col-lg-5">
                           
-                            <div class="form-floating form-floating-outline mb-4">
+                          @*   <div class="form-floating form-floating-outline mb-4">
                                 <input asp-for="SGST" value="@Model.SGST" class="form-control" placeholder="SGST" />
                                 <label asp-for="SGST" class="control-label">SGST</label>
 
@@ -190,7 +190,7 @@
                                 <label asp-for="OtherTax" class="control-label">OtherTax</label>
 
                                 <span asp-validation-for="SGST" class="text-danger"></span>
-                            </div>
+                            </div> *@
                             <div class="form-floating form-floating-outline mb-4">
                                 @{
                                     var discount = ((IEnumerable<DiscountCategoryMasterModel>)ViewData["discountid"])
@@ -211,6 +211,18 @@
 
                                 <span asp-validation-for="TotalAmount" class="text-danger"></span>
                             </div>
+
+                            <div class="form-floating form-floating-outline mb-4">
+                                <input type="GodownNoofitems" name="GodownNoofitems" value="@ViewBag.GodownNoofitems" class="form-control" placeholder="Godown Noofitems" readonly />
+                                <label class="control-label">Godown Noofitems</label>
+                            </div>
+
+
+                            <div class="form-floating form-floating-outline mb-4">
+                                <input type="RackNoofitems" name="RackNoofitems" value="@ViewBag.RackNoofitems" class="form-control" placeholder="RackNoofitems" readonly />
+                                <label class="control-label">Rack Noofitems</label>
+                            </div>
+
                         </div>
                         <div class="col-md-12 col-lg-1">
                         </div>

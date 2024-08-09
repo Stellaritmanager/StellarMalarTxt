@@ -20,6 +20,7 @@ using System.Data;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Web;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace StellarBillingSystem.Controllers
 {
@@ -195,6 +196,7 @@ namespace StellarBillingSystem.Controllers
             ViewData["categoryid"] = business.GetCatid(model.BranchID);
             ViewData["discountid"] = business.Getdiscountid(model.BranchID);
 
+
             if (buttonType == "Get")
             {
                 if (model.ProductID == null && model.BarcodeId == null)
@@ -210,6 +212,15 @@ namespace StellarBillingSystem.Controllers
 
                 if (resultpro != null)
                 {
+                    //get rack noofitems
+                    var noofitemrack = await _billingsoftware.SHRackPartionProduct.Where(x => x.ProductID == model.ProductID && x.BranchID == model.BranchID).Select(x => x.Noofitems).FirstOrDefaultAsync();
+                    
+                    //get godown noofstock
+                    var noofstock = await _billingsoftware.SHGodown.Where(x => x.ProductID == model.ProductID && x.BranchID == model.BranchID).Select(x => x.NumberofStocks).FirstOrDefaultAsync();
+
+                    ViewBag.GodownNoofitems = noofstock;
+                    ViewBag.RackNoofitems = noofitemrack;
+
                     return View("ProductMaster", resultpro);
                 }
                 else
@@ -219,6 +230,9 @@ namespace StellarBillingSystem.Controllers
                     return View("ProductMaster", obj);
                 }
             }
+
+
+
             else if (buttonType == "Delete")
             {
                 if (string.IsNullOrEmpty(model.ProductID) && string.IsNullOrEmpty(model.BarcodeId))
@@ -3220,25 +3234,42 @@ namespace StellarBillingSystem.Controllers
             {
                 //Delete Details from DB
                 //Delete from database
-                var selectedDBpayment = _billingsoftware.SHPaymentDetails.Where(x => x.PaymentId == model.PaymentId && x.BranchID == model.BranchID).ToList();
-                foreach(var item in selectedDBpayment)
+
+                var Dbdelete = _billingsoftware.SHPaymentMaster.SingleOrDefault(x => x.BillId == model.BillId  && x.BranchID == model.BranchID && x.BillDate == model.BillDate);
+
+                if (Dbdelete != null)
                 {
-                    _billingsoftware.SHPaymentDetails.Remove(item);
+
+                    var selectedDBpayment = _billingsoftware.SHPaymentDetails.Where(x => x.PaymentId == model.PaymentId && x.BranchID == model.BranchID).ToList();
+                    foreach (var item in selectedDBpayment)
+                    {
+                        _billingsoftware.SHPaymentDetails.Remove(item);
+                        _billingsoftware.SaveChanges();
+                    }
+
+
+                    //Delete Master
+                    var SelectedPayMas = _billingsoftware.SHPaymentMaster.SingleOrDefault(x => x.BillId == model.BillId && x.BillDate == model.BillDate && x.PaymentId == model.PaymentId && x.BranchID == model.BranchID);
+
+                    _billingsoftware.SHPaymentMaster.Remove(SelectedPayMas);
                     _billingsoftware.SaveChanges();
+                    ViewBag.Message = "Payment Deleted Successfully";
+                }
+                else
+                {
+                    ViewBag.Message = "Payment Not Found";
                 }
 
+                    //Code here for refresh model
+                    PaymentTableViewModel objnew = new PaymentTableViewModel();
 
-                //Delete Master
-                var SelectedPayMas = _billingsoftware.SHPaymentMaster.SingleOrDefault(x =>x.BillId ==model.BillId && x.BillDate == model.BillDate && x.PaymentId == model.PaymentId && x.BranchID == model.BranchID);
+                    model = objnew;
 
-                _billingsoftware.SHPaymentMaster.Remove(SelectedPayMas);
-                _billingsoftware.SaveChanges();
-
-                //Code here for refresh model
-                PaymentTableViewModel objnew = new PaymentTableViewModel();
-
-                model = objnew;
+                
+                return View("PaymentBilling", model);
             }
+
+
             if (buttonType == "GetPayment")
             {
                 var selectDBpayment = _billingsoftware.SHPaymentDetails.Where(x => x.PaymentId == model.PaymentId && x.BranchID == model.BranchID ).ToList();
@@ -3266,6 +3297,14 @@ namespace StellarBillingSystem.Controllers
             }
             if (buttonType == "DeletePaymentDetail")
             {
+
+                if (string.IsNullOrEmpty(selectedSlotId))
+                {
+                    ViewBag.Message = "Please select a payment.";
+                    return View("PaymentBilling", model);
+                }
+
+
                 //Delete from database
                 var selectedDBpayment = _billingsoftware.SHPaymentDetails.SingleOrDefault(x => x.PaymentDiscription == selectedSlotId && x.PaymentId == model.PaymentId && x.BranchID == model.BranchID);
                 if (selectedDBpayment != null)
@@ -3279,9 +3318,15 @@ namespace StellarBillingSystem.Controllers
                 if (selectedpayment != null)
                 {
                     model.Viewpayment.Remove(selectedpayment);
+                    ViewBag.Message = "Payment Detail Deleted Successfully";
                 }
+                else
+                {
+                    ViewBag.Message = "PaymentID Not Found";
+                }
+               
+                return View("PaymentBilling", model);
 
-                
 
 
             }
@@ -3334,9 +3379,9 @@ namespace StellarBillingSystem.Controllers
                  if(objpaymas != null)
                 {
                     objpaymas.BranchID = model.BranchID;
-                    objpaymas.Lastupdateddate = "";
-                    objpaymas.Lastupdateduser = "";
-                    objpaymas.Lastupdatedmachine = "";
+                    objpaymas.Lastupdateddate = DateTime.Now.ToString();
+                    objpaymas.Lastupdateduser = User.Claims.First().Value.ToString();
+                    objpaymas.Lastupdatedmachine = Request.HttpContext.Connection.RemoteIpAddress.ToString();
                     objpaymas.Balance = model.StrBillvalue;
                     objpaymas.BillDate = model.BillDate;
                     objpaymas.BillId = model.BillId;
@@ -3357,9 +3402,9 @@ namespace StellarBillingSystem.Controllers
                     if (obpaydet != null)
                     {
                         obpaydet.BranchID = model.BranchID;
-                        obpaydet.Lastupdateduser = "";
-                        obpaydet.Lastupdatedmachine = "";
-                        obpaydet.Lastupdatedmachine = "";
+                        obpaydet.Lastupdateduser = User.Claims.First().Value.ToString();
+                        obpaydet.Lastupdateddate = DateTime.Now.ToString();
+                        obpaydet.Lastupdatedmachine = Request.HttpContext.Connection.RemoteIpAddress.ToString();
                         obpaydet.PaymentAmount = objdetail.PaymentAmount;
                         obpaydet.PaymentDate = objdetail.PaymentDate;
                         obpaydet.PaymentDiscription = objdetail.PaymentDiscription;
