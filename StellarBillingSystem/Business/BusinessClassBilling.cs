@@ -385,10 +385,10 @@ namespace StellarBillingSystem.Business
         public byte[] PrintBillDetails(DataTable billDetails,string BranchID)
         {
             // Determine the template name based on the BranchID
-            string templateName = BranchID == "B_1" ? "BillTemplate Branch1.docx" : "BillTemplate Branch2.docx";
+            string templateName = BranchID == "Branch1" ? "BillTemplate Branch1.docx" : "BillTemplate Branch2.docx";
 
             // Combine the template path
-            string templatePath = Path.Combine("..\\StellarBillingSystem\\Templates", templateName);
+            string templatePath = Path.Combine(templateName);
 
             return ModifyBillDoc(templatePath, billDetails);
         }
