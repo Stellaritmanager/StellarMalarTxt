@@ -71,7 +71,7 @@
                         <div class="col-md-12 col-lg-9">
                             <div class="form-floating form-floating-outline mb-4">
 
-                                        <input asp-for="NetPrice" class="form-control" placeholder="Net Price" value="@Model.NetPrice" pattern="^\d+$" title="Please enter a valid format. Only numbers are allowed" />
+                                        <input asp-for="NetPrice" class="form-control" placeholder="Net Price" value="@Model.NetPrice" pattern="^\d+$" title="Please enter a valid format. Only numbers are allowed"  required />
                                         <label asp-for="NetPrice" class="control-label">Net Price</label>
                                         <span asp-validation-for="NetPrice" class="text-danger"></span>
                                     </div>

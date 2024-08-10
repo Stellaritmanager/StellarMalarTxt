@@ -2678,9 +2678,9 @@ namespace StellarBillingSystem.Controllers
 
                 // Save points calculation
                 var checkpoints = await _billingsoftware.SHBillingPoints.FirstOrDefaultAsync(x => x.BillID == model.BillID && x.CustomerNumber == CustomerNumber);
-                var pointsMaster = await _billingsoftware.SHPointsMaster.FirstOrDefaultAsync();
+                var pointsMaster = await _billingsoftware.SHPointsMaster.FirstOrDefaultAsync(x=>x.BranchID == model.BranchID);
 
-                if (pointsMaster != null)
+                if (pointsMaster != null && pointsMaster.NetPrice !=null && pointsMaster.NetPoints !=null && pointsMaster.BranchID == model.BranchID)
                 {
                     decimal netPointsRatio = Convert.ToDecimal(pointsMaster.NetPoints) / Convert.ToDecimal(pointsMaster.NetPrice);
                     decimal points = Convert.ToDecimal(billingSummary.NetPrice) * netPointsRatio;
@@ -2725,6 +2725,9 @@ namespace StellarBillingSystem.Controllers
                     ViewBag.TotalPrice = updatedMaster.Totalprice;
                     ViewBag.TotalDiscount = updatedMaster.TotalDiscount;
                     ViewBag.NetPrice = updatedMaster.NetPrice;
+                    ViewBag.CGSTPercentage = updatedMaster.CGSTPercentage;
+                    ViewBag.SGSTPercentage = updatedMaster.SGSTPercentage;
+
                 }
 
 
@@ -3326,7 +3329,20 @@ namespace StellarBillingSystem.Controllers
                 {
                     ViewBag.Message = "PaymentID Not Found";
                 }
-               
+
+                model.StrBillvalue = BusinessClassCommon.getbalance(_billingsoftware, model.PaymentId, model.BillId, model.BranchID, model.BillDate, detailmodel.PaymentAmount);
+
+                var exbalance = _billingsoftware.SHPaymentMaster.Where(x => x.BillId == model.BillId && x.BranchID == model.BranchID && x.PaymentId == model.PaymentId && x.BillDate == model.BillDate).FirstOrDefault();
+
+
+                if (exbalance != null)
+                {
+                    exbalance.Balance = model.StrBillvalue;
+                    _billingsoftware.Entry(exbalance).State = EntityState.Modified;
+                    _billingsoftware.SaveChanges();
+                }
+
+
                 return View("PaymentBilling", model);
 
 
@@ -3449,6 +3465,20 @@ namespace StellarBillingSystem.Controllers
                 if (string.IsNullOrEmpty(model.PaymentId))
                 {
                     ViewBag.Message = "Please enter Payment ID.";
+                    return View("PaymentBilling", model);
+                }
+
+
+                var existingPayment = _billingsoftware.SHPaymentMaster
+       .Where(x => x.BillId == model.BillId && x.BranchID == model.BranchID && x.PaymentId != model.PaymentId && x.IsDelete == false && x.BillDate == model.BillDate)
+       .FirstOrDefault();
+
+
+
+
+                if (existingPayment != null)
+                {
+                    ViewBag.Message = HttpUtility.JavaScriptStringEncode($"Your Payment ID is '{existingPayment.PaymentId}' cannot insert another ID.");
                     return View("PaymentBilling", model);
                 }
 

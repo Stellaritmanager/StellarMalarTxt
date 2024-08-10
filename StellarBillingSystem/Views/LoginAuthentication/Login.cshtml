@@ -33,7 +33,7 @@
                     <form id="formAuthentication" class="mb-3" action="~/" method="POST">
                         <div class="mb-3" style="margin-top:20px">
                             <label asp-for="Username" class="form-label">Email or Username</label>
-                            <input type="text" asp-for="Username" class="form-control" id="Username" name="Username" placeholder="Enter your email or username" autofocus>
+                            <input type="text" asp-for="Username" class="form-control" id="Username" name="Username" placeholder="Enter your email or username" autofocus required>
                         </div>
                         <div class="mb-3 form-password-toggle" style="margin-top:20px">
                             <div class="d-flex justify-content-between">
@@ -43,7 +43,7 @@
                                 </a> *@
                             </div>
                             <div class="input-group input-group-merge">
-                                <input asp-for="Password" type="password" id="password" class="form-control" name="password" placeholder="&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;" aria-describedby="password" />
+                                <input asp-for="Password" type="password" id="password" class="form-control" name="password" placeholder="&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;" aria-describedby="password" required/>
                                 <span class="input-group-text cursor-pointer"><i class="bx bx-hide"></i></span>
                             </div>
                         </div>
