@@ -5,6 +5,10 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <UserSecretsId>3be8c568-12fa-455b-9c85-662e2b303644</UserSecretsId>
+    <Copyright>Copyright@StellarTechnologiesPdkt</Copyright>
+    <Description>Stellar Billing System</Description>
+    <FileVersion>1.0</FileVersion>
+    <AssemblyVersion>1.0</AssemblyVersion>
   </PropertyGroup>
 
   <ItemGroup>
