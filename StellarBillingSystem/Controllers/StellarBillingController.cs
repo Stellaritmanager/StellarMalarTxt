@@ -2331,6 +2331,9 @@ namespace StellarBillingSystem.Controllers
 
                 //Check BranchID for Template
 
+              
+
+
 
                   /*  var templateName = await _billingsoftware.SHBranchMaster
                                                     .Where(b => b.BracnchID == model.BranchID)
@@ -2345,9 +2348,8 @@ namespace StellarBillingSystem.Controllers
 */
                
 
-                    BusinessClassBilling objbilling = new BusinessClassBilling(_billingsoftware);
-
-                    return File(objbilling.PrintBillDetails(Table, model.BranchID), "application/vnd.openxmlformats-officedocument.wordprocessingml.document", "Bill_" + TempData["BillID"] + ".docx");
+                
+                    return File(Busbill.PrintBillDetails(Table, model.BranchID), "application/vnd.openxmlformats-officedocument.wordprocessingml.document", "Bill_" + TempData["BillID"] + ".docx");
                 
             }
 
@@ -3480,8 +3482,9 @@ namespace StellarBillingSystem.Controllers
                     return View("PaymentBilling", model);
                 }
 
+                BusinessClassBilling obj = new BusinessClassBilling(_billingsoftware);
                 PaymentDetailsModel objNewPayment = new PaymentDetailsModel();
-                objNewPayment.PaymentDiscription = model.PaymentId + DateTime.Now.ToString();
+                objNewPayment.PaymentDiscription = obj.GeneratePaymentDescriptionreport(model.PaymentId);
                 objNewPayment.PaymentId = model.PaymentId;
                 objNewPayment.BranchID = model.BranchID;
 
