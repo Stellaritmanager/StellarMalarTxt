@@ -3476,7 +3476,7 @@ namespace StellarBillingSystem.Controllers
 
                 if (existingPayment != null)
                 {
-                    ViewBag.Message = HttpUtility.JavaScriptStringEncode($"Your Payment ID is '{existingPayment.PaymentId}' cannot insert another ID.");
+                    ViewBag.Message = HttpUtility.JavaScriptStringEncode($"Your Payment ID is '{existingPayment.PaymentId}' cannot insert another ID");
                     return View("PaymentBilling", model);
                 }
 
