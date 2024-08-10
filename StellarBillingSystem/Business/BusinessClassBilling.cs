@@ -1,4 +1,5 @@
 ﻿
+using DocumentFormat.OpenXml.InkML;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Operations;
 using Microsoft.Data.SqlClient;
@@ -384,8 +385,14 @@ namespace StellarBillingSystem.Business
         }
         public byte[] PrintBillDetails(DataTable billDetails,string BranchID)
         {
+            //var template = _billingContext.SHBranchMaster.FirstOrDefault(x => x.BracnchID == BranchID);
+
+            //var result = _billingContext.Database.SqlQueryRaw<dynamic>(
+            //                "select BillTemplate from SHBranchMaster where BracnchID = '"+ BranchID+"'",
+            //                1).ToList();
+
             // Determine the template name based on the BranchID
-            string templateName = BranchID == "Branch1" ? "BillTemplate Branch1.docx" : "BillTemplate Branch2.docx";
+            string templateName = BranchID == "Lee_Mobile" ? "BillTemplate Branch1.docx" : "BillTemplate Branch2.docx";
 
             // Combine the template path
             string templatePath = Path.Combine(templateName);
@@ -393,60 +400,7 @@ namespace StellarBillingSystem.Business
             return ModifyBillDoc(templatePath, billDetails);
         }
 
-        /*        public async Task<bool> UpdateProduct(string productId, bool isDelete)
-                {
-                    var product = await _billingContext.SHProductMaster.FirstOrDefaultAsync(x => x.ProductID == productId);
-
-                    if (product == null)
-                    {
-                        return false; // Product not found
-                    }
-
-                    product.IsDelete = isDelete;
-
-                    await _billingContext.SaveChangesAsync();
-
-                    return true; // Update successful
-                }*/
-
-        /*        public async Task<ProductMatserModel> GetProductmaster(string productID)
-                {
-                    var product = await (
-                            from pp in _billingContext.SHProductMaster
-                            where pp.ProductID == productID
-                            select new ProductMatserModel
-                            {
-                                CategoryID = pp.CategoryID,
-                                ProductID = pp.ProductID,
-                                ProductName = pp.ProductName,
-                                Brandname = pp.Brandname,
-                                Discount = pp.Discount,
-                                TotalAmount = pp.TotalAmount,
-                                Price = pp.Price
-
-                            }).FirstOrDefaultAsync();
-
-                    return product;
-
-                }*/
-
-
-
-        /*        public async Task AddPointsToCustomer(string customerId, int pointsToAdd)
-                {
-                    var customer = await _billingContext.SHCustomerMaster.FindAsync(customerId);
-
-                    if (customer == null)
-                    {
-                        throw new ArgumentException("Customer not found");
-                    }
-
-                    customer.PointsReedem += pointsToAdd;
-                    await _billingContext.SaveChangesAsync();
-                }*/
-
-
-
+        
         public string GeneratePaymentDescriptionreport(string paymentId)
         {
             string timestamp = DateTime.Now.ToString("HH:mm:ss");
