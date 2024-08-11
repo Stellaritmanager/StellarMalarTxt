@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace StellarBillingSystem.Controllers
 {
+    [Authorize]
     public class ReportsController : Controller
     {
 
