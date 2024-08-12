@@ -3356,6 +3356,9 @@ namespace StellarBillingSystem.Controllers
                     _billingsoftware.SaveChanges();
                 }
 
+                var exbilltotal = await _billingsoftware.SHbillmaster.Where(x => x.BillID == model.BillId && x.BillDate == model.BillDate && x.BranchID == model.BranchID).FirstOrDefaultAsync();
+                if (exbilltotal != null)
+                    model.Balance = exbilltotal.NetPrice;
 
                 return View("PaymentBilling", model);
 
