@@ -3566,8 +3566,10 @@ namespace StellarBillingSystem.Controllers
 
                 var exbalance = _billingsoftware.SHPaymentMaster.Where(x => x.BillId == model.BillId && x.BranchID == model.BranchID && x.PaymentId == model.PaymentId && x.BillDate == model.BillDate).FirstOrDefault();
 
-                 model.StrBillvalue= exbalance.Balance;
-
+                if (exbalance != null)
+                {
+                    model.StrBillvalue = exbalance.Balance;
+                }
 
 
                 }

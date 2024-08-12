@@ -116,7 +116,7 @@
                                 }
 
 
-                                <input type="text" id="productDropdownInput" class="form-control" placeholder="Select Product ID" onkeyup="filterDropdown(event, 'productDropdownInput', 'productDropdown')" onclick="showDropdown('productDropdown')">
+                                <input type="text" id="productDropdownInput" class="form-control" placeholder="Select Product Name" onkeyup="filterDropdown(event, 'productDropdownInput', 'productDropdown')" onclick="showDropdown('productDropdown')">
                                 <ul id="productDropdown" class="list-group mt-2" style="display: none; position: absolute; z-index: 1000; width: 100%; max-height: 200px; overflow-y: auto; background-color: white; list-style-type: none; padding: 0;">
                                     @foreach (var item in PatientID)
                                     {
@@ -126,7 +126,7 @@
                                 <input type="hidden" name="ProductID" id="productID" value="ProductID" />
 
                                 @*   @Html.DropDownListFor(model => model.PatientID, PatientID, "Select Patient ID", new { @class = "form-control", @required = "required" }) *@
-                                <label asp-for="ProductID" class="control-label"></label>
+                                <label asp-for="ProductID" class="control-label">Product Name </label>
 
                             </div>
                         </div>
