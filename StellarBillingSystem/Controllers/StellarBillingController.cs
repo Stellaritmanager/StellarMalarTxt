@@ -361,6 +361,8 @@ namespace StellarBillingSystem.Controllers
                     existingProduct.BarcodeId = model.BarcodeId;
                     existingProduct.Brandname = model.Brandname;
                     existingProduct.Price = model.Price;
+                    existingProduct.ImeiNumber = model.ImeiNumber;
+                    existingProduct.SerialNumber = model.SerialNumber;
                     existingProduct.DiscountCategory = model.DiscountCategory;
                     existingProduct.SGST = model.SGST;
                     existingProduct.CGST = model.CGST;
