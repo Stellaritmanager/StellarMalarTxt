@@ -1,4 +1,5 @@
 ﻿
+using DocumentFormat.OpenXml.InkML;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Operations;
 using Microsoft.Data.SqlClient;
@@ -384,69 +385,22 @@ namespace StellarBillingSystem.Business
         }
         public byte[] PrintBillDetails(DataTable billDetails,string BranchID)
         {
+            //var template = _billingContext.SHBranchMaster.FirstOrDefault(x => x.BracnchID == BranchID);
+
+            //var result = _billingContext.Database.SqlQueryRaw<dynamic>(
+            //                "select BillTemplate from SHBranchMaster where BracnchID = '"+ BranchID+"'",
+            //                1).ToList();
+
             // Determine the template name based on the BranchID
-            string templateName = BranchID == "B_1" ? "BillTemplate Branch1.docx" : "BillTemplate Branch2.docx";
+            string templateName = BranchID == "Lee_Mobile" ? "BillTemplate Branch1.docx" : "BillTemplate Branch2.docx";
 
             // Combine the template path
-            string templatePath = Path.Combine("..\\StellarBillingSystem\\Templates", templateName);
+            string templatePath = Path.Combine(templateName);
 
             return ModifyBillDoc(templatePath, billDetails);
         }
 
-        /*        public async Task<bool> UpdateProduct(string productId, bool isDelete)
-                {
-                    var product = await _billingContext.SHProductMaster.FirstOrDefaultAsync(x => x.ProductID == productId);
-
-                    if (product == null)
-                    {
-                        return false; // Product not found
-                    }
-
-                    product.IsDelete = isDelete;
-
-                    await _billingContext.SaveChangesAsync();
-
-                    return true; // Update successful
-                }*/
-
-        /*        public async Task<ProductMatserModel> GetProductmaster(string productID)
-                {
-                    var product = await (
-                            from pp in _billingContext.SHProductMaster
-                            where pp.ProductID == productID
-                            select new ProductMatserModel
-                            {
-                                CategoryID = pp.CategoryID,
-                                ProductID = pp.ProductID,
-                                ProductName = pp.ProductName,
-                                Brandname = pp.Brandname,
-                                Discount = pp.Discount,
-                                TotalAmount = pp.TotalAmount,
-                                Price = pp.Price
-
-                            }).FirstOrDefaultAsync();
-
-                    return product;
-
-                }*/
-
-
-
-        /*        public async Task AddPointsToCustomer(string customerId, int pointsToAdd)
-                {
-                    var customer = await _billingContext.SHCustomerMaster.FindAsync(customerId);
-
-                    if (customer == null)
-                    {
-                        throw new ArgumentException("Customer not found");
-                    }
-
-                    customer.PointsReedem += pointsToAdd;
-                    await _billingContext.SaveChangesAsync();
-                }*/
-
-
-
+        
         public string GeneratePaymentDescriptionreport(string paymentId)
         {
             string timestamp = DateTime.Now.ToString("HH:mm:ss");
@@ -558,6 +512,7 @@ namespace StellarBillingSystem.Business
                 .Where(x => x.BillID == billID && x.BillDate == billDate && x.CustomerNumber == customerNumber && !x.IsDelete)
                 .ToListAsync();
 
+
             if (billingDetails == null || !billingDetails.Any())
             {
               
@@ -576,11 +531,26 @@ namespace StellarBillingSystem.Business
             decimal cgstAmount = (totalPrice * cgstPercentageDecimal) / 100;
             decimal sgstAmount = (totalPrice * sgstPercentageDecimal) / 100;
 
+
+            var billingmaster = await _billingContext.SHbillmaster
+             .Where(x => x.BillID == billID && x.BillDate == billDate && x.CustomerNumber == customerNumber && !x.IsDelete).Select(x => x.NetPrice).FirstOrDefaultAsync();
+
+            decimal billingMasterNetPrice = decimal.TryParse(billingmaster, out decimal NetPrice) ? NetPrice : totalPrice;
+
             // Calculate total after applying CGST and SGST
-            decimal totalWithTaxes = totalPrice + cgstAmount + sgstAmount;
+            decimal totalWithTaxes = billingMasterNetPrice + cgstAmount + sgstAmount;
+
+            decimal netPrice = totalWithTaxes - discountDecimal;
+
+          /*  var billingmaster = await _billingContext.SHbillmaster
+              .Where(x => x.BillID == billID && x.BillDate == billDate && x.CustomerNumber == customerNumber && !x.IsDelete).Select(x => x.NetPrice).FirstOrDefaultAsync();
+
+
+
+            decimal billingMasterNetPrice = decimal.TryParse(billingmaster, out decimal NetPrice) ? NetPrice : totalPrice;
 
             // Calculate final net price after applying discount
-            decimal netPrice = totalWithTaxes - discountDecimal;
+            decimal netPrice = billingMasterNetPrice - discountDecimal;*/
 
             return new BillingMasterModel
             {

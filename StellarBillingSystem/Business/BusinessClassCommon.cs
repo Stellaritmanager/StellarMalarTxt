@@ -9,12 +9,30 @@ using DocumentFormat.OpenXml.ExtendedProperties;
 using Microsoft.CodeAnalysis.FlowAnalysis;
 using StellarBillingSystem.Context;
 using Microsoft.IdentityModel.Tokens;
+using Aspose.Words;
 
 
 namespace StellarBillingSystem.Business
 {
     public static class BusinessClassCommon
     {
+
+        public static byte[] ConvertWordToPdf(byte[] wordBytes)
+        {
+            // Load the Word document from the byte array
+            using (MemoryStream wordStream = new MemoryStream(wordBytes))
+            {
+                Document doc = new Document(wordStream);
+
+                // Convert the document to PDF
+                using (MemoryStream pdfStream = new MemoryStream())
+                {
+                    doc.Save(pdfStream, SaveFormat.Pdf);
+                    return pdfStream.ToArray(); // Return the PDF as a byte array
+                }
+            }
+        }
+
         public static String AddParameter(String FromDate, String ToDate, String ColName, String DateColumn, String Colvalue)
         {
             String Where = String.Empty;
@@ -161,30 +179,30 @@ namespace StellarBillingSystem.Business
             
         }
 
-        public static String getbalance (BillingContext billing,string strPayID,string pBillID,string strBranchid,string pbillDate)
+        public static String getbalance(BillingContext billing, string strPayID, string pBillID, string strBranchid, string pbillDate, string pPaymentAmount)
         {
-           var paymentList= billing.SHPaymentDetails.Where(x => x.PaymentId == strPayID && x.IsDelete == false && x.BranchID==strBranchid).Select(x => x.PaymentAmount).ToList();
+            var paymentList = billing.SHPaymentDetails.Where(x => x.PaymentId == strPayID && x.IsDelete == false && x.BranchID == strBranchid).Select(x => x.PaymentAmount).ToList();
+
 
             Double dblBalance = 0.0;
 
-            foreach(var strpayment in paymentList)
+ 
+
+            foreach (var strpayment in paymentList)
             {
-                if(!(String.IsNullOrEmpty(strpayment)))
+                if (!(String.IsNullOrEmpty(strpayment)))
                     dblBalance = dblBalance + Double.Parse(strpayment);
             }
 
-            var billamount = billing.SHbillmaster.Where(x => x.BillID == pBillID &&x.BillDate == pbillDate && x.BranchID ==strBranchid).Select(x => x.NetPrice).FirstOrDefault();
+            var billamount = billing.SHbillmaster.Where(x => x.BillID == pBillID && x.BillDate == pbillDate && x.BranchID == strBranchid).Select(x => x.NetPrice).FirstOrDefault();
 
-            if(billamount != null)
+            if (billamount != null)
                 dblBalance = Double.Parse(billamount) - dblBalance;
 
             dblBalance = Math.Round(dblBalance, 2);
-       
 
             return dblBalance.ToString();
         }
-
-
 
     }
 }

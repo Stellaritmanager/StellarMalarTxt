@@ -7,6 +7,7 @@ using StellarBillingSystem.Models;
 using Newtonsoft.Json;
 using StellarBillingSystem.Business;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authorization;
 
 namespace StellarBillingSystem.Controllers
 {
@@ -31,6 +32,7 @@ namespace StellarBillingSystem.Controllers
             return View();
         }
 
+        [Authorize]
         public IActionResult Administration()
         {
 
@@ -96,15 +98,12 @@ namespace StellarBillingSystem.Controllers
 
                     var branch = await _billingContext.SHStaffAdmin.FirstOrDefaultAsync(x => x.UserName == model.UserName);
 
-                    var rolldetail = Busreg.GetRoll(model.UserName, branch.BranchID); 
-
-                   
+                    var rolldetail = Busreg.GetRoll(model.UserName, branch.BranchID);                   
 
 
                     TempData["UserName"] = model.UserName;
                     TempData["BranchID"] = branch.BranchID;
-                    
-                 
+                            
                     
 
                     // Set TempData with the filtered roll details

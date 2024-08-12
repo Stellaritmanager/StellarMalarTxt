@@ -51,7 +51,7 @@
                 <div class="card-body dividerblack">
                     <div class="card-header d-flex justify-content-between align-items-center">
                         <div class="container">
-                            <h2 class="centered text-white" style="font-family:'Lucida Bright';margin-left:27%;">Payment Screen</h2>
+                            <h2 class="centered text-white" style="font-family:'Lucida Bright';margin-left:32%;">Payment Screen</h2>
                         </div>
                     </div>
                 </div>
@@ -76,14 +76,14 @@
 
                             <div class="form-floating form-floating-outline mb-4">
 
-                                <input type="text" class="form-control" id="BillId" name="BillId" placeholder="BillId" value="@Model.BillId" />
+                                <input type="text" class="form-control" id="BillId" name="BillId" placeholder="BillId" value="@Model.BillId" required />
                                 <label for="BillId" class="control-label">Bill ID</label>
                             </div>
                         </div>
                         <div class="col-md-12 col-lg-5">
                             <div class="form-floating form-floating-outline mb-4 custom-date-picker">
 
-                                <input type="date" class="form-control" id="BillDate" name="BillDate" placeholder="Bill Date" value="@Model.BillDate" />
+                                <input type="date" class="form-control" id="BillDate" name="BillDate" placeholder="Bill Date" value="@Model.BillDate" required />
                                 <label for="BillDate" class="control-label">Bill Date</label>
 
                             </div>
@@ -106,8 +106,8 @@
 
                             <div class="form-floating form-floating-outline mb-4">
 
-                                <input type="text" class="form-control" id="Balance" name="Balance" placeholder="Balance" value="@Model.Balance" />
-                                <label for="Balance" class="control-label">BillValue</label>
+                                <input type="text" class="form-control" id="BillValue" name="BillValue" placeholder="BillValue" value="@Model.Balance" />
+                                <label for="BillValue" class="control-label">BillValue</label>
                             </div>
 
                         </div>
@@ -119,8 +119,8 @@
 
                             <div class="form-floating form-floating-outline mb-4">
 
-                                <input type="text" class="form-control" id="BillValue" name="BillValue" value="@Model.StrBillvalue" placeholder="BillValue" />
-                                <label for="BillValue" class="control-label">Balance</label>
+                                <input type="text" class="form-control" id="Balance" name="Balance" value="@Model.StrBillvalue" placeholder="Balance" />
+                                <label for="Balance" class="control-label">Balance</label>
                             </div>
 
                         </div>
@@ -204,7 +204,7 @@
                                     <input type="hidden" name="billDetails[@i].BillID" value="@ViewBag.BillID" /> *@
                                         </td>
                                         <td>
-                                            <input type="date" class="form-control" name="Viewpayment[@i].PaymentDate" value="@Model.Viewpayment[i].PaymentDate" type="date" />
+                                            <input type="date" class="form-control custom-date-picker" name="Viewpayment[@i].PaymentDate" value="@Model.Viewpayment[i].PaymentDate" type="date" />
                                         </td>
                                         <td>
                                             <input type="text" class="form-control" name="Viewpayment[@i].PaymentDiscription" value="@Model.Viewpayment[i].PaymentDiscription" readonly />
@@ -217,6 +217,8 @@
                                         </td>
                                         <td>
                                             <input type="text" class="form-control" name="Viewpayment[@i].PaymentAmount" value="@Model.Viewpayment[i].PaymentAmount" />
+
+                                       
                                         </td>
 
                                     </tr>
@@ -275,6 +277,9 @@
             handleMessages("@ViewBag.DeleteMessage");
         </script>
     }
+
+
+
 </form>
 
 
