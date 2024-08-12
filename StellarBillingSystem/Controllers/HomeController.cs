@@ -27,7 +27,12 @@ namespace StellarBillingSystem.Controllers
         public IActionResult Index(string DashBoard = null, string fromDate = null, string toDate = null, string GroupBy = null)
         {
 
-
+            string branchId = string.Empty; ;
+            if (TempData["BranchID"] != null)
+            {
+                branchId = TempData["BranchID"].ToString();
+                TempData.Keep("BranchID");
+            }
 
             string salesMessage = GetSalesComparison();
             decimal dailySales = GetDailySales();
@@ -55,7 +60,7 @@ namespace StellarBillingSystem.Controllers
 
             if (reportQuery != null)
             {
-                var query = BusinessClassCommon.DataTableReport(_billingContext, reportQuery.ReportQuery, reportQuery.Datecolumn, fromDate, toDate, reportQuery.GroupBy);
+                var query = BusinessClassCommon.DataTableReport(_billingContext, reportQuery.ReportQuery, reportQuery.Datecolumn, fromDate, toDate, reportQuery.GroupBy, branchId);
                 ViewBag.Reportname = reportQuery.ReportName;
                 return View(query);
             }

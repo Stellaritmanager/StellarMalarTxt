@@ -41,6 +41,8 @@ namespace StellarBillingSystem.Controllers
         [HttpGet]
         public async Task<IActionResult> GetCategory(CategoryMasterModel model,string buttonType)
         {
+         
+
             if (TempData["BranchID"] != null)
             {
                 model.BranchID = TempData["BranchID"].ToString();

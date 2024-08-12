@@ -25,7 +25,13 @@ namespace StellarBillingSystem.Controllers
             BusinessClassBilling business = new BusinessClassBilling(_billingContext);
             ViewData["reportid"] = business.GetReportId();
 
-           
+            string branchId = string.Empty; ;
+            if (TempData["BranchID"] != null)
+            {
+                branchId = TempData["BranchID"].ToString();
+                TempData.Keep("BranchID");
+            }
+
             var reportQuery = (from rep in _billingContext.ShGenericReport
                                where (rep.ReportName == inputValue)
                                select new GenericReportModel
@@ -39,7 +45,7 @@ namespace StellarBillingSystem.Controllers
 
            
 
-            var query = BusinessClassCommon.DataTableReport(_billingContext, reportQuery.ReportQuery, reportQuery.Datecolumn, fromDate, toDate,reportQuery.GroupBy);
+            var query = BusinessClassCommon.DataTableReport(_billingContext, reportQuery.ReportQuery, reportQuery.Datecolumn, fromDate, toDate,reportQuery.GroupBy, branchId);
 
 
 
