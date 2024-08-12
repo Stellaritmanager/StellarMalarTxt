@@ -58,9 +58,6 @@
     </div>
 
     <div class="row">
-        @*     <div class="col-md-12 col-lg-1">
-        </div>
-        *@
         <div class="col-md-12 col-lg-12">
             <div class="card">
                 <div class="card-body dividerblack">
@@ -77,7 +74,7 @@
                         </div>
 
                         <div class="col-md-12 col-lg-3">
- 
+
                             <div class="form-floating form-floating-outline mb-4 custom-date-picker">
                                 <input asp-for="BillDate" type="date" value="@Model.BillDate" class="form-control" name="BillDate" placeholder="BillDate" required />
                                 <label asp-for="BillDate" class="control-label">Bill Date</label>
@@ -100,8 +97,8 @@
                     <br />
 
 
-                  
-                               
+
+
 
                     <div class="row">
 
@@ -130,12 +127,12 @@
 
                                 @*   @Html.DropDownListFor(model => model.PatientID, PatientID, "Select Patient ID", new { @class = "form-control", @required = "required" }) *@
                                 <label asp-for="ProductID" class="control-label"></label>
-                                
-                            </div>
-                            </div>
 
-                            <div class="col-md-12 col-lg-3">
-                           
+                            </div>
+                        </div>
+
+                        <div class="col-md-12 col-lg-3">
+
                             <div class="form-floating form-floating-outline mb-4">
                                 <input type="Quantity" class="form-control" name="Quantity" placeholder="Quantity" value="@Model.Quantity" />
                                 <label asp-for="Quantity" class="control-label">Quantity</label>
@@ -144,52 +141,73 @@
 
                         </div>
 
-                            <div class="col-md-12 col-lg-3">
+                        <div class="col-md-12 col-lg-3">
                             <button type="submit" value="Add Product" name="buttonType" class="btn btn-primary">Add Product</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="row">
+        <div class="col-md-12 col-lg-12">
+            <div class="card">
+                <div class="card-body dividerblack">
+
+
+                    @if (Model.Viewbillproductlist != null && Model.Viewbillproductlist.Any())
+                    {
+
+
+                        <div class="row gy-4">
+                            <div class="col-md-12 col-lg-0.5">
                             </div>
-                           </div>
+                            <div class="col-md-12 col-lg-12">
+                                <div class="card">
+                                    <div class="card-body ">
+                                        <div class="table-responsive">
+
+                                            <center>
+                                                <h2 class="centered text-white" style="font-family:'Lucida Bright';">Product List</h2>
+                                            </center>
+                                            <br />
+
+                                            <table class="table">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Product ID</th>
+                                                        <th>Product Name</th>
+                                                        <th>Price</th>
+                                                        <th>Quantity</th>
+                                                        <th>Discount</th>
+                                                        <th>Net Price</th>
+                                                        <th>Actions</th>
+
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    @for (int i = 0; i < Model.Viewbillproductlist.Count; i++)
+                                                    {
+                                                        <tr>
+
+                                                            <td>@Model.Viewbillproductlist[i].ProductID</td>
+                                                            <td>@Model.Viewbillproductlist[i].ProductName</td>
+                                                            <td>@Model.Viewbillproductlist[i].Price</td>
+                                                            <td>@Model.Viewbillproductlist[i].Quantity</td>
+                                                            <td>@Model.Viewbillproductlist[i].Discount</td>
+                                                            <td>@Model.Viewbillproductlist[i].NetPrice</td>
+                                                            <td>
+                                                                <a href="@Url.Action("DeleteProduct", new { productId = @Model.Viewbillproductlist[i].ProductID, billID = @Model.Viewbillproductlist[i].BillID, billDate = @Model.Viewbillproductlist[i].BillDate, customerNumber = @Model.Viewbillproductlist[i].CustomerNumber })" class="btn btn-primary">Delete Product</a>
+                                                            </td>
+                                                        </tr>
 
 
-                        <div class="col-md-12 col-lg-6">
-
-                            @if (Model.Viewbillproductlist != null && Model.Viewbillproductlist.Any())
-                            {
-
-                                <h3>Product List</h3>
-                                <table class="table">
-                                    <thead>
-                                        <tr>
-                                            <th>Product ID</th>
-                                            <th>Product Name</th>
-                                            <th>Price</th>
-                                            <th>Quantity</th>
-                                            <th>Discount</th>
-                                            <th>Net Price</th>
-                                        <th>Actions</th>
-
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                    @for (int i = 0; i < Model.Viewbillproductlist.Count; i++)
-                                    {
-                                        <tr>
-
-                                            <td>@Model.Viewbillproductlist[i].ProductID</td>
-                                            <td>@Model.Viewbillproductlist[i].ProductName</td>
-                                            <td>@Model.Viewbillproductlist[i].Price</td>
-                                            <td>@Model.Viewbillproductlist[i].Quantity</td>
-                                            <td>@Model.Viewbillproductlist[i].Discount</td>
-                                            <td>@Model.Viewbillproductlist[i].NetPrice</td>
-                                            <td>
-                                                <a href="@Url.Action("DeleteProduct", new { productId = @Model.Viewbillproductlist[i].ProductID, billID = @Model.Viewbillproductlist[i].BillID, billDate = @Model.Viewbillproductlist[i].BillDate, customerNumber = @Model.Viewbillproductlist[i].CustomerNumber })" class="btn btn-primary">Delete Product</a>
-                                            </td>
-                                        </tr>
-
-
-                                    }
-                                       @*  @foreach (var product in Model.Viewbillproductlist)
-                                        {
-                                            <tr>
+                                                    }
+                                                    @*  @foreach (var product in Model.Viewbillproductlist)
+                                                {
+                                                <tr>
 
                                                 <td>@product.ProductID</td>
                                                 <td>@product.ProductName</td>
@@ -197,24 +215,32 @@
                                                 <td>@product.Quantity</td>
                                                 <td>@product.Discount</td>
                                                 <td>@product.NetPrice</td>
-                                            <td>
+                                                <td>
                                                 <a href="@Url.Action("DeleteProduct", new { productId = product.ProductID, billID = Model.BillID, billDate = Model.BillDate, customerNumber = Model.CustomerNumber })" class="btn btn-primary">Delete Product</a>
-                                            </td>
-                                            </tr>
-                                        } *@
-                                    </tbody>
-                                </table>
+                                                </td>
+                                                </tr>
+                                                } *@
+                                                </tbody>
+                                            </table>
 
 
-                            }
-                       
-           
+                                            <br />
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    }
+
+
+                </div>
+            </div>
         </div>
     </div>
-    </div>
-    </div>
-    </div>
-   
+
+
 
     </br>
 
@@ -222,108 +248,121 @@
 
         <div class="card">
             <div class="card-body dividerblack">
-                <div class="col-md-12 col-lg-3">
-                    <div class="form-floating form-floating-outline mb-4">
-                        <input type="Totalprice" class="form-control" name="Totalprice" placeholder="Total price" value="@ViewBag.TotalPrice" readonly />
-                        <label asp-for="Totalprice" class="control-label">Total price</label>
 
+                <div class="row">
+                    <div class="col-md-12 col-lg-4">
+                        <div class="form-floating form-floating-outline mb-4">
+                            <input type="Totalprice" class="form-control" name="Totalprice" placeholder="Total price" value="@ViewBag.TotalPrice" readonly />
+                            <label asp-for="Totalprice" class="control-label">Total price</label>
 
-                    </div>
-
-                </div>
-
-                <div class="col-md-12 col-lg-3">
-                    <div class="row">
-                        <div class="col-md-12 col-lg-6">
-                                                                                                                                                                                                                                                                                                                    
-                            <div class="form-floating form-floating-outline mb-4">
-                                <input type="CGSTPercentage" class="form-control" name="CGSTPercentage" placeholder="CGSTPercentage" value="@ViewBag.CGSTPercentage" />
-                                <label asp-for="CGSTPercentage" class="control-label">CGST%</label>
-                            </div>
 
                         </div>
-                        <div class="col-md-12 col-lg-6">
-                            <div class="form-floating form-floating-outline mb-4">
-                                <input type="CGSTPercentageAmt" class="form-control" name="CGSTPercentageAmt" placeholder="CGSTPercentageAmt" value="@ViewBag.CGSTPercentageAmt" />
-                                <label asp-for="CGSTPercentageAmt" class="control-label">Net Price</label>
+
+                    </div>
+
+                    <div class="col-md-12 col-lg-2">
+
+                        <div class="form-floating form-floating-outline mb-4">
+                            <input type="CGSTPercentage" class="form-control" name="CGSTPercentage" placeholder="CGSTPercentage" value="@ViewBag.CGSTPercentage" />
+                            <label asp-for="CGSTPercentage" class="control-label">CGST%</label>
+                        </div>
+
+                    </div>
+                    <div class="col-md-12 col-lg-2">
+
+                        <div class="form-floating form-floating-outline mb-4">
+                            <input type="SGSTPercentage" class="form-control" name="SGSTPercentage" placeholder="SGSTPercentage" value="@ViewBag.SGSTPercentage" />
+                            <label asp-for="SGSTPercentage" class="control-label">SGST%</label>
+                        </div>
+                    </div>
+
+                    <div class="col-md-12 col-lg-4">
+
+                        <div class="form-floating form-floating-outline mb-4">
+                            <input type="TotalDiscount" class="form-control" name="TotalDiscount" placeholder="Total Discount" value="@ViewBag.TotalDiscount" />
+                            <label asp-for="TotalDiscount" class="control-label">Total Discount</label>
+
+                        </div>
+
+                    </div>
+                </div>
+
+                @*  <div class="col-md-12 col-lg-6">
+                <div class="form-floating form-floating-outline mb-4">
+                <input type="CGSTPercentageAmt" class="form-control" name="CGSTPercentageAmt" placeholder="CGSTPercentageAmt" value="@ViewBag.CGSTPercentageAmt" />
+                <label asp-for="CGSTPercentageAmt" class="control-label">Net Price</label>
+                </div>
+                </div> *@
+                @*   </div>
+                <div class="row">
+
+
+                </div> *@
+                @* <div class="col-md-12 col-lg-6">
+                <div class="form-floating form-floating-outline mb-4">
+                <input type="SGSTPercentageAmt" class="form-control" name="SGSTPercentageAmt" placeholder="SGSTPercentageAmt" value="@ViewBag.SGSTPercentageAmt" />
+                <label asp-for="SGSTPercentageAmt" class="control-label">Net Price</label>
+                </div>
+                </div> *@
+                            <div class="row">
+                              
+                                <div class="col-md-12 col-lg-4">
+                                    <div class="form-floating form-floating-outline mb-4">
+                                        <input type="Points" class="form-control" name="Points" placeholder="Points" value="@ViewBag.Points" readonly />
+                                        <label class="control-label">Points</label>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-12 col-lg-2">
+                                    <button type="submit" valu  e="Get Points" name="buttonType" class="btn btn-primary">Get Points</button>
+                                </div>
+                                <div class="col-md-12 col-lg-2">
+                                    <button type="submit" value="Reedem Points" name="buttonType" class="btn btn-primary">Reedem Points</button>
+
+                                </div>
+                    <div class="col-md-12 col-lg-4">
+                        <div class="form-floating form-floating-outline mb-4">
+                        </div>
+                    </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12 col-lg-8">
+                        <div class="form-floating form-floating-outline mb-4">
+                                    </div>
+                    </div>
+                            <div class="col-md-12 col-lg-4">
+                                <div class="form-floating form-floating-outline mb-4">
+                                    <input type="NetPrice" class="form-control" name="NetPrice" placeholder="Net Price" value="@ViewBag.NetPrice" readonly />
+                                    <label asp-for="NetPrice" class="control-label">Net Price</label> </div>
+
+                                </div>
+
+                                </div>
+
                             </div>
                         </div>
                     </div>
-                    <div class="row">
-                        <div class="col-md-12 col-lg-6">
 
-                            <div class="form-floating form-floating-outline mb-4">
-                                <input type="SGSTPercentage" class="form-control" name="SGSTPercentage" placeholder="SGSTPercentage" value="@ViewBag.SGSTPercentage" />
-                                <label asp-for="SGSTPercentage" class="control-label">SGST%</label>
-                            </div>
-
-                        </div>
-                        <div class="col-md-12 col-lg-6">
-                            <div class="form-floating form-floating-outline mb-4">
-                                <input type="SGSTPercentageAmt" class="form-control" name="SGSTPercentageAmt" placeholder="SGSTPercentageAmt" value="@ViewBag.SGSTPercentageAmt" />
-                                <label asp-for="SGSTPercentageAmt" class="control-label">Net Price</label>
-                            </div>
-                        </div>
-                </div>
-                </div>
-                <div class="col-md-12 col-lg-3">
-
-                    <div class="form-floating form-floating-outline mb-4">
-                        <input type="TotalDiscount" class="form-control" name="TotalDiscount" placeholder="Total Discount" value="@ViewBag.TotalDiscount" />
-                        <label asp-for="TotalDiscount" class="control-label">Total Discount</label>
-
-                    </div>
-
-                </div>
-
-                <div class="col-md-12 col-lg-3">
-                    <div class="form-floating form-floating-outline mb-4">
-                        <input type="NetPrice" class="form-control" name="NetPrice" placeholder="Net Price" value="@ViewBag.NetPrice" readonly />
-                        <label asp-for="NetPrice" class="control-label">Net Price</label>
-
-
-                    </div>
-
-                    <div class="form-floating form-floating-outline mb-4">
-                        <input type="Points" class="form-control" name="Points" placeholder="Points" value="@ViewBag.Points" readonly />
-                        <label class="control-label">Points</label>
-                    </div>
-
-                </div>
-
-            </div>
-
-    </div>
-        </div>
-   
     </br>
+
     <div class="row">
-        <div class="col-md-12 col-lg-2">
-            </div>
-        <div class="col-md-12 col-lg-4">
-          
-                <button type="submit"  value="Save" name="buttonType" class="btn btn-primary">Save</button>
-
-                <button type="submit" value="Delete Bill" name="buttonType" class="btn btn-primary">Delete Bill</button>
-
-                <button type="submit"  value="Payment" name="buttonType" class="btn btn-primary">Payment</button>
-           
-        </div>
-                <div class="col-md-12 col-lg-5">
-                    
-                <button type="submit" value="Download Bill" name="buttonType" class="btn btn-primary">Download Bill</button>
-
-                <button type="submit" value="Get Points" name="buttonType" class="btn btn-primary">Get Points</button>
-
-                <button type="submit"  value="Reedem Points" name="buttonType" class="btn btn-primary">Reedem Points</button>
-           
-
-            <div class="col-md-12 col-lg-1">
-            </div>
-        </div>
         
+        <center>
+            <button type="submit" value="Save" name="buttonType" class="btn btn-primary">Save</button>
+
+            <button type="submit" value="Delete Bill" name="buttonType" class="btn btn-primary">Delete Bill</button>
+
+            <button type="submit" value="Payment" name="buttonType" class="btn btn-primary">Payment</button>
+
+
+            <button type="submit" value="Download Bill" name="buttonType" class="btn btn-primary">Download Bill</button>
+        </center>
+
+
+           
+
     </div>
-   
+
     @if (ViewBag.SaveMessage != null)
     {
         <script>
@@ -351,7 +390,7 @@
 
 <script>
 
-    
+
     var selectedPatientID = null;
 
     function setSelectedIDs(productID) {
