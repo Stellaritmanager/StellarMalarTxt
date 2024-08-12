@@ -3387,6 +3387,25 @@ namespace StellarBillingSystem.Controllers
                 }
 
 
+
+                double totalpayamount = 0.0;
+                foreach (var payment in model.Viewpayment)
+                {
+                    totalpayamount = totalpayamount + double.Parse(payment.PaymentAmount);
+                }
+
+                var billAmount = _billingsoftware.SHbillmaster
+                 .Where(x => x.BillID == model.BillId && x.BillDate == model.BillDate && x.BranchID == model.BranchID)
+                 .Select(x => x.NetPrice)
+                 .FirstOrDefault();
+
+                // Check if total payment amount exceeds the bill amount
+                if (totalpayamount > double.Parse(billAmount))
+                {
+                    ViewBag.Message = HttpUtility.JavaScriptStringEncode($"Payment amount '{totalpayamount}' exceeds the total bill amount '{billAmount}'");
+                    return View("PaymentBilling", model);
+                }
+
                 var existingPayment = _billingsoftware.SHPaymentMaster
        .Where(x => x.BillId == model.BillId && x.BranchID == model.BranchID && x.PaymentId != model.PaymentId && x.IsDelete==false && x.BillDate == model.BillDate)
        .FirstOrDefault();
@@ -3461,12 +3480,13 @@ namespace StellarBillingSystem.Controllers
 
                     _billingsoftware.SaveChanges();
 
-                bool isOverpayment;
-                double totalBillAmount;
+               
 
-                model.StrBillvalue = BusinessClassCommon.getbalance(_billingsoftware, model.PaymentId, model.BillId, model.BranchID, model.BillDate, detailmodel.PaymentAmount);
+              
 
-                    var exbalance = _billingsoftware.SHPaymentMaster.Where(x => x.BillId == model.BillId && x.BranchID == model.BranchID && x.PaymentId == model.PaymentId && x.BillDate == model.BillDate).FirstOrDefault();
+              model.StrBillvalue = BusinessClassCommon.getbalance(_billingsoftware, model.PaymentId, model.BillId, model.BranchID, model.BillDate, totalpayamount.ToString());
+
+              var exbalance = _billingsoftware.SHPaymentMaster.Where(x => x.BillId == model.BillId && x.BranchID == model.BranchID && x.PaymentId == model.PaymentId && x.BillDate == model.BillDate).FirstOrDefault();
 
 
                     if (exbalance != null)
@@ -3488,6 +3508,7 @@ namespace StellarBillingSystem.Controllers
                     ViewBag.Message = "Please enter Payment ID.";
                     return View("PaymentBilling", model);
                 }
+
 
 
                 var existingPayment = _billingsoftware.SHPaymentMaster
