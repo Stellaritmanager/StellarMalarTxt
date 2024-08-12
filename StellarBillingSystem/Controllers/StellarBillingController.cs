@@ -3298,8 +3298,13 @@ namespace StellarBillingSystem.Controllers
                     model.BillDate = SelectPayMas.BillDate;
                     model.PaymentId = SelectPayMas.PaymentId;
                     model.BranchID = SelectPayMas.BranchID;
-                    model.Balance = SelectPayMas.Balance;
+                    model.StrBillvalue = SelectPayMas.Balance;
                     model.BillId = SelectPayMas.BillId;
+
+                    var exbilltotal = await _billingsoftware.SHbillmaster.Where(x => x.BillID == model.BillId && x.BillDate == model.BillDate && x.BranchID == model.BranchID).FirstOrDefaultAsync();
+                    if (exbilltotal != null)
+                        model.Balance = exbilltotal.NetPrice;
+
 
                 }
                 else
@@ -3491,12 +3496,17 @@ namespace StellarBillingSystem.Controllers
 
                     if (exbalance != null)
                     {
-                        model.StrBillvalue = model.StrBillvalue;
+                        exbalance.Balance = model.StrBillvalue;
                         _billingsoftware.Entry(exbalance).State = EntityState.Modified;
                         _billingsoftware.SaveChanges();
                     }
 
-                    ViewBag.Message = "Payment Saved Successfully";
+                var exbilltotal = await _billingsoftware.SHbillmaster.Where(x => x.BillID == model.BillId && x.BillDate == model.BillDate && x.BranchID == model.BranchID).FirstOrDefaultAsync();
+                if (exbilltotal != null)
+                    model.Balance = exbilltotal.NetPrice;
+
+
+                ViewBag.Message = "Payment Saved Successfully";
 
                     return View("PaymentBilling", model);                
 
@@ -3554,8 +3564,13 @@ namespace StellarBillingSystem.Controllers
                 var exbill = await _billingsoftware.SHbillmaster.Where(x => x.BillID == model.BillId && x.BillDate == model.BillDate && x.BranchID == model.BranchID).FirstOrDefaultAsync();
                 model.Balance = exbill.NetPrice;
 
+                var exbalance = _billingsoftware.SHPaymentMaster.Where(x => x.BillId == model.BillId && x.BranchID == model.BranchID && x.PaymentId == model.PaymentId && x.BillDate == model.BillDate).FirstOrDefault();
 
-            }
+                 model.StrBillvalue= exbalance.Balance;
+
+
+
+                }
 
             return View("PaymentBilling",model);
         }
