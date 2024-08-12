@@ -2757,14 +2757,11 @@ namespace StellarBillingSystem.Controllers
             if (buttonType == "Get Points")
             {
 
-                var billingPoints = await (from bp in _billingsoftware.SHBillingPoints
-                                           join bm in _billingsoftware.SHbillmaster
-                                           on bp.CustomerNumber equals bm.CustomerNumber
-                                           where bp.CustomerNumber == CustomerNumber
-                                                 && !bp.IsUsed
-                                                 && bm.IsDelete == false
-                                           select bp)
-                                .ToListAsync();
+                var billingPoints = await _billingsoftware.SHBillingPoints.Where(bp => bp.CustomerNumber == CustomerNumber
+                      && !bp.IsUsed && bp.BillID != BillID
+                      && _billingsoftware.SHbillmaster
+                          .Any(bm => bm.CustomerNumber == bp.CustomerNumber
+                                     && bm.IsDelete == false)).ToListAsync();
 
 
                 var totalPoints = billingPoints.Sum(bp => decimal.TryParse(bp.Points, out decimal pts) ? pts : 0);
@@ -2799,7 +2796,7 @@ namespace StellarBillingSystem.Controllers
             {
 
                 var billingPoints = await _billingsoftware.SHBillingPoints
-           .Where(bp => bp.CustomerNumber == CustomerNumber && !bp.IsUsed)
+           .Where(bp => bp.CustomerNumber == CustomerNumber && !bp.IsUsed && bp.BillID != BillID)
            .ToListAsync();
 
                 var totalPoints = billingPoints.Sum(bp => decimal.TryParse(bp.Points, out decimal pts) ? pts : 0);
@@ -3379,6 +3376,17 @@ namespace StellarBillingSystem.Controllers
                 }
 
 
+                var existingPaymentCheck = _billingsoftware.SHPaymentMaster
+                       .Where(x => x.PaymentId == model.PaymentId && x.BillId != model.BillId && x.IsDelete == false)
+                       .FirstOrDefault();
+
+                if (existingPaymentCheck != null)
+                {
+                    ViewBag.Message = "Payment ID already exists for a different Bill.";
+                    return View("PaymentBilling", model);
+                }
+
+
                 var existingPayment = _billingsoftware.SHPaymentMaster
        .Where(x => x.BillId == model.BillId && x.BranchID == model.BranchID && x.PaymentId != model.PaymentId && x.IsDelete==false && x.BillDate == model.BillDate)
        .FirstOrDefault();
@@ -3453,7 +3461,10 @@ namespace StellarBillingSystem.Controllers
 
                     _billingsoftware.SaveChanges();
 
-                    model.StrBillvalue = BusinessClassCommon.getbalance(_billingsoftware, model.PaymentId, model.BillId, model.BranchID, model.BillDate, detailmodel.PaymentAmount);
+                bool isOverpayment;
+                double totalBillAmount;
+
+                model.StrBillvalue = BusinessClassCommon.getbalance(_billingsoftware, model.PaymentId, model.BillId, model.BranchID, model.BillDate, detailmodel.PaymentAmount);
 
                     var exbalance = _billingsoftware.SHPaymentMaster.Where(x => x.BillId == model.BillId && x.BranchID == model.BranchID && x.PaymentId == model.PaymentId && x.BillDate == model.BillDate).FirstOrDefault();
 
@@ -3491,6 +3502,19 @@ namespace StellarBillingSystem.Controllers
                     ViewBag.Message = HttpUtility.JavaScriptStringEncode($"Your Payment ID is '{existingPayment.PaymentId}' cannot insert another ID");
                     return View("PaymentBilling", model);
                 }
+
+
+                var existingPaymentCheck = _billingsoftware.SHPaymentMaster
+                      .Where(x => x.PaymentId == model.PaymentId && x.BillId != model.BillId && x.IsDelete == false)
+                      .FirstOrDefault();
+
+                if (existingPaymentCheck != null)
+                {
+                    ViewBag.Message = "Payment ID already exists for a different Bill.";
+                    return View("PaymentBilling", model);
+                }
+
+
 
                 BusinessClassBilling obj = new BusinessClassBilling(_billingsoftware);
                 PaymentDetailsModel objNewPayment = new PaymentDetailsModel();
