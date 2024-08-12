@@ -2331,26 +2331,36 @@ namespace StellarBillingSystem.Controllers
 
                 //Check BranchID for Template
 
-              
 
 
 
-                  /*  var templateName = await _billingsoftware.SHBranchMaster
-                                                    .Where(b => b.BracnchID == model.BranchID)
-                                                    .FirstOrDefaultAsync();
 
-   
-                if (string.IsNullOrEmpty(templateName.BillTemplate))
-                    {
-                        // Handle case where templateName is not found
-                        return NotFound("Template not found for the specified BranchID.");
-                    }
+                /*  var templateName = await _billingsoftware.SHBranchMaster
+                                                  .Where(b => b.BracnchID == model.BranchID)
+                                                  .FirstOrDefaultAsync();
+
+
+              if (string.IsNullOrEmpty(templateName.BillTemplate))
+                  {
+                      // Handle case where templateName is not found
+                      return NotFound("Template not found for the specified BranchID.");
+                  }
 */
-               
 
-                
-                    return File(Busbill.PrintBillDetails(Table, model.BranchID), "application/vnd.openxmlformats-officedocument.wordprocessingml.document", "Bill_" + TempData["BillID"] + ".docx");
-                
+
+
+                  return File(Busbill.PrintBillDetails(Table, model.BranchID), "application/vnd.openxmlformats-officedocument.wordprocessingml.document", "Bill_" + TempData["BillID"] + ".docx");
+
+               // byte[] wordFileContent = GetWordFileContent(); // Your method to get the byte array of the Word document
+
+                // Convert Word to PDF
+               // byte[] pdfContent = BusinessClassCommon.ConvertWordToPdf(Busbill.PrintBillDetails(Table, model.BranchID));
+
+                // Return PDF to be rendered in browser
+                //return File(pdfContent, "application/pdf");
+
+              //  return File(Busbill.PrintBillDetails(Table, model.BranchID), "application/pdf");
+
             }
 
             if (buttonType == "Payment")

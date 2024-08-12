@@ -7,6 +7,7 @@ using StellarBillingSystem.Models;
 using Newtonsoft.Json;
 using StellarBillingSystem.Business;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authorization;
 
 namespace StellarBillingSystem.Controllers
 {
@@ -31,6 +32,7 @@ namespace StellarBillingSystem.Controllers
             return View();
         }
 
+        [Authorize]
         public IActionResult Administration()
         {
 
