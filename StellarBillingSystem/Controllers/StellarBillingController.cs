@@ -3471,7 +3471,7 @@ namespace StellarBillingSystem.Controllers
 
                     if (exbalance != null)
                     {
-                        exbalance.Balance = model.StrBillvalue;
+                        model.StrBillvalue = model.StrBillvalue;
                         _billingsoftware.Entry(exbalance).State = EntityState.Modified;
                         _billingsoftware.SaveChanges();
                     }
@@ -3530,8 +3530,11 @@ namespace StellarBillingSystem.Controllers
                 else
                     model.Viewpayment.Add(objNewPayment);
 
-            }
+                var exbill = await _billingsoftware.SHbillmaster.Where(x => x.BillID == model.BillId && x.BillDate == model.BillDate && x.BranchID == model.BranchID).FirstOrDefaultAsync();
+                model.Balance = exbill.NetPrice;
 
+
+            }
 
             return View("PaymentBilling",model);
         }
