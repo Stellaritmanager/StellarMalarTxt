@@ -542,15 +542,7 @@ namespace StellarBillingSystem.Business
 
             decimal netPrice = totalWithTaxes - discountDecimal;
 
-          /*  var billingmaster = await _billingContext.SHbillmaster
-              .Where(x => x.BillID == billID && x.BillDate == billDate && x.CustomerNumber == customerNumber && !x.IsDelete).Select(x => x.NetPrice).FirstOrDefaultAsync();
-
-
-
-            decimal billingMasterNetPrice = decimal.TryParse(billingmaster, out decimal NetPrice) ? NetPrice : totalPrice;
-
-            // Calculate final net price after applying discount
-            decimal netPrice = billingMasterNetPrice - discountDecimal;*/
+         
 
             return new BillingMasterModel
             {
