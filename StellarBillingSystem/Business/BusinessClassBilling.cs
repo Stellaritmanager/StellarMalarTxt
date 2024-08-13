@@ -332,6 +332,9 @@ namespace StellarBillingSystem.Business
                 document.ReplaceText("<<billdate>>", pbillData.Rows[0]["BillDate"].ToString());
                 document.ReplaceText("<<billno>>", pbillData.Rows[0]["BillID"].ToString());
                 document.ReplaceText("<<totalamount>>", pbillData.Rows[0]["MasterTotalprice"].ToString());
+                document.ReplaceText("<<cgst>>", pbillData.Rows[0]["CGSTPercentage"].ToString());
+                document.ReplaceText("<<sgst>>", pbillData.Rows[0]["SGSTPercentage"].ToString());
+                document.ReplaceText("<<discount>>", pbillData.Rows[0]["TotalDiscount"].ToString());
 
                 //document.ReplaceText("{Placeholder2}", "Dynamic Value 2");
 
@@ -422,6 +425,7 @@ namespace StellarBillingSystem.Business
                 document.ReplaceText("<<billdate>>", pbillData.Rows[0]["BillDate"].ToString());
                 document.ReplaceText("<<billno>>", pbillData.Rows[0]["BillID"].ToString());
                 document.ReplaceText("<<paymentno>>", pbillData.Rows[0]["PaymentId"].ToString());
+               
 
                 //document.ReplaceText("{Placeholder2}", "Dynamic Value 2");
 
