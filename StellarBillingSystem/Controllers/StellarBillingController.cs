@@ -2404,6 +2404,8 @@ namespace StellarBillingSystem.Controllers
                     ViewBag.Getnotfound = "You cannot Add the same product";
                     return View("CustomerBilling", model);
                 }
+                
+           
 
 
                 var productlist = await _billingsoftware.SHProductMaster
@@ -2417,6 +2419,14 @@ namespace StellarBillingSystem.Controllers
                                  NetPrice = model.NetPrice
 
                              }).ToListAsync();
+
+
+                if(productlist.Count == 0)
+                {
+                    ViewBag.Getnotfound = "Please enter Valid Product ID or Barcode";
+                    return View("CustomerBilling", model);
+                }
+
 
                 var existingbilldetail = await _billingsoftware.SHbilldetails
             .FirstOrDefaultAsync(x => x.BillID == model.BillID && x.BillDate == model.BillDate && x.CustomerNumber == model.CustomerNumber && x.BranchID == model.BranchID && x.ProductID == model.ProductID && x.IsDelete == false);
