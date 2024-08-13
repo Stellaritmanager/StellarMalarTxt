@@ -2641,11 +2641,9 @@ namespace StellarBillingSystem.Controllers
 
 
                 BusinessClassBilling busbill = new BusinessClassBilling(_billingsoftware);
-                var billingSummary = await busbill.CalculateBillingDetails(BillID, BillDate, CustomerNumber, model.TotalDiscount, model.CGSTPercentage, model.SGSTPercentage,masterModel.BranchID);
-                if (billingSummary != null)
-                {
+               
 
-                    // Retrieve the existing master record
+                // Retrieve the existing master record
                     var updateMaster = await _billingsoftware.SHbillmaster
                         .FirstOrDefaultAsync(m => m.BillID == model.BillID && m.BranchID == model.BranchID && m.BillDate == model.BillDate && m.CustomerNumber == model.CustomerNumber);
 
@@ -2662,13 +2660,13 @@ namespace StellarBillingSystem.Controllers
                         updateMaster.BillID = masterModel.BillID;
                         updateMaster.BillDate = masterModel.BillDate;
                         updateMaster.CustomerNumber = masterModel.CustomerNumber;
-                        updateMaster.Totalprice = billingSummary.Totalprice;
+                        updateMaster.Totalprice = masterModel.Totalprice;
                         updateMaster.TotalDiscount = masterModel.TotalDiscount;
-                        updateMaster.NetPrice = billingSummary.NetPrice;
+                        updateMaster.NetPrice = masterModel.NetPrice;
                         updateMaster.CGSTPercentage = masterModel.CGSTPercentage;
-                        updateMaster.CGSTPercentageAmt = billingSummary.CGSTPercentageAmt;
+                        updateMaster.CGSTPercentageAmt = masterModel.CGSTPercentageAmt;
                         updateMaster.SGSTPercentage = masterModel.SGSTPercentage;
-                        updateMaster.SGSTPercentageAmt = billingSummary.SGSTPercentageAmt;
+                        updateMaster.SGSTPercentageAmt = masterModel.SGSTPercentageAmt;
                         updateMaster.BranchID = masterModel.BranchID;
                         updateMaster.Lastupdateduser = User.Claims.First().Value.ToString();
                         updateMaster.Lastupdatedmachine = Request.HttpContext.Connection.RemoteIpAddress.ToString();
@@ -2679,10 +2677,10 @@ namespace StellarBillingSystem.Controllers
                     }
                     else
                     {
-                        masterModel.Totalprice = billingSummary.Totalprice;
+                       /* masterModel.Totalprice = billingSummary.Totalprice;
                         masterModel.CGSTPercentageAmt = billingSummary.CGSTPercentageAmt;
                         masterModel.SGSTPercentageAmt = billingSummary.SGSTPercentageAmt;
-                        masterModel.NetPrice = billingSummary.NetPrice;
+                        masterModel.NetPrice = billingSummary.NetPrice;*/
                         masterModel.Billby = User.Claims.First().Value.ToString();
                         masterModel.Lastupdateduser = User.Claims.First().Value.ToString();
                         masterModel.Lastupdatedmachine = Request.HttpContext.Connection.RemoteIpAddress.ToString();
@@ -2695,12 +2693,34 @@ namespace StellarBillingSystem.Controllers
 
                     _billingsoftware.SaveChanges();
 
+                // var billingSummary = await busbill.CalculateBillingDetails(BillID, BillDate, CustomerNumber, model.TotalDiscount, model.CGSTPercentage, model.SGSTPercentage, masterModel.BranchID);
 
+                var billingSummary = await busbill.CalculateBillingDetails(BillID, BillDate, CustomerNumber, model.TotalDiscount, model.CGSTPercentage, model.SGSTPercentage, masterModel.BranchID);
+
+
+
+                if (billingSummary != null)
+                {
+
+                    var updateMasterTax = await _billingsoftware.SHbillmaster
+                      .FirstOrDefaultAsync(m => m.BillID == model.BillID && m.BranchID == model.BranchID && m.BillDate == model.BillDate && m.CustomerNumber == model.CustomerNumber);
+
+                    if (updateMasterTax != null)
+                    {
+                        updateMasterTax.Totalprice = billingSummary.Totalprice;
+                        updateMasterTax.NetPrice = billingSummary.NetPrice;
+                        updateMasterTax.CGSTPercentageAmt = billingSummary.CGSTPercentageAmt;
+                        updateMasterTax.SGSTPercentageAmt = billingSummary.SGSTPercentageAmt;
+
+                        _billingsoftware.Entry(updateMasterTax).State = EntityState.Modified;
+                    }
+
+                    _billingsoftware.SaveChanges();
                 }
-
-
+                    
+                
                 // Save points calculation
-                var checkpoints = await _billingsoftware.SHBillingPoints.FirstOrDefaultAsync(x => x.BillID == model.BillID && x.CustomerNumber == CustomerNumber);
+                    var checkpoints = await _billingsoftware.SHBillingPoints.FirstOrDefaultAsync(x => x.BillID == model.BillID && x.CustomerNumber == CustomerNumber);
                 var pointsMaster = await _billingsoftware.SHPointsMaster.FirstOrDefaultAsync(x=>x.BranchID == model.BranchID);
 
                 if (pointsMaster != null && pointsMaster.NetPrice !=null && pointsMaster.NetPoints !=null && pointsMaster.BranchID == model.BranchID)
