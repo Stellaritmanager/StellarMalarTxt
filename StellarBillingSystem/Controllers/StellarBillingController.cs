@@ -2491,7 +2491,7 @@ namespace StellarBillingSystem.Controllers
 
 
                 var rackProduct = _billingsoftware.SHRackPartionProduct
-                   .FirstOrDefault(r => r.ProductID == model.ProductID && r.BranchID == model.BranchID);
+                   .FirstOrDefault(r => r.ProductID == detailModel.ProductID && r.BranchID == model.BranchID);
 
                 if (rackProduct != null)
                 {
