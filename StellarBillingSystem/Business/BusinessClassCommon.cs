@@ -93,8 +93,8 @@ namespace StellarBillingSystem.Business
             return dataTable;
         }
 
-        public static DataTable DataTableReport(DbContext context, string sqlQuery, string Datecolumn, string Fromdate, string Todate,string GroupBy,
-                                       params DbParameter[] parameters)
+        public static DataTable DataTableReport(DbContext context, string sqlQuery, string Datecolumn, string Fromdate, string Todate,string GroupBy,string pbranchID
+                                       ,params DbParameter[] parameters)
         {
 
 
@@ -119,6 +119,11 @@ namespace StellarBillingSystem.Business
             else if (Todate!=null)
             {
                 sqlQuery = sqlQuery + Datecolumn + " <= '" + Todate +"'";
+            }
+
+            if (pbranchID !=null && pbranchID !=string.Empty)
+            {
+                sqlQuery = sqlQuery + " and bh.BracnchID ='" + pbranchID + "' "; 
             }
           
            if(GroupBy!= string.Empty)

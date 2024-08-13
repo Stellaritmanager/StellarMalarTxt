@@ -512,6 +512,7 @@ namespace StellarBillingSystem.Business
                 .Where(x => x.BillID == billID && x.BillDate == billDate && x.CustomerNumber == customerNumber && !x.IsDelete)
                 .ToListAsync();
 
+
             if (billingDetails == null || !billingDetails.Any())
             {
               
@@ -530,11 +531,18 @@ namespace StellarBillingSystem.Business
             decimal cgstAmount = (totalPrice * cgstPercentageDecimal) / 100;
             decimal sgstAmount = (totalPrice * sgstPercentageDecimal) / 100;
 
-            // Calculate total after applying CGST and SGST
-            decimal totalWithTaxes = totalPrice + cgstAmount + sgstAmount;
 
-            // Calculate final net price after applying discount
+            var billingmaster = await _billingContext.SHbillmaster
+             .Where(x => x.BillID == billID && x.BillDate == billDate && x.CustomerNumber == customerNumber && !x.IsDelete).Select(x => x.NetPrice).FirstOrDefaultAsync();
+
+            decimal billingMasterNetPrice = decimal.TryParse(billingmaster, out decimal NetPrice) ? NetPrice : totalPrice;
+
+            // Calculate total after applying CGST and SGST
+            decimal totalWithTaxes = billingMasterNetPrice + cgstAmount + sgstAmount;
+
             decimal netPrice = totalWithTaxes - discountDecimal;
+
+         
 
             return new BillingMasterModel
             {

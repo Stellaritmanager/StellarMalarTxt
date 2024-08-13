@@ -106,8 +106,8 @@
 
                             <div class="form-floating form-floating-outline mb-4">
 
-                                <input type="text" class="form-control" id="Balance" name="Balance" placeholder="BillValue" value="@Model.Balance" />
-                                <label for="Balance" class="control-label">BillValue</label>
+                                <input type="text" class="form-control" id="BillValue" name="BillValue" placeholder="BillValue" value="@Model.Balance" readonly/>
+                                <label for="BillValue" class="control-label">BillValue</label>
                             </div>
 
                         </div>
@@ -119,8 +119,8 @@
 
                             <div class="form-floating form-floating-outline mb-4">
 
-                                <input type="text" class="form-control" id="BillValue" name="BillValue" value="@Model.StrBillvalue" placeholder="Balance" />
-                                <label for="BillValue" class="control-label">Balance</label>
+                                <input type="text" class="form-control" id="Balance" name="Balance" value="@Model.StrBillvalue" placeholder="Balance" readonly/>
+                                <label for="Balance" class="control-label">Balance</label>
                             </div>
 
                         </div>
@@ -166,9 +166,21 @@
 
                     @if (Model.Viewpayment != null)
                     {
+                        
+                        <div class="row gy-4">
+                            <div class="col-md-12 col-lg-0.5">
+                            </div>
+                            <div class="col-md-12 col-lg-12">
+                                <div class="card">
+                                    <div class="card-body ">
+                                        <div class="table-responsive">
 
+                                            <center>
+                                                <h2 class="centered text-white" style="font-family:'Lucida Bright';">Payment Details</h2>
+                                            </center>
+                                            <br />
 
-                        <h3>Payment Details</h3>
+                     
                         <table class="table table-sm">
                             <thead>
                                 <tr>
@@ -205,6 +217,8 @@
                                         </td>
                                         <td>
                                             <input type="text" class="form-control" name="Viewpayment[@i].PaymentAmount" value="@Model.Viewpayment[i].PaymentAmount" />
+
+                                       
                                         </td>
 
                                     </tr>
@@ -212,6 +226,15 @@
                             </tbody>
 
                         </table>
+
+
+                                            <br />
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
 
 
 
@@ -254,6 +277,9 @@
             handleMessages("@ViewBag.DeleteMessage");
         </script>
     }
+
+
+
 </form>
 
 
