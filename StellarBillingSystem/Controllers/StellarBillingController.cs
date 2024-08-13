@@ -2368,8 +2368,6 @@ namespace StellarBillingSystem.Controllers
                 return RedirectToAction("PaymentBilling", new { BillID = model.BillID });
             }
 
-
-
             if (buttonType == "Add Product")
             {
 
@@ -2379,16 +2377,17 @@ namespace StellarBillingSystem.Controllers
                     TempData.Keep("BranchID");
                 }
 
-                if (string.IsNullOrWhiteSpace(model.ProductID) || model.ProductID == "ProductID")
+                if ((string.IsNullOrWhiteSpace(model.ProductID) || model.ProductID == "ProductID") &&
+                      string.IsNullOrWhiteSpace(model.BarCode) || model.ProductID == "Barcode")
                 {
-                    ViewBag.Getnotfound = "Please enter Product ID.";
+                    ViewBag.Getnotfound = "Please enter Product ID or Barcode";
                     return View("CustomerBilling", model);
                 }
 
                 //Check  ProductID
 
                 var existingProductInBillDetails = await _billingsoftware.SHbilldetails
-                     .FirstOrDefaultAsync(x => x.ProductID == model.ProductID
+                     .FirstOrDefaultAsync(x => x.ProductID == model.ProductID 
                                   && x.BillID == model.BillID
                                   && x.BillDate == model.BillDate
                                   && x.CustomerNumber == model.CustomerNumber
@@ -2404,7 +2403,7 @@ namespace StellarBillingSystem.Controllers
 
 
                 var productlist = await _billingsoftware.SHProductMaster
-                             .Where(p => p.ProductID == model.ProductID && p.BranchID == model.BranchID)
+                             .Where(p => (p.ProductID == model.ProductID || p.BarcodeId == model.BarCode) && p.IsDelete==false && p.BranchID == model.BranchID)
                              .Select(p => new BillingDetailsModel
                              {
                                  ProductID = p.ProductID,
