@@ -28,6 +28,7 @@
         private string sGSTPercentage;
         private string cGSTPercentageAmt;
         private string sGSTPercentageAmt;
+        private string barCode;
        
 
 
@@ -55,5 +56,6 @@
         public string? SGSTPercentage { get => sGSTPercentage; set => sGSTPercentage = value; }
         public string? CGSTPercentageAmt { get => cGSTPercentageAmt; set => cGSTPercentageAmt = value; }
         public string? SGSTPercentageAmt { get => sGSTPercentageAmt; set => sGSTPercentageAmt = value; }
+        public string BarCode { get => barCode; set => barCode = value; }
     }
 }
