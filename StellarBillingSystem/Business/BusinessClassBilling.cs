@@ -359,7 +359,7 @@ namespace StellarBillingSystem.Business
                     table.Rows[rowcount].Cells[1].Paragraphs[0].Append(objRow["ProductName"].ToString());
                     table.Rows[rowcount].Cells[2].Paragraphs[0].Append(objRow["Price"].ToString());
                     table.Rows[rowcount].Cells[3].Paragraphs[0].Append(objRow["Quantity"].ToString());
-                    table.Rows[rowcount].Cells[4].Paragraphs[0].Append(objRow["TotalDiscount"].ToString());
+                    table.Rows[rowcount].Cells[4].Paragraphs[0].Append(objRow["DetailDiscount"].ToString());
                     table.Rows[rowcount].Cells[5].Paragraphs[0].Append(objRow["DetailTotalprice"].ToString());
                     rowcount++;
                 }
