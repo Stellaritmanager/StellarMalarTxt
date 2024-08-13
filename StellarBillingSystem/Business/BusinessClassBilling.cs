@@ -512,20 +512,38 @@ namespace StellarBillingSystem.Business
                 .Where(x => x.BillID == billID && x.BillDate == billDate && x.CustomerNumber == customerNumber && !x.IsDelete)
                 .ToListAsync();
 
+            var billMaster = await _billingContext.SHbillmaster
+                .Where(x => x.BillID == billID && x.BillDate == billDate && !x.IsDelete)
+                .FirstOrDefaultAsync();
 
-            if (billingDetails == null || !billingDetails.Any())
+            if ((billingDetails == null || !billingDetails.Any()) && billMaster ==null)
             {
               
                 return null;
             }
 
+            
             // Calculate total price
             decimal totalPrice = billingDetails.Sum(x => decimal.TryParse(x.NetPrice, out decimal price) ? price : 0);
 
-            // Convert percentage and discount from string to decimal
-            decimal discountDecimal = decimal.TryParse(discount, out decimal discountValue) ? discountValue : 0;
-            decimal cgstPercentageDecimal = decimal.TryParse(cgstPercentage, out decimal cgstPercentageValue) ? cgstPercentageValue : 0;
-            decimal sgstPercentageDecimal = decimal.TryParse(sgstPercentage, out decimal sgstPercentageValue) ? sgstPercentageValue : 0;
+            decimal discountDecimal = 0;
+            decimal cgstPercentageDecimal= 0;
+            decimal sgstPercentageDecimal = 0;
+
+            // Convert percentage and discount from string to decimal onyl if the orginal value has change
+            if (billMaster.TotalDiscount != discount)
+            {
+                discountDecimal = decimal.TryParse(discount, out decimal discountValue) ? discountValue : 0;
+            }
+            if (billMaster.CGSTPercentage != cgstPercentage)
+            {
+                cgstPercentageDecimal = decimal.TryParse(cgstPercentage, out decimal cgstPercentageValue) ? cgstPercentageValue : 0;
+            }
+
+            if (billMaster.SGSTPercentage != sgstPercentage)
+            {
+                sgstPercentageDecimal = decimal.TryParse(sgstPercentage, out decimal sgstPercentageValue) ? sgstPercentageValue : 0;
+            }
 
             // Calculate CGST and SGST amounts
             decimal cgstAmount = (totalPrice * cgstPercentageDecimal) / 100;
