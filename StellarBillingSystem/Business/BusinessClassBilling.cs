@@ -509,15 +509,15 @@ namespace StellarBillingSystem.Business
         }
 
 
-        public async Task<BillingMasterModel> CalculateBillingDetails(string billID, string billDate, string customerNumber, string discount, string cgstPercentage, string sgstPercentage)
+        public async Task<BillingMasterModel> CalculateBillingDetails(string billID, string billDate, string customerNumber, string discount, string cgstPercentage, string sgstPercentage,string BranchID)
         {
             
             var billingDetails = await _billingContext.SHbilldetails
-                .Where(x => x.BillID == billID && x.BillDate == billDate && x.CustomerNumber == customerNumber && !x.IsDelete)
+                .Where(x => x.BillID == billID && x.BillDate == billDate && x.CustomerNumber == customerNumber && !x.IsDelete && x.BranchID == BranchID)
                 .ToListAsync();
 
             var billMaster = await _billingContext.SHbillmaster
-                .Where(x => x.BillID == billID && x.BillDate == billDate && !x.IsDelete)
+                .Where(x => x.BillID == billID && x.BillDate == billDate && !x.IsDelete && x.CustomerNumber == customerNumber && x.BranchID == BranchID )
                 .FirstOrDefaultAsync();
 
             if ((billingDetails == null || !billingDetails.Any()) && billMaster ==null)
@@ -535,16 +535,16 @@ namespace StellarBillingSystem.Business
             decimal sgstPercentageDecimal = 0;
 
             // Convert percentage and discount from string to decimal onyl if the orginal value has change
-            if (billMaster.TotalDiscount != discount)
+            if (discount == null || billMaster.TotalDiscount != discount)
             {
                 discountDecimal = decimal.TryParse(discount, out decimal discountValue) ? discountValue : 0;
             }
-            if (billMaster.CGSTPercentage != cgstPercentage)
+            if (cgstPercentage == null || billMaster.CGSTPercentage != cgstPercentage)
             {
                 cgstPercentageDecimal = decimal.TryParse(cgstPercentage, out decimal cgstPercentageValue) ? cgstPercentageValue : 0;
             }
 
-            if (billMaster.SGSTPercentage != sgstPercentage)
+            if (sgstPercentage == null || billMaster.SGSTPercentage != sgstPercentage)
             {
                 sgstPercentageDecimal = decimal.TryParse(sgstPercentage, out decimal sgstPercentageValue) ? sgstPercentageValue : 0;
             }

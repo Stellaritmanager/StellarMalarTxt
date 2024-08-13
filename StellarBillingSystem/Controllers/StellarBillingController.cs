@@ -2631,7 +2631,7 @@ namespace StellarBillingSystem.Controllers
 
 
                 BusinessClassBilling busbill = new BusinessClassBilling(_billingsoftware);
-                var billingSummary = await busbill.CalculateBillingDetails(BillID, BillDate, CustomerNumber, model.TotalDiscount, model.CGSTPercentage, model.SGSTPercentage);
+                var billingSummary = await busbill.CalculateBillingDetails(BillID, BillDate, CustomerNumber, model.TotalDiscount, model.CGSTPercentage, model.SGSTPercentage,masterModel.BranchID);
                 if (billingSummary != null)
                 {
 
