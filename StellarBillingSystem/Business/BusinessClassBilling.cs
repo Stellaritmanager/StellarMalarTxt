@@ -550,16 +550,16 @@ namespace StellarBillingSystem.Business
             {
 
                 // Convert percentage and discount from string to decimal onyl if the orginal value has change
-                if (discount == null || billMaster.TotalDiscount != discount)
+                if (discount == null || billMaster.TotalDiscount != discount || billMaster.BillInsertion == true)
                 {
                     discountDecimal = decimal.TryParse(discount, out decimal discountValue) ? discountValue : 0;
                 }
-                if (cgstPercentage == null || billMaster.CGSTPercentage != cgstPercentage)
+                if (cgstPercentage == null || billMaster.CGSTPercentage != cgstPercentage || billMaster.BillInsertion == true)
                 {
                     cgstPercentageDecimal = decimal.TryParse(cgstPercentage, out decimal cgstPercentageValue) ? cgstPercentageValue : 0;
                 }
 
-                if (sgstPercentage == null || billMaster.SGSTPercentage != sgstPercentage)
+                if (sgstPercentage == null || billMaster.SGSTPercentage != sgstPercentage || billMaster.BillInsertion == true)
                 {
                     sgstPercentageDecimal = decimal.TryParse(sgstPercentage, out decimal sgstPercentageValue) ? sgstPercentageValue : 0;
                 }

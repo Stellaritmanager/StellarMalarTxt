@@ -2669,8 +2669,8 @@ namespace StellarBillingSystem.Controllers
                             return View("CustomerBilling", model);
                         }
 
-                      
 
+                        updateMaster.BillInsertion = false;
                         updateMaster.BillID = masterModel.BillID;
                         updateMaster.BillDate = masterModel.BillDate;
                         updateMaster.CustomerNumber = masterModel.CustomerNumber;
@@ -2685,13 +2685,14 @@ namespace StellarBillingSystem.Controllers
                         updateMaster.Lastupdateduser = User.Claims.First().Value.ToString();
                         updateMaster.Lastupdatedmachine = Request.HttpContext.Connection.RemoteIpAddress.ToString();
                         updateMaster.Lastupdateddate = DateTime.Now.ToString();
+                      
 
                         _billingsoftware.Entry(updateMaster).State = EntityState.Modified;
 
                     }
                     else
                     {
-                       /* masterModel.Totalprice = billingSummary.Totalprice;
+                      /* masterModel.Totalprice = billingSummary.Totalprice;
                         masterModel.CGSTPercentageAmt = billingSummary.CGSTPercentageAmt;
                         masterModel.SGSTPercentageAmt = billingSummary.SGSTPercentageAmt;
                         masterModel.NetPrice = billingSummary.NetPrice;*/
@@ -2699,7 +2700,7 @@ namespace StellarBillingSystem.Controllers
                         masterModel.Lastupdateduser = User.Claims.First().Value.ToString();
                         masterModel.Lastupdatedmachine = Request.HttpContext.Connection.RemoteIpAddress.ToString();
                         masterModel.Lastupdateddate = DateTime.Now.ToString();
-                     
+                        masterModel.BillInsertion = true;
 
                         _billingsoftware.SHbillmaster.Add(masterModel);
 
