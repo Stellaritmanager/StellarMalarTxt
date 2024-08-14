@@ -2655,13 +2655,18 @@ namespace StellarBillingSystem.Controllers
 
 
                 BusinessClassBilling busbill = new BusinessClassBilling(_billingsoftware);
-               
+
 
                 // Retrieve the existing master record
                     var updateMaster = await _billingsoftware.SHbillmaster
                         .FirstOrDefaultAsync(m => m.BillID == model.BillID && m.BranchID == model.BranchID && m.BillDate == model.BillDate && m.CustomerNumber == model.CustomerNumber);
 
-                    if (updateMaster != null)
+                string currentDiscount = string.Empty;
+                string currentSGST = string.Empty;
+                string currentCGST = string.Empty;
+
+
+                if (updateMaster != null)
                     {
                         if (updateMaster.IsDelete)
                         {
@@ -2669,8 +2674,13 @@ namespace StellarBillingSystem.Controllers
                             return View("CustomerBilling", model);
                         }
 
+                    // existing value
+                    currentDiscount = updateMaster.TotalDiscount;
+                    currentSGST = updateMaster.SGSTPercentage;
+                    currentCGST = updateMaster.CGSTPercentage;
 
-                        updateMaster.BillInsertion = false;
+
+                    updateMaster.BillInsertion = false;
                         updateMaster.BillID = masterModel.BillID;
                         updateMaster.BillDate = masterModel.BillDate;
                         updateMaster.CustomerNumber = masterModel.CustomerNumber;
@@ -2711,7 +2721,7 @@ namespace StellarBillingSystem.Controllers
 
                 // var billingSummary = await busbill.CalculateBillingDetails(BillID, BillDate, CustomerNumber, model.TotalDiscount, model.CGSTPercentage, model.SGSTPercentage, masterModel.BranchID);
 
-                var billingSummary = await busbill.CalculateBillingDetails(BillID, BillDate, CustomerNumber, model.TotalDiscount, model.CGSTPercentage, model.SGSTPercentage, masterModel.BranchID);
+                var billingSummary = await busbill.CalculateBillingDetails(BillID, BillDate, CustomerNumber, currentDiscount, currentCGST, currentSGST, masterModel.BranchID);
 
 
 
