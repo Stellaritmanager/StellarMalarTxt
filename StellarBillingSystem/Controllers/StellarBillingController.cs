@@ -2388,6 +2388,21 @@ namespace StellarBillingSystem.Controllers
                     return View("CustomerBilling", model);
                 }
 
+                // check barcode stock in godown
+                var barcodeInGodown = await (from p in _billingsoftware.SHProductMaster
+                                             join g in _billingsoftware.SHGodown on p.ProductID equals g.ProductID
+                                             where p.BarcodeId == model.BarCode && g.BranchID == model.BranchID && g.IsDelete == false
+                                             select g).FirstOrDefaultAsync();
+
+                if (model.BarCode != null && barcodeInGodown == null)
+                {
+                    ViewBag.Getnotfound = "This Barcode does not exist in Godown.";
+                    return View("CustomerBilling", model);
+                }
+
+
+
+
                 //Check  ProductID
 
                 var existingProductInBillDetails = await _billingsoftware.SHbilldetails
@@ -2404,8 +2419,7 @@ namespace StellarBillingSystem.Controllers
                     ViewBag.Getnotfound = "You cannot Add the same product";
                     return View("CustomerBilling", model);
                 }
-                
-           
+                               
 
 
                 var productlist = await _billingsoftware.SHProductMaster
@@ -2490,14 +2504,14 @@ namespace StellarBillingSystem.Controllers
                 await _billingsoftware.SaveChangesAsync();
 
 
-                var rackProduct = _billingsoftware.SHRackPartionProduct
+                var rackProduct = _billingsoftware.SHGodown
                    .FirstOrDefault(r => r.ProductID == detailModel.ProductID && r.BranchID == model.BranchID);
 
                 if (rackProduct != null)
                 {
-                    int currentNoofitems = Convert.ToInt32(rackProduct.Noofitems);
+                    int currentNoofitems = Convert.ToInt32(rackProduct.NumberofStocks);
                     int productQuantity = Convert.ToInt32(model.Quantity);
-                    rackProduct.Noofitems = (currentNoofitems - productQuantity).ToString();
+                    rackProduct.NumberofStocks = (currentNoofitems - productQuantity).ToString();
 
                     _billingsoftware.SaveChanges();
                 }
@@ -2605,13 +2619,13 @@ namespace StellarBillingSystem.Controllers
 
                    
 
-                        var rackProduct = _billingsoftware.SHRackPartionProduct
+                        var rackProduct = _billingsoftware.SHGodown
                             .FirstOrDefault(r => r.ProductID == detail.ProductID && r.BranchID == detail.BranchID);
 
                         if (rackProduct != null)
                         {
-                            int currentNoofitems = Convert.ToInt32(rackProduct.Noofitems);
-                            rackProduct.Noofitems = (currentNoofitems + productQuantity).ToString();
+                            int currentNoofitems = Convert.ToInt32(rackProduct.NumberofStocks);
+                            rackProduct.NumberofStocks = (currentNoofitems + productQuantity).ToString();
                         }
                     }
 
@@ -2915,14 +2929,14 @@ namespace StellarBillingSystem.Controllers
                 _billingsoftware.SaveChanges();
 
                 // Update SHRackPartionProduct to add back the quantity
-                var rackProduct = _billingsoftware.SHRackPartionProduct
+                var rackProduct = _billingsoftware.SHGodown
                     .FirstOrDefault(r => r.ProductID == productId && r.BranchID == product.BranchID);
 
                 if (rackProduct != null)
                 {
-                    int currentNoofitems = Convert.ToInt32(rackProduct.Noofitems);
+                    int currentNoofitems = Convert.ToInt32(rackProduct.NumberofStocks);
                     int productQuantity = Convert.ToInt32(product.Quantity);
-                    rackProduct.Noofitems = (currentNoofitems + productQuantity).ToString();
+                    rackProduct.NumberofStocks = (currentNoofitems + productQuantity).ToString();
                 }
 
                 _billingsoftware.SaveChanges();

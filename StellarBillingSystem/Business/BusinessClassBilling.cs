@@ -244,12 +244,12 @@ namespace StellarBillingSystem.Business
         {
             var productid = (
                         from product in _billingContext.SHProductMaster
-                        join rack in _billingContext.SHRackPartionProduct
+                        join rack in _billingContext.SHGodown
                         on product.ProductID equals rack.ProductID
                         where product.BranchID == BranchID && rack.BranchID == BranchID
                         select new { product, rack })
                   .AsEnumerable()
-                  .Where(pr => int.Parse(pr.rack.Noofitems) > 0)
+                  .Where(pr => int.Parse(pr.rack.NumberofStocks) > 0)
                   .Select(pr => pr.product)
                   .ToList();
 
