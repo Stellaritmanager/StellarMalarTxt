@@ -223,3 +223,12 @@
     }
 
 </form>
+
+
+                   
+@if (ViewBag.Message != null)
+{
+    <script>
+        handleMessages("@ViewBag.Message");
+    </script>
+}

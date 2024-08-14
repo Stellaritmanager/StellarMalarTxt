@@ -43,7 +43,11 @@ namespace StellarBillingSystem.Controllers
                                    GroupBy = rep.GroupBy
                                }).First();
 
-           
+            if (reportQuery == null)
+            {
+                ViewBag.Message = "Not Found";
+                return View("Reports");
+            }
 
             var query = BusinessClassCommon.DataTableReport(_billingContext, reportQuery.ReportQuery, reportQuery.Datecolumn, fromDate, toDate,reportQuery.GroupBy, branchId);
 
