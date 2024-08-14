@@ -436,6 +436,7 @@ namespace StellarBillingSystem.Business
 
                 // Add a table
                 var table = document.AddTable(pbillData.Rows.Count + 1, 5);
+                
                 table.Rows[0].Cells[0].Paragraphs[0].Append("Payment Description");
                 table.Rows[0].Cells[1].Paragraphs[0].Append("Payment Mode");
                 table.Rows[0].Cells[2].Paragraphs[0].Append("Payment Transaction Number");
@@ -454,6 +455,15 @@ namespace StellarBillingSystem.Business
                     table.Rows[rowcount].Cells[3].Paragraphs[0].Append(objRow["PaymentAmount"].ToString());
                     table.Rows[rowcount].Cells[4].Paragraphs[0].Append(objRow["PaymentDate"].ToString());
                     rowcount++;
+                }
+
+                // Set font and font size for the entire table
+                foreach (var row in table.Rows)
+                {
+                    foreach (var cell in row.Cells)
+                    {
+                        cell.Paragraphs[0].Font(new Font("Arial")).FontSize(14);                     
+                    }
                 }
 
                 string searchText = "<<paymentnode>>";
