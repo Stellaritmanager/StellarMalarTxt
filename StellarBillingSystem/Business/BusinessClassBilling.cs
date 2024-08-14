@@ -244,12 +244,12 @@ namespace StellarBillingSystem.Business
         {
             var productid = (
                         from product in _billingContext.SHProductMaster
-                        join rack in _billingContext.SHRackPartionProduct
+                        join rack in _billingContext.SHGodown
                         on product.ProductID equals rack.ProductID
                         where product.BranchID == BranchID && rack.BranchID == BranchID
                         select new { product, rack })
                   .AsEnumerable()
-                  .Where(pr => int.Parse(pr.rack.Noofitems) > 0)
+                  .Where(pr => int.Parse(pr.rack.NumberofStocks) > 0)
                   .Select(pr => pr.product)
                   .ToList();
 
@@ -343,29 +343,31 @@ namespace StellarBillingSystem.Business
 
                 // Add a table
                 var table = document.AddTable(pbillData.Rows.Count + 1, 6);
-                table.Rows[0].Cells[0].Paragraphs[0].Append("Product ID");
-                table.Rows[0].Cells[1].Paragraphs[0].Append("Product Name");
-                table.Rows[0].Cells[2].Paragraphs[0].Append("Price");
-                table.Rows[0].Cells[3].Paragraphs[0].Append("Quantity");
-                table.Rows[0].Cells[4].Paragraphs[0].Append("Total Discount");
-                table.Rows[0].Cells[5].Paragraphs[0].Append("Net Price");
+                table.Rows[0].Cells[0].Paragraphs[0].Append("Product ID").Font("Cambria (Headings)").FontSize(12);
+                table.Rows[0].Cells[1].Paragraphs[0].Append("Product Name").Font("Cambria (Headings)").FontSize(12);
+                table.Rows[0].Cells[2].Paragraphs[0].Append("Price").Font("Cambria (Headings)").FontSize(12);
+                table.Rows[0].Cells[3].Paragraphs[0].Append("Quantity").Font("Cambria (Headings)").FontSize(12);
+                table.Rows[0].Cells[4].Paragraphs[0].Append("Total Discount").Font("Cambria (Headings)").FontSize(12);
+                table.Rows[0].Cells[5].Paragraphs[0].Append("Net Price").Font("Cambria (Headings)").FontSize(12);
 
                 int rowcount = 1;
                 //Row data
                 foreach (DataRow objRow in pbillData.Rows)
                 {
 
-                    table.Rows[rowcount].Cells[0].Paragraphs[0].Append(objRow["ProductID"].ToString());
-                    table.Rows[rowcount].Cells[1].Paragraphs[0].Append(objRow["ProductName"].ToString());
-                    table.Rows[rowcount].Cells[2].Paragraphs[0].Append(objRow["Price"].ToString());
-                    table.Rows[rowcount].Cells[3].Paragraphs[0].Append(objRow["Quantity"].ToString());
-                    table.Rows[rowcount].Cells[4].Paragraphs[0].Append(objRow["TotalDiscount"].ToString());
-                    table.Rows[rowcount].Cells[5].Paragraphs[0].Append(objRow["DetailTotalprice"].ToString());
+                    table.Rows[rowcount].Cells[0].Paragraphs[0].Append(objRow["ProductID"].ToString()).Font("Cambria (Headings)").FontSize(12);
+                    table.Rows[rowcount].Cells[1].Paragraphs[0].Append(objRow["ProductName"].ToString()).Font("Cambria (Headings)").FontSize(12);
+                    table.Rows[rowcount].Cells[2].Paragraphs[0].Append(objRow["Price"].ToString()).Font("Cambria (Headings)").FontSize(12);
+                    table.Rows[rowcount].Cells[3].Paragraphs[0].Append(objRow["Quantity"].ToString()).Font("Cambria (Headings)").FontSize(12);
+                    table.Rows[rowcount].Cells[4].Paragraphs[0].Append(objRow["DetailDiscount"].ToString()).Font("Cambria (Headings)").FontSize(12);
+                    table.Rows[rowcount].Cells[5].Paragraphs[0].Append(objRow["DetailTotalprice"].ToString()).Font("Cambria (Headings)").FontSize(12);
                     rowcount++;
                 }
 
                 string searchText = "<<billnodet>>";
                 Paragraph paragraph = document.Paragraphs.FirstOrDefault(p => p.Text.Contains(searchText));
+
+
 
                 if (paragraph != null)
                 {
@@ -519,15 +521,15 @@ namespace StellarBillingSystem.Business
         }
 
 
-        public async Task<BillingMasterModel> CalculateBillingDetails(string billID, string billDate, string customerNumber, string discount, string cgstPercentage, string sgstPercentage)
+        public async Task<BillingMasterModel> CalculateBillingDetails(string billID, string billDate, string customerNumber, string discount, string cgstPercentage, string sgstPercentage,string BranchID)
         {
             
             var billingDetails = await _billingContext.SHbilldetails
-                .Where(x => x.BillID == billID && x.BillDate == billDate && x.CustomerNumber == customerNumber && !x.IsDelete)
+                .Where(x => x.BillID == billID && x.BillDate == billDate && x.CustomerNumber == customerNumber && !x.IsDelete && x.BranchID == BranchID)
                 .ToListAsync();
 
             var billMaster = await _billingContext.SHbillmaster
-                .Where(x => x.BillID == billID && x.BillDate == billDate && !x.IsDelete)
+                .Where(x => x.BillID == billID && x.BillDate == billDate && !x.IsDelete && x.CustomerNumber == customerNumber && x.BranchID == BranchID )
                 .FirstOrDefaultAsync();
 
             if ((billingDetails == null || !billingDetails.Any()) && billMaster ==null)
@@ -544,19 +546,23 @@ namespace StellarBillingSystem.Business
             decimal cgstPercentageDecimal= 0;
             decimal sgstPercentageDecimal = 0;
 
-            // Convert percentage and discount from string to decimal onyl if the orginal value has change
-            if (billMaster.TotalDiscount != discount)
+            if (billMaster != null)
             {
-                discountDecimal = decimal.TryParse(discount, out decimal discountValue) ? discountValue : 0;
-            }
-            if (billMaster.CGSTPercentage != cgstPercentage)
-            {
-                cgstPercentageDecimal = decimal.TryParse(cgstPercentage, out decimal cgstPercentageValue) ? cgstPercentageValue : 0;
-            }
 
-            if (billMaster.SGSTPercentage != sgstPercentage)
-            {
-                sgstPercentageDecimal = decimal.TryParse(sgstPercentage, out decimal sgstPercentageValue) ? sgstPercentageValue : 0;
+                // Convert percentage and discount from string to decimal onyl if the orginal value has change
+                if (discount == null || billMaster.TotalDiscount != discount)
+                {
+                    discountDecimal = decimal.TryParse(discount, out decimal discountValue) ? discountValue : 0;
+                }
+                if (cgstPercentage == null || billMaster.CGSTPercentage != cgstPercentage)
+                {
+                    cgstPercentageDecimal = decimal.TryParse(cgstPercentage, out decimal cgstPercentageValue) ? cgstPercentageValue : 0;
+                }
+
+                if (sgstPercentage == null || billMaster.SGSTPercentage != sgstPercentage)
+                {
+                    sgstPercentageDecimal = decimal.TryParse(sgstPercentage, out decimal sgstPercentageValue) ? sgstPercentageValue : 0;
+                }
             }
 
             // Calculate CGST and SGST amounts

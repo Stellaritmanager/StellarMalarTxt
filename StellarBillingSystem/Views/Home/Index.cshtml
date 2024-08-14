@@ -85,6 +85,12 @@
 </div>
 <form action="@Url.Action("GetReports","Home")" method="post">
 
+
+    <div class="row">
+        <div class="col-md-12 col-lg-12">
+            <div class="card">
+                <div class="card-body dividerblack">
+
     @if (Model != null && Model.Rows.Count > 0)
     {
 
@@ -193,6 +199,11 @@
 
     }
 
+
+                </div>
+            </div>
+        </div>
+    </div>
 
 </form>
 

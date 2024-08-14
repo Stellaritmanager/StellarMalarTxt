@@ -2329,7 +2329,7 @@ namespace StellarBillingSystem.Controllers
             //Code for print the Bill 
             if (buttonType == "Download Bill")
             {
-                String Query = "Select SD.BillID,Convert(varchar(10),SD.BillDate,101) as BillDate,SD.ProductID,Sp.ProductName, SD.Price,SD.Quantity,SD.CustomerNumber as CustomerName, SD.CustomerNumber,\r\nSD.TotalDiscount,SD.Totalprice as DetailTotalprice,SB.CGSTPercentage,SB.SGSTPercentage,SB.TotalDiscount, SB.NetPrice as MasterTotalprice  from SHbilldetails SD inner join SHbillmaster SB \r\non SD.BillID= SB.BillID\r\ninner join SHProductMaster SP\r\non SD.ProductID = sp.ProductID\r\n where sd.IsDelete=0 AND sd.BillID ='" + BillID + "' AND sd.BillDate ='"+BillDate+ "'AND sd.CustomerNumber ='"+CustomerNumber+ "' AND sd.BranchID ='" + model.BranchID + "'  AND sp.BranchID ='" + model.BranchID + "'  AND sb.BranchID ='" + model.BranchID + "'  ";
+                String Query = "Select SD.BillID,Convert(varchar(10),SD.BillDate,101) as BillDate,SD.ProductID,Sp.ProductName, SD.Price,SD.Quantity,SD.CustomerNumber as CustomerName, SD.CustomerNumber,\r\nSD.TotalDiscount as DetailDiscount,SD.Totalprice as DetailTotalprice,SB.CGSTPercentage,SB.SGSTPercentage,SB.TotalDiscount, SB.NetPrice as MasterTotalprice  from SHbilldetails SD inner join SHbillmaster SB \r\non SD.BillID= SB.BillID\r\ninner join SHProductMaster SP\r\non SD.ProductID = sp.ProductID\r\n where sd.IsDelete=0 AND sd.BillID ='" + BillID + "' AND sd.BillDate ='"+BillDate+ "'AND sd.CustomerNumber ='"+CustomerNumber+ "' AND sd.BranchID ='" + model.BranchID + "'  AND sp.BranchID ='" + model.BranchID + "'  AND sb.BranchID ='" + model.BranchID + "'  ";
                  
                 var Table = BusinessClassCommon.DataTable(_billingsoftware, Query);
 
@@ -2388,6 +2388,21 @@ namespace StellarBillingSystem.Controllers
                     return View("CustomerBilling", model);
                 }
 
+                // check barcode stock in godown
+                var barcodeInGodown = await (from p in _billingsoftware.SHProductMaster
+                                             join g in _billingsoftware.SHGodown on p.ProductID equals g.ProductID
+                                             where p.BarcodeId == model.BarCode && g.BranchID == model.BranchID && g.IsDelete == false
+                                             select g).FirstOrDefaultAsync();
+
+                if (model.BarCode != null && barcodeInGodown == null)
+                {
+                    ViewBag.Getnotfound = "This Barcode does not exist in Godown.";
+                    return View("CustomerBilling", model);
+                }
+
+
+
+
                 //Check  ProductID
 
                 var existingProductInBillDetails = await _billingsoftware.SHbilldetails
@@ -2404,6 +2419,7 @@ namespace StellarBillingSystem.Controllers
                     ViewBag.Getnotfound = "You cannot Add the same product";
                     return View("CustomerBilling", model);
                 }
+                               
 
 
                 var productlist = await _billingsoftware.SHProductMaster
@@ -2417,6 +2433,14 @@ namespace StellarBillingSystem.Controllers
                                  NetPrice = model.NetPrice
 
                              }).ToListAsync();
+
+
+                if(productlist.Count == 0)
+                {
+                    ViewBag.Getnotfound = "Please enter Valid Product ID or Barcode";
+                    return View("CustomerBilling", model);
+                }
+
 
                 var existingbilldetail = await _billingsoftware.SHbilldetails
             .FirstOrDefaultAsync(x => x.BillID == model.BillID && x.BillDate == model.BillDate && x.CustomerNumber == model.CustomerNumber && x.BranchID == model.BranchID && x.ProductID == model.ProductID && x.IsDelete == false);
@@ -2480,14 +2504,14 @@ namespace StellarBillingSystem.Controllers
                 await _billingsoftware.SaveChangesAsync();
 
 
-                var rackProduct = _billingsoftware.SHRackPartionProduct
-                   .FirstOrDefault(r => r.ProductID == model.ProductID && r.BranchID == model.BranchID);
+                var rackProduct = _billingsoftware.SHGodown
+                   .FirstOrDefault(r => r.ProductID == detailModel.ProductID && r.BranchID == model.BranchID);
 
                 if (rackProduct != null)
                 {
-                    int currentNoofitems = Convert.ToInt32(rackProduct.Noofitems);
+                    int currentNoofitems = Convert.ToInt32(rackProduct.NumberofStocks);
                     int productQuantity = Convert.ToInt32(model.Quantity);
-                    rackProduct.Noofitems = (currentNoofitems - productQuantity).ToString();
+                    rackProduct.NumberofStocks = (currentNoofitems - productQuantity).ToString();
 
                     _billingsoftware.SaveChanges();
                 }
@@ -2595,13 +2619,13 @@ namespace StellarBillingSystem.Controllers
 
                    
 
-                        var rackProduct = _billingsoftware.SHRackPartionProduct
+                        var rackProduct = _billingsoftware.SHGodown
                             .FirstOrDefault(r => r.ProductID == detail.ProductID && r.BranchID == detail.BranchID);
 
                         if (rackProduct != null)
                         {
-                            int currentNoofitems = Convert.ToInt32(rackProduct.Noofitems);
-                            rackProduct.Noofitems = (currentNoofitems + productQuantity).ToString();
+                            int currentNoofitems = Convert.ToInt32(rackProduct.NumberofStocks);
+                            rackProduct.NumberofStocks = (currentNoofitems + productQuantity).ToString();
                         }
                     }
 
@@ -2631,11 +2655,9 @@ namespace StellarBillingSystem.Controllers
 
 
                 BusinessClassBilling busbill = new BusinessClassBilling(_billingsoftware);
-                var billingSummary = await busbill.CalculateBillingDetails(BillID, BillDate, CustomerNumber, model.TotalDiscount, model.CGSTPercentage, model.SGSTPercentage);
-                if (billingSummary != null)
-                {
+               
 
-                    // Retrieve the existing master record
+                // Retrieve the existing master record
                     var updateMaster = await _billingsoftware.SHbillmaster
                         .FirstOrDefaultAsync(m => m.BillID == model.BillID && m.BranchID == model.BranchID && m.BillDate == model.BillDate && m.CustomerNumber == model.CustomerNumber);
 
@@ -2652,13 +2674,13 @@ namespace StellarBillingSystem.Controllers
                         updateMaster.BillID = masterModel.BillID;
                         updateMaster.BillDate = masterModel.BillDate;
                         updateMaster.CustomerNumber = masterModel.CustomerNumber;
-                        updateMaster.Totalprice = billingSummary.Totalprice;
+                        updateMaster.Totalprice = masterModel.Totalprice;
                         updateMaster.TotalDiscount = masterModel.TotalDiscount;
-                        updateMaster.NetPrice = billingSummary.NetPrice;
+                        updateMaster.NetPrice = masterModel.NetPrice;
                         updateMaster.CGSTPercentage = masterModel.CGSTPercentage;
-                        updateMaster.CGSTPercentageAmt = billingSummary.CGSTPercentageAmt;
+                        updateMaster.CGSTPercentageAmt = masterModel.CGSTPercentageAmt;
                         updateMaster.SGSTPercentage = masterModel.SGSTPercentage;
-                        updateMaster.SGSTPercentageAmt = billingSummary.SGSTPercentageAmt;
+                        updateMaster.SGSTPercentageAmt = masterModel.SGSTPercentageAmt;
                         updateMaster.BranchID = masterModel.BranchID;
                         updateMaster.Lastupdateduser = User.Claims.First().Value.ToString();
                         updateMaster.Lastupdatedmachine = Request.HttpContext.Connection.RemoteIpAddress.ToString();
@@ -2669,10 +2691,10 @@ namespace StellarBillingSystem.Controllers
                     }
                     else
                     {
-                        masterModel.Totalprice = billingSummary.Totalprice;
+                       /* masterModel.Totalprice = billingSummary.Totalprice;
                         masterModel.CGSTPercentageAmt = billingSummary.CGSTPercentageAmt;
                         masterModel.SGSTPercentageAmt = billingSummary.SGSTPercentageAmt;
-                        masterModel.NetPrice = billingSummary.NetPrice;
+                        masterModel.NetPrice = billingSummary.NetPrice;*/
                         masterModel.Billby = User.Claims.First().Value.ToString();
                         masterModel.Lastupdateduser = User.Claims.First().Value.ToString();
                         masterModel.Lastupdatedmachine = Request.HttpContext.Connection.RemoteIpAddress.ToString();
@@ -2685,12 +2707,34 @@ namespace StellarBillingSystem.Controllers
 
                     _billingsoftware.SaveChanges();
 
+                // var billingSummary = await busbill.CalculateBillingDetails(BillID, BillDate, CustomerNumber, model.TotalDiscount, model.CGSTPercentage, model.SGSTPercentage, masterModel.BranchID);
 
+                var billingSummary = await busbill.CalculateBillingDetails(BillID, BillDate, CustomerNumber, model.TotalDiscount, model.CGSTPercentage, model.SGSTPercentage, masterModel.BranchID);
+
+
+
+                if (billingSummary != null)
+                {
+
+                    var updateMasterTax = await _billingsoftware.SHbillmaster
+                      .FirstOrDefaultAsync(m => m.BillID == model.BillID && m.BranchID == model.BranchID && m.BillDate == model.BillDate && m.CustomerNumber == model.CustomerNumber);
+
+                    if (updateMasterTax != null)
+                    {
+                        updateMasterTax.Totalprice = billingSummary.Totalprice;
+                        updateMasterTax.NetPrice = billingSummary.NetPrice;
+                        updateMasterTax.CGSTPercentageAmt = billingSummary.CGSTPercentageAmt;
+                        updateMasterTax.SGSTPercentageAmt = billingSummary.SGSTPercentageAmt;
+
+                        _billingsoftware.Entry(updateMasterTax).State = EntityState.Modified;
+                    }
+
+                    _billingsoftware.SaveChanges();
                 }
-
-
+                    
+                
                 // Save points calculation
-                var checkpoints = await _billingsoftware.SHBillingPoints.FirstOrDefaultAsync(x => x.BillID == model.BillID && x.CustomerNumber == CustomerNumber);
+                    var checkpoints = await _billingsoftware.SHBillingPoints.FirstOrDefaultAsync(x => x.BillID == model.BillID && x.CustomerNumber == CustomerNumber);
                 var pointsMaster = await _billingsoftware.SHPointsMaster.FirstOrDefaultAsync(x=>x.BranchID == model.BranchID);
 
                 if (pointsMaster != null && pointsMaster.NetPrice !=null && pointsMaster.NetPoints !=null && pointsMaster.BranchID == model.BranchID)
@@ -2885,14 +2929,14 @@ namespace StellarBillingSystem.Controllers
                 _billingsoftware.SaveChanges();
 
                 // Update SHRackPartionProduct to add back the quantity
-                var rackProduct = _billingsoftware.SHRackPartionProduct
+                var rackProduct = _billingsoftware.SHGodown
                     .FirstOrDefault(r => r.ProductID == productId && r.BranchID == product.BranchID);
 
                 if (rackProduct != null)
                 {
-                    int currentNoofitems = Convert.ToInt32(rackProduct.Noofitems);
+                    int currentNoofitems = Convert.ToInt32(rackProduct.NumberofStocks);
                     int productQuantity = Convert.ToInt32(product.Quantity);
-                    rackProduct.Noofitems = (currentNoofitems + productQuantity).ToString();
+                    rackProduct.NumberofStocks = (currentNoofitems + productQuantity).ToString();
                 }
 
                 _billingsoftware.SaveChanges();
