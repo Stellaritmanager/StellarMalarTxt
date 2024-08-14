@@ -20,7 +20,7 @@
         private string lastupdatedmachine;
         private string branchID;
         private string billby;
-        private string billInsertion;
+        private bool billInsertion;
 
         public string BillID { get => billID; set => billID = value; }
         public string BillDate { get => billDate; set => billDate = value; }
@@ -38,6 +38,6 @@
         public string? CGSTPercentageAmt { get => cGSTPercentageAmt; set => cGSTPercentageAmt = value; }
         public string? SGSTPercentageAmt { get => sGSTPercentageAmt; set => sGSTPercentageAmt = value; }
         public string? Billby { get => billby; set => billby = value; }
-        public string? BillInsertion { get => billInsertion; set => billInsertion = value; }
+        public bool BillInsertion { get => billInsertion; set => billInsertion = value; }
     }
 }

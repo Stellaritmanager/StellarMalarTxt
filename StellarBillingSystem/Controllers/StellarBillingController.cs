@@ -2699,6 +2699,7 @@ namespace StellarBillingSystem.Controllers
                         masterModel.Lastupdateduser = User.Claims.First().Value.ToString();
                         masterModel.Lastupdatedmachine = Request.HttpContext.Connection.RemoteIpAddress.ToString();
                         masterModel.Lastupdateddate = DateTime.Now.ToString();
+                     
 
                         _billingsoftware.SHbillmaster.Add(masterModel);
 
