@@ -601,7 +601,9 @@ namespace StellarBillingSystem.Controllers
 
             ViewBag.Message = "Saved Successfully";
 
-            return View("CustomerMaster", model);
+            CustomerMasterModel mod = new CustomerMasterModel();
+
+            return View("CustomerMaster", mod);
         }
         public async Task<IActionResult> GetCustomer(CustomerMasterModel model)
         {
