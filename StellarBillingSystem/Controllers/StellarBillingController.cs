@@ -2401,6 +2401,8 @@ namespace StellarBillingSystem.Controllers
                 }
 
 
+              
+
 
 
                 //Check  ProductID
@@ -2439,6 +2441,26 @@ namespace StellarBillingSystem.Controllers
                 {
                     ViewBag.Getnotfound = "Please enter Valid Product ID or Barcode";
                     return View("CustomerBilling", model);
+                }
+
+
+                var rackProduct = _billingsoftware.SHGodown
+                  .FirstOrDefault(r => r.ProductID == detailModel.ProductID && r.BranchID == model.BranchID);
+
+                if (rackProduct != null)
+                {
+                    int currentNoofitems = Convert.ToInt32(rackProduct.NumberofStocks);
+                    int productQuantity = Convert.ToInt32(model.Quantity);
+
+                    if (productQuantity > currentNoofitems)
+                    {
+                        ViewBag.Getnotfound = $"You have only {currentNoofitems} items in stock";
+                        return View("CustomerBilling", model);
+                    }
+
+                    rackProduct.NumberofStocks = (currentNoofitems - productQuantity).ToString();
+
+                    _billingsoftware.SaveChanges();
                 }
 
 
@@ -2504,17 +2526,7 @@ namespace StellarBillingSystem.Controllers
                 await _billingsoftware.SaveChangesAsync();
 
 
-                var rackProduct = _billingsoftware.SHGodown
-                   .FirstOrDefault(r => r.ProductID == detailModel.ProductID && r.BranchID == model.BranchID);
-
-                if (rackProduct != null)
-                {
-                    int currentNoofitems = Convert.ToInt32(rackProduct.NumberofStocks);
-                    int productQuantity = Convert.ToInt32(model.Quantity);
-                    rackProduct.NumberofStocks = (currentNoofitems - productQuantity).ToString();
-
-                    _billingsoftware.SaveChanges();
-                }
+               
 
                 productlist = await _billingsoftware.SHbilldetails
           .Where(d => d.BillID == BillID && d.BillDate == BillDate && d.CustomerNumber == CustomerNumber && d.BranchID == detailModel.BranchID)
