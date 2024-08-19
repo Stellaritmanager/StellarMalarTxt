@@ -550,19 +550,13 @@ namespace StellarBillingSystem.Business
             {
 
                 // Convert percentage and discount from string to decimal onyl if the orginal value has change
-                if (discount == null || billMaster.TotalDiscount != discount || billMaster.BillInsertion == true)
-                {
+                
                     discountDecimal = decimal.TryParse(billMaster.TotalDiscount , out decimal discountValue) ? discountValue : 0;
-                }
-                if (cgstPercentage == null || billMaster.CGSTPercentage != cgstPercentage || billMaster.BillInsertion == true)
-                {
+                
                     cgstPercentageDecimal = decimal.TryParse(billMaster.CGSTPercentage, out decimal cgstPercentageValue) ? cgstPercentageValue : 0;
-                }
-
-                if (sgstPercentage == null || billMaster.SGSTPercentage != sgstPercentage || billMaster.BillInsertion == true)
-                {
+                
                     sgstPercentageDecimal = decimal.TryParse(billMaster.SGSTPercentage, out decimal sgstPercentageValue) ? sgstPercentageValue : 0;
-                }
+                
             }
 
             // Calculate CGST and SGST amounts
@@ -571,7 +565,7 @@ namespace StellarBillingSystem.Business
 
 
             var billingmaster = await _billingContext.SHbillmaster
-             .Where(x => x.BillID == billID && x.BillDate == billDate && x.CustomerNumber == customerNumber && !x.IsDelete).Select(x => x.NetPrice).FirstOrDefaultAsync();
+             .Where(x => x.BillID == billID && x.BillDate == billDate && x.CustomerNumber == customerNumber && !x.IsDelete).Select(x => x.Totalprice).FirstOrDefaultAsync();
 
             decimal billingMasterNetPrice = decimal.TryParse(billingmaster, out decimal NetPrice) ? NetPrice : totalPrice;
 
