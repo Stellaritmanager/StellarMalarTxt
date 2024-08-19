@@ -2444,12 +2444,22 @@ namespace StellarBillingSystem.Controllers
                 }
 
 
-                var rackProduct = _billingsoftware.SHGodown
-                  .FirstOrDefault(r => r.ProductID == detailModel.ProductID && r.BranchID == model.BranchID);
 
-                if (rackProduct != null)
+                /*var rackProduct = await _billingsoftware.SHGodown
+                  .FirstOrDefaultAsync(r => r.ProductID == detailModel.ProductID && r.BranchID == model.BranchID);
+*/
+
+                var rackProducts = await _billingsoftware.SHGodown
+            .Where(r => r.ProductID == detailModel.ProductID
+                && r.BranchID == model.BranchID)
+             .ToListAsync();
+
+                var validRackProduct = rackProducts
+                    .FirstOrDefault(r => int.TryParse(r.NumberofStocks, out int stock) && stock > 0);
+
+                if (rackProducts != null)
                 {
-                    int currentNoofitems = Convert.ToInt32(rackProduct.NumberofStocks);
+                    int currentNoofitems = Convert.ToInt32(validRackProduct.NumberofStocks);
                     int productQuantity = Convert.ToInt32(model.Quantity);
 
                     if (productQuantity > currentNoofitems)
@@ -2458,7 +2468,7 @@ namespace StellarBillingSystem.Controllers
                         return View("CustomerBilling", model);
                     }
 
-                    rackProduct.NumberofStocks = (currentNoofitems - productQuantity).ToString();
+                    validRackProduct.NumberofStocks = (currentNoofitems - productQuantity).ToString();
 
                     _billingsoftware.SaveChanges();
                 }
