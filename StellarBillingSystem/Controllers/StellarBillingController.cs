@@ -2876,6 +2876,7 @@ namespace StellarBillingSystem.Controllers
             if (buttonType == "Reedem Points")
             {
 
+         
                 var billingPoints = await _billingsoftware.SHBillingPoints
            .Where(bp => bp.CustomerNumber == CustomerNumber && !bp.IsUsed && bp.BillID != BillID)
            .ToListAsync();
@@ -2901,6 +2902,14 @@ namespace StellarBillingSystem.Controllers
                     ViewBag.CGSTPercentage = updatedMaster.CGSTPercentage;
                     ViewBag.SGSTPercentage = updatedMaster.SGSTPercentage;
 
+
+                }
+                else
+                {
+
+                    ViewBag.SaveMessage = "Cannot Reedem Points Please Save a Product";
+
+                    return View("CustomerBilling", model);
 
                 }
 
