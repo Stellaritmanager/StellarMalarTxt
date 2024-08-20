@@ -147,14 +147,13 @@
         </div>
         
         <div class="col-md-12 col-lg-6">
-                            <div class="input-group input-group-merge speech-to-text form-floating form-floating-outline mb-4">
-                                <textarea asp-for="Address" class="form-control" placeholder="Customer Address" aria-describedby="text-to-speech-addon"></textarea>
+                            <div class="form-floating form-floating-outline mb-4">
+                                <textarea asp-for="Address" class="form-control" placeholder="Customer Address"></textarea>
                                 <label asp-for="Address" class="control-label">Customer Address</label>
-                                <span class="input-group-text" id="text-to-speech-addon">
-                                    <i class="mdi mdi-microphone-outline cursor-pointer text-to-speech-toggle"></i>
-                                </span>
+                             
                                 <span asp-validation-for="Address" class="text-danger"></span>
                             </div>
+
                     <div class="mb-4">
                         <label class="control-label">Gender</label>
                         <div class="form-check">
