@@ -2429,30 +2429,31 @@ namespace StellarBillingSystem.Controllers
                 }
 
 
-                var rackProducts = await _billingsoftware.SHGodown
-            .Where(r => r.ProductID == detailModel.ProductID
-                && r.BranchID == model.BranchID)
-             .ToListAsync();
+                var rackProducts = await (from p in _billingsoftware.SHProductMaster
+                                                join g in _billingsoftware.SHGodown on p.ProductID equals g.ProductID
+                                                where p.BarcodeId == model.BarCode && g.BranchID == model.BranchID && g.IsDelete == false
+                                                select g).FirstOrDefaultAsync();
 
-                var validRackProduct = rackProducts
-                    .FirstOrDefault(r => int.TryParse(r.NumberofStocks, out int stock) && stock > 0);
-
+      
+*/
                 if (rackProducts != null)
                 {
-                    int currentNoofitems = Convert.ToInt32(validRackProduct.NumberofStocks);
-                    int productQuantity = Convert.ToInt32(model.Quantity);
-
-                    if (productQuantity > currentNoofitems)
+                    if (int.TryParse(rackProducts.NumberofStocks, out int currentNoofitems))
                     {
-                        ViewBag.Getnotfound = $"You have only {currentNoofitems} items in stock";
-                        return View("CustomerBilling", model);
+                        int productQuantity = Convert.ToInt32(model.Quantity);
+
+
+                        if (productQuantity > currentNoofitems)
+                        {
+                            ViewBag.Getnotfound = $"You have only {currentNoofitems} items in stock";
+                            return View("CustomerBilling", model);
+                        }
+
+                        rackProducts.NumberofStocks = (currentNoofitems - productQuantity).ToString();
+
+                        _billingsoftware.SaveChanges();
                     }
-
-                    validRackProduct.NumberofStocks = (currentNoofitems - productQuantity).ToString();
-
-                    _billingsoftware.SaveChanges();
                 }
-
 
                 var existingbilldetail = await _billingsoftware.SHbilldetails
             .FirstOrDefaultAsync(x => x.BillID == model.BillID && x.BillDate == model.BillDate && x.CustomerNumber == model.CustomerNumber && x.BranchID == model.BranchID && x.ProductID == model.ProductID && x.IsDelete == false);
