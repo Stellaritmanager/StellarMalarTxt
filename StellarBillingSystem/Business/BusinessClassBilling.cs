@@ -264,7 +264,7 @@ namespace StellarBillingSystem.Business
                         join ram in _billingContext.SHrollaccess on rac.RollID equals ram.RollID
                         join sam in _billingContext.SHStaffAdmin on ram.StaffID equals sam.StaffID
                         join s in _billingContext.SHStaffAdmin on sam.StaffID equals s.StaffID
-                        where rac.Authorized == "1" && sam.UserName == userid && sam.BranchID == BranchID
+                        where rac.Authorized == "1" && sam.UserName == userid && sam.BranchID == BranchID && rac.BranchID == BranchID && ram.BranchID == BranchID && sm.BranchID == BranchID
                         select sm.ScreenName;
 
             var result = query.ToList();
