@@ -1,12 +1,11 @@
-USE [StellarBilling]
-GO
+
 /****** Object:  UserDefinedFunction [dbo].[CompareDailySales]    Script Date: 31-07-2024 11:45:49 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
 
-ALTER FUNCTION [dbo].[CompareDailySales] (@BranchID NVARCHAR(50))
+CREATE FUNCTION [dbo].[CompareDailySales] (@BranchID NVARCHAR(50))
 RETURNS NVARCHAR(100)
 AS
 BEGIN
