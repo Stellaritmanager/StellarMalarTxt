@@ -86,10 +86,7 @@
 <form action="@Url.Action("GetReports","Home")" method="post">
 
 
-    <div class="row">
-        <div class="col-md-12 col-lg-12">
-            <div class="card">
-                <div class="card-body dividerblack">
+  
 
     @if (Model != null && Model.Rows.Count > 0)
     {
@@ -100,29 +97,16 @@
             <div class="col-md-12 col-lg-0.5">
             </div>
             <div class="col-md-12 col-lg-12">
+
                 <div class="card">
-                    <div class="card-body dividerblack ">
+                    <div class="card-body ">
+                        <div class="table-responsive">
+                            <center>
+                                                <h3 class="centered text-white" style="font-family:'Lucida Bright';">@ViewBag.Reportname</h3>
 
-
-                        <div class="row">
-                            <div class="col-md-12 col-lg-0.5">
-                            </div>
-                            <div class="col-md-12 col-lg-12">
-                                <div class="card">
-                                    <div class="card-body dividerblack ">
-                                        <div style="align-items:center">
-                                            <div class="container" style="text-align:center">
-
-                                                <h2 class="centered text-white" style="font-family:'Lucida Bright';">@ViewBag.Reportname</h2>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <br />
-                        <table id="dataTable" class="table table-sm" style="font-size: 18px;">
+                            </center>
+                            <br />
+                            <table id="dataTable" class="table table-dark" style="font-size: 18px;">
                             <thead class="card-body dividerblack">
                                 <tr>
                                     @foreach (DataColumn column in Model.Columns)
@@ -158,9 +142,10 @@
                     </div>
                 </div>
             </div>
-        </div>
+                                            </div>
+                                        </div>
 
-
+                      
 
         <script>
             function exportToExcel() {
@@ -200,10 +185,7 @@
     }
 
 
-                </div>
-            </div>
-        </div>
-    </div>
+               
 
 </form>
 
