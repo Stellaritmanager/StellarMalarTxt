@@ -2435,7 +2435,7 @@ namespace StellarBillingSystem.Controllers
                                                 select g).FirstOrDefaultAsync();
 
       
-*/
+
                 if (rackProducts != null)
                 {
                     if (int.TryParse(rackProducts.NumberofStocks, out int currentNoofitems))
