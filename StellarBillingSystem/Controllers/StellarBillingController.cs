@@ -21,6 +21,7 @@ using System.Linq;
 using System.Security.Cryptography;
 using System.Web;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using Microsoft.AspNetCore.Components.Forms;
 
 namespace StellarBillingSystem.Controllers
 {
@@ -2718,13 +2719,17 @@ namespace StellarBillingSystem.Controllers
                     _billingsoftware.SaveChanges();
 
                
-                var billingSummary = await busbill.CalculateBillingDetails(BillID, BillDate, CustomerNumber, currentDiscount, currentCGST, currentSGST, masterModel.BranchID);
+                var (billingSummary, Validate) = await busbill.CalculateBillingDetails(BillID, BillDate, CustomerNumber, currentDiscount, currentCGST, currentSGST, masterModel.BranchID);
 
-
+                if (!string.IsNullOrEmpty(Validate))
+                {
+                    ViewBag.SaveMessage = Validate;
+                    return View("CustomerBilling", model);
+                }
 
                 if (billingSummary != null)
                 {
-
+                  
                     var updateMasterTax = await _billingsoftware.SHbillmaster
                       .FirstOrDefaultAsync(m => m.BillID == model.BillID && m.BranchID == model.BranchID && m.BillDate == model.BillDate && m.CustomerNumber == model.CustomerNumber);
 

@@ -501,7 +501,7 @@ namespace StellarBillingSystem.Business
         }
 
 
-        public async Task<BillingMasterModel> CalculateBillingDetails(string billID, string billDate, string customerNumber, string discount, string cgstPercentage, string sgstPercentage,string BranchID)
+        public async Task<(BillingMasterModel,string Validate)> CalculateBillingDetails(string billID, string billDate, string customerNumber, string discount, string cgstPercentage, string sgstPercentage,string BranchID)
         {
             
             var billingDetails = await _billingContext.SHbilldetails
@@ -514,8 +514,7 @@ namespace StellarBillingSystem.Business
 
             if ((billingDetails == null || !billingDetails.Any()) && billMaster ==null)
             {
-              
-                return null;
+                return (null, "No billing details found.");
             }
 
             
@@ -539,6 +538,9 @@ namespace StellarBillingSystem.Business
                 
             }
 
+
+           
+
             // Calculate CGST and SGST amounts
             decimal cgstAmount = (totalPrice * cgstPercentageDecimal) / 100;
             decimal sgstAmount = (totalPrice * sgstPercentageDecimal) / 100;
@@ -552,18 +554,23 @@ namespace StellarBillingSystem.Business
             // Calculate total after applying CGST and SGST
             decimal totalWithTaxes = billingMasterNetPrice + cgstAmount + sgstAmount;
 
+            if (discountDecimal > totalWithTaxes)
+            {
+                return (null, "Discount cannot be greater than the total price.");
+            }
+
             decimal netPrice = totalWithTaxes - discountDecimal;
 
          
 
-            return new BillingMasterModel
+            return (new BillingMasterModel
             {
                 Totalprice = totalPrice.ToString("F2"),
                 CGSTPercentageAmt = cgstAmount.ToString("F2"),
                 SGSTPercentageAmt = sgstAmount.ToString("F2"),
                 TotalDiscount = discountDecimal.ToString("F2"),
                 NetPrice = netPrice.ToString("F2")
-            };
+            },null);
         }
     }
 
