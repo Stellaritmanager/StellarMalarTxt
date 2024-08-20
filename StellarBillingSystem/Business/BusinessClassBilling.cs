@@ -264,7 +264,7 @@ namespace StellarBillingSystem.Business
                         join ram in _billingContext.SHrollaccess on rac.RollID equals ram.RollID
                         join sam in _billingContext.SHStaffAdmin on ram.StaffID equals sam.StaffID
                         join s in _billingContext.SHStaffAdmin on sam.StaffID equals s.StaffID
-                        where rac.Authorized == "1" && sam.UserName == userid && sam.BranchID == BranchID
+                        where rac.Authorized == "1" && sam.UserName == userid && sam.BranchID == BranchID && rac.BranchID == BranchID && ram.BranchID == BranchID && sm.BranchID == BranchID
                         select sm.ScreenName;
 
             var result = query.ToList();
@@ -286,16 +286,7 @@ namespace StellarBillingSystem.Business
         }
 
 
-        /*public List<String> Getbranchinitial(string userid, string BranchID)
-        {
-            var query = from sm in _billingContext.SHStaffAdmin
-                        join k in _billingContext.SHBranchMaster on sm.BranchID equals k.BracnchID
-                        where sm.UserName == userid && sm.BranchID == BranchID
-                        select k.BranchInitial;
-
-            var result = query.ToList();
-            return result;
-        }*/
+     
 
 
         public List<GenericReportModel> GetReportId()
@@ -390,12 +381,6 @@ namespace StellarBillingSystem.Business
         }
         public byte[] PrintBillDetails(DataTable billDetails,string BranchID)
         {
-            //var template = _billingContext.SHBranchMaster.FirstOrDefault(x => x.BracnchID == BranchID);
-
-            //var result = _billingContext.Database.SqlQueryRaw<dynamic>(
-            //                "select BillTemplate from SHBranchMaster where BracnchID = '"+ BranchID+"'",
-            //                1).ToList();
-
             // Determine the template name based on the BranchID
             string templateName = BranchID == "Lee_Mobile" ? "BillTemplate Branch1.docx" : "BillTemplate Branch2.docx";
 
@@ -428,11 +413,6 @@ namespace StellarBillingSystem.Business
                 document.ReplaceText("<<billno>>", pbillData.Rows[0]["BillID"].ToString());
                 document.ReplaceText("<<paymentno>>", pbillData.Rows[0]["PaymentId"].ToString());
                
-
-                //document.ReplaceText("{Placeholder2}", "Dynamic Value 2");
-
-                // Insert a new paragraph
-                //  document.InsertParagraph("This is a new paragraph added to the document.").FontSize(14).Bold();
 
                 // Add a table
                 var table = document.AddTable(pbillData.Rows.Count + 1, 5);
@@ -550,19 +530,13 @@ namespace StellarBillingSystem.Business
             {
 
                 // Convert percentage and discount from string to decimal onyl if the orginal value has change
-                if (discount == null || billMaster.TotalDiscount != discount || billMaster.BillInsertion == true)
-                {
+                
                     discountDecimal = decimal.TryParse(billMaster.TotalDiscount , out decimal discountValue) ? discountValue : 0;
-                }
-                if (cgstPercentage == null || billMaster.CGSTPercentage != cgstPercentage || billMaster.BillInsertion == true)
-                {
+                
                     cgstPercentageDecimal = decimal.TryParse(billMaster.CGSTPercentage, out decimal cgstPercentageValue) ? cgstPercentageValue : 0;
-                }
-
-                if (sgstPercentage == null || billMaster.SGSTPercentage != sgstPercentage || billMaster.BillInsertion == true)
-                {
+                
                     sgstPercentageDecimal = decimal.TryParse(billMaster.SGSTPercentage, out decimal sgstPercentageValue) ? sgstPercentageValue : 0;
-                }
+                
             }
 
             // Calculate CGST and SGST amounts
@@ -571,7 +545,7 @@ namespace StellarBillingSystem.Business
 
 
             var billingmaster = await _billingContext.SHbillmaster
-             .Where(x => x.BillID == billID && x.BillDate == billDate && x.CustomerNumber == customerNumber && !x.IsDelete).Select(x => x.NetPrice).FirstOrDefaultAsync();
+             .Where(x => x.BillID == billID && x.BillDate == billDate && x.CustomerNumber == customerNumber && !x.IsDelete).Select(x => x.Totalprice).FirstOrDefaultAsync();
 
             decimal billingMasterNetPrice = decimal.TryParse(billingmaster, out decimal NetPrice) ? NetPrice : totalPrice;
 
