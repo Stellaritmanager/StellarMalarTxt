@@ -286,16 +286,7 @@ namespace StellarBillingSystem.Business
         }
 
 
-        /*public List<String> Getbranchinitial(string userid, string BranchID)
-        {
-            var query = from sm in _billingContext.SHStaffAdmin
-                        join k in _billingContext.SHBranchMaster on sm.BranchID equals k.BracnchID
-                        where sm.UserName == userid && sm.BranchID == BranchID
-                        select k.BranchInitial;
-
-            var result = query.ToList();
-            return result;
-        }*/
+     
 
 
         public List<GenericReportModel> GetReportId()
@@ -390,12 +381,6 @@ namespace StellarBillingSystem.Business
         }
         public byte[] PrintBillDetails(DataTable billDetails,string BranchID)
         {
-            //var template = _billingContext.SHBranchMaster.FirstOrDefault(x => x.BracnchID == BranchID);
-
-            //var result = _billingContext.Database.SqlQueryRaw<dynamic>(
-            //                "select BillTemplate from SHBranchMaster where BracnchID = '"+ BranchID+"'",
-            //                1).ToList();
-
             // Determine the template name based on the BranchID
             string templateName = BranchID == "Lee_Mobile" ? "BillTemplate Branch1.docx" : "BillTemplate Branch2.docx";
 
@@ -428,11 +413,6 @@ namespace StellarBillingSystem.Business
                 document.ReplaceText("<<billno>>", pbillData.Rows[0]["BillID"].ToString());
                 document.ReplaceText("<<paymentno>>", pbillData.Rows[0]["PaymentId"].ToString());
                
-
-                //document.ReplaceText("{Placeholder2}", "Dynamic Value 2");
-
-                // Insert a new paragraph
-                //  document.InsertParagraph("This is a new paragraph added to the document.").FontSize(14).Bold();
 
                 // Add a table
                 var table = document.AddTable(pbillData.Rows.Count + 1, 5);

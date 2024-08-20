@@ -173,24 +173,7 @@
                             </div>
                             <div class="col-md-12 col-lg-5">
                           
-                          @*   <div class="form-floating form-floating-outline mb-4">
-                                <input asp-for="SGST" value="@Model.SGST" class="form-control" placeholder="SGST" />
-                                <label asp-for="SGST" class="control-label">SGST</label>
-
-                                <span asp-validation-for="SGST" class="text-danger"></span>
-                            </div>
-                            <div class="form-floating form-floating-outline mb-4">
-                                <input asp-for="CGST" value="@Model.CGST" class="form-control" placeholder="CGST" />
-                                <label asp-for="CGST" class="control-label">CGST</label>
-
-                                <span asp-validation-for="CGST" class="text-danger"></span>
-                            </div>
-                            <div class="form-floating form-floating-outline mb-4">
-                                <input asp-for="OtherTax" value="@Model.OtherTax" class="form-control" placeholder="OtherTax" />
-                                <label asp-for="OtherTax" class="control-label">OtherTax</label>
-
-                                <span asp-validation-for="SGST" class="text-danger"></span>
-                            </div> *@
+                        
                             <div class="form-floating form-floating-outline mb-4">
                                 @{
                                     var discount = ((IEnumerable<DiscountCategoryMasterModel>)ViewData["discountid"])

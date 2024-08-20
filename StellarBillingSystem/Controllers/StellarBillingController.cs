@@ -2721,10 +2721,7 @@ namespace StellarBillingSystem.Controllers
                     }
                     else
                     {
-                      /* masterModel.Totalprice = billingSummary.Totalprice;
-                        masterModel.CGSTPercentageAmt = billingSummary.CGSTPercentageAmt;
-                        masterModel.SGSTPercentageAmt = billingSummary.SGSTPercentageAmt;
-                        masterModel.NetPrice = billingSummary.NetPrice;*/
+                    
                         masterModel.Billby = User.Claims.First().Value.ToString();
                         masterModel.Lastupdateduser = User.Claims.First().Value.ToString();
                         masterModel.Lastupdatedmachine = Request.HttpContext.Connection.RemoteIpAddress.ToString();
@@ -2738,8 +2735,7 @@ namespace StellarBillingSystem.Controllers
 
                     _billingsoftware.SaveChanges();
 
-                // var billingSummary = await busbill.CalculateBillingDetails(BillID, BillDate, CustomerNumber, model.TotalDiscount, model.CGSTPercentage, model.SGSTPercentage, masterModel.BranchID);
-
+               
                 var billingSummary = await busbill.CalculateBillingDetails(BillID, BillDate, CustomerNumber, currentDiscount, currentCGST, currentSGST, masterModel.BranchID);
 
 

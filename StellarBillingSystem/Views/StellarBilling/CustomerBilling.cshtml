@@ -213,21 +213,7 @@
 
 
                                                     }
-                                                    @*  @foreach (var product in Model.Viewbillproductlist)
-                                                {
-                                                <tr>
-
-                                                <td>@product.ProductID</td>
-                                                <td>@product.ProductName</td>
-                                                <td>@product.Price</td>
-                                                <td>@product.Quantity</td>
-                                                <td>@product.Discount</td>
-                                                <td>@product.NetPrice</td>
-                                                <td>
-                                                <a href="@Url.Action("DeleteProduct", new { productId = product.ProductID, billID = Model.BillID, billDate = Model.BillDate, customerNumber = Model.CustomerNumber })" class="btn btn-primary">Delete Product</a>
-                                                </td>
-                                                </tr>
-                                                } *@
+                                                   
                                                 </tbody>
                                             </table>
 
@@ -295,23 +281,7 @@
                     </div>
                 </div>
 
-                @*  <div class="col-md-12 col-lg-6">
-                <div class="form-floating form-floating-outline mb-4">
-                <input type="CGSTPercentageAmt" class="form-control" name="CGSTPercentageAmt" placeholder="CGSTPercentageAmt" value="@ViewBag.CGSTPercentageAmt" />
-                <label asp-for="CGSTPercentageAmt" class="control-label">Net Price</label>
-                </div>
-                </div> *@
-                @*   </div>
-                <div class="row">
-
-
-                </div> *@
-                @* <div class="col-md-12 col-lg-6">
-                <div class="form-floating form-floating-outline mb-4">
-                <input type="SGSTPercentageAmt" class="form-control" name="SGSTPercentageAmt" placeholder="SGSTPercentageAmt" value="@ViewBag.SGSTPercentageAmt" />
-                <label asp-for="SGSTPercentageAmt" class="control-label">Net Price</label>
-                </div>
-                </div> *@
+              
                             <div class="row">
                               
                                 <div class="col-md-12 col-lg-4">
