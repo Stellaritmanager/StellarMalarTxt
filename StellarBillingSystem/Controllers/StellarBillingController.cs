@@ -2431,11 +2431,10 @@ namespace StellarBillingSystem.Controllers
 
                 var rackProducts = await (from p in _billingsoftware.SHProductMaster
                                                 join g in _billingsoftware.SHGodown on p.ProductID equals g.ProductID
-                                                where p.BarcodeId == model.BarCode && g.BranchID == model.BranchID && g.IsDelete == false
+                                                where (p.ProductID == model.ProductID || p.BarcodeId == model.BarCode) && g.BranchID == model.BranchID && g.IsDelete == false
                                                 select g).FirstOrDefaultAsync();
 
       
-*/
                 if (rackProducts != null)
                 {
                     if (int.TryParse(rackProducts.NumberofStocks, out int currentNoofitems))
