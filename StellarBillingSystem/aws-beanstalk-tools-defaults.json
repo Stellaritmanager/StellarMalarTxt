@@ -1,11 +1,11 @@
 
 {
-    "region" : "us-east-1",
+    "region" : "ap-south-1",
     "configuration" : "Debug",
     "framework"     : "net8.0",
     "self-contained" : true,
-    "application"    : "StellarBillingSystem",
-    "environment"    : "StellarBillingSystem-env",
+    "application"    : "LeeStoreIndia",
+    "environment"    : "LeeStoreIndia-Prod",
     "enable-xray"    : false,
     "enhanced-health-type" : "basic",
     "additional-options"   : "",

@@ -1,5 +1,4 @@
-USE [StellarBilling]
-GO
+
 /****** Object:  UserDefinedFunction [dbo].[GetDailySales]    Script Date: 31-07-2024 11:48:00 ******/
 SET ANSI_NULLS ON
 GO
