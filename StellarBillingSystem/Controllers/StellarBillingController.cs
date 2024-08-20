@@ -2331,41 +2331,23 @@ namespace StellarBillingSystem.Controllers
             //Code for print the Bill 
             if (buttonType == "Download Bill")
             {
+                var checkbillavailable = _billingsoftware.SHbillmaster.FirstOrDefault(x => x.BillID == model.BillID && x.BillDate == model.BillDate && x.CustomerNumber == model.CustomerNumber && x.BranchID == model.BranchID && x.IsDelete == false);
+                    
+                if(checkbillavailable==null)
+                {
+                    ViewBag.Getnotfound = "BillID Not Found";
+
+                    return View("CustomerBilling", model);
+                }
+
                 String Query = "Select SD.BillID,Convert(varchar(10),SD.BillDate,101) as BillDate,SD.ProductID,Sp.ProductName, SD.Price,SD.Quantity, CM.CustomerName, SD.CustomerNumber,\r\nSD.TotalDiscount as DetailDiscount,SD.Totalprice as DetailTotalprice,SB.CGSTPercentage,SB.SGSTPercentage,SB.TotalDiscount, SB.NetPrice as MasterTotalprice  from SHbilldetails SD inner join SHbillmaster SB \r\non SD.BillID= SB.BillID\r\ninner join SHProductMaster SP\r\non SD.ProductID = sp.ProductID\r\nleft join  SHCustomerMaster CM\r\non SD.CustomerNumber = CM.MobileNumber\r\n where sd.IsDelete=0 AND sd.BillID ='" + BillID + "' AND sd.BillDate ='"+BillDate+ "'AND sd.CustomerNumber ='"+CustomerNumber+ "' AND sd.BranchID ='" + model.BranchID + "'  AND sp.BranchID ='" + model.BranchID + "'  AND sb.BranchID ='" + model.BranchID + "'  ";
                  
                 var Table = BusinessClassCommon.DataTable(_billingsoftware, Query);
 
-                //Check BranchID for Template
-
-
-
-
-
-                /*  var templateName = await _billingsoftware.SHBranchMaster
-                                                  .Where(b => b.BracnchID == model.BranchID)
-                                                  .FirstOrDefaultAsync();
-
-
-              if (string.IsNullOrEmpty(templateName.BillTemplate))
-                  {
-                      // Handle case where templateName is not found
-                      return NotFound("Template not found for the specified BranchID.");
-                  }
-*/
-
-
-
+             
                   return File(Busbill.PrintBillDetails(Table, model.BranchID), "application/vnd.openxmlformats-officedocument.wordprocessingml.document", "Bill_" + TempData["BillID"] + ".docx");
 
-               // byte[] wordFileContent = GetWordFileContent(); // Your method to get the byte array of the Word document
-
-                // Convert Word to PDF
-               // byte[] pdfContent = BusinessClassCommon.ConvertWordToPdf(Busbill.PrintBillDetails(Table, model.BranchID));
-
-                // Return PDF to be rendered in browser
-                //return File(pdfContent, "application/pdf");
-
-              //  return File(Busbill.PrintBillDetails(Table, model.BranchID), "application/pdf");
+              
 
             }
 
