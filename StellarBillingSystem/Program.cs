@@ -15,17 +15,12 @@ builder.Services.AddSession();
 
 builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
-/*string encryptedConnectionString = builder.Configuration.GetConnectionString("BillingDBConnection");
-string decryptedConnectionString = EncryptionHelper.Decrypt(encryptedConnectionString);
 
-builder.Services.AddDbContext<BillingContext>(options =>
-    options.UseSqlServer(decryptedConnectionString));*/
 
 
 builder.Services.AddDbContext<BillingContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("BillingDBConnection")));
 
-//builder.Services.AddDbContext<BillingContext>(options =>
-//    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
