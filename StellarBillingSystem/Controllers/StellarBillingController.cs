@@ -217,9 +217,16 @@ namespace StellarBillingSystem.Controllers
                 {
                     //get rack noofitems
                     var noofitemrack = await _billingsoftware.SHRackPartionProduct.Where(x => x.ProductID == model.ProductID && x.BranchID == model.BranchID).Select(x => x.Noofitems).FirstOrDefaultAsync();
-                    
+
                     //get godown noofstock
-                    var noofstock = await _billingsoftware.SHGodown.Where(x => x.ProductID == model.ProductID && x.BranchID == model.BranchID).Select(x => x.NumberofStocks).FirstOrDefaultAsync();
+                    var noofstock = await (
+                                   from godown in _billingsoftware.SHGodown
+                                   join product in _billingsoftware.SHProductMaster
+                                   on godown.ProductID equals product.ProductID
+                                   where (product.BarcodeId == model.BarcodeId || product.ProductID == model.ProductID) && godown.BranchID == model.BranchID && !product.IsDelete && !godown.IsDelete
+                                   select godown.NumberofStocks
+                                      ).FirstOrDefaultAsync();
+
 
                     ViewBag.GodownNoofitems = noofstock;
                     ViewBag.RackNoofitems = noofitemrack;
