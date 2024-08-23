@@ -2611,7 +2611,7 @@ namespace StellarBillingSystem.Controllers
                         return View("CustomerBilling", model);
                     }
 
-                    billMaster.IsDelete = true;
+                    _billingsoftware.SHbillmaster.Remove(billMaster);
 
                     _billingsoftware.SaveChanges();
                 
@@ -2619,10 +2619,10 @@ namespace StellarBillingSystem.Controllers
                    
                     foreach (var detail in billDetails)
                     {
-                        
-                        detail.IsDelete = true;
 
-                        
+
+                        _billingsoftware.SHbilldetails.Remove(detail);
+
                         int productQuantity = Convert.ToInt32(detail.Quantity);
                         detail.Quantity = "0";
 
