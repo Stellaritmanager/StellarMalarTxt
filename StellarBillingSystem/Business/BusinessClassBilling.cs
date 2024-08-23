@@ -246,7 +246,7 @@ namespace StellarBillingSystem.Business
                         from product in _billingContext.SHProductMaster
                         join rack in _billingContext.SHGodown
                         on product.ProductID equals rack.ProductID
-                        where product.BranchID == BranchID && rack.BranchID == BranchID
+                        where product.BranchID == BranchID && rack.BranchID == BranchID && rack.IsDelete == false && product.IsDelete == false
                         select new { product, rack })
                   .AsEnumerable()
                   .Where(pr => int.Parse(pr.rack.NumberofStocks) > 0)
