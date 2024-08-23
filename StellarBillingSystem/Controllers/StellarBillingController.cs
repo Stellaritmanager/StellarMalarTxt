@@ -2407,7 +2407,7 @@ namespace StellarBillingSystem.Controllers
                                   && x.BranchID == model.BranchID
                                   && x.IsDelete == false);
 
-                if (existingProductInBillDetails != null)
+                if (existingProductInBillDetails != null )
                 {
                     // ProductID already exists in billdetails
                     ViewBag.Getnotfound = "You cannot Add the same product";
