@@ -209,7 +209,7 @@
                                                             <td>@Model.Viewbillproductlist[i].Discount</td>
                                                             <td>@Model.Viewbillproductlist[i].NetPrice</td>
                                                             <td>
-                                                                <a href="@Url.Action("DeleteProduct", new { productId = @Model.Viewbillproductlist[i].ProductID, billID = @Model.Viewbillproductlist[i].BillID, billDate = @Model.Viewbillproductlist[i].BillDate, customerNumber = @Model.Viewbillproductlist[i].CustomerNumber })" class="btn btn-primary">Delete Product</a>
+                                                                <a href="@Url.Action("DeleteProduct", new { productId = @Model.Viewbillproductlist[i].ProductID, billID = @Model.BillID, billDate = @Model.BillDate, customerNumber = @Model.CustomerNumber })" class="btn btn-primary">Delete Product</a>
                                                             </td>
                                                         </tr>
 

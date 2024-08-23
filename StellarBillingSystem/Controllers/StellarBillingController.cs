@@ -2960,13 +2960,14 @@ namespace StellarBillingSystem.Controllers
 
                 // Update SHRackPartionProduct to add back the quantity
                 var rackProduct = _billingsoftware.SHGodown
-                    .FirstOrDefault(r => r.ProductID == productId && r.BranchID == product.BranchID);
+                    .FirstOrDefault(r => r.ProductID == productId && r.BranchID == product.BranchID && r.IsDelete == false);
 
                 if (rackProduct != null)
                 {
                     int currentNoofitems = Convert.ToInt32(rackProduct.NumberofStocks);
                     int productQuantity = Convert.ToInt32(product.Quantity);
                     rackProduct.NumberofStocks = (currentNoofitems + productQuantity).ToString();
+                    _billingsoftware.Entry(rackProduct).State = EntityState.Modified;
                 }
 
                 _billingsoftware.SaveChanges();
