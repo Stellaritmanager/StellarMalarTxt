@@ -2602,6 +2602,16 @@ namespace StellarBillingSystem.Controllers
 
             if (buttonType == "Delete Bill")
             {
+
+                var checkbillpay = _billingsoftware.SHPaymentMaster.FirstOrDefault(x=>x.BillId == model.BillID && x.BillDate == model.BillDate && x.BranchID == model.BranchID);
+
+                if(checkbillpay !=null)
+                {
+                    ViewBag.DelMessage = "You Have Payment For This BillID. Please Delete Payment First";
+                    return View("CustomerBilling", model);
+
+                }
+
                 var billMaster = _billingsoftware.SHbillmaster.FirstOrDefault(b => b.BillID == model.BillID && !b.IsDelete && b.BillDate == model.BillDate && model.BranchID == model.BranchID);
                 if (billMaster != null)
                 {
