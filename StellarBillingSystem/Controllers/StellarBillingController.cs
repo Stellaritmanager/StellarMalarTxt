@@ -3334,13 +3334,20 @@ namespace StellarBillingSystem.Controllers
             {
                 //Delete Details from DB
                 //Delete from database
-
+           
                 var Dbdelete = _billingsoftware.SHPaymentMaster.SingleOrDefault(x => x.BillId == model.BillId  && x.BranchID == model.BranchID && x.BillDate == model.BillDate);
 
                 if (Dbdelete != null)
                 {
 
                     var selectedDBpayment = _billingsoftware.SHPaymentDetails.Where(x => x.PaymentId == model.PaymentId && x.BranchID == model.BranchID).ToList();
+
+                    if (selectedDBpayment.Count==0)
+                    {
+                        ViewBag.Message = "Please enter Payment ID";
+                        return View("PaymentBilling", model);
+                    }
+
                     foreach (var item in selectedDBpayment)
                     {
                         _billingsoftware.SHPaymentDetails.Remove(item);
