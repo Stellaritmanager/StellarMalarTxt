@@ -28,7 +28,7 @@ namespace StellarBillingSystem.Business
         {
             var categoryid = (
                     from pr in _billingContext.SHCategoryMaster
-                    where pr.BranchID == BranchID
+                    where pr.BranchID == BranchID && pr.IsDelete == false
                     select new CategoryMasterModel
                     {
                         CategoryID = pr.CategoryID,
@@ -43,7 +43,7 @@ namespace StellarBillingSystem.Business
         {
             var pointreedemcustomerid = (
                 from pr in _billingContext.SHCustomerMaster
-                select new CustomerMasterModel
+                select new CustomerMasterModel 
                 {
                     CustomerID = pr.CustomerID,
                     CustomerName = pr.CustomerName,
@@ -56,7 +56,7 @@ namespace StellarBillingSystem.Business
         {
             var discountcategoryid = (
                 from pr in _billingContext.SHCategoryMaster
-                where pr.BranchID == BranchID
+                where pr.BranchID == BranchID && pr.IsDelete == false
                 select new CategoryMasterModel
                 {
                     CategoryID = pr.CategoryID,
@@ -74,7 +74,7 @@ namespace StellarBillingSystem.Business
         {
             var godownproductid = (
                 from pr in _billingContext.SHProductMaster
-                where pr.BranchID == BranchID
+                where pr.BranchID == BranchID && pr.IsDelete == false
                 select new ProductMatserModel
                 {
                     ProductID = pr.ProductID,
@@ -120,7 +120,7 @@ namespace StellarBillingSystem.Business
         {
             var rollid = (
                     from pr in _billingContext.SHrollType
-                    where pr.BranchID == BranchID
+                    where pr.BranchID == BranchID && pr.IsDelete == false
                     select new RollTypeMaster
                     {
                         RollID = pr.RollID,
@@ -149,7 +149,7 @@ namespace StellarBillingSystem.Business
         {
             var staffid = (
                     from pr in _billingContext.SHStaffAdmin
-                    where pr.BranchID == BranchID
+                    where pr.BranchID == BranchID && pr.IsDelete == false
                     select new StaffAdminModel
                     {
                         StaffID = pr.StaffID,
@@ -165,7 +165,7 @@ namespace StellarBillingSystem.Business
         {
             var screenid = (
                         from pr in _billingContext.SHScreenMaster
-                        where pr.BranchID == BranchID
+                        where pr.BranchID == BranchID && pr.IsDelete == false
                         select new ScreenMasterModel
                         {
                             ScreenId = pr.ScreenId,
@@ -181,7 +181,7 @@ namespace StellarBillingSystem.Business
         {
             var discountid = (
                         from pr in _billingContext.SHDiscountCategory
-                        where pr.BranchID == BranchID
+                        where pr.BranchID == BranchID && pr.IsDelete == false
                         select new DiscountCategoryMasterModel
                         {
                             CategoryID = pr.CategoryID,
