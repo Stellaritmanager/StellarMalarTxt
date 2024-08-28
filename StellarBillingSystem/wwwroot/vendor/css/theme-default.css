@@ -589,7 +589,7 @@ a:hover {
 
 .bg-navbar-theme {
   background-color: #fff !important;
-  color: #697a8d;
+  color: #fff;
 }
 .bg-navbar-theme .navbar-brand,
 .bg-navbar-theme .navbar-brand a {
