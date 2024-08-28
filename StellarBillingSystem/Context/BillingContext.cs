@@ -123,7 +123,7 @@ namespace StellarBillingSystem.Context
 
             modelBuilder.Entity<BilingSysytemModel>().HasKey(i => new { i.BillID,i.BranchID });
 
-            modelBuilder.Entity<GodownModel>().HasKey(i => new { i.ProductID,i.DatefofPurchase,i.SupplierInformation,i.BranchID});
+            modelBuilder.Entity<GodownModel>().HasKey(i => new { i.ProductID,i.BranchID});
 
             modelBuilder.Entity<NetDiscountMasterModel>().HasKey(i => new { i.NetID, i.BranchID });
 

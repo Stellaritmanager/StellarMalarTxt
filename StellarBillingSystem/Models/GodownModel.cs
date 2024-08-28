@@ -22,8 +22,8 @@ public class GodownModel
     public string? LastUpdatedDate { get => strLastUpdatedDate; set => strLastUpdatedDate = value; }
     public string? LastUpdatedUser { get => strLastUpdatedUser; set => strLastUpdatedUser = value; }
     public string? LastUpdatedmachine { get => strLastUpdatedmachine; set => strLastUpdatedmachine = value; }
-    public string DatefofPurchase { get => strDatefofPurchase; set => strDatefofPurchase = value; }
-    public string SupplierInformation { get => strSupplierInformation; set => strSupplierInformation = value; }
+    public string? DatefofPurchase { get => strDatefofPurchase; set => strDatefofPurchase = value; }
+    public string? SupplierInformation { get => strSupplierInformation; set => strSupplierInformation = value; }
     public bool IsDelete { get => strIsDelete; set => strIsDelete = value; }
-    public string BranchID { get => branchID; set => branchID = value; }
+    public string? BranchID { get => branchID; set => branchID = value; }
 }
