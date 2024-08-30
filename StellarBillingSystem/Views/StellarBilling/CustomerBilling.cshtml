@@ -73,6 +73,7 @@
 
                             </div>
                             <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalCenter">+</button>
+                            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#customerModal">+C</button>
                         </div>
 
                         <div class="col-md-12 col-lg-3">
@@ -93,7 +94,7 @@
                             </div>
                         </div>
                         <div class="col-md-12 col-lg-3">
-                            <button type="submit" style="width:180px" value="Get" name="buttonType" class="btn btn-primary">Get</button>
+                            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#getcustomerpop">Get</button>
                         </div>
                     </div>
                     <br />
@@ -369,6 +370,7 @@
 </form>
 
 
+<!-- Product Modal -->
 
 <div class="modal fade" id="modalCenter" tabindex="-1" aria-labelledby="modalCenterTitle" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
@@ -383,11 +385,11 @@
                  
                     <div class="form-control black-text-input">
 
-
+                        <label asp-for="ProductID" class="control-label">Product ID</label>
 
                         <input type="text" class="form-control" id="ProductID" name="ProductID" />
 
-                        <label asp-for="ProductID" class="control-label">Product ID</label>
+                       
 
                         <span asp-validation-for="ProductID" class="alert-danger">Product ID</span>
 
@@ -434,6 +436,100 @@
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                 <button type="button" class="btn btn-primary" id="saveButton">Save</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+<!-- Get Customer Details Modal -->
+<div class="modal fade" id="getCustomerDetailsModal" tabindex="-1" role="dialog" aria-labelledby="getCustomerDetailsModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="getCustomerDetailsModalLabel">Get Customer Product Details</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+
+                </button>
+            </div>
+            <form id="modalSearchFormbill" asp-controller="StellarBilling" asp-action="getcustomerpop" method="post">
+
+            <div class="modal-body">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Select</th>
+                            <th>Bill ID</th>
+                            <th>Bill Date</th>
+                            <th>Product Name</th>
+                           
+
+                        </tr>
+                    </thead>
+                    <tbody id="productTableBody">
+                        <!-- Data will be populated here -->
+                    </tbody>
+                </table>
+            </div>
+            </form>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="loadSelectedProduct">Load Selected Product</button>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+
+<!-- Customer Details Modal -->
+<div class="modal fade" id="customerModal" tabindex="-1" role="dialog" aria-labelledby="customerModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="customerModalLabel">Enter Customer Details</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    
+                </button>
+            </div>
+            <div class="modal-body">
+
+
+                <form id="modalSearchFormcus" asp-controller="StellarBilling" asp-action="AddCustomerPop" method="post">
+              
+                    <div class="form-control black-text-input">
+
+
+                        <label asp-for="CustomerNumber" class="control-label">Mobile Number</label>
+                        <input type="text" class="form-control" id="MobileNumber" name="MobileNumber" />
+
+                        
+
+                    </div>
+
+                    <div class="form-control black-text-input">
+                        <label for="searchInput">Customer Name </label>
+                        <input type="text" class="form-control" id="CustomerName" name="CustomerName" />
+                    </div>
+
+
+                    <div class="form-control black-text-input">
+                        <label for="searchInput">Customer Address </label>
+                        <input type="text" class="form-control" id="Address" name="Address" />
+                    </div>
+
+                </form>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary" id="saveCustomer">Save Customer</button>
+                    </div>
+                
             </div>
         </div>
     </div>
@@ -492,7 +588,8 @@
 </script>
 
 
-<!-- Add Bootstrap JavaScript and jQuery -->
+<!-- Add Bootstrap JavaScript and jQuery  -->
+
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/5.1.3/js/bootstrap.bundle.min.js"></script>
 
@@ -518,7 +615,17 @@
                     alert('Error occurred during the search.');
                 }
             });
-        }); 
+        });
+
+
+        // Clear input fields when the modal is about to be shown
+        $('#modalCenter').on('show.bs.modal', function () {
+            $('#ProductID').val('');
+            $('#ProductName').val('');
+            $('#BarcodeId').val('');
+            $('#Price').val('');
+            $('#NumberofStock').val('');
+        });
 
         // Handle the Save button click in the modal
         $('#saveButton').on('click', function () {
@@ -552,3 +659,141 @@
     });
 </script>
 
+
+
+<!-- Add Javascript for Customer Master Pop -->
+
+<script>
+
+
+    $(document).ready(function () {
+        // Handle the form submission in the modal for Customer search
+        $('#modalSearchFormcus').on('submit', function (e) {
+            e.preventDefault();
+            var productID = $('#ProductID').val();
+            var barcodeID = $('#BarcodeId').val();
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Action("PopupView", "StellarBilling")',
+                data: {
+                    CustomerNumber: customernumber,
+                },
+                success: function (result) {
+                    $('#modalResults').html(result);
+                },
+                error: function (error) {
+                    console.log(error);
+                    alert('Error occurred during the search.');
+                }
+            });
+        });
+
+
+        // Clear input fields when the modal is about to be shown
+        $('#customerModal').on('show.bs.modal', function () {
+            $('#MobileNumber').val('');
+            $('#CustomerName').val('');
+            $('#Address').val('');
+        });
+
+        // Handle the Save customer button click in the modal
+        $('#saveCustomer').on('click', function () {
+            var customernumber = $('#MobileNumber').val();
+            var customername = $('#CustomerName').val();
+            var Address = $('#Address').val();
+           
+
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Action("AddCustomerPop", "StellarBilling")',
+                data: {
+                    MobileNumber: customernumber,
+                    CustomerName: customername,
+                    Address: Address,
+                   
+
+                },
+                success: function (result) {
+                    $('#customerModal').modal('hide');
+                    // Optionally, reload or update content
+                },
+                error: function (error) {
+                    console.log(error);
+                    alert('Error occurred during saving.');
+                }
+            });
+        });
+    });
+
+</script>
+
+
+<!-- Add Javascript for Get customer bill Data -->
+
+<script>
+
+
+    $(document).ready(function () {
+        // Handle the form submission in the modal for Customer search
+        $('#modalSearchFormbill').on('submit', function (e) {
+            e.preventDefault();
+            var productID = $('#ProductID').val();
+            var barcodeID = $('#BarcodeId').val();
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Action("PopupView", "StellarBilling")',
+                data: {
+                    CustomerNumber: customernumber,
+                },
+                success: function (result) {
+                    $('#modalResults').html(result);
+                },
+                error: function (error) {
+                    console.log(error);
+                    alert('Error occurred during the search.');
+                }
+            });
+        });
+
+
+
+    document.getElementById('getCustomerDetails').addEventListener('click', function () {
+        var billID = document.querySelector('input[name="BillID"]').value;
+        var billDate = document.querySelector('input[name="BillDate"]').value;
+        var customerNumber = document.querySelector('input[name="CustomerNumber"]').value;
+
+        $.ajax({
+            url: '@Url.Action("getcustomerpop", "YourControllerName")',
+            type: 'POST',
+            data: {
+                BillID: billID,
+                BillDate: billDate,
+                CustomerNumber: customerNumber
+            },
+            success: function (response) {
+                var tbody = $('#productTableBody');
+                tbody.empty(); // Clear existing data
+
+                response.forEach(function (item) {
+                    tbody.append(
+                        '<tr>' +
+                        '<td><input type="radio" name="selectedProduct" value="' + item.ProductID + '"></td>' +
+                        '<td>' + item.BillID + '</td>' +
+                        '<td>' + item.BillDate + '</td>' +
+                        '<td>' + item.ProductName + '</td>' +
+                        '</tr>'
+                    );
+                });
+            }
+        });
+    });
+
+    document.getElementById('loadSelectedProduct').addEventListener('click', function () {
+        var selectedProductID = $('input[name="selectedProduct"]:checked').val();
+        if (selectedProductID) {
+            window.location.href = '@Url.Action("CustomerBilling", "YourControllerName")?productID=' + selectedProductID;
+        } else {
+            alert('Please select a product.');
+        }
+    });
+</script>

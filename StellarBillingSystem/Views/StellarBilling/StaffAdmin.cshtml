@@ -60,7 +60,7 @@
                 <div class="card-body dividerblack ">
                     <div style="align-items:center">
                         <div class="container" style="text-align:center">
-                            <h2 class="centered text-white" style="font-family:'Lucida Bright'">StaffAdmin</h2>
+                            <h2 class="centered text-white" style="font-family:'Lucida Bright'">Staff Admin</h2>
                         </div>
                     </div>
                 </div>
@@ -143,7 +143,7 @@
                             </div>
 
                             <div class="form-floating form-floating-outline mb-4">
-                                <input asp-for="FirstName" value="@Model.FirstName" class="form-control" placeholder="First Name" pattern="^[A-Za-z\s]+$" title="staff Name should contain only letters and spaces" />
+                                <input asp-for="FirstName" value="@Model.FirstName" class="form-control" placeholder="First Name" pattern="^[A-Za-z\s]+$" title="First Name should contain only letters and spaces" />
                                 <label asp-for="FirstName" class="control-label">First Name</label>
                                 <span asp-validation-for="FirstName" class="text-danger"></span>
                             </div>
@@ -151,7 +151,7 @@
 
                             <div class="form-floating form-floating-outline mb-4">
 
-                                <input asp-for="LastName" value="@Model.LastName" class="form-control" placeholder="Last Name" pattern="^[A-Za-z\s]+$" title="staff Name should contain only letters and spaces" />
+                                <input asp-for="LastName" value="@Model.LastName" class="form-control" placeholder="Last Name" pattern="^[A-Za-z\s]+$" title="Last Name should contain only letters and spaces" />
                                 <label asp-for="LastName" class="control-label">Last Name</label>
                                 <span asp-validation-for="LastName" class="text-danger"></span>
                             </div>
@@ -159,26 +159,26 @@
 
                             <div class="form-floating form-floating-outline mb-4">
 
-                                <input asp-for="FullName" value="@Model.FullName" class="form-control" placeholder="Full Name" pattern="^[A-Za-z\s]+$" title="straff Name should contain only letters and spaces" />
+                                <input asp-for="FullName" value="@Model.FullName" class="form-control" placeholder="Full Name" pattern="^[A-Za-z\s]+$" title="Full Name should contain only letters and spaces" />
                                 <label asp-for="FullName" class="control-label">Full Name</label>
                                 <span asp-validation-for="FullName" class="text-danger"></span>
                             </div>
 
                             <div class="form-floating form-floating-outline mb-4">
 
-                                <input asp-for="Initial" value="@Model.Initial" class="form-control" placeholder="Initial" />
+                                <input asp-for="Initial" value="@Model.Initial" class="form-control" placeholder="Initial" pattern="^[A-Za-z\s.]+$" title="Initial should contain only letters,spaces and dots" />
                                 <label asp-for="Initial" class="control-label">Initial</label>
                                 <span asp-validation-for="Initial" class="text-danger"></span>
                             </div>
                             <div class="form-floating form-floating-outline mb-4">
 
-                                <input asp-for="Prefix" value="@Model.Prefix" class="form-control" placeholder="Prefix" />
+                                <input asp-for="Prefix" value="@Model.Prefix" class="form-control" placeholder="Prefix" pattern="^[A-Za-z\s]+$" title="Prefix should contain only letters and spaces" />
                                 <label asp-for="Prefix" class="control-label">Prefix</label>
                                 <span asp-validation-for="Prefix" class="text-danger"></span>
                             </div>
 
                             <div class="form-floating form-floating-outline mb-4">
-                                <input asp-for="PhoneNumber" value="@Model.PhoneNumber" class="form-control" placeholder="Phone Number" pattern="^\d{10}$" title="Mobile Number should be exactly 10 digits" />
+                                <input asp-for="PhoneNumber" value="@Model.PhoneNumber" class="form-control" placeholder="Phone Number" pattern="^\d{10}$" title="Phone Number should be exactly 10 digits" />
                                 <label asp-for="PhoneNumber" class="control-label">Phone Number</label>
                                 <span asp-validation-for="PhoneNumber" class="text-danger"></span>
                             </div>
@@ -195,7 +195,7 @@
 
                             <div class="form-floating form-floating-outline mb-4">
 
-                                <input asp-for="Age" value="@Model.Age" class="form-control" placeholder="Age" />
+                                <input asp-for="Age" value="@Model.Age" type="number" class="form-control" placeholder="Age" />
                                 <label asp-for="Age" class="control-label">Age</label>
                                 <span asp-validation-for="Age" class="text-danger"></span>
                             </div>
@@ -217,8 +217,8 @@
                                 <span asp-validation-for="Gender" class="text-danger"></span>
                             </div>
                             <div class="form-floating form-floating-outline mb-4">
-                                <textarea asp-for="Address1" value="@Model.Address1" class="form-control" placeholder="Address1" aria-describedby="text-to-speech-addon"></textarea>
-                                <label asp-for="Address1" class="control-label">Address1</label>
+                                <textarea asp-for="Address1" value="@Model.Address1" class="form-control" placeholder="Address" aria-describedby="text-to-speech-addon"></textarea>
+                                <label asp-for="Address1" class="control-label">Address</label>
                                 <span asp-validation-for="Address1" class="text-danger"></span>
                             </div>
                           
@@ -235,16 +235,16 @@
                                 <span asp-validation-for="State" class="text-danger"></span>
                             </div>
                             <div class="form-floating form-floating-outline mb-4">
-                                <input asp-for="Pin" value="@Model.Pin" class="form-control" placeholder="Pin" pattern="^\d{6}$" title="Pincode Number should be in correct format" />
-                                <label asp-for="Pin" class="control-label">Pin</label>
+                                <input asp-for="Pin" value="@Model.Pin" class="form-control" placeholder="Pincode" pattern="^\d{6}$" title="Pincode Number should be in correct format" />
+                                <label asp-for="Pin" class="control-label">Pincode</label>
                                 <span asp-validation-for="Pin" class="text-danger"></span>
                             </div>
-                        </div>
+                        </div> 
 
                         <div class="col-md-12 col-lg-4">
                             <div class="form-floating form-floating-outline mb-4">
-                                <input asp-for="EmailId" value="@Model.EmailId" class="form-control" placeholder="EmailId" />
-                                <label asp-for="EmailId" class="control-label">EmailId</label>
+                                <input asp-for="EmailId" value="@Model.EmailId" type="email" class="form-control" placeholder="Email" />
+                                <label asp-for="EmailId" class="control-label">Email</label>
                                 <span asp-validation-for="EmailId" class="text-danger"></span>
                             </div>
                            
@@ -265,13 +265,13 @@
                             </div>
 
                             <div class="form-floating form-floating-outline mb-4">
-                                <input asp-for="IdProofId" value="@Model.IdProofId" class="form-control" placeholder="IdProofId" />
-                                <label asp-for="IdProofId" class="control-label">IdProofId</label>
+                                <input asp-for="IdProofId" value="@Model.IdProofId" class="form-control" placeholder="IdProof ID" />
+                                <label asp-for="IdProofId" class="control-label">IdProof ID</label>
                                 <span asp-validation-for="IdProofId" class="text-danger"></span>
                             </div>
                             <div class="form-floating form-floating-outline mb-4">
-                                <input asp-for="IdProofName" value="@Model.IdProofName" class="form-control" placeholder="IdProofName" pattern="^[A-Za-z\s]+$" title="Staff Name should contain only letters and spaces" />
-                                <label asp-for="IdProofName" class="control-label">IdProofName</label>
+                                <input asp-for="IdProofName" value="@Model.IdProofName" class="form-control" placeholder="IdProof Name" pattern="^[A-Za-z\s.]+$" title="Staff Name should contain only letters,spaces and dots" />
+                                <label asp-for="IdProofName" class="control-label">IdProof Name</label>
                                 <span asp-validation-for="IdProofName" class="text-danger"></span>
                             </div>
 

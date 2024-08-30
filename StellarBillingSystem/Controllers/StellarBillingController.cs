@@ -3828,11 +3828,7 @@ namespace StellarBillingSystem.Controllers
         }
 
 
-      /*  public IActionResult PopupViewProduct()
-        {
-            return PartialView();
-        }*/
-
+      
         //ADD PRODUCT POPUP
         public async Task<IActionResult> AddProductPop(ProductMatserModel model, string buttonType, string productID, string NumberofStock, GodownModel gmodel)
         {
@@ -3841,10 +3837,6 @@ namespace StellarBillingSystem.Controllers
                 model.BranchID = TempData["BranchID"].ToString();
                 TempData.Keep("BranchID");
             }
-
-
-
-
 
             BusinessClassBilling business = new BusinessClassBilling(_billingsoftware);
             ViewData["categoryid"] = business.GetCatid(model.BranchID);
@@ -3881,18 +3873,18 @@ namespace StellarBillingSystem.Controllers
 
             if (existinggodwnstock == null)
             {
-                
-                    // Create a new instance of SHGodown
-                    existinggodwnstock = new GodownModel
-                    {
-                        ProductID = productID,
-                        BranchID = model.BranchID,
-                        NumberofStocks = NumberofStock
-                    };
+
+                // Create a new instance of SHGodown
+                existinggodwnstock = new GodownModel
+                {
+                    ProductID = productID,
+                    BranchID = model.BranchID,
+                    NumberofStocks = NumberofStock
+                };
 
 
-                    _billingsoftware.SHGodown.Add(existinggodwnstock);
-                
+                _billingsoftware.SHGodown.Add(existinggodwnstock);
+
             }
             else
             {
@@ -3906,9 +3898,9 @@ namespace StellarBillingSystem.Controllers
             }
 
 
-                _billingsoftware.SaveChanges();
+            _billingsoftware.SaveChanges();
 
-            
+
 
             var existingProduct = await _billingsoftware.SHProductMaster.FindAsync(model.ProductID, model.BranchID);
             if (existingProduct != null)
@@ -3970,8 +3962,94 @@ namespace StellarBillingSystem.Controllers
         }
 
 
+        //Add Customer Pop
+        public async Task<IActionResult> AddCustomerPop(CustomerMasterModel model)
+        {
+            if (TempData["BranchID"] != null)
+            {
+                model.BranchID = TempData["BranchID"].ToString();
+                TempData.Keep("BranchID");
+            }
+
+
+
+            var existingCustomer = await _billingsoftware.SHCustomerMaster.FindAsync(model.MobileNumber, model.BranchID);
+            if (existingCustomer != null)
+            {
+                if (existingCustomer.IsDelete)
+                {
+                    ViewBag.Message = "Cannot update. Customer Number is marked as deleted.";
+
+                    return View("CustomerMaster", model);
+                }
+
+                existingCustomer.CustomerID = model.CustomerID;
+                existingCustomer.CustomerName = model.CustomerName;
+                existingCustomer.DateofBirth = model.DateofBirth;
+                existingCustomer.Gender = model.Gender;
+                existingCustomer.Address = model.Address;
+                existingCustomer.City = model.City;
+                existingCustomer.MobileNumber = model.MobileNumber;
+                existingCustomer.IsDelete = model.IsDelete;
+                existingCustomer.BranchID = model.BranchID;
+                existingCustomer.LastUpdatedDate = DateTime.Now.ToString();
+                existingCustomer.LastUpdatedUser = User.Claims.First().Value.ToString();
+                existingCustomer.LastUpdatedmachine = Request.HttpContext.Connection.RemoteIpAddress.ToString();
+
+                _billingsoftware.Entry(existingCustomer).State = EntityState.Modified;
+
+            }
+            else
+            {
+                model.LastUpdatedDate = DateTime.Now.ToString();
+                model.LastUpdatedUser = User.Claims.First().Value.ToString();
+                model.LastUpdatedmachine = Request.HttpContext.Connection.RemoteIpAddress.ToString();
+
+                _billingsoftware.SHCustomerMaster.Add(model);
+
+
+            }
+
+            await _billingsoftware.SaveChangesAsync();
+
+            ViewBag.Message = "Saved Successfully";
+
+            CustomerMasterModel cus = new CustomerMasterModel();
+
+            return View("CustomerBilling", cus);
+
+        }
+
+        //Get Customer Data Pop
+
+        public async Task<IActionResult> getcustomerpop(BillProductlistModel model)
+        {
+            if (TempData["BranchID"] != null)
+            {
+                model.BranchID = TempData["BranchID"].ToString();
+                TempData.Keep("BranchID");
+            }
+
+            var getdata = from bd in _billingsoftware.SHbilldetails
+                          join bm in _billingsoftware.SHbillmaster on bd.BillID equals bm.BillID
+                          where bd.BillID == model.BillID && bd.BillDate == model.BillDate && bd.CustomerNumber == model.CustomerNumber && bd.BranchID == model.BranchID
+
+                          select new 
+                          {
+                              bd.BillID,
+                              bd.BillDate,
+                              bd.ProductName,
+                              bd.ProductID 
+                          };
+
+            var result = await getdata.ToListAsync();
+            return Json(result);
+
+        }
+          
+
     }
 
 
-}
+    }
 
