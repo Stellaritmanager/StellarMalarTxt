@@ -4175,7 +4175,7 @@ textarea.form-control-lg {
 }
 
 .dividerblack {
-    background-image: linear-gradient(to right,#282a42 0%, #373957 51%,#424566 100%);
+    background-color:white;
 }
 
 .dividercol {
@@ -11144,7 +11144,7 @@ button.list-group-item-gray.active {
 
 .text-white {
   --bs-text-opacity: 1;
-  color: #fff !important;
+  color: #000000 !important;
 }
 
 .text-body {
