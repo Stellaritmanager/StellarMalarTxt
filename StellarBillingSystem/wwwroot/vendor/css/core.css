@@ -4179,7 +4179,7 @@ textarea.form-control-lg {
 }
 
 .dividercol {
-    background-color: rgba(67, 89, 113, 0.1);
+    background-color:ligh;
 }
 
 .popborder{
@@ -6938,10 +6938,10 @@ a.invert-bg-dark:hover, a.invert-bg-dark:focus {
 }
 
 .container-p-y:not([class^=pt-]):not([class*=" pt-"]) {
-  padding-top: 1.625rem !important;
+    padding-top: 0.5rem !important;
 }
 .container-p-y:not([class^=pb-]):not([class*=" pb-"]) {
-  padding-bottom: 1.625rem !important;
+  padding-bottom: 0.5rem !important;
 }
 
 .container-m-ny:not([class^=mt-]):not([class*=" mt-"]) {
