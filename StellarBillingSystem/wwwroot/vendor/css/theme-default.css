@@ -805,9 +805,9 @@ html:not(.layout-menu-collapsed) .bg-menu-theme .menu-inner .menu-item .menu-lin
   background-color: #f5f5f9 !important;
   color: #697a8d;
 }
-.bg-footer-theme .footer-link {
-  color: #697a8d;
-}
+    .bg-footer-theme .footer-link {
+        color: #000000;
+    }
 .bg-footer-theme .footer-link:hover, .bg-footer-theme .footer-link:focus {
   color: #566a7f;
 }
