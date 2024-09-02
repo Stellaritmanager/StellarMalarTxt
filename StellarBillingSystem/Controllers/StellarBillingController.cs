@@ -22,6 +22,8 @@ using System.Security.Cryptography;
 using System.Web;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.AspNetCore.Components.Forms;
+using SkiaSharp;
+using Newtonsoft.Json;
 
 namespace StellarBillingSystem.Controllers
 {
@@ -4020,9 +4022,11 @@ namespace StellarBillingSystem.Controllers
 
         }
 
+
         //Get Customer Data Pop
 
-        public async Task<IActionResult> getcustomerpop(BillProductlistModel model)
+        [HttpPost]
+        public async Task<IActionResult> getcustomerpop(BillProductlistModel model, string BillID, string BillDate, string CustomerNumber)
         {
             if (TempData["BranchID"] != null)
             {
@@ -4032,21 +4036,79 @@ namespace StellarBillingSystem.Controllers
 
             var getdata = from bd in _billingsoftware.SHbilldetails
                           join bm in _billingsoftware.SHbillmaster on bd.BillID equals bm.BillID
-                          where bd.BillID == model.BillID && bd.BillDate == model.BillDate && bd.CustomerNumber == model.CustomerNumber && bd.BranchID == model.BranchID
-
-                          select new 
+                          where bd.CustomerNumber == CustomerNumber && bd.BranchID == model.BranchID && bm.BranchID == model.BranchID
+                          select new BillProductlistModel
                           {
-                              bd.BillID,
-                              bd.BillDate,
-                              bd.ProductName,
-                              bd.ProductID 
+                             BillID = bd.BillID,
+                             BillDate = bd.BillDate,
+                             ProductName = bd.ProductName,
+                             ProductID = bd.ProductID 
                           };
 
             var result = await getdata.ToListAsync();
+           
+
             return Json(result);
 
         }
-          
+
+
+        public IActionResult loadbill(string productID, string billID, string billDate, string customerNumber,BillProductlistModel model)
+        {
+
+            //var selectedProductIDs = JsonConvert.DeserializeObject<List<string>>(selectedValues);
+
+            if (TempData["BranchID"] != null)
+            {
+                model.BranchID = TempData["BranchID"].ToString();
+                TempData.Keep("BranchID");
+            }
+
+            BusinessClassBilling Busbill = new BusinessClassBilling(_billingsoftware);
+            ViewData["productid"] = Busbill.Getproduct(model.BranchID);
+
+
+            var updatedMasterex = _billingsoftware.SHbillmaster.FirstOrDefault(bm => bm.BillID == billID && bm.BillDate == billDate && bm.CustomerNumber == customerNumber && bm.BranchID == model.BranchID);
+                                  
+
+            // Query to get details of selected products
+            var exbillingDetails = _billingsoftware.SHbilldetails
+        .Where(d =>  d.BranchID == model.BranchID && d.IsDelete == false && d.CustomerNumber == customerNumber)
+        .ToList();
+
+            // Create ViewModel
+            var viewModel = new BillProductlistModel
+            {
+                MasterModel = updatedMasterex != null ? new BillingMasterModel
+                {
+                    BillID = updatedMasterex.BillID,
+                    BillDate = updatedMasterex.BillDate,
+                    CustomerNumber = updatedMasterex.CustomerNumber,
+                    Totalprice = updatedMasterex.Totalprice,
+                    TotalDiscount = updatedMasterex.TotalDiscount,
+                    NetPrice = updatedMasterex.NetPrice,
+                    CGSTPercentage = updatedMasterex.CGSTPercentage,
+                    SGSTPercentage = updatedMasterex.SGSTPercentage,
+                    
+                } : null,
+                Viewbillproductlist = exbillingDetails,
+                BillID = billID,
+                BillDate = billDate,
+                CustomerNumber = customerNumber
+            };
+
+            ViewBag.TotalPrice = updatedMasterex?.Totalprice;
+            ViewBag.TotalDiscount = updatedMasterex?.TotalDiscount;
+            ViewBag.NetPrice = updatedMasterex?.NetPrice;
+            ViewBag.CGSTPercentage = updatedMasterex?.CGSTPercentage;
+            ViewBag.SGSTPercentage = updatedMasterex?.SGSTPercentage;
+
+            // Pass data to the view using ViewBag or ViewModel
+            
+            return View("CustomerBilling", viewModel);
+        }
+
+
 
     }
 
