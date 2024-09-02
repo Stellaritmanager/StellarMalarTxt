@@ -2463,6 +2463,7 @@ namespace StellarBillingSystem.Controllers
                     }
                 }
 
+
                 var existingbilldetail = await _billingsoftware.SHbilldetails
             .FirstOrDefaultAsync(x => x.BillID == model.BillID && x.BillDate == model.BillDate && x.CustomerNumber == model.CustomerNumber && x.BranchID == model.BranchID && x.ProductID == model.ProductID && x.IsDelete == false);
 
@@ -2525,6 +2526,50 @@ namespace StellarBillingSystem.Controllers
                 await _billingsoftware.SaveChangesAsync();
 
 
+                // Calculate total price for SHbillmaster
+                var billDetails = await _billingsoftware.SHbilldetails
+         .Where(x => x.BillID == model.BillID && x.BillDate == model.BillDate && x.CustomerNumber == model.CustomerNumber && x.BranchID == model.BranchID && x.IsDelete == false)
+         .Select(x => x.Totalprice)
+         .ToListAsync();
+
+                // Convert Totalprice strings to decimal and sum
+                decimal totalPrice = billDetails
+                    .Select(price => decimal.TryParse(price, out decimal value) ? value : 0)
+                    .Sum();
+
+                var existingbillmaster = await _billingsoftware.SHbillmaster
+           .FirstOrDefaultAsync(x => x.BillID == model.BillID && x.BillDate == model.BillDate && x.CustomerNumber == model.CustomerNumber && x.BranchID == model.BranchID &&  x.IsDelete == false);
+
+             if(existingbillmaster!=null)
+                {
+                    existingbillmaster.Totalprice = totalPrice.ToString();
+                    existingbillmaster.NetPrice = totalPrice.ToString();
+                    existingbillmaster.Lastupdateddate = DateTime.Now.ToString();
+                    existingbillmaster.Lastupdatedmachine = Request.HttpContext.Connection.RemoteIpAddress.ToString();
+                    existingbillmaster.Lastupdateduser = User.Claims.First().Value.ToString();
+                    _billingsoftware.Entry(existingbillmaster).State = EntityState.Modified;
+                }
+             else
+                {
+                    // Add new bill master if it does not exist
+                    var newBillMaster = new BillingMasterModel
+                    {
+                        BillID = model.BillID,
+                        BillDate = model.BillDate,
+                        CustomerNumber = model.CustomerNumber,
+                        Totalprice = totalPrice.ToString(),
+                        NetPrice = totalPrice.ToString(),
+                        BranchID = model.BranchID,
+                        Lastupdateddate = DateTime.Now.ToString(),
+                        Lastupdatedmachine = Request.HttpContext.Connection.RemoteIpAddress.ToString(),
+                        Lastupdateduser = User.Claims.First().Value.ToString()
+                    };
+
+                    _billingsoftware.SHbillmaster.Add(newBillMaster);
+
+                }
+
+                await _billingsoftware.SaveChangesAsync();
 
 
                 productlist = await _billingsoftware.SHbilldetails
@@ -2540,6 +2585,8 @@ namespace StellarBillingSystem.Controllers
 
 
                 model.Viewbillproductlist = productlist;
+
+                ViewBag.TotalPrice = totalPrice;
 
                 return View("CustomerBilling", model);
             }
