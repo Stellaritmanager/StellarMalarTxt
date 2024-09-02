@@ -1,4 +1,4 @@
-﻿@model CategoryMasterModel
+﻿@model CategoryMasterViewModel
 
 @{
     ViewData["Title"] = "CategoryMaster";
@@ -50,7 +50,7 @@
         </div>
     </div>
     
-    <div class="row" style="margin-top:20px">
+@*     <div class="row" style="margin-top:20px">
         <div class="col-md-1">
         </div>
         <div class="col-md-10">
@@ -85,7 +85,7 @@
         </div>
             <div class="col-md-1">
             </div>
-        </div>
+        </div> *@
         <div class="row gy-4" style="margin-top:50px">
         <div class="col-md-12 col-lg-2">
         </div>
@@ -96,9 +96,9 @@
                     <div class="row gy-4">
                         <div class="col-md-12 col-lg-8">
                             <div class="form-floating form-floating-outline mb-4">
-                                <input asp-for="CategoryID" value="@Model.CategoryID" class="form-control" placeholder="Category ID" required />
+                                <input type="CategoryID" class="form-control" placeholder="Category ID" name="CategoryID" required />
                                 <label asp-for="CategoryID" class="control-label">Category ID</label>
-                                <span asp-validation-for="CategoryID" class="text-danger"></span>
+                                
                             </div>
                         </div>
 
@@ -108,10 +108,10 @@
                     </div>
                     <br />
                     <div class="form-floating form-floating-outline mb-4">
-                        <input asp-for="CategoryName" value="@Model.CategoryName" class="form-control" placeholder="Category Name" />
+                        <input type="CategoryName" class="form-control" placeholder="Category Name" name="CategoryName" />
                         <label asp-for="CategoryName" class="control-label">Category Name</label>
 
-                        <span asp-validation-for="CategoryName" class="text-danger"></span>
+                       
                     </div>
 
                     <br />
@@ -127,6 +127,38 @@
         <div class="col-md-12 col-lg-2">
         </div>
     </div>
+
+
+
+      @if (Model != null)
+    {
+
+    <div class="row" style="margin-top:30px">
+        <div class="col-md-12">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Category ID</th>
+                        <th>Category Name</th>
+                      
+                        <!-- Add other columns as needed -->
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var category in Model.ViewCategories)
+                    {
+                        <tr>
+                            <td>@category.CategoryID</td>
+                            <td>@category.CategoryName</td>
+                        
+                            <!-- Add other columns as needed -->
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+    }
 
     <div class="form-group" style="margin-top:30px">
         <center>

@@ -101,6 +101,21 @@ namespace StellarBillingSystem.Business
 
 
 
+
+        public List<CategoryMasterViewModel> Getcategory(string BranchID) 
+        {
+            var result = (from c in _billingContext.SHCategoryMaster
+                          where c.IsDelete == false && c.BranchID == BranchID select new CategoryMasterViewModel
+                          {
+                              CategoryID = c.CategoryID,
+                              CategoryName = c.CategoryName
+                          }).ToList();
+            return result;
+        
+        }
+
+
+
         public List<ResourceTypeMasterModel> GetResourceid(string BranchID)
         {
             var resoruseid = (
