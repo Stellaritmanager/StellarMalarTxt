@@ -162,7 +162,7 @@ h6, .h6, h5, .h5, h4, .h4, h3, .h3, h2, .h2, h1, .h1 {
   margin-bottom: 1rem;
   font-weight: 500;
   line-height: 1.1;
-  color: var(--bs-heading-color);
+  color:#000000;
 }
 
 h1, .h1 {
@@ -1829,7 +1829,7 @@ progress {
 }
 .table > :not(caption) > * > * {
   padding: 0.625rem 1.25rem;
-  color: var(--bs-table-color-state, var(--bs-table-color-type, #fff));
+  color: #000000;
   background-color: var(--bs-table-bg);
   border-bottom-width: var(--bs-border-width);
   box-shadow: inset 0 0 0 9999px var(--bs-table-bg-state, var(--bs-table-bg-type, var(--bs-table-accent-bg)));
@@ -7104,7 +7104,7 @@ a.invert-bg-dark:hover, a.invert-bg-dark:focus {
   letter-spacing: 1px;
 }
 .table:not(.table-dark) th {
-  color: #fff;
+  color: #000000;
 }
 
 .table-border-bottom-0 tr:last-child td,

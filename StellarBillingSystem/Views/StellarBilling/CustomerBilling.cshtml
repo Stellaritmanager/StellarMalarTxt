@@ -249,7 +249,7 @@
                 <div class="row">
                     <div class="col-md-12 col-lg-4">
                         <div class="form-floating form-floating-outline mb-4">
-                            <input type="Totalprice" class="form-control" name="Totalprice" placeholder="Total price" value="@ViewBag.TotalPrice" readonly />
+                            <input type="Totalprice" id="Totalprice" class="form-control" name="Totalprice" placeholder="Total price" value="@ViewBag.TotalPrice" readonly />
                             <label asp-for="Totalprice" class="control-label">Total price</label>
 
 
@@ -260,7 +260,7 @@
                     <div class="col-md-12 col-lg-2">
 
                         <div class="form-floating form-floating-outline mb-4">
-                            <input type="CGSTPercentage" class="form-control" name="CGSTPercentage" placeholder="CGSTPercentage" value="@ViewBag.CGSTPercentage" />
+                            <input type="CGSTPercentage" id="CGSTPercentage" class="form-control" name="CGSTPercentage" placeholder="CGSTPercentage" value="@ViewBag.CGSTPercentage" />
                             <label asp-for="CGSTPercentage" class="control-label">CGST%</label>
                         </div>
 
@@ -268,7 +268,7 @@
                     <div class="col-md-12 col-lg-2">
 
                         <div class="form-floating form-floating-outline mb-4">
-                            <input type="SGSTPercentage" class="form-control" name="SGSTPercentage" placeholder="SGSTPercentage" value="@ViewBag.SGSTPercentage" />
+                            <input type="SGSTPercentage" id="SGSTPercentage" class="form-control" name="SGSTPercentage" placeholder="SGSTPercentage" value="@ViewBag.SGSTPercentage" />
                             <label asp-for="SGSTPercentage" class="control-label">SGST%</label>
                         </div>
                     </div>
@@ -276,7 +276,7 @@
                     <div class="col-md-12 col-lg-4">
 
                         <div class="form-floating form-floating-outline mb-4">
-                            <input type="TotalDiscount" class="form-control" name="TotalDiscount" placeholder="Total Discount" value="@ViewBag.TotalDiscount" />
+                            <input type="TotalDiscount" id="TotalDiscount" class="form-control" name="TotalDiscount" placeholder="Total Discount" value="@ViewBag.TotalDiscount" />
                             <label asp-for="TotalDiscount" class="control-label">Total Discount</label>
 
                         </div>
@@ -313,7 +313,7 @@
                     </div>
                             <div class="col-md-12 col-lg-4">
                                 <div class="form-floating form-floating-outline mb-4">
-                                    <input type="NetPrice" class="form-control" name="NetPrice" placeholder="Net Price" value="@ViewBag.NetPrice" readonly />
+                            <input type="NetPrice" id="NetPrice" class="form-control" name="NetPrice" placeholder="Net Price" value="@ViewBag.NetPrice" readonly />
                                     <label asp-for="NetPrice" class="control-label">Net Price</label> </div>
 
                                 </div>
@@ -442,48 +442,12 @@
 </div>
 
 
-
-
-
-<!-- Get Customer Details Modal -->
-@* <div class="modal fade" id="getCustomerDetailsModal" tabindex="-1" role="dialog" aria-labelledby="getCustomerDetailsModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="getCustomerDetailsModalLabel">Get Customer Product Details</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <form id="modalSearchFormbill" asp-controller="StellarBilling" asp-action="getcustomerpop" method="post">
-                <div class="modal-body">
-                    <table class="table">
-                        <thead>
-                            <tr>
-                                <th>Select</th>
-                                <th>Bill ID</th>
-                                <th>Bill Date</th>
-                                <th>Product Name</th>
-                            </tr>
-                        </thead>
-                        <tbody id="productTableBody">
-                            <!-- Data will be populated here -->
-                        </tbody>
-                    </table>
-                </div>
-            </form>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary" id="loadSelectedProduct">Load Selected Product</button>
-            </div>
-        </div>
-    </div>
-</div> *@
-
 <!-- Get Customer Details Modal -->
 <div class="modal fade" id="getCustomerDetailsModal" tabindex="-1" aria-labelledby="getCustomerDetailsModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="getCustomerDetailsModalLabel">Get Customer Product Details</h5>
+                <h5 class="modal-title" id="getCustomerDetailsModalLabel">Customer Product Details</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
@@ -835,3 +799,39 @@
 
 
 </script>
+
+
+<!-- Add Javascript for Tax and discount -->
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const totalPriceInput = document.getElementById('Totalprice');
+        const cgstPercentageInput = document.getElementById('CGSTPercentage');
+        const sgstPercentageInput = document.getElementById('SGSTPercentage');
+        const totalDiscountInput = document.getElementById('TotalDiscount');
+        const netPriceInput = document.getElementById('NetPrice');
+
+        function calculateNetPrice() {
+            const totalPrice = parseFloat(totalPriceInput.value) || 0;
+            const cgstPercentage = parseFloat(cgstPercentageInput.value) || 0;
+            const sgstPercentage = parseFloat(sgstPercentageInput.value) || 0;
+            const discountPercentage = parseFloat(totalDiscountInput.value) || 0;
+
+            const cgstAmount = (totalPrice * cgstPercentage) / 100;
+            const sgstAmount = (totalPrice * sgstPercentage) / 100;
+            const discountAmount = (totalPrice * discountPercentage) / 100;
+
+            const netPrice = totalPrice + cgstAmount + sgstAmount - discountAmount;
+
+            netPriceInput.value = netPrice.toFixed(2);
+        }
+
+        function setupEventListeners() {
+            cgstPercentageInput.addEventListener('blur', calculateNetPrice);
+            sgstPercentageInput.addEventListener('blur', calculateNetPrice);
+            totalDiscountInput.addEventListener('blur', calculateNetPrice);
+        }
+
+        setupEventListeners();
+    });
+</script>
+

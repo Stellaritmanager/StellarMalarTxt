@@ -2766,10 +2766,7 @@ namespace StellarBillingSystem.Controllers
                 var updateMaster = await _billingsoftware.SHbillmaster
                     .FirstOrDefaultAsync(m => m.BillID == model.BillID && m.BranchID == model.BranchID && m.BillDate == model.BillDate && m.CustomerNumber == model.CustomerNumber);
 
-                string currentDiscount = string.Empty;
-                string currentSGST = string.Empty;
-                string currentCGST = string.Empty;
-
+               
 
                 if (updateMaster != null)
                 {
@@ -2779,11 +2776,7 @@ namespace StellarBillingSystem.Controllers
                         return View("CustomerBilling", model);
                     }
 
-                    // existing value
-                    currentDiscount = updateMaster.TotalDiscount;
-                    currentSGST = updateMaster.SGSTPercentage;
-                    currentCGST = updateMaster.CGSTPercentage;
-
+                   
 
                     updateMaster.BillInsertion = false;
                     updateMaster.BillID = masterModel.BillID;
@@ -2822,33 +2815,7 @@ namespace StellarBillingSystem.Controllers
                 _billingsoftware.SaveChanges();
 
 
-                var (billingSummary, Validate) = await busbill.CalculateBillingDetails(BillID, BillDate, CustomerNumber, currentDiscount, currentCGST, currentSGST, masterModel.BranchID);
-
-                if (!string.IsNullOrEmpty(Validate))
-                {
-                    ViewBag.SaveMessage = Validate;
-                    return View("CustomerBilling", model);
-                }
-
-                if (billingSummary != null)
-                {
-
-                    var updateMasterTax = await _billingsoftware.SHbillmaster
-                      .FirstOrDefaultAsync(m => m.BillID == model.BillID && m.BranchID == model.BranchID && m.BillDate == model.BillDate && m.CustomerNumber == model.CustomerNumber);
-
-                    if (updateMasterTax != null)
-                    {
-                        updateMasterTax.Totalprice = billingSummary.Totalprice;
-                        updateMasterTax.NetPrice = billingSummary.NetPrice;
-                        updateMasterTax.CGSTPercentageAmt = billingSummary.CGSTPercentageAmt;
-                        updateMasterTax.SGSTPercentageAmt = billingSummary.SGSTPercentageAmt;
-
-                        _billingsoftware.Entry(updateMasterTax).State = EntityState.Modified;
-                    }
-
-                    _billingsoftware.SaveChanges();
-                }
-
+              
 
                 // Save points calculation
                 var checkpoints = await _billingsoftware.SHBillingPoints.FirstOrDefaultAsync(x => x.BillID == model.BillID && x.CustomerNumber == CustomerNumber);
@@ -2857,12 +2824,12 @@ namespace StellarBillingSystem.Controllers
                 if (pointsMaster != null && pointsMaster.NetPrice != null && pointsMaster.NetPoints != null && pointsMaster.BranchID == model.BranchID)
                 {
                     decimal netPointsRatio = Convert.ToDecimal(pointsMaster.NetPoints) / Convert.ToDecimal(pointsMaster.NetPrice);
-                    decimal points = Convert.ToDecimal(billingSummary.NetPrice) * netPointsRatio;
+                    decimal points = Convert.ToDecimal(masterModel.NetPrice) * netPointsRatio;
 
                     if (checkpoints != null)
                     {
                         // Update existing points record
-                        checkpoints.NetPrice = billingSummary.NetPrice;
+                        checkpoints.NetPrice = masterModel.NetPrice;
                         checkpoints.Points = points.ToString("F2");
                         checkpoints.IsUsed = false;
                         checkpoints.DateofReedem = null;
@@ -2876,7 +2843,7 @@ namespace StellarBillingSystem.Controllers
                         {
                             BillID = BillID,
                             CustomerNumber = CustomerNumber,
-                            NetPrice = billingSummary.NetPrice,
+                            NetPrice = masterModel.NetPrice,
                             Points = points.ToString("F2"),
                             IsUsed = false,
                             DateofReedem = null
