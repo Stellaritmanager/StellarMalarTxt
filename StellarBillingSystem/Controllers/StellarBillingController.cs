@@ -45,7 +45,6 @@ namespace StellarBillingSystem.Controllers
         public async Task<IActionResult> GetCategory(CategoryMasterModel model, string buttonType)
         {
 
-
             if (TempData["BranchID"] != null)
             {
                 model.BranchID = TempData["BranchID"].ToString();
@@ -73,7 +72,7 @@ namespace StellarBillingSystem.Controllers
 
 
         [HttpPost]
-        public async Task<IActionResult> AddCategory(CategoryMasterModel model, string buttonType)
+        public async Task<IActionResult> AddCategory(CategoryMasterModel model, string buttonType,CategoryMasterViewModel viewmodel)
         {
             if (TempData["BranchID"] != null)
             {
@@ -81,6 +80,17 @@ namespace StellarBillingSystem.Controllers
                 TempData.Keep("BranchID");
             }
 
+
+            if (viewmodel == null)
+            {
+                viewmodel = new CategoryMasterViewModel();
+            }
+
+            // Initialize ViewCategories if it's a List
+            if (viewmodel.ViewCategories == null)
+            {
+                viewmodel.ViewCategories = new List<CategoryMasterModel>();
+            }
 
             if (buttonType == "Get")
             {
@@ -182,9 +192,9 @@ namespace StellarBillingSystem.Controllers
 
                 ViewBag.Message = "Saved Successfully";
             }
-            model = new CategoryMasterModel();
+           
 
-            return View("CategoryMaster", model);
+            return View("CategoryMaster", viewmodel);
         }
 
         [HttpPost]
@@ -1107,10 +1117,37 @@ namespace StellarBillingSystem.Controllers
         }
 
 
-        public IActionResult CategoryMaster()
+        public IActionResult CategoryMaster(CategoryMasterViewModel model)
         {
-            CategoryMasterModel par = new CategoryMasterModel();
-            return View("CategoryMaster", par);
+            if (TempData["BranchID"] != null)
+            {
+                model.BranchID = TempData["BranchID"].ToString();
+                TempData.Keep("BranchID");
+            }
+
+
+            BusinessClassBilling business = new BusinessClassBilling(_billingsoftware);
+
+            var result = business.Getcategory(model.BranchID);
+            if (result == null || !result.Any())
+            {
+                ViewBag.GetMessage = "No data found.";
+                model.ViewCategories = new List<CategoryMasterModel>();
+            }
+            else
+            {
+                var viewModelList = result.Select(p => new CategoryMasterModel
+                {
+                    CategoryID= p.CategoryID,
+                    CategoryName = p.CategoryName
+                   
+                }).ToList();
+
+                model.ViewCategories = viewModelList;
+            }
+
+           
+            return View("CategoryMaster",model );
         }
 
         public IActionResult ProductMaster()
