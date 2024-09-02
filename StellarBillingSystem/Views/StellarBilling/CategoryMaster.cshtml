@@ -96,7 +96,7 @@
                     <div class="row gy-4">
                         <div class="col-md-12 col-lg-8">
                             <div class="form-floating form-floating-outline mb-4">
-                                <input type="CategoryID" class="form-control" placeholder="Category ID" name="CategoryID" required />
+                                <input type="CategoryID" class="form-control" placeholder="Category ID" name="CategoryID" value="@Model.CategoryID" required />
                                 <label asp-for="CategoryID" class="control-label">Category ID</label>
                                 
                             </div>
@@ -108,7 +108,7 @@
                     </div>
                     <br />
                     <div class="form-floating form-floating-outline mb-4">
-                        <input type="CategoryName" class="form-control" placeholder="Category Name" name="CategoryName" />
+                        <input type="CategoryName" class="form-control" placeholder="Category Name" name="CategoryName" value="@Model.CategoryName" />
                         <label asp-for="CategoryName" class="control-label">Category Name</label>
 
                        
@@ -130,34 +130,53 @@
 
 
 
-      @if (Model != null)
+    @if (Model != null)
     {
+        <center>
+            <center>
+                <h3 class="centered" style="font-family: 'Lucida Bright'; color: black;">Category Master</h3>
+            </center>
 
-    <div class="row" style="margin-top:30px">
-        <div class="col-md-12">
-            <table class="table table-striped">
-                <thead>
-                    <tr>
-                        <th>Category ID</th>
-                        <th>Category Name</th>
-                      
-                        <!-- Add other columns as needed -->
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var category in Model.ViewCategories)
-                    {
+
+        </center>
+        <div class="row" style="margin-top:30px">
+            <div class="col-md-12">
+
+                <table class="table table-striped">
+                    <thead>
                         <tr>
-                            <td>@category.CategoryID</td>
-                            <td>@category.CategoryName</td>
-                        
+                            <th>Category ID</th>
+                            <th>Category Name</th>
                             <!-- Add other columns as needed -->
                         </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var category in Model.ViewCategories)
+                        {
+                            <tr>
+                                <td>@category.CategoryID</td>
+                                <td>@category.CategoryName</td>
+                                <!-- Add other columns as needed -->
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+
+                <div class="pagination">
+                    @if (Model.TotalCount > Model.PageSize)
+                    {
+                        int totalPages = (int)Math.Ceiling((double)Model.TotalCount / Model.PageSize);
+
+                        for (int i = 1; i <= totalPages; i++)
+                        {
+                            <a href="@Url.Action("CategoryMaster", new { page = i })" class="@(Model.CurrentPage == i ? "btn btn-primary" : "btn btn-secondary")">
+                                @i
+                            </a>
+                        }
                     }
-                </tbody>
-            </table>
+                </div>
+            </div>
         </div>
-    </div>
     }
 
     <div class="form-group" style="margin-top:30px">

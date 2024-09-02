@@ -42,7 +42,7 @@ namespace StellarBillingSystem.Controllers
 
 
         [HttpGet]
-        public async Task<IActionResult> GetCategory(CategoryMasterModel model, string buttonType)
+        public async Task<IActionResult> GetCategory(CategoryMasterModel model, string buttonType, CategoryMasterViewModel viewmodel)
         {
 
             if (TempData["BranchID"] != null)
@@ -56,17 +56,43 @@ namespace StellarBillingSystem.Controllers
                 var getcategory = await _billingsoftware.SHCategoryMaster.FirstOrDefaultAsync(x => x.CategoryID == model.CategoryID && !x.IsDelete && x.BranchID == model.BranchID);
                 if (getcategory != null)
                 {
-                    return View("CategoryMaster", getcategory);
+                    viewmodel.CategoryID = getcategory.CategoryID;
+                    viewmodel.CategoryName = getcategory.CategoryName;
+
+
+                    var category = await _billingsoftware.SHCategoryMaster
+               .Where(x => !x.IsDelete && x.BranchID == model.BranchID)
+               .ToListAsync();
+
+                    viewmodel.ViewCategories = category.Select(c => new CategoryMasterModel
+                    {
+                        CategoryID = c.CategoryID,
+                        CategoryName = c.CategoryName
+                    }).ToList();
+
+                    return View("CategoryMaster", viewmodel);
                 }
                 else
                 {
-                    CategoryMasterModel par = new CategoryMasterModel();
+                    viewmodel.ViewCategories = new List<CategoryMasterModel>();
                     ViewBag.ErrorMessage = "No value for this Category ID";
-                    return View("CategoryMaster", par);
+                  //  return View("CategoryMaster", par);
                 }
             }
 
-            return View();
+
+            // Optionally reload the list of all categories
+            var categories = await _billingsoftware.SHCategoryMaster
+                .Where(x => !x.IsDelete && x.BranchID == model.BranchID)
+                .ToListAsync();
+
+            viewmodel.ViewCategories = categories.Select(c => new CategoryMasterModel
+            {
+                CategoryID = c.CategoryID,
+                CategoryName = c.CategoryName
+            }).ToList();
+
+            return View("CategoryMaster", viewmodel);
         }
 
 
@@ -74,6 +100,9 @@ namespace StellarBillingSystem.Controllers
         [HttpPost]
         public async Task<IActionResult> AddCategory(CategoryMasterModel model, string buttonType,CategoryMasterViewModel viewmodel)
         {
+
+            BusinessClassBilling business = new BusinessClassBilling(_billingsoftware);
+
             if (TempData["BranchID"] != null)
             {
                 model.BranchID = TempData["BranchID"].ToString();
@@ -192,7 +221,9 @@ namespace StellarBillingSystem.Controllers
 
                 ViewBag.Message = "Saved Successfully";
             }
-           
+
+
+        
 
             return View("CategoryMaster", viewmodel);
         }
@@ -1117,14 +1148,13 @@ namespace StellarBillingSystem.Controllers
         }
 
 
-        public IActionResult CategoryMaster(CategoryMasterViewModel model)
+        public IActionResult CategoryMaster(CategoryMasterViewModel model, int page = 1, int pageSize = 5)
         {
             if (TempData["BranchID"] != null)
             {
                 model.BranchID = TempData["BranchID"].ToString();
                 TempData.Keep("BranchID");
             }
-
 
             BusinessClassBilling business = new BusinessClassBilling(_billingsoftware);
 
@@ -1133,22 +1163,26 @@ namespace StellarBillingSystem.Controllers
             {
                 ViewBag.GetMessage = "No data found.";
                 model.ViewCategories = new List<CategoryMasterModel>();
+                model.TotalCount = 0;
             }
             else
             {
-                var viewModelList = result.Select(p => new CategoryMasterModel
+                var totalCount = result.Count();
+                var viewModelList = result.Skip((page - 1) * pageSize).Take(pageSize).Select(p => new CategoryMasterModel
                 {
-                    CategoryID= p.CategoryID,
+                    CategoryID = p.CategoryID,
                     CategoryName = p.CategoryName
-                   
                 }).ToList();
 
                 model.ViewCategories = viewModelList;
+                model.TotalCount = totalCount;
+                model.CurrentPage = page;
+                model.PageSize = pageSize;
             }
 
-           
-            return View("CategoryMaster",model );
+            return View("CategoryMaster", model);
         }
+
 
         public IActionResult ProductMaster()
         {
