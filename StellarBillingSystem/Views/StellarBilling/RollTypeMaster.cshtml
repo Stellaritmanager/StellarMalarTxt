@@ -41,14 +41,15 @@
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
     <div class="row">
-        <div class="col-md-12 col-lg-2">
-        </div>
-        <div class="col-md-12 col-lg-8">
-            <div class="card">
+        <div class="col-md-12 col-lg-0"></div>
+        <div class="col-md-12 col-lg-12" style="padding: 0;">
+            <div class="card" style="height:40px;">
                 <div class="card-body dividerblack">
-                    <div class="card-header d-flex justify-content-between align-items-center">
-                        <div class="container">
-                            <h2 class="centered text-white" style="font-family:'Lucida Bright';margin-left:27%;">Roll Type Master</h2>
+                    <div style="display: flex; align-items: center; height: 100%;">
+                        <div class="container" style="text-align: left; width: 100%;">
+                            <h2 class="centered text-white" style="font-family:'Lucida Bright'; margin: 0;">
+                                RollType Master
+                            </h2>
                         </div>
                     </div>
                 </div>
@@ -56,20 +57,16 @@
         </div>
     </div>
     <br />
+    <div class="row" style="height:8%"></div>
 
-    <div class="row" style="height:8%">
-    </div>
-
-    <div class="row gy-4">
-        <div class="col-md-12 col-lg-2">
-        </div>
-        <div class="col-md-12 col-lg-8">
+    <div class="row" style="margin-top:60px">
+        <div class="col-md-12 col-lg-0"></div>
+        <div class="col-md-12 col-lg-12">
             <div class="card">
-                <div class="card-body dividerblack ">
-
+                <div class="card-body dividerblack">
                     <div class="row gy-4">
-                        <div class="col-md-12 col-lg-8">
-
+                        <div class="col-md-12 col-lg-0"></div>
+                        <div class="col-md-12 col-lg-4">
 
 
             <div class="form-floating form-floating-outline mb-4">
@@ -80,48 +77,45 @@
             </div>
 
                         </div>
-                        <div class="col-md-12 col-lg-1">
-                        </div>
-                        <div class="col-md-12 col-lg-2" style="align-items:center">
-                            <div class="form-group">
-                                <button type="submit"  value="Get" name="buttonType" class="btn btn-primary">Get</button>
+
+
+                        <div class="col-md-12 col-lg-4">
+                            <div class="form-floating form-floating-outline mb-4">
+
+                                <input type="RollName" value="@Model.RollName" name="RollName" class="form-control" placeholder="Roll Name" />
+                                <label asp-for="RollName" class="control-label">Roll Name</label>
+
                             </div>
 
                         </div>
+                      
+                        <div class="col-md-12 col-lg-2" style="align-items:center">
+                           
+                                <button type="submit" style="width:100px" value="Get" name="buttonType" class="btn btn-primary">Get</button>
+                           
+
+                        </div>
+
+                        <div class="col-md-12 d-flex justify-content-center">
+
+
+                            <button type="submit" style="width:180px" value="Save" class="btn btn-primary mx-2">Save</button>
+
+                            <button type="submit" style="width:180px" value="Delete" name="buttonType" class="btn btn-primaryred mx-2">Delete</button>
+                            <button type="submit" style="width:180px" value="DeleteRetrieve" name="buttonType" class="btn btn-primaryellow mx-2">Delete Retrieve</button>
+
+                        </div>
+
                     </div>
-
-                    <br/>
-
-            <div class="form-floating form-floating-outline mb-4">
-
-                        <input type="RollName" value="@Model.RollName" name="RollName" class="form-control" placeholder="Roll Name" />
-                <label asp-for="RollName" class="control-label">Roll Name</label>
-               
-            </div>
-                    <br />
-
-
                 </div>
             </div>
 
 
         </div>
 
-
-        <div class="col-md-12 col-lg-2">
-        </div>
-    </div>
-    <br />
-    <div class="form-group">
-        <center>
-
-    <button type="submit" style="width:180px" value="Save" class="btn btn-primary">Save</button>
-
-                <button type="submit" style="width:180px" value="Delete" name="buttonType" class="btn btn-primary">Delete</button>
-                <button type="submit" style="width:180px" value="DeleteRetrieve" name="buttonType" class="btn btn-primary">Delete Retrieve</button>
-        </center>
     </div>
 
+   
 
             @if (ViewBag.Message != null)
             {
