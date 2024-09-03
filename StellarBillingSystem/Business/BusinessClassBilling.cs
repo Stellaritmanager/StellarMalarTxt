@@ -22,9 +22,53 @@ namespace StellarBillingSystem.Business
             _billingContext = billingContext;
         }
 
-        /*Product Dropdown*/
+        /*
+              // Query to get all Product
+                public DataTable GetProductData(string branchId)
+                {
+                    // Define the SQL query
+                    string sqlQuery = "SELECT ProductID, ProductName, BarcodeId, Price FROM SHProductMaster WHERE BranchID = '"+ branchId +"' AND IsDelete = 0";
 
-        public List<CategoryMasterModel> GetCatid(string BranchID)
+                    // Define the parameters for the SQL query
+                    var parameters = new[]
+                    {
+                    new SqlParameter("@BranchID", branchId)
+                };
+
+                    // Use the DataTable method from BusinessClassCommon to execute the query
+                    return BusinessClassCommon.DataTable(_billingContext, sqlQuery, parameters);
+               }
+
+        */
+
+
+
+
+        public static DataTable ConvertToDataTableProductMaster(IEnumerable<ProductMatserModel> entities)
+        {
+            var dataTable = new DataTable();
+
+            // Add columns
+            dataTable.Columns.Add("ProductID", typeof(string));
+            dataTable.Columns.Add("ProductName", typeof(string));
+            dataTable.Columns.Add("BarcodeId", typeof(string));
+            dataTable.Columns.Add("Price", typeof(string));
+        
+            // Add rows
+            foreach (var entity in entities)
+            {
+                dataTable.Rows.Add(entity.ProductID, entity.ProductName, entity.BarcodeId, entity.Price);
+            }
+
+            return dataTable;
+        }
+    
+
+
+
+    /*Product Dropdown*/
+
+    public List<CategoryMasterModel> GetCatid(string BranchID)
         {
             var categoryid = (
                     from pr in _billingContext.SHCategoryMaster

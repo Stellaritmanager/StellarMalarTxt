@@ -24,6 +24,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.AspNetCore.Components.Forms;
 using SkiaSharp;
 using Newtonsoft.Json;
+using Microsoft.EntityFrameworkCore.Metadata;
 
 namespace StellarBillingSystem.Controllers
 {
@@ -228,6 +229,59 @@ namespace StellarBillingSystem.Controllers
             return View("CategoryMaster", viewmodel);
         }
 
+
+
+
+
+        public IActionResult ProductMaster()
+        {
+            var model = new ProductMatserModel();
+
+            if (TempData["BranchID"] != null)
+            {
+                model.BranchID = TempData["BranchID"].ToString();
+                TempData.Keep("BranchID");
+            }
+
+            BusinessClassBilling business = new BusinessClassBilling(_billingsoftware);
+            ViewData["categoryid"] = business.GetCatid(model.BranchID);
+            ViewData["discountid"] = business.Getdiscountid(model.BranchID);
+            using (var context = new BillingContext())
+            {
+                // Step 1: Perform the query
+                var entities = context.SHProductMaster
+                                      .Where(e => e.BranchID == model.BranchID && e.IsDelete == false)
+                                      .ToList();
+
+                // Step 2: Convert to DataTable
+                var dataTable = BusinessClassBilling.ConvertToDataTableProductMaster(entities);
+                // Store the DataTable in ViewData for access in the view
+
+                ViewData["ProductData"] = dataTable;
+
+                return View("ProductMaster", model);
+
+            }
+        }
+
+
+        public async Task<DataTable> AdditionalProductMasterFun(string branchID)
+        {
+            using (var context = new BillingContext())
+            {
+                // Step 1: Perform the query
+                var entities = context.SHProductMaster
+                                      .Where(e => e.BranchID == branchID && e.IsDelete == false)
+                                      .ToList();
+
+                // Step 2: Convert to DataTable
+                return BusinessClassBilling.ConvertToDataTableProductMaster(entities);
+                
+            }
+        }
+
+
+
         [HttpPost]
 
         public async Task<IActionResult> AddProduct(ProductMatserModel model, string buttonType)
@@ -241,6 +295,7 @@ namespace StellarBillingSystem.Controllers
             BusinessClassBilling business = new BusinessClassBilling(_billingsoftware);
             ViewData["categoryid"] = business.GetCatid(model.BranchID);
             ViewData["discountid"] = business.Getdiscountid(model.BranchID);
+           
 
 
             if (buttonType == "Get")
@@ -248,6 +303,12 @@ namespace StellarBillingSystem.Controllers
                 if (model.ProductID == null && model.BarcodeId == null)
                 {
                     ViewBag.ValidationMessage = "Please enter either ProductID or BarcodeID.";
+
+                    var dataTable = await AdditionalProductMasterFun(model.BranchID);
+
+                    // Store the DataTable in ViewData for access in the view
+                    ViewData["ProductData"] = dataTable;
+
                     return View("ProductMaster", model);
                 }
                 ProductMatserModel? resultpro;
@@ -273,13 +334,25 @@ namespace StellarBillingSystem.Controllers
 
                     ViewBag.GodownNoofitems = noofstock;
                     ViewBag.RackNoofitems = noofitemrack;
+                    var dataTable = await AdditionalProductMasterFun(model.BranchID);
 
+                    // Store the DataTable in ViewData for access in the view
+                    ViewData["ProductData"] = dataTable;
+                    var dataTable1 = await AdditionalProductMasterFun(model.BranchID);
+
+                    // Store the DataTable in ViewData for access in the view
+                    ViewData["ProductData"] = dataTable1;
                     return View("ProductMaster", resultpro);
                 }
                 else
                 {
                     ProductMatserModel obj = new ProductMatserModel();
                     ViewBag.NoProductMessage = "No value for this product ID";
+                    var dataTable = await AdditionalProductMasterFun(model.BranchID);
+
+                    // Store the DataTable in ViewData for access in the view
+                    ViewData["ProductData"] = dataTable;
+
                     return View("ProductMaster", obj);
                 }
             }
@@ -291,6 +364,11 @@ namespace StellarBillingSystem.Controllers
                 if (string.IsNullOrEmpty(model.ProductID) && string.IsNullOrEmpty(model.BarcodeId))
                 {
                     ViewBag.ValidationMessage = "Please enter either ProductID or BarcodeID.";
+                    var dataTable1 = await AdditionalProductMasterFun(model.BranchID);
+
+                    // Store the DataTable in ViewData for access in the view
+                    ViewData["ProductData"] = dataTable1;
+
                     return View("ProductMaster", model);
                 }
 
@@ -308,8 +386,13 @@ namespace StellarBillingSystem.Controllers
                     ViewBag.ErrorMessage = "Product not found";
 
                 }
-                model = new ProductMatserModel();
+                
+                var dataTable = await AdditionalProductMasterFun(model.BranchID);
 
+                // Store the DataTable in ViewData for access in the view
+                ViewData["ProductData"] = dataTable;
+
+                model = new ProductMatserModel();
                 return View("ProductMaster", model);
             }
             else if (buttonType == "DeleteRetrieve")
@@ -317,6 +400,10 @@ namespace StellarBillingSystem.Controllers
                 if (string.IsNullOrEmpty(model.ProductID) && string.IsNullOrEmpty(model.BarcodeId))
                 {
                     ViewBag.ValidationMessage = "Please enter either ProductID or BarcodeID.";
+                    var dataTable1 = await AdditionalProductMasterFun(model.BranchID);
+
+                    // Store the DataTable in ViewData for access in the view
+                    ViewData["ProductData"] = dataTable1;
                     return View("ProductMaster", model);
                 }
 
@@ -354,7 +441,10 @@ namespace StellarBillingSystem.Controllers
                 {
                     ViewBag.ErrorMessage = "Product not found";
                 }
+                var dataTable = await AdditionalProductMasterFun(model.BranchID);
 
+                // Store the DataTable in ViewData for access in the view
+                ViewData["ProductData"] = dataTable;
                 return View("ProductMaster", model);
             }
             else if (buttonType == "Save")
@@ -362,12 +452,20 @@ namespace StellarBillingSystem.Controllers
                 if (string.IsNullOrEmpty(model.ProductID))
                 {
                     ViewBag.ValidationMessage = "Please enter  ProductID";
+                    var dataTable = await AdditionalProductMasterFun(model.BranchID);
+
+                    // Store the DataTable in ViewData for access in the view
+                    ViewData["ProductData"] = dataTable;
                     return View("ProductMaster", model);
                 }
 
                 if (string.IsNullOrEmpty(model.BarcodeId))
                 {
                     ViewBag.ValidationMessage = "Please enter  BarcodeID.";
+                    var dataTable = await AdditionalProductMasterFun(model.BranchID);
+
+                    // Store the DataTable in ViewData for access in the view
+                    ViewData["ProductData"] = dataTable;
                     return View("ProductMaster", model);
                 }
 
@@ -376,6 +474,10 @@ namespace StellarBillingSystem.Controllers
                 if (!decimal.TryParse(model.Price, out price))
                 {
                     ViewBag.PriceErrorMessage = "Please enter a valid price.";
+                    var dataTable = await AdditionalProductMasterFun(model.BranchID);
+
+                    // Store the DataTable in ViewData for access in the view
+                    ViewData["ProductData"] = dataTable;
                     return View("ProductMaster", model);
                 }
 
@@ -404,6 +506,10 @@ namespace StellarBillingSystem.Controllers
                     if (existingProduct.IsDelete)
                     {
                         ViewBag.ErrorMessage = "Cannot update. Product is marked as deleted.";
+                        var dataTable = await AdditionalProductMasterFun(model.BranchID);
+
+                        // Store the DataTable in ViewData for access in the view
+                        ViewData["ProductData"] = dataTable;
                         return View("ProductMaster", model);
                     }
 
@@ -450,9 +556,15 @@ namespace StellarBillingSystem.Controllers
                 ViewBag.Message = "Saved Successfully";
             }
 
+           
+
+            var dataTable2 = await AdditionalProductMasterFun(model.BranchID);
+
+            // Store the DataTable in ViewData for access in the view
+            ViewData["ProductData"] = dataTable2;
+
+
             model = new ProductMatserModel();
-
-
             return View("ProductMaster", model);
         }
 
@@ -1184,22 +1296,8 @@ namespace StellarBillingSystem.Controllers
         }
 
 
-        public IActionResult ProductMaster()
-        {
-            var model = new ProductMatserModel();
-
-            if (TempData["BranchID"] != null)
-            {
-                model.BranchID = TempData["BranchID"].ToString();
-                TempData.Keep("BranchID");
-            }
-
-            BusinessClassBilling business = new BusinessClassBilling(_billingsoftware);
-            ViewData["categoryid"] = business.GetCatid(model.BranchID);
-            ViewData["discountid"] = business.Getdiscountid(model.BranchID);
-
-            return View(model);
-        }
+           
+        
 
         [HttpPost]
         public async Task<IActionResult> AddRackPartition(RackPatrionProductModel model, string buttonType, RackpartitionViewModel viewmodel)

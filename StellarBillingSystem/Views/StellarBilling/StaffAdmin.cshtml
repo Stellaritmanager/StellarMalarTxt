@@ -180,8 +180,8 @@
                             </div>
 
                             <div class="form-floating form-floating-outline mb-4">
-                                <input asp-for="PhoneNumber" value="@Model.PhoneNumber" class="form-control" placeholder="Phone Number" pattern="^\d{10}$" title="Phone Number should be exactly 10 digits" />
-                                <label asp-for="PhoneNumber" class="control-label">Phone Number</label>
+                                <input type="text" value="@Model.PhoneNumber" class="form-control" placeholder="(999) 999-9999" />
+                                <label class="col-md-4 control-label">Phone Number</label>
                                 <span asp-validation-for="PhoneNumber" class="text-danger"></span>
                             </div>
 

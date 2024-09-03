@@ -1,4 +1,6 @@
 ﻿@model ProductMatserModel
+@using System.Data
+@using NonFactors.Mvc.Grid
 
 
 @{
@@ -272,6 +274,37 @@
             handleMessages("@ViewBag.ValidationMessage");
         </script>
     }
+
+
+    @{
+        var dataTable = ViewData["ProductData"] as DataTable;
+    }
+
+    <table>
+        <thead>
+            <tr>
+                <th>ProductID</th>
+                <th>ProductName</th>
+                <th>BarcodeId</th>
+                <th>Price</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (dataTable != null)
+            {
+                foreach (DataRow row in dataTable.Rows)
+                {
+                    <tr>
+                        <td>@row["ProductID"]</td>
+                        <td>@row["ProductName"]</td>
+                        <td>@row["BarcodeId"]</td>
+                        <td>@row["Price"]</td>
+                    </tr>
+                }
+            }
+        </tbody>
+    </table>
+
 
 
 </form>
