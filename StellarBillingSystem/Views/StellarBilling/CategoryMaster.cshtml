@@ -33,161 +33,112 @@
         border: 10px solid #fff;
     }
 </style>
-
-
 <form asp-controller="StellarBilling">
     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
-   
-    <div class="row" style="margin-top:5px">
-
-        <div class="card text-bg-light" style="height:70px">
-            <div class="d-flex align-items-end row" style="margin-top:10px">
-               
-                    <h1 class="card-title text-dark" style="margin-top:2px">Category Master</h1>
-               
-            </div>
-        </div>
-    </div>
-    
-@*     <div class="row" style="margin-top:20px">
-        <div class="col-md-1">
-        </div>
-        <div class="col-md-10">
-    <div class="row" >
-
-        <div class="card text-bg-light" style="height:70px">
-            <div class="d-flex align-items-end row" style="margin-top:10px">
-                       
-                <div class="col-md-4">
-                    <div class="form-floating form-floating-outline mb-4">
-                        <input asp-for="CategoryID" value="@Model.CategoryID" class="form-control" placeholder="Category ID" required />
-                        <label asp-for="CategoryID" class="control-label">Category ID</label>
-                        <span asp-validation-for="CategoryID" class="text-danger"></span>
+    <div class="row">
+        <div class="col-md-12 col-lg-0"></div>
+        <div class="col-md-12 col-lg-12" style="padding: 0;">
+            <div class="card" style="height:40px;">
+                <div class="card-body dividerblack">
+                    <div style="display: flex; align-items: center; height: 100%;">
+                        <div class="container" style="text-align: left; width: 100%;">
+                            <h2 class="centered text-white" style="font-family:'Lucida Bright'; margin: 0;">
+                                Category Master
+                            </h2>
+                        </div>
                     </div>
                 </div>
-                <div class="col-md-5">
-                <div class="form-floating form-floating-outline mb-4">
-                    <input asp-for="CategoryName" value="@Model.CategoryName" class="form-control" placeholder="Category Name" />
-                    <label asp-for="CategoryName" class="control-label">Category Name</label>
-
-                    <span asp-validation-for="CategoryName" class="text-danger"></span>
-                </div>
-                            
-                </div>
-                <div class="col-md-3">
-                    <button type="submit" style="width:100px" value="Get" asp-action="GetCategory" formmethod="get" name="buttonType" class="btn btn-primary">Get</button>
-                </div>
-                     
             </div>
         </div>
     </div>
-        </div>
-            <div class="col-md-1">
-            </div>
-        </div> *@
-        <div class="row gy-4" style="margin-top:50px">
-        <div class="col-md-12 col-lg-2">
-        </div>
-        <div class="col-md-12 col-lg-8">
+
+    <br />
+
+    <div class="row" style="height:8%"></div>
+
+    <div class="row" style="margin-top:60px">
+        <div class="col-md-12 col-lg-0"></div>
+        <div class="col-md-12 col-lg-12">
             <div class="card">
                 <div class="card-body dividerblack">
-
                     <div class="row gy-4">
-                        <div class="col-md-12 col-lg-8">
+                        <div class="col-md-12 col-lg-2"></div>
+                        <div class="col-md-12 col-lg-4">
                             <div class="form-floating form-floating-outline mb-4">
                                 <input type="CategoryID" class="form-control" placeholder="Category ID" name="CategoryID" value="@Model.CategoryID" required />
                                 <label asp-for="CategoryID" class="control-label">Category ID</label>
-                                
                             </div>
                         </div>
-
-                        <div class="col-md-12 col-lg-4" style="align-items:center">
+                        <div class="col-md-12 col-lg-4">
+                            <div class="form-floating form-floating-outline mb-4">
+                                <input type="CategoryName" class="form-control" placeholder="Category Name" name="CategoryName" value="@Model.CategoryName" />
+                                <label asp-for="CategoryName" class="control-label">Category Name</label>
+                            </div>
+                        </div>
+                        <div class="col-md-12 col-lg-2" style="align-items:center">
                             <button type="submit" style="width:100px" value="Get" asp-action="GetCategory" formmethod="get" name="buttonType" class="btn btn-primary">Get</button>
+                        </div>
+                        <div class="col-md-12 d-flex justify-content-center">
+                            <button type="submit" asp-action="AddCategory" value="save" name="buttonType" formmethod="post" class="btn btn-primary mx-2">Save</button>
+                            <button type="submit" asp-action="AddCategory" value="Delete" name="buttonType" class="btn btn-primaryred mx-2">Delete</button>
+                            <button type="submit" asp-action="AddCategory" value="DeleteRetrieve" name="buttonType" class="btn btn-primaryellow mx-2">Delete Retrieve</button>
                         </div>
                     </div>
                     <br />
-                    <div class="form-floating form-floating-outline mb-4">
-                        <input type="CategoryName" class="form-control" placeholder="Category Name" name="CategoryName" value="@Model.CategoryName" />
-                        <label asp-for="CategoryName" class="control-label">Category Name</label>
-
-                       
-                    </div>
-
-                    <br />
-
-
                 </div>
             </div>
-
-
         </div>
-
-
-        <div class="col-md-12 col-lg-2">
-        </div>
+        <div class="col-md-12 col-lg-2"></div>
     </div>
-
-
 
     @if (Model != null)
     {
-        <center>
-            <center>
-                <h3 class="centered" style="font-family: 'Lucida Bright'; color: black;">Category Master</h3>
-            </center>
-
-
-        </center>
         <div class="row" style="margin-top:30px">
-            <div class="col-md-12">
+            <div class="col-md-12 col-lg-0"></div>
+            <div class="col-md-12 col-lg-12">
+                <div class="card">
+                    <div class="card-body dividerblack">
+                        <h3 class="centered text-white" style="font-family: 'Lucida Bright'; margin-bottom: 20px; text-align: center;">Category Master</h3>
+                        <table class="table table-striped table-bordered" style="border: 3px solid black;">
+                            <thead style="background-color: black; color: white;">
+                                <tr>
+                                    <th style="text-align: center;">Category ID</th>
+                                    <th style="text-align: center;">Category Name</th>
+                                    <!-- Add other columns as needed -->
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var category in Model.ViewCategories)
+                                {
+                                    <tr>
+                                        <td style="text-align: center;">@category.CategoryID</td>
+                                        <td style="text-align: center;">@category.CategoryName</td>
+                                        <!-- Add other columns as needed -->
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                        <div class="pagination">
+                            @if (Model.TotalCount > Model.PageSize)
+                            {
+                                int totalPages = (int)Math.Ceiling((double)Model.TotalCount / Model.PageSize);
 
-                <table class="table table-striped">
-                    <thead>
-                        <tr>
-                            <th>Category ID</th>
-                            <th>Category Name</th>
-                            <!-- Add other columns as needed -->
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var category in Model.ViewCategories)
-                        {
-                            <tr>
-                                <td>@category.CategoryID</td>
-                                <td>@category.CategoryName</td>
-                                <!-- Add other columns as needed -->
-                            </tr>
-                        }
-                    </tbody>
-                </table>
-
-                <div class="pagination">
-                    @if (Model.TotalCount > Model.PageSize)
-                    {
-                        int totalPages = (int)Math.Ceiling((double)Model.TotalCount / Model.PageSize);
-
-                        for (int i = 1; i <= totalPages; i++)
-                        {
-                            <a href="@Url.Action("CategoryMaster", new { page = i })" class="@(Model.CurrentPage == i ? "btn btn-primary" : "btn btn-secondary")">
-                                @i
-                            </a>
-                        }
-                    }
+                                for (int i = 1; i <= totalPages; i++)
+                                {
+                                    <a href="@Url.Action("CategoryMaster", new { page = i })" class="@(Model.CurrentPage == i ? "btn btn-primary" : "btn btn-secondary")">
+                                        @i
+                                    </a>
+                                }
+                            }
+                        </div>
+                    </div>
                 </div>
             </div>
+            <div class="col-md-12 col-lg-0"></div>
         </div>
     }
 
-    <div class="form-group" style="margin-top:30px">
-        <center>
-
-            <button type="submit" asp-action="AddCategory" value="save" name="buttonType" formmethod="post" class="btn btn-primary">Save</button>
-            <button type="submit" asp-action="AddCategory" value="Delete" name="buttonType" class="btn btn-primary">Delete</button>
-            <button type="submit" asp-action="AddCategory" value="DeleteRetrieve" name="buttonType" class="btn btn-primary">Delete Retrieve</button>
-
-        </center>
-    </div>
     @if (ViewBag.Message != null)
     {
         <script>
@@ -203,4 +154,3 @@
         ViewBag.ErrorMessage = null;
     }
 </form>
-

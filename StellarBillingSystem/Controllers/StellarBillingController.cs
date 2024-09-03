@@ -477,7 +477,7 @@ namespace StellarBillingSystem.Controllers
 
             if (buttonType == "DeleteRetrieve")
             {
-                var screentoretrieve = await _billingsoftware.SHGodown.FindAsync(model.ProductID, model.DatefofPurchase, model.SupplierInformation, model.BranchID);
+                var screentoretrieve = await _billingsoftware.SHGodown.FindAsync(model.ProductID, model.BranchID);
                 if (screentoretrieve != null)
                 {
                     if (screentoretrieve.IsDelete == true)
@@ -511,7 +511,7 @@ namespace StellarBillingSystem.Controllers
 
             if (buttonType == "Save")
             {
-                var existinggoddown = await _billingsoftware.SHGodown.FindAsync(model.ProductID, model.DatefofPurchase, model.SupplierInformation, model.BranchID);
+                var existinggoddown = await _billingsoftware.SHGodown.FindAsync(model.ProductID, model.BranchID);
                 if (existinggoddown != null)
                 {
                     if (existinggoddown.IsDelete)
@@ -549,7 +549,7 @@ namespace StellarBillingSystem.Controllers
             }
             if (buttonType == "Delete")
             {
-                var goddown = await _billingsoftware.SHGodown.FindAsync(model.ProductID, model.DatefofPurchase, model.SupplierInformation, model.BranchID);
+                var goddown = await _billingsoftware.SHGodown.FindAsync(model.ProductID, model.BranchID);
                 if (goddown != null)
                 {
                     if (goddown.IsDelete)
@@ -577,7 +577,7 @@ namespace StellarBillingSystem.Controllers
 
             if (buttonType == "Get")
             {
-                var getStock = await _billingsoftware.SHGodown.FirstOrDefaultAsync(x => x.IsDelete == false && x.ProductID == model.ProductID && x.DatefofPurchase == model.DatefofPurchase && x.SupplierInformation == model.SupplierInformation && x.BranchID == model.BranchID);
+                var getStock = await _billingsoftware.SHGodown.FirstOrDefaultAsync(x => x.IsDelete == false && x.ProductID == model.ProductID && x.IsDelete==false && x.BranchID == model.BranchID);
                 if (getStock != null)
                 {
 
