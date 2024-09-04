@@ -698,10 +698,10 @@ namespace StellarBillingSystem.Controllers
                         model.SupplierInformation = screentoretrieve.SupplierInformation;
 
                         ViewBag.retMessage = "Deleted Stock retrieved successfully";
-                        var dataTable = await AdditionalGodownFun(model.BranchID);
+                        var dataTable1 = await AdditionalGodownFun(model.BranchID);
 
                         // Store the DataTable in ViewData for access in the view
-                        ViewData["GodownData"] = dataTable;
+                        ViewData["GodownData"] = dataTable1;
                         return View("GodownModel", screentoretrieve);
                     }
                     else
@@ -714,6 +714,10 @@ namespace StellarBillingSystem.Controllers
                     ScreenMasterModel scrn = new ScreenMasterModel();
                     ViewBag.nostockMessage = "Stock not found";
                 }
+                var dataTable2 = await AdditionalGodownFun(model.BranchID);
+
+                // Store the DataTable in ViewData for access in the view
+                ViewData["GodownData"] = dataTable2;
                 return View("GodownModel", model);
             }
 
@@ -726,6 +730,10 @@ namespace StellarBillingSystem.Controllers
                     if (existinggoddown.IsDelete)
                     {
                         ViewBag.ErrorMessage = "Cannot update. GodowmnID is marked as deleted.";
+                        var dataTable3 = await AdditionalGodownFun(model.BranchID);
+
+                        // Store the DataTable in ViewData for access in the view
+                        ViewData["GodownData"] = dataTable3;
                         return View("GodownModel", model);
                     }
 
@@ -735,7 +743,7 @@ namespace StellarBillingSystem.Controllers
                     existinggoddown.SupplierInformation = model.SupplierInformation;
                     existinggoddown.IsDelete = model.IsDelete;
                     existinggoddown.BranchID = model.BranchID;
-                    existinggoddown.LastUpdatedDate = DateTime.Now.ToString();
+                    existinggoddown.LastUpdatedDate = DateTime.Now;
                     existinggoddown.LastUpdatedUser = User.Claims.First().Value.ToString();
                     existinggoddown.LastUpdatedmachine = Request.HttpContext.Connection.RemoteIpAddress.ToString();
                     _billingsoftware.Entry(existinggoddown).State = EntityState.Modified;
@@ -745,7 +753,7 @@ namespace StellarBillingSystem.Controllers
                 else
                 {
 
-                    model.LastUpdatedDate = DateTime.Now.ToString();
+                    model.LastUpdatedDate = DateTime.Now;
                     model.LastUpdatedUser = User.Claims.First().Value.ToString();
                     model.LastUpdatedmachine = Request.HttpContext.Connection.RemoteIpAddress.ToString();
                     _billingsoftware.SHGodown.Add(model);
@@ -764,6 +772,10 @@ namespace StellarBillingSystem.Controllers
                     if (goddown.IsDelete)
                     {
                         ViewBag.ErrorMessage = "Stock Already Deleted";
+                        var dataTable4 = await AdditionalGodownFun(model.BranchID);
+
+                        // Store the DataTable in ViewData for access in the view
+                        ViewData["GodownData"] = dataTable4;
                         return View("GodownModel", model);
                     }
 
@@ -771,12 +783,20 @@ namespace StellarBillingSystem.Controllers
                     await _billingsoftware.SaveChangesAsync();
 
                     ViewBag.delMessage = "Stock deleted successfully";
+                    var dataTable5 = await AdditionalGodownFun(model.BranchID);
+
+                    // Store the DataTable in ViewData for access in the view
+                    ViewData["GodownData"] = dataTable5;
                     model = new GodownModel();
                     return View("GodownModel", model);
                 }
                 else
                 {
                     ViewBag.nostockMessage = "Stock not found";
+                    var dataTable6 = await AdditionalGodownFun(model.BranchID);
+
+                    // Store the DataTable in ViewData for access in the view
+                    ViewData["GodownData"] = dataTable6;
                     model = new GodownModel();
                     return View("GodownModel", model);
                 }
@@ -794,7 +814,12 @@ namespace StellarBillingSystem.Controllers
                 }
                 else
                 {
+                    var dataTable7 = await AdditionalGodownFun(model.BranchID);
+
+                    // Store the DataTable in ViewData for access in the view
+                    ViewData["GodownData"] = dataTable7;
                     GodownModel role = new GodownModel();
+
                     ViewBag.getMessage = "No Data found";
                     return View("GodownModel", model);
                 }
@@ -802,6 +827,11 @@ namespace StellarBillingSystem.Controllers
             }
 
             ViewBag.Message = "Saved Successfully";
+
+            var dataTable8 = await AdditionalGodownFun(model.BranchID);
+
+            // Store the DataTable in ViewData for access in the view
+            ViewData["GodownData"] = dataTable8;
 
             model = new GodownModel();
 
