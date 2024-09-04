@@ -7104,6 +7104,7 @@ a.invert-bg-dark:hover, a.invert-bg-dark:focus {
   letter-spacing: 1px;
 }
 .table:not(.table-dark) th {
+    background-color : black;
   color: #fff;
 }
 
@@ -11623,6 +11624,31 @@ button.list-group-item-gray.active {
   .d-sm-table {
     display: table !important;
   }
+
+
+    /* Style for table headers */
+    th {
+        background-color: black;
+        color: white;
+        padding: 10px;
+        text-align: left;
+        border: 1px solid #444; /* Adds border to the header cells */
+    }
+
+    /* Style for table cells */
+    td {
+        padding: 10px;
+        border: 1px solid #444; /* Adds border to table cells */
+    }
+
+    /* Style for the table structure */
+    table {
+        border-collapse: collapse; /* Ensures borders do not double up */
+        width: 100%; /* Makes the table take up full width */
+    }
+
+
+
   .d-sm-table-row {
     display: table-row !important;
   }

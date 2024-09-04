@@ -573,6 +573,48 @@ namespace StellarBillingSystem.Controllers
 
 
 
+        public async Task<DataTable> AdditionalGodownFun(string branchID)
+        {
+            using (var context = new BillingContext())
+            {
+                // Step 1: Perform the query
+                var entities = context.SHGodown
+                                      .Where(e => e.BranchID == branchID && e.IsDelete == false)
+                                      .ToList();
+
+                // Step 2: Convert to DataTable
+                return BusinessClassBilling.ConvertToDataTableGodown(entities);
+
+            }
+        }
+
+
+
+        public async Task<IActionResult> GodownModel()
+        {
+            var model = new GodownModel();
+
+            if (TempData["BranchID"] != null)
+            {
+                model.BranchID = TempData["BranchID"].ToString();
+                TempData.Keep("BranchID");
+            }
+
+
+            BusinessClassBilling business = new BusinessClassBilling(_billingsoftware);
+            ViewData["godownproductid"] = business.GetProductid(model.BranchID);
+
+
+            var dataTable = await AdditionalGodownFun(model.BranchID);
+
+            // Store the DataTable in ViewData for access in the view
+            ViewData["GodownData"] = dataTable;
+
+            return View("GodownModel", model);
+
+        }
+
+
         [HttpPost]
 
         public async Task<IActionResult> GodDown(GodownModel model, string buttonType)
@@ -605,6 +647,10 @@ namespace StellarBillingSystem.Controllers
                         model.SupplierInformation = screentoretrieve.SupplierInformation;
 
                         ViewBag.retMessage = "Deleted Stock retrieved successfully";
+                        var dataTable = await AdditionalGodownFun(model.BranchID);
+
+                        // Store the DataTable in ViewData for access in the view
+                        ViewData["GodownData"] = dataTable;
                         return View("GodownModel", screentoretrieve);
                     }
                     else
@@ -3410,24 +3456,7 @@ namespace StellarBillingSystem.Controllers
             return View();
         }
 
-        public IActionResult GodownModel()
-        {
-            var model = new GodownModel();
-
-            if (TempData["BranchID"] != null)
-            {
-                model.BranchID = TempData["BranchID"].ToString();
-                TempData.Keep("BranchID");
-            }
-
-
-            BusinessClassBilling business = new BusinessClassBilling(_billingsoftware);
-            ViewData["godownproductid"] = business.GetProductid(model.BranchID);
-
-
-            return View(model);
-
-        }
+   
 
 
         public IActionResult CustomerBilling(string productid, string billid, string SelectedProductID)

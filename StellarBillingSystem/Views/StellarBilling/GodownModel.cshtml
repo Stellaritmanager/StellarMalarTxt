@@ -1,4 +1,6 @@
 ﻿@model GodownModel
+@using System.Data
+@using NonFactors.Mvc.Grid
 
 @{
     ViewData["Title"] = "GodownModel";
@@ -152,11 +154,54 @@
 
 
         </div>
+
+
+
+    @{
+        var dataTable = ViewData["GodownData"] as DataTable;
+    }
+
+    <div class="row" style="margin-top:30px">
+        <div class="col-md-12 col-lg-0"></div>
+        <div class="col-md-12 col-lg-12">
+            <div class="card">
+                <div class="card-body dividerblack">
+                    <h3 class="centered text-white" style="font-family: 'Lucida Bright'; margin-bottom: 20px; text-align: center;">Godown</h3>
+                    <table class="table table-striped table-bordered" style="border: 3px solid black;">
+                        <thead style="background-color: black; color: white;">
+                            <tr>
+                        <tr>
+                            <th>ProductID</th>
+                            <th>Number Of Stock</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (dataTable != null)
+                        {
+                            foreach (DataRow row in dataTable.Rows)
+                            {
+                                <tr>
+                                    <td>@row["ProductID"]</td>
+                                    <td>@row["NumberofStocks"]</td>
+                        
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+
+
+            </div>
+        </div>
+    </div>
+    </div>
     
-  
 
 
-            @if (ViewBag.Message != null)
+
+
+
+    @if (ViewBag.Message != null)
             {
                 <script>
                     handleMessages("@ViewBag.Message");

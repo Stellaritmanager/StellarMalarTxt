@@ -62,13 +62,30 @@ namespace StellarBillingSystem.Business
 
             return dataTable;
         }
-    
+
+        public static DataTable ConvertToDataTableGodown(IEnumerable<GodownModel> entities)
+        {
+            var dataTable = new DataTable();
+
+            // Add columns
+            dataTable.Columns.Add("ProductID", typeof(string));
+            dataTable.Columns.Add("NumberofStocks", typeof(string));
+           
+            // Add rows
+            foreach (var entity in entities)
+            {
+                dataTable.Rows.Add(entity.ProductID, entity.NumberofStocks);
+            }
+
+            return dataTable;
+        }
 
 
 
-    /*Product Dropdown*/
 
-    public List<CategoryMasterModel> GetCatid(string BranchID)
+        /*Product Dropdown*/
+
+        public List<CategoryMasterModel> GetCatid(string BranchID)
         {
             var categoryid = (
                     from pr in _billingContext.SHCategoryMaster
