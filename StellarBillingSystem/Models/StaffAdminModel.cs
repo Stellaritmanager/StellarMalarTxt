@@ -26,7 +26,7 @@
         private string strIdProofId;
         private string strIdProofName;
         private string lastupdatedUser;
-        private string lastupdatedDate;
+        private DateTime lastupdatedDate;
         private string lastUpdatedMachine;
         private bool isDelete;
         private string branchID;
@@ -56,10 +56,11 @@
         public string? IdProofId { get => strIdProofId; set => strIdProofId = value; }
         public string? IdProofName { get => strIdProofName; set => strIdProofName = value; }
         public string? LastupdatedUser { get => lastupdatedUser; set => lastupdatedUser = value; }
-        public string? LastupdatedDate { get => lastupdatedDate; set => lastupdatedDate = value; }
+       
         public string? LastUpdatedMachine { get => lastUpdatedMachine; set => lastUpdatedMachine = value; }
         public bool IsDelete { get => isDelete; set => isDelete = value; }
         public string BranchID { get => branchID; set => branchID = value; }
-        public byte[] IdProofFile { get => idProofFile; set => idProofFile = value; }
+        public byte[]? IdProofFile { get => idProofFile; set => idProofFile = value; }
+        public DateTime LastupdatedDate { get => lastupdatedDate; set => lastupdatedDate = value; }
     }
 }

@@ -80,6 +80,27 @@ namespace StellarBillingSystem.Business
             return dataTable;
         }
 
+        public static DataTable ConvertToDataTableStaff(IEnumerable<StaffAdminModel> entities)
+        {
+            var dataTable = new DataTable();
+
+            // Add columns
+            dataTable.Columns.Add("StaffID", typeof(string));
+            dataTable.Columns.Add("FullName", typeof(string));
+            dataTable.Columns.Add("ResourceTypeID", typeof(string));
+            dataTable.Columns.Add("PhoneNumber", typeof(string));
+            dataTable.Columns.Add("EmailId", typeof(string));
+           
+
+            // Add rows
+            foreach (var entity in entities)
+            {
+                dataTable.Rows.Add(entity.StaffID, entity.FullName,entity.ResourceTypeID,entity.PhoneNumber,entity.EmailId);
+            }
+
+            return dataTable;
+        }
+
 
 
         public static DataTable convertToDataTableCategoryMaster(IEnumerable<CategoryMasterModel> entities)

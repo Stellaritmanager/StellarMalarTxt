@@ -1752,6 +1752,54 @@ namespace StellarBillingSystem.Controllers
 
 
 
+        public async Task<DataTable> AdditionalStaffFun(string branchID)
+        {
+            using (var context = new BillingContext())
+            {
+                // Step 1: Perform the query
+                var entities = await (from staff in context.SHStaffAdmin
+                                      join resource in context.SHresourceType 
+                                      on staff.ResourceTypeID equals resource.ResourceTypeID
+                                      where staff.BranchID == branchID && staff.IsDelete == false && resource.BranchID == branchID && resource.IsDelete == false
+                                      orderby staff.LastupdatedDate descending
+                                      select new StaffAdminModel
+                                      {
+                                          StaffID = staff.StaffID,
+                                          FullName = staff.FullName,
+                                          ResourceTypeID = resource.ResourceTypeName,
+                                          PhoneNumber = staff.PhoneNumber,
+                                          EmailId = staff.EmailId
+                                      }).ToListAsync();
+
+                // Step 2: Convert to DataTable
+                return BusinessClassBilling.ConvertToDataTableStaff(entities);
+
+            }
+        }
+
+
+
+        public async Task<IActionResult> StaffAdmin()
+        {
+            var model = new StaffAdminModel();
+
+            if (TempData["BranchID"] != null)
+            {
+                model.BranchID = TempData["BranchID"].ToString();
+                TempData.Keep("BranchID");
+            }
+
+            BusinessClassBilling Busbill = new BusinessClassBilling(_billingsoftware);
+            ViewData["resoruseid"] = Busbill.GetResourceid(model.BranchID);
+            ViewData["branchid"] = Busbill.Getbranch();
+
+            var dataTable = await AdditionalStaffFun(model.BranchID);
+
+            // Store the DataTable in ViewData for access in the view
+            ViewData["StaffData"] = dataTable;
+
+            return View(model);
+        }
 
         // staff reg
         [HttpPost]
@@ -1778,12 +1826,20 @@ namespace StellarBillingSystem.Controllers
                 {
                     // Prepare the image URL
                     ViewBag.ImageUrl = Url.Action("GetIdProofImage", new { staffId = getstaff.StaffID, branchId = getstaff.BranchID });
+                    var dataTable1 = await AdditionalStaffFun(model.BranchID);
+
+                    // Store the DataTable in ViewData for access in the view
+                    ViewData["StaffData"] = dataTable1;
                     return View("StaffAdmin", getstaff);
                 }
                 else
                 {
                     StaffAdminModel par = new StaffAdminModel();
                     ViewBag.getMessage = "No Data found for this Staff ID";
+                    var dataTable2 = await AdditionalStaffFun(model.BranchID);
+
+                    // Store the DataTable in ViewData for access in the view
+                    ViewData["StaffData"] = dataTable2;
                     return View("StaffAdmin", par);
                 }
 
@@ -1802,6 +1858,10 @@ namespace StellarBillingSystem.Controllers
                     if (stafftodelete.IsDelete)
                     {
                         ViewBag.ErrorMessage = "StaffID Already Deleted";
+                        var dataTable3 = await AdditionalStaffFun(model.BranchID);
+
+                        // Store the DataTable in ViewData for access in the view
+                        ViewData["StaffData"] = dataTable3;
                         return View("StaffAdmin", model);
                     }
 
@@ -1809,12 +1869,21 @@ namespace StellarBillingSystem.Controllers
                     await _billingsoftware.SaveChangesAsync();
 
                     ViewBag.delMessage = "StaffID deleted successfully";
+                    var dataTable4 = await AdditionalStaffFun(model.BranchID);
+
+                    // Store the DataTable in ViewData for access in the view
+                    ViewData["StaffData"] = dataTable4;
+
                     model = new StaffAdminModel();
                     return View("StaffAdmin", model);
                 }
                 else
                 {
                     ViewBag.delnoMessage = "StaffID not found";
+                    var dataTable5 = await AdditionalStaffFun(model.BranchID);
+
+                    // Store the DataTable in ViewData for access in the view
+                    ViewData["StaffData"] = dataTable5;
                     model = new StaffAdminModel();
                     return View("StaffAdmin", model);
                 }
@@ -1874,6 +1943,10 @@ namespace StellarBillingSystem.Controllers
                 {
                     ViewBag.noretMessage = "StaffID not found";
                 }
+                var dataTable6 = await AdditionalStaffFun(model.BranchID);
+
+                // Store the DataTable in ViewData for access in the view
+                ViewData["StaffData"] = dataTable6;
                 return View("StaffAdmin", model);
             }
 
@@ -1891,6 +1964,10 @@ namespace StellarBillingSystem.Controllers
                     if (!IsImage(imageFile))
                     {
                         ModelState.AddModelError(string.Empty, "Uploaded file is not an image.");
+                        var dataTable7 = await AdditionalStaffFun(model.BranchID);
+
+                        // Store the DataTable in ViewData for access in the view
+                        ViewData["StaffData"] = dataTable7;
                         return View("StaffAdmin", model);
                     }
 
@@ -1900,12 +1977,7 @@ namespace StellarBillingSystem.Controllers
                         model.IdProofFile = memoryStream.ToArray();
                     }
                 }
-                else
-                {
-                    // Handle the case where no file was provided
-                    ViewBag.ErrorMessage = "No file uploaded.";
-                    return View("StaffAdmin", model);
-                }
+               
 
 
                 var existingStaffAdmin = await _billingsoftware.SHStaffAdmin.FindAsync(model.StaffID, model.BranchID);
@@ -1914,6 +1986,10 @@ namespace StellarBillingSystem.Controllers
                 if (string.IsNullOrWhiteSpace(model.UserName) || string.IsNullOrWhiteSpace(model.Password))
                 {
                     ViewBag.validateMessage = "Username and Password are required.";
+                    var dataTable8 = await AdditionalStaffFun(model.BranchID);
+
+                    // Store the DataTable in ViewData for access in the view
+                    ViewData["StaffData"] = dataTable8;
                     return View("StaffAdmin", model);
                 }
 
@@ -1922,6 +1998,10 @@ namespace StellarBillingSystem.Controllers
                     if (existingStaffAdmin.IsDelete)
                     {
                         ViewBag.ErrorMessage = "Cannot update. Product is marked as deleted.";
+                        var dataTable9 = await AdditionalStaffFun(model.BranchID);
+
+                        // Store the DataTable in ViewData for access in the view
+                        ViewData["StaffData"] = dataTable9;
                         return View("StaffAdmin", model);
                     }
 
@@ -1947,7 +2027,7 @@ namespace StellarBillingSystem.Controllers
                     existingStaffAdmin.IdProofId = model.IdProofId;
                     existingStaffAdmin.IdProofName = model.IdProofName;
                     existingStaffAdmin.IdProofFile = model.IdProofFile;
-                    existingStaffAdmin.LastupdatedDate = DateTime.Now.ToString();
+                    existingStaffAdmin.LastupdatedDate = DateTime.Now;
                     existingStaffAdmin.LastupdatedUser = User.Claims.First().Value.ToString();
                     existingStaffAdmin.LastUpdatedMachine = Request.HttpContext.Connection.RemoteIpAddress.ToString();
 
@@ -1957,7 +2037,7 @@ namespace StellarBillingSystem.Controllers
                 else
                 {
 
-                    model.LastupdatedDate = DateTime.Now.ToString();
+                    model.LastupdatedDate = DateTime.Now;
                     model.LastupdatedUser = User.Claims.First().Value.ToString();
                     model.LastUpdatedMachine = Request.HttpContext.Connection.RemoteIpAddress.ToString();
                     _billingsoftware.SHStaffAdmin.Add(model);
@@ -1967,12 +2047,20 @@ namespace StellarBillingSystem.Controllers
             {
                 StaffAdminModel mod = new StaffAdminModel();
                 ViewBag.ExistMessage = "Username and Password Already Exist";
+                var dataTable10 = await AdditionalStaffFun(model.BranchID);
+
+                // Store the DataTable in ViewData for access in the view
+                ViewData["StaffData"] = dataTable10;
                 return View("StaffAdmin", mod);
             }
             await _billingsoftware.SaveChangesAsync();
 
             ViewBag.Message = "Saved Successfully";
 
+            var dataTable = await AdditionalStaffFun(model.BranchID);
+
+            // Store the DataTable in ViewData for access in the view
+            ViewData["StaffData"] = dataTable;
             model = new StaffAdminModel();
             return View("StaffAdmin", model);
 
@@ -3413,24 +3501,7 @@ namespace StellarBillingSystem.Controllers
 
 
 
-        public IActionResult StaffAdmin()
-        {
-            var model = new StaffAdminModel();
-
-            if (TempData["BranchID"] != null)
-            {
-                model.BranchID = TempData["BranchID"].ToString();
-                TempData.Keep("BranchID");
-            }
-
-            BusinessClassBilling Busbill = new BusinessClassBilling(_billingsoftware);
-            ViewData["resoruseid"] = Busbill.GetResourceid(model.BranchID);
-            ViewData["branchid"] = Busbill.Getbranch();
-
-
-
-            return View(model);
-        }
+   
 
         public IActionResult ResourceTypeMaster()
         {
