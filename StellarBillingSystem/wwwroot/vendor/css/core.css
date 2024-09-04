@@ -2106,7 +2106,7 @@ progress {
   appearance: none;
   background-color: #fff;
   background-clip: padding-box;
-  border: var(--bs-border-width) solid #d9dee3;
+  border: var(--bs-border-width) solid #000000;
   border-radius: var(--bs-border-radius);
   transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
 }
