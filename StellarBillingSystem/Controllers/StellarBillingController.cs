@@ -81,7 +81,7 @@ namespace StellarBillingSystem.Controllers
             {
                 // Step 1: Perform the query
                 var entities = context.SHCategoryMaster
-                                      .Where(e => e.BranchID == branchID && e.IsDelete == false)
+                                      .Where(e => e.BranchID == branchID && e.IsDelete == false).OrderByDescending(e=>e.LastUpdatedDate)
                                       .ToList();
 
                 // Step 2: Convert to DataTable
@@ -322,7 +322,7 @@ namespace StellarBillingSystem.Controllers
             {
                 // Step 1: Perform the query
                 var entities = context.SHProductMaster
-                                      .Where(e => e.BranchID == branchID && e.IsDelete == false)
+                                      .Where(e => e.BranchID == branchID && e.IsDelete == false).OrderByDescending(e => e.LastUpdatedDate)
                                       .ToList();
 
                 // Step 2: Convert to DataTable
@@ -584,7 +584,7 @@ namespace StellarBillingSystem.Controllers
 
 
                     // existingProduct.TotalAmount = model.TotalAmount - (model.Price * model.Discount / 100 = model.TotalAmount);
-                    existingProduct.LastUpdatedDate = DateTime.Now.ToString();
+                    existingProduct.LastUpdatedDate = DateTime.Now;
                     existingProduct.LastUpdatedUser = User.Claims.First().Value.ToString();
                     existingProduct.LastUpdatedmachine = Request.HttpContext.Connection.RemoteIpAddress.ToString();
 
@@ -595,7 +595,7 @@ namespace StellarBillingSystem.Controllers
 
                     // Convert strings to decimals, calculate TotalAmount, and convert back to string
 
-                    model.LastUpdatedDate = DateTime.Now.ToString();
+                    model.LastUpdatedDate = DateTime.Now;
                     model.LastUpdatedUser = User.Claims.First().Value.ToString();
                     model.LastUpdatedmachine = Request.HttpContext.Connection.RemoteIpAddress.ToString();
 
@@ -630,7 +630,7 @@ namespace StellarBillingSystem.Controllers
             {
                 // Step 1: Perform the query
                 var entities = context.SHGodown
-                                      .Where(e => e.BranchID == branchID && e.IsDelete == false)
+                                      .Where(e => e.BranchID == branchID && e.IsDelete == false).OrderByDescending(e=> e.LastUpdatedDate)
                                       .ToList();
 
                 // Step 2: Convert to DataTable
@@ -4258,7 +4258,7 @@ namespace StellarBillingSystem.Controllers
 
 
                 // existingProduct.TotalAmount = model.TotalAmount - (model.Price * model.Discount / 100 = model.TotalAmount);
-                existingProduct.LastUpdatedDate = DateTime.Now.ToString();
+                existingProduct.LastUpdatedDate = DateTime.Now;
                 existingProduct.LastUpdatedUser = User.Claims.First().Value.ToString();
                 existingProduct.LastUpdatedmachine = Request.HttpContext.Connection.RemoteIpAddress.ToString();
 
@@ -4269,7 +4269,7 @@ namespace StellarBillingSystem.Controllers
 
                 // Convert strings to decimals, calculate TotalAmount, and convert back to string
 
-                model.LastUpdatedDate = DateTime.Now.ToString();
+                model.LastUpdatedDate = DateTime.Now;
                 model.LastUpdatedUser = User.Claims.First().Value.ToString();
                 model.LastUpdatedmachine = Request.HttpContext.Connection.RemoteIpAddress.ToString();
 
