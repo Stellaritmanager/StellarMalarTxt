@@ -50,7 +50,7 @@
 
 
 
-<form asp-action="AddStaff" asp-controller="StellarBilling">
+<form asp-action="AddStaff" enctype="multipart/form-data" asp-controller="StellarBilling">
     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
     <div class="row">
         <div class="col-md-12 col-lg-0">
@@ -91,9 +91,7 @@
 
                         <div class="col-md-12 col-lg-3">
 
-                          
-
-
+                         
                             <div class="form-floating form-floating-outline mb-4">
                                 <input asp-for="StaffID" value="@Model.StaffID" class="form-control" placeholder="Staff ID" required />
                                 <label asp-for="StaffID" class="control-label">Staff ID</label>
@@ -277,6 +275,27 @@
                                 <span asp-validation-for="IdProofName" class="text-danger"></span>
                             </div>
 
+                            @{
+                                var imageUrl = ViewBag.ImageUrl as string;
+                            }
+
+                            <div>
+                                <label>ID Proof File:</label>
+                                @if (!string.IsNullOrEmpty(imageUrl))
+                                {
+                                    <!-- Link to download the image -->
+                                    <a href="@imageUrl" download="id-proof.jpg">Download ID Proof Image</a>
+                                }
+                                else
+                                {
+                                    <p>No image available</p>
+                                }
+                            </div>
+                            <div>
+                                <label>Upload Image:</label>
+                                <input type="file" name="imageFile" value="@Model.IdProofFile" />
+                            </div>
+
                         </div>
                     </div>
                 </div>
@@ -296,6 +315,12 @@
             </div>
         </div>
         </div>
+
+
+        
+
+
+
 
         @if (ViewBag.Message != null)
         {

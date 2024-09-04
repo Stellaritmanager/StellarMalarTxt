@@ -82,6 +82,20 @@ namespace StellarBillingSystem.Business
 
 
 
+        public static DataTable convertToDataTableCategoryMaster(IEnumerable<CategoryMasterModel> entities)
+        {
+            var dataTable = new DataTable();
+            dataTable.Columns.Add("CategoryID", typeof(string));
+            dataTable.Columns.Add("CategoryName", typeof(string));
+
+            foreach (var entity in entities)
+            {
+                dataTable.Rows.Add(entity.CategoryID, entity.CategoryName);
+            }
+
+            return dataTable;
+        }
+
 
         /*Product Dropdown*/
 
@@ -158,21 +172,6 @@ namespace StellarBillingSystem.Business
 
                           }).ToList();
             return result;
-        }
-
-
-
-
-        public List<CategoryMasterViewModel> Getcategory(string BranchID) 
-        {
-            var result = (from c in _billingContext.SHCategoryMaster
-                          where c.IsDelete == false && c.BranchID == BranchID select new CategoryMasterViewModel
-                          {
-                              CategoryID = c.CategoryID,
-                              CategoryName = c.CategoryName
-                          }).ToList();
-            return result;
-        
         }
 
 

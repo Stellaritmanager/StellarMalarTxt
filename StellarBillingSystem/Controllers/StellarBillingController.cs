@@ -25,6 +25,7 @@ using Microsoft.AspNetCore.Components.Forms;
 using SkiaSharp;
 using Newtonsoft.Json;
 using Microsoft.EntityFrameworkCore.Metadata;
+using System.Globalization;
 
 namespace StellarBillingSystem.Controllers
 {
@@ -42,67 +43,60 @@ namespace StellarBillingSystem.Controllers
         }
 
 
-        [HttpGet]
-        public async Task<IActionResult> GetCategory(CategoryMasterModel model, string buttonType, CategoryMasterViewModel viewmodel)
-        {
 
+
+
+
+
+        public IActionResult CategoryMaster()
+        {
+            CategoryMasterModel model = new CategoryMasterModel();
             if (TempData["BranchID"] != null)
             {
                 model.BranchID = TempData["BranchID"].ToString();
                 TempData.Keep("BranchID");
             }
-
-            if (buttonType == "Get")
+            using (var context = new BillingContext())
             {
-                var getcategory = await _billingsoftware.SHCategoryMaster.FirstOrDefaultAsync(x => x.CategoryID == model.CategoryID && !x.IsDelete && x.BranchID == model.BranchID);
-                if (getcategory != null)
-                {
-                    viewmodel.CategoryID = getcategory.CategoryID;
-                    viewmodel.CategoryName = getcategory.CategoryName;
+                // Step 1: Perform the query
+                var entities = context.SHCategoryMaster
+                                      .Where(e => e.BranchID == model.BranchID && e.IsDelete == false)
+                                      .ToList();
 
+                // Step 2: Convert to DataTable
+                var dataTable = BusinessClassBilling.convertToDataTableCategoryMaster(entities);
+                // Store the DataTable in ViewData for access in the view
 
-                    var category = await _billingsoftware.SHCategoryMaster
-               .Where(x => !x.IsDelete && x.BranchID == model.BranchID)
-               .ToListAsync();
-
-                    viewmodel.ViewCategories = category.Select(c => new CategoryMasterModel
-                    {
-                        CategoryID = c.CategoryID,
-                        CategoryName = c.CategoryName
-                    }).ToList();
-
-                    return View("CategoryMaster", viewmodel);
-                }
-                else
-                {
-                    viewmodel.ViewCategories = new List<CategoryMasterModel>();
-                    ViewBag.ErrorMessage = "No value for this Category ID";
-                  //  return View("CategoryMaster", par);
-                }
+                ViewData["Categorydata"] = dataTable;
+              
+                return View("CategoryMaster",model);
             }
-
-
-            // Optionally reload the list of all categories
-            var categories = await _billingsoftware.SHCategoryMaster
-                .Where(x => !x.IsDelete && x.BranchID == model.BranchID)
-                .ToListAsync();
-
-            viewmodel.ViewCategories = categories.Select(c => new CategoryMasterModel
-            {
-                CategoryID = c.CategoryID,
-                CategoryName = c.CategoryName
-            }).ToList();
-
-            return View("CategoryMaster", viewmodel);
         }
 
 
 
-        [HttpPost]
-        public async Task<IActionResult> AddCategory(CategoryMasterModel model, string buttonType,CategoryMasterViewModel viewmodel)
+        public async Task<DataTable> AdditionalCategoryMasterFun(string branchID)
+        {
+            using (var context = new BillingContext())
+            {
+                // Step 1: Perform the query
+                var entities = context.SHCategoryMaster
+                                      .Where(e => e.BranchID == branchID && e.IsDelete == false)
+                                      .ToList();
+
+                // Step 2: Convert to DataTable
+                return BusinessClassBilling.convertToDataTableCategoryMaster(entities);
+
+            }
+        }
+
+
+
+
+        [HttpGet]
+        public async Task<IActionResult> GetCategory(CategoryMasterModel model, string buttonType)
         {
 
-            BusinessClassBilling business = new BusinessClassBilling(_billingsoftware);
 
             if (TempData["BranchID"] != null)
             {
@@ -110,29 +104,63 @@ namespace StellarBillingSystem.Controllers
                 TempData.Keep("BranchID");
             }
 
-
-            if (viewmodel == null)
-            {
-                viewmodel = new CategoryMasterViewModel();
-            }
-
-            // Initialize ViewCategories if it's a List
-            if (viewmodel.ViewCategories == null)
-            {
-                viewmodel.ViewCategories = new List<CategoryMasterModel>();
-            }
-
             if (buttonType == "Get")
             {
                 var getcategory = await _billingsoftware.SHCategoryMaster.FirstOrDefaultAsync(x => x.CategoryID == model.CategoryID && !x.IsDelete && x.BranchID == model.BranchID);
                 if (getcategory != null)
                 {
+                    var dataTable = await AdditionalCategoryMasterFun(model.BranchID);
+
+                    // Store the DataTable in ViewData for access in the view
+                    ViewData["Categorydata"] = dataTable;
                     return View("CategoryMaster", getcategory);
                 }
                 else
                 {
                     CategoryMasterModel par = new CategoryMasterModel();
                     ViewBag.ErrorMessage = "No value for this Category ID";
+                    var dataTable = await AdditionalCategoryMasterFun(model.BranchID);
+
+                    // Store the DataTable in ViewData for access in the view
+                    ViewData["Categorydata"] = dataTable;
+                    return View("CategoryMaster", par);
+                }
+            }
+
+            return View();
+        }
+
+
+
+        [HttpPost]
+        public async Task<IActionResult> AddCategory(CategoryMasterModel model, string buttonType)
+        {
+            if (TempData["BranchID"] != null)
+            {
+                model.BranchID = TempData["BranchID"].ToString();
+                TempData.Keep("BranchID");
+            }
+
+
+            if (buttonType == "Get")
+            {
+                var getcategory = await _billingsoftware.SHCategoryMaster.FirstOrDefaultAsync(x => x.CategoryID == model.CategoryID && !x.IsDelete && x.BranchID == model.BranchID);
+                if (getcategory != null)
+                {
+                    var dataTable1 = await AdditionalCategoryMasterFun(model.BranchID);
+
+                    // Store the DataTable in ViewData for access in the view
+                    ViewData["Categorydata"] = dataTable1;
+                    return View("CategoryMaster", getcategory);
+                }
+                else
+                {
+                    CategoryMasterModel par = new CategoryMasterModel();
+                    ViewBag.ErrorMessage = "No value for this Category ID";
+                    var dataTable2 = await AdditionalCategoryMasterFun(model.BranchID);
+
+                    // Store the DataTable in ViewData for access in the view
+                    ViewData["Categorydata"] = dataTable2;
                     return View("CategoryMaster", par);
                 }
             }
@@ -146,12 +174,23 @@ namespace StellarBillingSystem.Controllers
                     await _billingsoftware.SaveChangesAsync();
 
                     ViewBag.Message = "Category deleted successfully";
+
+                    var dataTable3 = await AdditionalCategoryMasterFun(model.BranchID);
+
+                    // Store the DataTable in ViewData for access in the view
+                    ViewData["Categorydata"] = dataTable3;
+
                     model = new CategoryMasterModel();
+
                     return View("CategoryMaster", model);
                 }
                 else
                 {
                     ViewBag.ErrorMessage = "Category not found";
+                    var dataTable4 = await AdditionalCategoryMasterFun(model.BranchID);
+
+                    // Store the DataTable in ViewData for access in the view
+                    ViewData["Categorydata"] = dataTable4;
                     model = new CategoryMasterModel();
                     return View("CategoryMaster", model);
                 }
@@ -185,8 +224,15 @@ namespace StellarBillingSystem.Controllers
                 else
                 {
                     ViewBag.ErrorMessage = "Category not found";
-                    model = new CategoryMasterModel();
+                    
+                   
                 }
+                var dataTable5 = await AdditionalCategoryMasterFun(model.BranchID);
+
+                // Store the DataTable in ViewData for access in the view
+                ViewData["Categorydata"] = dataTable5;
+
+                model = new CategoryMasterModel();
                 return View("CategoryMaster", model);
             }
             else if (buttonType == "save")
@@ -197,6 +243,10 @@ namespace StellarBillingSystem.Controllers
                     if (existingCategory.IsDelete)
                     {
                         ViewBag.ErrorMessage = "Cannot Save or Update. Category is marked as deleted.";
+                        var dataTable6 = await AdditionalCategoryMasterFun(model.BranchID);
+
+                        // Store the DataTable in ViewData for access in the view
+                        ViewData["Categorydata"] = dataTable6;
                         return View("CategoryMaster", model);
                     }
                     existingCategory.CategoryID = model.CategoryID;
@@ -222,13 +272,14 @@ namespace StellarBillingSystem.Controllers
 
                 ViewBag.Message = "Saved Successfully";
             }
+            var dataTable = await AdditionalCategoryMasterFun(model.BranchID);
 
+            // Store the DataTable in ViewData for access in the view
+            ViewData["Categorydata"] = dataTable;
+            model = new CategoryMasterModel();
 
-        
-
-            return View("CategoryMaster", viewmodel);
+            return View("CategoryMaster", model);
         }
-
 
 
 
@@ -1306,41 +1357,7 @@ namespace StellarBillingSystem.Controllers
         }
 
 
-        public IActionResult CategoryMaster(CategoryMasterViewModel model, int page = 1, int pageSize = 5)
-        {
-            if (TempData["BranchID"] != null)
-            {
-                model.BranchID = TempData["BranchID"].ToString();
-                TempData.Keep("BranchID");
-            }
-
-            BusinessClassBilling business = new BusinessClassBilling(_billingsoftware);
-
-            var result = business.Getcategory(model.BranchID);
-            if (result == null || !result.Any())
-            {
-                ViewBag.GetMessage = "No data found.";
-                model.ViewCategories = new List<CategoryMasterModel>();
-                model.TotalCount = 0;
-            }
-            else
-            {
-                var totalCount = result.Count();
-                var viewModelList = result.Skip((page - 1) * pageSize).Take(pageSize).Select(p => new CategoryMasterModel
-                {
-                    CategoryID = p.CategoryID,
-                    CategoryName = p.CategoryName
-                }).ToList();
-
-                model.ViewCategories = viewModelList;
-                model.TotalCount = totalCount;
-                model.CurrentPage = page;
-                model.PageSize = pageSize;
-            }
-
-            return View("CategoryMaster", model);
-        }
-
+       
 
            
         
@@ -1668,15 +1685,55 @@ namespace StellarBillingSystem.Controllers
             return View("RackPatrionProduct", viewmodel);
         }
 
+
+
+        //imageupload
+
+        private bool IsImage(IFormFile file)
+        {
+            if (file == null || file.Length == 0)
+                return false;
+
+            // Check the file's MIME type to confirm it's an image
+            if (file.ContentType.ToLower().StartsWith("image/"))
+                return true;
+
+            // You can add more checks here depending on your requirements
+
+            return false;
+        }
+
+
+
+
+        public IActionResult GetIdProofImage(string staffId, string branchId)
+        {
+            var staffAdmin = _billingsoftware.SHStaffAdmin
+                .FirstOrDefault(x => x.StaffID == staffId && x.BranchID == branchId && x.IsDelete == false);
+
+            if (staffAdmin != null && staffAdmin.IdProofFile != null)
+            {
+                // Return the file with appropriate content type
+                return File(staffAdmin.IdProofFile, "image/jpeg", "id-proof.jpg"); // Adjust filename and MIME type if necessary
+            }
+
+            return NotFound();  // Return 404 if the image is not found
+        }
+
+
+
+
         // staff reg
         [HttpPost]
-        public async Task<IActionResult> AddStaff(StaffAdminModel model, string buttontype)
+        public async Task<IActionResult> AddStaff(StaffAdminModel model, string buttontype, IFormFile imageFile)
         {
 
             BusinessClassBilling Busbill = new BusinessClassBilling(_billingsoftware);
             ViewData["resoruseid"] = Busbill.GetResourceid(model.BranchID);
             ViewData["branchid"] = Busbill.Getbranch();
 
+
+            
 
             if (buttontype == "Get")
             {
@@ -1689,6 +1746,8 @@ namespace StellarBillingSystem.Controllers
                 var getstaff = await _billingsoftware.SHStaffAdmin.FirstOrDefaultAsync(x => x.StaffID == model.StaffID && x.IsDelete == false && x.BranchID == model.BranchID);
                 if (getstaff != null)
                 {
+                    // Prepare the image URL
+                    ViewBag.ImageUrl = Url.Action("GetIdProofImage", new { staffId = getstaff.StaffID, branchId = getstaff.BranchID });
                     return View("StaffAdmin", getstaff);
                 }
                 else
@@ -1697,6 +1756,7 @@ namespace StellarBillingSystem.Controllers
                     ViewBag.getMessage = "No Data found for this Staff ID";
                     return View("StaffAdmin", par);
                 }
+
             }
             else if (buttontype == "Delete")
             {
@@ -1791,9 +1851,31 @@ namespace StellarBillingSystem.Controllers
 
             var staffcheck = await _billingsoftware.SHStaffAdmin.FirstOrDefaultAsync(x => x.StaffID == model.StaffID && x.BranchID == model.BranchID && x.UserName == model.UserName && x.Password == model.Password);
 
+
+
             if (staffcheck == null)
             {
+                if (imageFile != null && imageFile.Length > 0)
+                {
+                    // Validate that the uploaded file is an image (optional)
+                    if (!IsImage(imageFile))
+                    {
+                        ModelState.AddModelError(string.Empty, "Uploaded file is not an image.");
+                        return View("StaffAdmin", model);
+                    }
 
+                    using (var memoryStream = new MemoryStream())
+                    {
+                        await imageFile.CopyToAsync(memoryStream);
+                        model.IdProofFile = memoryStream.ToArray();
+                    }
+                }
+                else
+                {
+                    // Handle the case where no file was provided
+                    ViewBag.ErrorMessage = "No file uploaded.";
+                    return View("StaffAdmin", model);
+                }
 
 
                 var existingStaffAdmin = await _billingsoftware.SHStaffAdmin.FindAsync(model.StaffID, model.BranchID);
@@ -1834,6 +1916,7 @@ namespace StellarBillingSystem.Controllers
                     existingStaffAdmin.Password = model.Password;
                     existingStaffAdmin.IdProofId = model.IdProofId;
                     existingStaffAdmin.IdProofName = model.IdProofName;
+                    existingStaffAdmin.IdProofFile = model.IdProofFile;
                     existingStaffAdmin.LastupdatedDate = DateTime.Now.ToString();
                     existingStaffAdmin.LastupdatedUser = User.Claims.First().Value.ToString();
                     existingStaffAdmin.LastUpdatedMachine = Request.HttpContext.Connection.RemoteIpAddress.ToString();

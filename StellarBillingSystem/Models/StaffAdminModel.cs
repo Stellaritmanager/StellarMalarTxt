@@ -30,6 +30,7 @@
         private string lastUpdatedMachine;
         private bool isDelete;
         private string branchID;
+        private byte[] idProofFile;
 
 
 
@@ -59,5 +60,6 @@
         public string? LastUpdatedMachine { get => lastUpdatedMachine; set => lastUpdatedMachine = value; }
         public bool IsDelete { get => isDelete; set => isDelete = value; }
         public string BranchID { get => branchID; set => branchID = value; }
+        public byte[] IdProofFile { get => idProofFile; set => idProofFile = value; }
     }
 }

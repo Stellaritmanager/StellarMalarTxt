@@ -1,5 +1,6 @@
-﻿@model CategoryMasterViewModel
-
+﻿@model CategoryMasterModel
+@using System.Data
+@using NonFactors.Mvc.Grid
 @{
     ViewData["Title"] = "CategoryMaster";
 }
@@ -33,8 +34,11 @@
         border: 10px solid #fff;
     }
 </style>
+
+
 <form asp-controller="StellarBilling">
     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
 
     <div class="row">
         <div class="col-md-12 col-lg-0"></div>
@@ -92,52 +96,39 @@
         <div class="col-md-12 col-lg-2"></div>
     </div>
 
-    @if (Model != null)
-    {
-        <div class="row" style="margin-top:30px">
-            <div class="col-md-12 col-lg-0"></div>
-            <div class="col-md-12 col-lg-12">
-                <div class="card">
-                    <div class="card-body dividerblack">
-                        <h3 class="centered text-white" style="font-family: 'Lucida Bright'; margin-bottom: 20px; text-align: center;">Category Master</h3>
-                        <table class="table table-striped table-bordered" style="border: 3px solid black;">
-                            <thead style="background-color: black; color: white;">
-                                <tr>
-                                    <th style="text-align: center;">Category ID</th>
-                                    <th style="text-align: center;">Category Name</th>
-                                    <!-- Add other columns as needed -->
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach (var category in Model.ViewCategories)
-                                {
-                                    <tr>
-                                        <td style="text-align: center;">@category.CategoryID</td>
-                                        <td style="text-align: center;">@category.CategoryName</td>
-                                        <!-- Add other columns as needed -->
-                                    </tr>
-                                }
-                            </tbody>
-                        </table>
-                        <div class="pagination">
-                            @if (Model.TotalCount > Model.PageSize)
-                            {
-                                int totalPages = (int)Math.Ceiling((double)Model.TotalCount / Model.PageSize);
 
-                                for (int i = 1; i <= totalPages; i++)
-                                {
-                                    <a href="@Url.Action("CategoryMaster", new { page = i })" class="@(Model.CurrentPage == i ? "btn btn-primary" : "btn btn-secondary")">
-                                        @i
-                                    </a>
-                                }
-                            }
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-12 col-lg-0"></div>
-        </div>
+
+    @{
+        var dataTable = ViewData["Categorydata"] as DataTable;
     }
+
+    <table>
+        <thead>
+            <tr>
+                <th>CategoryID</th>
+                <th>CategoryName</th>
+             
+            </tr>
+        </thead>
+        <tbody>
+            @if (dataTable != null)
+            {
+                foreach (DataRow row in dataTable.Rows)
+                {
+                    <tr>
+                        <td>@row["CategoryID"]</td>
+                        <td>@row["CategoryName"]</td>
+             
+                    </tr>
+                }
+            }
+        </tbody>
+    </table>
+
+
+
+
+
 
     @if (ViewBag.Message != null)
     {
@@ -153,4 +144,11 @@
         </script>
         ViewBag.ErrorMessage = null;
     }
+
+
+
+
+
+
 </form>
+
