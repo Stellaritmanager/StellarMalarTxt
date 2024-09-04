@@ -251,7 +251,7 @@ namespace StellarBillingSystem.Controllers
                     }
                     existingCategory.CategoryID = model.CategoryID;
                     existingCategory.CategoryName = model.CategoryName;
-                    existingCategory.LastUpdatedDate = DateTime.Now.ToString();
+                    existingCategory.LastUpdatedDate = DateTime.Now;
                     existingCategory.LastUpdatedUser = User.Claims.First().Value.ToString();
                     existingCategory.LastUpdatedmachine = Request.HttpContext.Connection.RemoteIpAddress.ToString();
 
@@ -259,7 +259,7 @@ namespace StellarBillingSystem.Controllers
                 }
                 else
                 {
-                    model.LastUpdatedDate = DateTime.Now.ToString();
+                    model.LastUpdatedDate = DateTime.Now;
                     model.LastUpdatedUser = User.Claims.First().Value.ToString(); ;
                     model.LastUpdatedmachine = Request.HttpContext.Connection.RemoteIpAddress.ToString();
 
