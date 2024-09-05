@@ -52,8 +52,8 @@
 
                             <div class="form-floating form-floating-outline mb-4">
 
-                                <input asp-for="BracnchID" class="form-control" placeholder="Bracnch ID"  value="@Model.BracnchID" required />
-                                <label asp-for="BracnchID" class="control-label">Bracnch ID</label>
+                                <input asp-for="BracnchID" class="form-control" placeholder="Bracnch"  value="@Model.BracnchID" required />
+                                <label asp-for="BracnchID" class="control-label">Bracnch</label>
 
                                 <span asp-validation-for="BracnchID" class="text-danger"></span>
                             </div>
@@ -112,8 +112,9 @@
                        
                         <div class="col-md-12 col-lg-4">
                             <div class="form-floating form-floating-outline mb-4">
-                                <textarea asp-for="Address1" value="@Model.Address1" class="form-control" placeholder="Branch Address1" aria-describedby="text-to-speech-addon"></textarea>
-                                <label asp-for="Address1" class="control-label">Branch Address1</label>
+                                <input asp-for="Address1" class="form-control" placeholder="Address1" value="@Model.Address1" />
+                                <label asp-for="Address1" class="control-label">Address1</label>
+
                                 <span asp-validation-for="Address1" class="text-danger"></span>
                             </div>
                             </div>
@@ -121,8 +122,9 @@
 
                         <div class="col-md-12 col-lg-3">
                             <div class="form-floating form-floating-outline mb-4">
-                                <textarea asp-for="Address2" value="@Model.Address2" class="form-control" placeholder="Branch Address2" aria-describedby="text-to-speech-addon"></textarea>
-                                <label asp-for="Address2" class="control-label">Branch Address2</label>
+                                <input asp-for="Address2" class="form-control" placeholder="Address2" value="@Model.Address2" />
+                                <label asp-for="Address2" class="control-label">Address2</label>
+
                                 <span asp-validation-for="Address2" class="text-danger"></span>
                             </div>
                             </div>
