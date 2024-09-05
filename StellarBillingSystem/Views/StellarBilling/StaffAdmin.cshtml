@@ -279,11 +279,11 @@
                             }
 
                             <div>
-                                <label>ID Proof File:</label>
+                            
                                 @if (!string.IsNullOrEmpty(imageUrl))
                                 {
                                     <!-- Link to download the image -->
-                                    <a href="@imageUrl" download="id-proof.jpg">Download ID Proof Image</a>
+                                    <a href="@imageUrl" download="id-proof.jpg">Download ID Proof</a>
                                 }
                                 else
                                 {
@@ -291,8 +291,8 @@
                                 }
                             </div>
                             <div>
-                                <label class="btn btn-primary">Upload Image</label>
-                                <input type="file" class="account-file-input" name="imageFile" accept="image/png, image/jpeg" value="@Model.IdProofFile" />
+                               
+                                <input type="file" class="btn btn-primary" name="imageFile" accept="image/png, image/jpeg" value="@Model.IdProofFile" style="width: 290px; height: 40px; padding: 5px;" />
                             </div>
 
 

@@ -415,54 +415,53 @@ namespace StellarBillingSystem.Business
             {
                 // Replace placeholders with dynamic data
                 document.ReplaceText("<<custname>>", pbillData.Rows[0]["CustomerName"].ToString());
-                document.ReplaceText("<<custnum>>", pbillData.Rows[0]["CustomerNumber"].ToString());
+                document.ReplaceText("<<custcont>>", pbillData.Rows[0]["CustomerNumber"].ToString());
                 document.ReplaceText("<<billdate>>", pbillData.Rows[0]["BillDate"].ToString());
                 document.ReplaceText("<<billno>>", pbillData.Rows[0]["BillID"].ToString());
-                document.ReplaceText("<<totalamount>>", pbillData.Rows[0]["MasterTotalprice"].ToString());
+                document.ReplaceText("<<custadd>>", pbillData.Rows[0]["CustomerAddress"].ToString());
+
+
+                document.ReplaceText("<<total>>", pbillData.Rows[0]["MasterTotalprice"].ToString());
                 document.ReplaceText("<<cgst>>", pbillData.Rows[0]["CGSTPercentage"].ToString());
                 document.ReplaceText("<<sgst>>", pbillData.Rows[0]["SGSTPercentage"].ToString());
-                document.ReplaceText("<<discount>>", pbillData.Rows[0]["TotalDiscount"].ToString());
-                document.ReplaceText("<<payid>>", pbillData.Rows[0]["PaymentId"].ToString());
+             
 
-                //document.ReplaceText("{Placeholder2}", "Dynamic Value 2");
 
-                // Insert a new paragraph
-                //  document.InsertParagraph("This is a new paragraph added to the document.").FontSize(14).Bold();
+                document.ReplaceText("{Placeholder2}", "Dynamic Value 2");
 
-                // Add a table
-                var table = document.AddTable(pbillData.Rows.Count + 1, 6);
-                table.Rows[0].Cells[0].Paragraphs[0].Append("Product ID").Font("Cambria (Headings)").FontSize(12);
-                table.Rows[0].Cells[1].Paragraphs[0].Append("Product Name").Font("Cambria (Headings)").FontSize(12);
-                table.Rows[0].Cells[2].Paragraphs[0].Append("Price").Font("Cambria (Headings)").FontSize(12);
-                table.Rows[0].Cells[3].Paragraphs[0].Append("Quantity").Font("Cambria (Headings)").FontSize(12);
-                table.Rows[0].Cells[4].Paragraphs[0].Append("Total Discount").Font("Cambria (Headings)").FontSize(12);
-                table.Rows[0].Cells[5].Paragraphs[0].Append("Net Price").Font("Cambria (Headings)").FontSize(12);
+               // Insert a new paragraph
+                 
 
+                //Add a table
+              
                 int rowcount = 1;
                 //Row data
                 foreach (DataRow objRow in pbillData.Rows)
                 {
+                    document.ReplaceText("<<sno" + rowcount.ToString() + ">>",rowcount.ToString());
+                    document.ReplaceText("<<description"+rowcount.ToString()+">>", pbillData.Rows[0]["ProductName"].ToString());
+                    document.ReplaceText("<<h" + rowcount.ToString() + ">>", pbillData.Rows[0]["Quantity"].ToString());
+                    document.ReplaceText("<<q" + rowcount.ToString() + ">>", pbillData.Rows[0]["Quantity"].ToString());
+                    document.ReplaceText("<<up" + rowcount.ToString() + ">>", pbillData.Rows[0]["Price"].ToString());
+                    document.ReplaceText("<<amt" + rowcount.ToString() + ">>", pbillData.Rows[0]["Price"].ToString());
 
-                    table.Rows[rowcount].Cells[0].Paragraphs[0].Append(objRow["ProductID"].ToString()).Font("Cambria (Headings)").FontSize(12);
-                    table.Rows[rowcount].Cells[1].Paragraphs[0].Append(objRow["ProductName"].ToString()).Font("Cambria (Headings)").FontSize(12);
-                    table.Rows[rowcount].Cells[2].Paragraphs[0].Append(objRow["Price"].ToString()).Font("Cambria (Headings)").FontSize(12);
-                    table.Rows[rowcount].Cells[3].Paragraphs[0].Append(objRow["Quantity"].ToString()).Font("Cambria (Headings)").FontSize(12);
-                    table.Rows[rowcount].Cells[4].Paragraphs[0].Append(objRow["DetailDiscount"].ToString()).Font("Cambria (Headings)").FontSize(12);
-                    table.Rows[rowcount].Cells[5].Paragraphs[0].Append(objRow["DetailTotalprice"].ToString()).Font("Cambria (Headings)").FontSize(12);
                     rowcount++;
                 }
 
-                string searchText = "<<billnodet>>";
-                Paragraph paragraph = document.Paragraphs.FirstOrDefault(p => p.Text.Contains(searchText));
-
-
-
-                if (paragraph != null)
+                
+                for (int emptycount = 1; emptycount <=6; emptycount++)
                 {
-                    paragraph.InsertTableAfterSelf(table);
+                    document.ReplaceText("<<sno" + emptycount.ToString() + ">>", string.Empty);
+                    document.ReplaceText("<<description" + emptycount.ToString() + ">>", string.Empty);
+                    document.ReplaceText("<<h" + emptycount.ToString() + ">>", string.Empty);
+                    document.ReplaceText("<<q" + emptycount.ToString() + ">>", string.Empty);
+                    document.ReplaceText("<<up" + emptycount.ToString() + ">>", string.Empty);
+                    document.ReplaceText("<<amt" + emptycount.ToString() + ">>", string.Empty);
+
+
                 }
 
-                document.ReplaceText("<<billnodet>>", String.Empty);
+
 
                 // Save the document to a MemoryStream
                 using (MemoryStream memoryStream = new MemoryStream())
