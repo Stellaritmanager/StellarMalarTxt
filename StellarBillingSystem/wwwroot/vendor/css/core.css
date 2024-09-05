@@ -11148,6 +11148,11 @@ button.list-group-item-gray.active {
   color: #000000 !important;
 }
 
+.text-black {
+    --bs-text-opacity: 1;
+    color: #fff !important;
+}
+
 .text-body {
   --bs-text-opacity: 1;
   color: #697a8d !important;

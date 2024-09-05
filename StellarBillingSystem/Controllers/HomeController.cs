@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using System.Data;
+using System.Diagnostics;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.CodeAnalysis.Operations;
@@ -6,6 +7,8 @@ using Microsoft.Data.SqlClient;
 using StellarBillingSystem.Business;
 using StellarBillingSystem.Context;
 using StellarBillingSystem.Models;
+
+
 
 namespace StellarBillingSystem.Controllers
 {
@@ -33,6 +36,8 @@ namespace StellarBillingSystem.Controllers
                 branchId = TempData["BranchID"].ToString();
                 TempData.Keep("BranchID");
             }
+
+
 
             string salesMessage = GetSalesComparison();
             decimal dailySales = GetDailySales();
@@ -216,6 +221,7 @@ namespace StellarBillingSystem.Controllers
             {
                 var query = BusinessClassCommon.DataTableReport(_billingContext, reportQuery.ReportQuery, reportQuery.Datecolumn, fromDate, toDate, reportQuery.GroupBy, branchId);
                 ViewBag.Reportname = reportQuery.ReportName;
+               
                 return View("Index",query);
             }
 
