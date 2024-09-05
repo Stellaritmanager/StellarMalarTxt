@@ -217,10 +217,34 @@ button.list-group-item-primary.active {
 
 .btn-primary {
     color: #fff;
-    background-color: #9b9c9d;
-    border-color: #9b9c9d;
+    background-color: #000000;
+    border-color: #000000;
     box-shadow: #fff;
 }
+.btn-primaryred {
+    color: #fff;
+    background-color: #ff3e1d;
+    border-color: #ff3e1d;
+    box-shadow: #fff;
+}
+    .btn-primaryred:hover {
+        color: #fff;
+        background-color: #f58a78;
+        border-color: #f58a78;
+    }
+.btn-primaryellow {
+    color: #fff;
+    background-color: #ffab00;
+    border-color: #ffab00;
+    box-shadow: #fff;
+}
+    .btn-primaryellow:hover {
+        color: #fff;
+        background-color: #ffcd67;
+        border-color: #ffcd67;
+    }
+
+
     .btn-primary:hover {
         color: #fff !important;
         background-color: #9b9c9d !important;
@@ -791,7 +815,7 @@ html:not(.layout-menu-collapsed) .bg-menu-theme .menu-inner .menu-item .menu-lin
 }
 
 .app-brand .layout-menu-toggle {
-    background-color: #233446;
+    background-color: #000000;
     border: 7px solid #f5f5f9;
 }
 .app-brand .layout-menu-toggle i {
@@ -805,9 +829,9 @@ html:not(.layout-menu-collapsed) .bg-menu-theme .menu-inner .menu-item .menu-lin
   background-color: #f5f5f9 !important;
   color: #697a8d;
 }
-.bg-footer-theme .footer-link {
-  color: #697a8d;
-}
+    .bg-footer-theme .footer-link {
+        color: #000000;
+    }
 .bg-footer-theme .footer-link:hover, .bg-footer-theme .footer-link:focus {
   color: #566a7f;
 }

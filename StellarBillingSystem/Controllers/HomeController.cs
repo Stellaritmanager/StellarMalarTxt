@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using System.Data;
+using System.Diagnostics;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.CodeAnalysis.Operations;
@@ -6,6 +7,8 @@ using Microsoft.Data.SqlClient;
 using StellarBillingSystem.Business;
 using StellarBillingSystem.Context;
 using StellarBillingSystem.Models;
+
+
 
 namespace StellarBillingSystem.Controllers
 {
@@ -34,6 +37,8 @@ namespace StellarBillingSystem.Controllers
                 TempData.Keep("BranchID");
             }
 
+
+
             string salesMessage = GetSalesComparison();
             decimal dailySales = GetDailySales();
             decimal dailyPayments = GetDailyPayments();
@@ -44,7 +49,7 @@ namespace StellarBillingSystem.Controllers
 
 
 
-            BusinessClassBilling business = new BusinessClassBilling(_billingContext);
+           /* BusinessClassBilling business = new BusinessClassBilling(_billingContext);
             ViewData["reportid"] = business.GetReportId();
 
             var reportQuery = (from rep in _billingContext.ShGenericReport
@@ -63,7 +68,7 @@ namespace StellarBillingSystem.Controllers
                 var query = BusinessClassCommon.DataTableReport(_billingContext, reportQuery.ReportQuery, reportQuery.Datecolumn, fromDate, toDate, reportQuery.GroupBy, branchId);
                 ViewBag.Reportname = reportQuery.ReportName;
                 return View(query);
-            }
+            }*/
 
 
             return View();
@@ -178,10 +183,49 @@ namespace StellarBillingSystem.Controllers
 
 
 
-        public IActionResult RedirectToReports()
+        public IActionResult RedirectToReports(string DashBoard = null, string fromDate = null, string toDate = null, string GroupBy = null)
         {
 
-            return RedirectToAction("Reports", "Reports");
+
+            string salesMessage = GetSalesComparison();
+            decimal dailySales = GetDailySales();
+            decimal dailyPayments = GetDailyPayments();
+
+            ViewBag.SalesMessage = salesMessage;
+            ViewBag.DailySales = dailySales.ToString("F2");
+            ViewBag.DailyPayments = dailyPayments.ToString("F2");
+
+
+            string branchId = string.Empty; ;
+            if (TempData["BranchID"] != null)
+            {
+                branchId = TempData["BranchID"].ToString();
+                TempData.Keep("BranchID");
+            }
+
+            BusinessClassBilling business = new BusinessClassBilling(_billingContext);
+            ViewData["reportid"] = business.GetReportId();
+
+            var reportQuery = (from rep in _billingContext.ShGenericReport
+                               where rep.IsDashboard == true
+                               select new GenericReportModel
+                               {
+                                   ReportName = rep.ReportName,
+                                   ReportQuery = rep.ReportQuery,
+                                   ReportDescription = rep.ReportDescription,
+                                   Datecolumn = rep.Datecolumn,
+                                   GroupBy = rep.GroupBy
+                               }).FirstOrDefault();
+
+            if (reportQuery != null)
+            {
+                var query = BusinessClassCommon.DataTableReport(_billingContext, reportQuery.ReportQuery, reportQuery.Datecolumn, fromDate, toDate, reportQuery.GroupBy, branchId);
+                ViewBag.Reportname = reportQuery.ReportName;
+               
+                return View("Index",query);
+            }
+
+            return View("Index");
         }
     }
     

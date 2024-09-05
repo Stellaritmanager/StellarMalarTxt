@@ -37,15 +37,17 @@
 
 <form asp-action="AddResourceType" asp-controller="StellarBilling">
 
+
     <div class="row">
-        <div class="col-md-12 col-lg-2">
-        </div>
-        <div class="col-md-12 col-lg-8">
-            <div class="card">
-               <div class="card-body dividerblack">
-                    <div class="card-header d-flex justify-content-between align-items-center">
-                        <div class="container">
-                            <h2 class="centered text-white" style="font-family:'Lucida Bright';margin-left:16%;">Resource Type Master</h2>
+        <div class="col-md-12 col-lg-0"></div>
+        <div class="col-md-12 col-lg-12" style="padding: 0;">
+            <div class="card" style="height:40px;">
+                <div class="card-body dividerblack">
+                    <div style="display: flex; align-items: center; height: 100%;">
+                        <div class="container" style="text-align: left; width: 100%;">
+                            <h2 class="centered text-white" style="font-family:'Lucida Bright'; margin: 0;">
+                                ResourceType Master
+                            </h2>
                         </div>
                     </div>
                 </div>
@@ -54,67 +56,61 @@
     </div>
     <br />
 
-    <div class="row" style="height:8%">
-    </div>
+    <div class="row" style="height:8%"></div>
 
-<div class="row gy-4">
-    <div class="col-md-12 col-lg-2">
-    </div>
-    <div class="col-md-12 col-lg-8">
-        <div class="card">
-            <div class="card-body dividerblack">
-
-                <div class="row gy-4">
-                    <div class="col-md-12 col-lg-8">
+    <div class="row" style="margin-top:60px">
+        <div class="col-md-12 col-lg-0"></div>
+        <div class="col-md-12 col-lg-12">
+            <div class="card">
+                <div class="card-body dividerblack">
+                    <div class="row gy-4">
+                        <div class="col-md-12 col-lg-0"></div>
+                        <div class="col-md-12 col-lg-4">
                         
 
                             <div class="form-floating form-floating-outline mb-4">
 
-                                <input asp-for="ResourceTypeID" value="@Model.ResourceTypeID" class="form-control" placeholder="ResourceTypeID" required />
-                                <label asp-for="ResourceTypeID" class="control-label">ResourceTypeID</label>
+                                <input asp-for="ResourceTypeID" value="@Model.ResourceTypeID" class="form-control" placeholder="ResourceType" required />
+                                <label asp-for="ResourceTypeID" class="control-label">ResourceType</label>
                                 <span asp-validation-for="ResourceTypeID" class="text-danger"></span>
                             </div>
 
                     </div>
-                    <div class="col-md-12 col-lg-1">
-                    </div>
-                    <div class="col-md-12 col-lg-2" style="align-items:center">
-                        <div class="form-group">
-                            <button type="submit" value="Get" name="buttonType" class="btn btn-primary">Get</button>
+
+                        <div class="col-md-12 col-lg-4">
+                            <div class="form-floating form-floating-outline mb-4">
+
+                                <input asp-for="ResourceTypeName" value="@Model.ResourceTypeName" class="form-control" placeholder="ResourceTypeName" />
+                                <label asp-for="ResourceTypeName" class="control-label">ResourceTypeName</label>
+                                <span asp-validation-for="ResourceTypeName" class="text-danger"></span>
+                            </div>
+
+                            </div>
+
+
+                        <div class="col-md-12 col-lg-2" style="align-items:center">
+                            <button type="submit" style="width:100px" value="Get" name="buttonType" class="btn btn-primary">Get</button>
                         </div>
 
-                        <br />
 
+                        <div class="col-md-12 d-flex justify-content-center">
 
-                    </div>
+                            <button type="submit"  value="Save" class="btn btn-primary mx-2">Save</button>
+                            <button type="submit"  value="Delete" name="buttonType" class="btn btn-primaryred mx-2">Delete</button>
+                            <button type="submit"  value="DeleteRetrieve" name="buttonType" class="btn btn-primaryellow mx-2">Delete Retrieve</button>
+
+                            </div>
+
                 </div>
-                        
+                       
        
-
-        <div class="form-floating form-floating-outline mb-4">
-
-            <input asp-for="ResourceTypeName" value="@Model.ResourceTypeName" class="form-control" placeholder="ResourceTypeName" />
-            <label asp-for="ResourceTypeName" class="control-label">ResourceTypeName</label>
-            <span asp-validation-for="ResourceTypeName" class="text-danger"></span>
-        </div>
                 </div>
-
-
-                <div class="col-md-12 col-lg-2">
-                </div>
-
             </div>
-            <br />
+           
         </div>
-        <div class="form-group">
-            <center>
+       
+        </div>
 
-                <button type="submit" style="width:180px" value="Save" class="btn btn-primary">Save</button>
-                <button type="submit" style="width:180px" value="Delete" name="buttonType" class="btn btn-primary">Delete</button>
-                <button type="submit" style="width:180px" value="DeleteRetrieve" name="buttonType" class="btn btn-primary">Delete Retrieve</button>
-            </center>
-        </div>
-        </div>
         @if (ViewBag.Message != null)
         {
             <script>

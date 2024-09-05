@@ -10,6 +10,7 @@ using Microsoft.CodeAnalysis.FlowAnalysis;
 using StellarBillingSystem.Context;
 using Microsoft.IdentityModel.Tokens;
 using Aspose.Words;
+using System.Xml;
 
 
 namespace StellarBillingSystem.Business
@@ -56,7 +57,10 @@ namespace StellarBillingSystem.Business
 
             return Where;
         }
-        public static DataTable DataTable(DbContext context, string sqlQuery,
+
+
+
+    public static DataTable DataTable(DbContext context, string sqlQuery,
                                         params DbParameter[] parameters)
         {
 

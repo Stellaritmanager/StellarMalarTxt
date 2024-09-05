@@ -79,7 +79,7 @@
                         <div class="col-md-12 col-lg-3">
 
                             <div class="form-floating form-floating-outline mb-4 custom-date-picker">
-                                <input asp-for="BillDate" type="date" value="@Model.BillDate" class="form-control" name="BillDate" placeholder="BillDate" required />
+                                <input asp-for="BillDate" type="date" value="@DateTime.Now.ToString("yyyy-MM-dd")" class="form-control" name="BillDate" max="@DateTime.Now.ToString("yyyy-MM-dd")" placeholder="BillDate" required />
                                 <label asp-for="BillDate" class="control-label">Bill Date</label>
                                 <span asp-validation-for="BillDate" class="text-danger"></span>
                             </div>
@@ -94,7 +94,7 @@
                             </div>
                         </div>
                         <div class="col-md-12 col-lg-3">
-                            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#getcustomerpop">Get</button>
+                            <button type="button" class="btn btn-primary" id="getCustomerDataButton">Get</button>
                         </div>
                     </div>
                     <br />
@@ -249,7 +249,7 @@
                 <div class="row">
                     <div class="col-md-12 col-lg-4">
                         <div class="form-floating form-floating-outline mb-4">
-                            <input type="Totalprice" class="form-control" name="Totalprice" placeholder="Total price" value="@ViewBag.TotalPrice" readonly />
+                            <input type="Totalprice" id="Totalprice" class="form-control" name="Totalprice" placeholder="Total price" value="@ViewBag.TotalPrice" readonly />
                             <label asp-for="Totalprice" class="control-label">Total price</label>
 
 
@@ -260,7 +260,7 @@
                     <div class="col-md-12 col-lg-2">
 
                         <div class="form-floating form-floating-outline mb-4">
-                            <input type="CGSTPercentage" class="form-control" name="CGSTPercentage" placeholder="CGSTPercentage" value="@ViewBag.CGSTPercentage" />
+                            <input type="CGSTPercentage" id="CGSTPercentage" class="form-control" name="CGSTPercentage" placeholder="CGSTPercentage" value="@ViewBag.CGSTPercentage" />
                             <label asp-for="CGSTPercentage" class="control-label">CGST%</label>
                         </div>
 
@@ -268,7 +268,7 @@
                     <div class="col-md-12 col-lg-2">
 
                         <div class="form-floating form-floating-outline mb-4">
-                            <input type="SGSTPercentage" class="form-control" name="SGSTPercentage" placeholder="SGSTPercentage" value="@ViewBag.SGSTPercentage" />
+                            <input type="SGSTPercentage" id="SGSTPercentage" class="form-control" name="SGSTPercentage" placeholder="SGSTPercentage" value="@ViewBag.SGSTPercentage" />
                             <label asp-for="SGSTPercentage" class="control-label">SGST%</label>
                         </div>
                     </div>
@@ -276,7 +276,7 @@
                     <div class="col-md-12 col-lg-4">
 
                         <div class="form-floating form-floating-outline mb-4">
-                            <input type="TotalDiscount" class="form-control" name="TotalDiscount" placeholder="Total Discount" value="@ViewBag.TotalDiscount" />
+                            <input type="TotalDiscount" id="TotalDiscount" class="form-control" name="TotalDiscount" placeholder="Total Discount" value="@ViewBag.TotalDiscount" />
                             <label asp-for="TotalDiscount" class="control-label">Total Discount</label>
 
                         </div>
@@ -313,7 +313,7 @@
                     </div>
                             <div class="col-md-12 col-lg-4">
                                 <div class="form-floating form-floating-outline mb-4">
-                                    <input type="NetPrice" class="form-control" name="NetPrice" placeholder="Net Price" value="@ViewBag.NetPrice" readonly />
+                            <input type="NetPrice" id="NetPrice" class="form-control" name="NetPrice" placeholder="Net Price" value="@ViewBag.NetPrice" readonly />
                                     <label asp-for="NetPrice" class="control-label">Net Price</label> </div>
 
                                 </div>
@@ -442,21 +442,14 @@
 </div>
 
 
-
-
-
 <!-- Get Customer Details Modal -->
-<div class="modal fade" id="getCustomerDetailsModal" tabindex="-1" role="dialog" aria-labelledby="getCustomerDetailsModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
+<div class="modal fade" id="getCustomerDetailsModal" tabindex="-1" aria-labelledby="getCustomerDetailsModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="getCustomerDetailsModalLabel">Get Customer Product Details</h5>
+                <h5 class="modal-title" id="getCustomerDetailsModalLabel">Customer Product Details</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-
-                </button>
             </div>
-            <form id="modalSearchFormbill" asp-controller="StellarBilling" asp-action="getcustomerpop" method="post">
-
             <div class="modal-body">
                 <table class="table">
                     <thead>
@@ -465,26 +458,21 @@
                             <th>Bill ID</th>
                             <th>Bill Date</th>
                             <th>Product Name</th>
-                           
-
+                            <th>Product ID</th>
                         </tr>
                     </thead>
                     <tbody id="productTableBody">
-                        <!-- Data will be populated here -->
+                        
                     </tbody>
                 </table>
             </div>
-            </form>
-
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                 <button type="button" class="btn btn-primary" id="loadSelectedProduct">Load Selected Product</button>
             </div>
-
         </div>
     </div>
 </div>
-
 
 
 <!-- Customer Details Modal -->
@@ -732,68 +720,118 @@
 
 <script>
 
-
     $(document).ready(function () {
-        // Handle the form submission in the modal for Customer search
-        $('#modalSearchFormbill').on('submit', function (e) {
-            e.preventDefault();
-            var productID = $('#ProductID').val();
-            var barcodeID = $('#BarcodeId').val();
+        $('#getCustomerDataButton').on('click', function () {
+            var billID = $('input[name="BillID"]').val();
+            var billDate = $('input[name="BillDate"]').val();
+            var customerNumber = $('input[name="CustomerNumber"]').val();
+
+
             $.ajax({
+                url: '@Url.Action("getcustomerpop", "StellarBilling")',
                 type: 'POST',
-                url: '@Url.Action("PopupView", "StellarBilling")',
                 data: {
-                    CustomerNumber: customernumber,
+                    BillID: billID,
+                    BillDate: billDate,
+                    CustomerNumber: customerNumber
                 },
-                success: function (result) {
-                    $('#modalResults').html(result);
+                success: function (response) {
+                    console.log('Server Response:', response); // Log the response to check data
+
+                    var tableBody = $('#productTableBody');
+                    tableBody.empty(); // Clear existing table data
+
+                    if (Array.isArray(response) && response.length > 0) {
+                        response.forEach(function (item) {
+                            var row = $('<tr>');
+                            row.append('<td><input type="radio" name="selectedProduct" value="' + item.productID + '"></td>');
+                            row.append('<td>' + (item.billID || '') + '</td>');
+                            row.append('<td>' + (item.billDate || '') + '</td>');
+                            row.append('<td>' + (item.productName || '') + '</td>');
+                            row.append('<td>' + (item.productID || '') + '</td>');
+                            tableBody.append(row);
+                        });
+                    } else {
+                        tableBody.append('<tr><td colspan="5">No data available</td></tr>');
+                    }
+
+                    $('#getCustomerDetailsModal').modal('show'); // Show the modal
                 },
-                error: function (error) {
-                    console.log(error);
-                    alert('Error occurred during the search.');
+                error: function (xhr, status, error) {
+                    console.error('AJAX Error:', status, error); // Log any AJAX errors
+                    alert('An error occurred while fetching data.');
                 }
             });
         });
 
 
+        //for selectedproduct
+        $('#loadSelectedProduct').on('click', function () {
+            var selectedProduct = $('input[name="selectedProduct"]:checked');
 
-    document.getElementById('getCustomerDetails').addEventListener('click', function () {
-        var billID = document.querySelector('input[name="BillID"]').value;
-        var billDate = document.querySelector('input[name="BillDate"]').value;
-        var customerNumber = document.querySelector('input[name="CustomerNumber"]').value;
+            if (selectedProduct.length > 0) {
+                // Find the row containing the selected radio button
+                var row = selectedProduct.closest('tr');
 
-        $.ajax({
-            url: '@Url.Action("getcustomerpop", "YourControllerName")',
-            type: 'POST',
-            data: {
-                BillID: billID,
-                BillDate: billDate,
-                CustomerNumber: customerNumber
-            },
-            success: function (response) {
-                var tbody = $('#productTableBody');
-                tbody.empty(); // Clear existing data
+                // Extract the data from the row cells
+                var billID = row.find('td:eq(1)').text().trim();
+                var billDate = row.find('td:eq(2)').text().trim();
+                var customerNumber = $('input[name="CustomerNumber"]').val(); 
+                var branchID = "yourBranchID"; // Set BranchID if it comes from a different source
 
-                response.forEach(function (item) {
-                    tbody.append(
-                        '<tr>' +
-                        '<td><input type="radio" name="selectedProduct" value="' + item.ProductID + '"></td>' +
-                        '<td>' + item.BillID + '</td>' +
-                        '<td>' + item.BillDate + '</td>' +
-                        '<td>' + item.ProductName + '</td>' +
-                        '</tr>'
-                    );
-                });
+                console.log('BillID:', billID);
+                console.log('BillDate:', billDate);
+                console.log('CustomerNumber:', customerNumber);
+                console.log('BranchID:', branchID);
+
+                if (billID && billDate && customerNumber) {
+                    // Redirect to the controller with the extracted values
+                    window.location.href = '@Url.Action("LoadBill", "StellarBilling")?billID=' + encodeURIComponent(billID) + '&billDate=' + encodeURIComponent(billDate) + '&customerNumber=' + encodeURIComponent(customerNumber) + '&selectedValues=' + encodeURIComponent(selectedProduct.val());
+                } else {
+                    alert('Please ensure all fields are filled.');
+                }
+            } else {
+                alert('Please select at least one product.');
             }
         });
+
     });
 
-    document.getElementById('loadSelectedProduct').addEventListener('click', function () {
-        var selectedProductID = $('input[name="selectedProduct"]:checked').val();
-        if (selectedProductID) {
-            window.location.href = '@Url.Action("CustomerBilling", "YourControllerName")?productID=' + selectedProductID;
-        } else {
-            alert('Please select a product.');
+
+</script>
+
+
+<!-- Add Javascript for Tax and discount -->
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const totalPriceInput = document.getElementById('Totalprice');
+        const cgstPercentageInput = document.getElementById('CGSTPercentage');
+        const sgstPercentageInput = document.getElementById('SGSTPercentage');
+        const totalDiscountInput = document.getElementById('TotalDiscount');
+        const netPriceInput = document.getElementById('NetPrice');
+
+        function calculateNetPrice() {
+            const totalPrice = parseFloat(totalPriceInput.value) || 0;
+            const cgstPercentage = parseFloat(cgstPercentageInput.value) || 0;
+            const sgstPercentage = parseFloat(sgstPercentageInput.value) || 0;
+            const discountPercentage = parseFloat(totalDiscountInput.value) || 0;
+
+            const cgstAmount = (totalPrice * cgstPercentage) / 100;
+            const sgstAmount = (totalPrice * sgstPercentage) / 100;
+            const discountAmount = (totalPrice * discountPercentage) / 100;
+
+            const netPrice = totalPrice + cgstAmount + sgstAmount - discountAmount;
+
+            netPriceInput.value = netPrice.toFixed(2);
         }
+
+        function setupEventListeners() {
+            cgstPercentageInput.addEventListener('blur', calculateNetPrice);
+            sgstPercentageInput.addEventListener('blur', calculateNetPrice);
+            totalDiscountInput.addEventListener('blur', calculateNetPrice);
+        }
+
+        setupEventListeners();
     });
 </script>
+

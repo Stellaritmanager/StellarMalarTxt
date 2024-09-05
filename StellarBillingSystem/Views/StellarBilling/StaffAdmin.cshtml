@@ -1,4 +1,6 @@
 ﻿@model StellarBillingSystem.Models.StaffAdminModel
+@using System.Data
+@using NonFactors.Mvc.Grid
 
 @{
     ViewData["Title"] = "StaffAdmin";
@@ -36,9 +38,9 @@
     }
 </script>
 
-<div id="popupMessage" class="dividerblack popborder" style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background-color: #f0f0f0; color: #fff; padding: 30px; border-radius: 10px; z-index: 1000; display: none; text-align: center;">
+<div id="popupMessage" style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); color:black; padding: 30px; border: 1px solid #000000; border-radius: 10px; z-index: 1000; display: none; text-align: center;">
     <span id="popupMessageText" style="display: block; margin-bottom: 10px;"></span>
-    <button id="popupOKButton" style="padding: 10px 20px; color: white; border: none; border-radius: 5px; cursor: pointer;">OK</button>
+    <button id="popupOKButton" style="padding: 10px 20px; background-color: rgba(255, 255, 255, 0.2); color: black; border: none; border-radius: 5px; cursor: pointer;">OK</button>
 </div>
 
 <style>
@@ -50,17 +52,19 @@
 
 
 
-<form asp-action="AddStaff" asp-controller="StellarBilling">
+<form asp-action="AddStaff" enctype="multipart/form-data" asp-controller="StellarBilling">
     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
     <div class="row">
-        <div class="col-md-12 col-lg-2">
+        <div class="col-md-12 col-lg-0">
         </div>
-        <div class="col-md-12 col-lg-8">
-            <div class="card" style="height:40px">
-                <div class="card-body dividerblack ">
-                    <div style="align-items:center">
-                        <div class="container" style="text-align:center">
-                            <h2 class="centered text-white" style="font-family:'Lucida Bright'">Staff Admin</h2>
+        <div class="col-md-12 col-lg-12" style="padding: 0;">
+            <div class="card" style="height:40px;">
+                <div class="card-body dividerblack">
+                    <div style="display: flex; align-items: center; height: 100%;">
+                        <div class="container" style="text-align: left; width: 100%;">
+                            <h2 class="centered text-white" style="font-family:'Lucida Bright'; margin: 0;">
+                                Staff Admin
+                            </h2>
                         </div>
                     </div>
                 </div>
@@ -76,22 +80,20 @@
   
 
     <div class="row" style="margin-top:60px">
-        <div class="col-md-12 col-lg-2">
+        <div class="col-md-12 col-lg-0">
         </div>
 
 
 
-        <div class="col-md-12 col-lg-8">
+        <div class="col-md-12 col-lg-12">
             <div class="card">
                 <div class="card-body dividerblack " >
 
                     <div class="row">
 
-                        <div class="col-md-12 col-lg-6">
+                        <div class="col-md-12 col-lg-3">
 
-                          
-
-
+                         
                             <div class="form-floating form-floating-outline mb-4">
                                 <input asp-for="StaffID" value="@Model.StaffID" class="form-control" placeholder="Staff ID" required />
                                 <label asp-for="StaffID" class="control-label">Staff ID</label>
@@ -118,12 +120,12 @@
                                     .Select(m => new SelectListItem
             {
                 Value = m.ResourceTypeID.ToString(), // Assuming ScreenId is of type int
-                Text = $"{m.ResourceTypeID} - {m.ResourceTypeName}"
+                Text = $"{m.ResourceTypeName}"
             });
                                 }
 
-                                @Html.DropDownListFor(model => model.ResourceTypeID, screenList, "Select Resource ID", new { @class = "form-control" })
-                                <label asp-for="ResourceTypeID" class="control-label">Resource TypeID</label>
+                                @Html.DropDownListFor(model => model.ResourceTypeID, screenList, "Select Resource", new { @class = "form-control" })
+                                <label asp-for="ResourceTypeID" class="control-label">Resource Type</label>
                                 <span asp-validation-for="ResourceTypeID" class="text-danger"></span>
                             </div>
 
@@ -142,7 +144,7 @@
                                
                             </div>
 
-                            <div class="form-floating form-floating-outline mb-4">
+                        @*     <div class="form-floating form-floating-outline mb-4">
                                 <input asp-for="FirstName" value="@Model.FirstName" class="form-control" placeholder="First Name" pattern="^[A-Za-z\s]+$" title="First Name should contain only letters and spaces" />
                                 <label asp-for="FirstName" class="control-label">First Name</label>
                                 <span asp-validation-for="FirstName" class="text-danger"></span>
@@ -155,14 +157,14 @@
                                 <label asp-for="LastName" class="control-label">Last Name</label>
                                 <span asp-validation-for="LastName" class="text-danger"></span>
                             </div>
-
+ *@
 
                             <div class="form-floating form-floating-outline mb-4">
 
                                 <input asp-for="FullName" value="@Model.FullName" class="form-control" placeholder="Full Name" pattern="^[A-Za-z\s]+$" title="Full Name should contain only letters and spaces" />
                                 <label asp-for="FullName" class="control-label">Full Name</label>
                                 <span asp-validation-for="FullName" class="text-danger"></span>
-                            </div>
+                            </div> 
 
                             <div class="form-floating form-floating-outline mb-4">
 
@@ -170,15 +172,16 @@
                                 <label asp-for="Initial" class="control-label">Initial</label>
                                 <span asp-validation-for="Initial" class="text-danger"></span>
                             </div>
-                            <div class="form-floating form-floating-outline mb-4">
+                        
+                            @*    <div class="form-floating form-floating-outline mb-4">
 
                                 <input asp-for="Prefix" value="@Model.Prefix" class="form-control" placeholder="Prefix" pattern="^[A-Za-z\s]+$" title="Prefix should contain only letters and spaces" />
                                 <label asp-for="Prefix" class="control-label">Prefix</label>
                                 <span asp-validation-for="Prefix" class="text-danger"></span>
-                            </div>
+                            </div> *@
 
                             <div class="form-floating form-floating-outline mb-4">
-                                <input asp-for="PhoneNumber" value="@Model.PhoneNumber" class="form-control" placeholder="Phone Number" pattern="^\d{10}$" title="Phone Number should be exactly 10 digits" />
+                                <input asp-for="PhoneNumber" value="@Model.PhoneNumber" class="form-control" placeholder="Mobile Number" />
                                 <label asp-for="PhoneNumber" class="control-label">Phone Number</label>
                                 <span asp-validation-for="PhoneNumber" class="text-danger"></span>
                             </div>
@@ -188,34 +191,29 @@
                         <div class="col-md-12 col-lg-4">
 
                             <div class="form-floating form-floating-outline mb-4 custom-date-picker">
-                                <input asp-for="DateofBirth" type="date" value="@Model.DateofBirth" class="form-control" placeholder="DateofBirth" />
+                                <input asp-for="DateofBirth" type="date" value="@Model.DateofBirth" class="form-control" placeholder="DateofBirth" max="@DateTime.Now.ToString("yyyy-MM-dd")" />
                                 <label asp-for="DateofBirth" class="control-label">Date of Birth</label>
                                 <span asp-validation-for="DateofBirth" class="text-danger"></span>
                             </div>
 
-                            <div class="form-floating form-floating-outline mb-4">
+                          @*   <div class="form-floating form-floating-outline mb-4">
 
                                 <input asp-for="Age" value="@Model.Age" type="number" class="form-control" placeholder="Age" />
                                 <label asp-for="Age" class="control-label">Age</label>
                                 <span asp-validation-for="Age" class="text-danger"></span>
-                            </div>
+                            </div> *@
 
-                            <div class="form-group">
-                                <label class="control-label">Gender:</label><br />
-                                <div class="form-check form-check-inline">
-                                    <input asp-for="Gender" value="@Model.Gender" class="form-check-input" type="radio" value="Male" id="maleRadio" />
-                                    <label class="form-check-label" for="maleRadio">Male</label>
-                                </div>
-                                <div class="form-check form-check-inline">
-                                    <input asp-for="Gender" value="@Model.Gender" class="form-check-input" type="radio" value="Female" id="femaleRadio" />
-                                    <label class="form-check-label" for="femaleRadio">Female</label>
-                                </div>
-                                <div class="form-check form-check-inline">
-                                    <input asp-for="Gender" value="@Model.Gender" class="form-check-input" type="radio" value="Other" id="otherRadio" />
-                                    <label class="form-check-label" for="otherRadio">Other</label>
-                                </div>
+                            <div class="form-floating form-floating-custom mb-4">
+                                <select asp-for="Gender" class="form-control" id="genderSelect">
+                                    <option value="">-- Select Gender --</option>
+                                    <option value="Male">Male</option>
+                                    <option value="Female">Female</option>
+                                    <option value="Other">Other</option>
+                                </select>
+                                <label for="genderSelect">Gender</label>
                                 <span asp-validation-for="Gender" class="text-danger"></span>
                             </div>
+
                             <div class="form-floating form-floating-outline mb-4">
                                 <textarea asp-for="Address1" value="@Model.Address1" class="form-control" placeholder="Address" aria-describedby="text-to-speech-addon"></textarea>
                                 <label asp-for="Address1" class="control-label">Address</label>
@@ -248,11 +246,12 @@
                                 <span asp-validation-for="EmailId" class="text-danger"></span>
                             </div>
                            
-                            <div class="form-floating form-floating-outline mb-4">
+                          @*   <div class="form-floating form-floating-outline mb-4">
                                 <input asp-for="Nationality" value="@Model.Nationality" class="form-control" placeholder="Nationality" />
                                 <label asp-for="Nationality" class="control-label">Nationality</label>
                                 <span asp-validation-for="Nationality" class="text-danger"></span>
-                            </div>
+                            </div> *@
+
                             <div class="form-floating form-floating-outline mb-4">
                                 <input asp-for="UserName" value="@Model.UserName" class="form-control" placeholder="UserName" />
                                 <label asp-for="UserName" class="control-label">UserName</label>
@@ -275,27 +274,103 @@
                                 <span asp-validation-for="IdProofName" class="text-danger"></span>
                             </div>
 
+                            @{
+                                var imageUrl = ViewBag.ImageUrl as string;
+                            }
+
+                            <div>
+                                <label>ID Proof File:</label>
+                                @if (!string.IsNullOrEmpty(imageUrl))
+                                {
+                                    <!-- Link to download the image -->
+                                    <a href="@imageUrl" download="id-proof.jpg">Download ID Proof Image</a>
+                                }
+                                else
+                                {
+                                    <p>No image available</p>
+                                }
+                            </div>
+                            <div>
+                                <label class="btn btn-primary">Upload Image</label>
+                                <input type="file" class="account-file-input" name="imageFile" accept="image/png, image/jpeg" value="@Model.IdProofFile" />
+                            </div>
+
+
+
+
                         </div>
+
+
+                        <div class="col-md-12 d-flex justify-content-center">
+
+
+                            <center>
+                                <button type="submit" value="Save" name="buttonType" class="btn btn-primary mx-2">Save</button>
+
+                                <button type="submit" value="Delete" name="buttonType" class="btn btn-primaryred mx-2">Delete</button>
+                                <button type="submit" value="DeleteRetrieve" name="buttonType" class="btn btn-primaryellow mx-2">Delete Retrieve</button>
+                            </center>
+
+                        </div>
+
                     </div>
                 </div>
             </div>
             <div class="col-md-12 col-lg-2">
             </div>
         </div>
-        <div class="row" style="margin-top:30px">
+      
+        </div>
 
-            <div class="form-group">
-                <center>
-                   <button type="submit" style="width:180px" value="Save" name="buttonType" class="btn btn-primary">Save</button>
 
-                    <button type="submit" style="width:180px" value="Delete" name="buttonType" class="btn btn-primary">Delete</button>
-                    <button type="submit" style="width:180px" value="DeleteRetrieve" name="buttonType" class="btn btn-primary">Delete Retrieve</button>
-                </center>
+    @{
+        var dataTable = ViewData["StaffData"] as DataTable;
+    }
+
+    <div class="row" style="margin-top:30px">
+        <div class="col-md-12 col-lg-0"></div>
+        <div class="col-md-12 col-lg-12">
+            <div class="card">
+                <div class="card-body dividerblack">
+                    <h3 class="centered text-white" style="font-family: 'Lucida Bright'; margin-bottom: 20px; text-align: center;">Staff Details</h3>
+                    <table class="table table-striped table-bordered" style="border: 3px solid black;">
+                        <thead style="background-color: black; color: white;">
+                            <tr>
+                                <th>Staff ID</th>
+                                <th>Staff Name</th>
+                                <th>Resource Type</th>
+                                <th>Phone Number</th>
+                                <th>Email</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (dataTable != null)
+                            {
+                                foreach (DataRow row in dataTable.Rows)
+                                {
+                                    <tr>
+                                        <td>@row["StaffID"]</td>
+                                        <td>@row["FullName"]</td>
+                                        <td>@row["ResourceTypeID"]</td>
+                                        <td>@row["PhoneNumber"]</td>
+                                        <td>@row["EmailId"]</td>
+                                    </tr>
+                                }
+                            }
+                        </tbody>
+                    </table>
+
+                </div>
             </div>
         </div>
-        </div>
+    </div>
 
-        @if (ViewBag.Message != null)
+
+
+
+
+
+    @if (ViewBag.Message != null)
         {
             <script>
                 handleMessages("@ViewBag.Message");

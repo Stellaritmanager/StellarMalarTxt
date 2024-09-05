@@ -21,14 +21,15 @@
     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
     <div class="row">
-        <div class="col-md-12 col-lg-2">
-        </div>
-        <div class="col-md-12 col-lg-8">
-            <div class="card" style="height:40px">
+        <div class="col-md-12 col-lg-0"></div>
+        <div class="col-md-12 col-lg-12" style="padding: 0;">
+            <div class="card" style="height:40px;">
                 <div class="card-body dividerblack">
-                    <div style="align-items:center">
-                        <div class="container" style="text-align:center">
-                            <h2 class="centered text-white" style="font-family:'Lucida Bright'">Branch Master</h2>
+                    <div style="display: flex; align-items: center; height: 100%;">
+                        <div class="container" style="text-align: left; width: 100%;">
+                            <h2 class="centered text-white" style="font-family:'Lucida Bright'; margin: 0;">
+                                Branch Master
+                            </h2>
                         </div>
                     </div>
                 </div>
@@ -37,28 +38,53 @@
     </div>
     <br />
 
-    <div class="row" style="margin-top:50px">
-        <div class="col-md-12 col-lg-2">
-        </div>
+    <div class="row" style="height:8%"></div>
 
-
-
-        <div class="col-md-12 col-lg-8">
+    <div class="row" style="margin-top:60px">
+        <div class="col-md-12 col-lg-0"></div>
+        <div class="col-md-12 col-lg-12">
             <div class="card">
                 <div class="card-body dividerblack">
+                    <div class="row gy-4">
+                        <div class="col-md-12 col-lg-0"></div>
 
-                    <div class="row">
+                        <div class="col-md-12 col-lg-3">
 
-                        <div class="col-md-12 col-lg-6">
                             <div class="form-floating form-floating-outline mb-4">
 
-                                <input asp-for="BracnchID" class="form-control" placeholder="Bracnch ID"  value="@Model.BracnchID" required />
-                                <label asp-for="BracnchID" class="control-label">Bracnch ID</label>
+                                <input asp-for="BracnchID" class="form-control" placeholder="Bracnch"  value="@Model.BracnchID" required />
+                                <label asp-for="BracnchID" class="control-label">Bracnch</label>
 
                                 <span asp-validation-for="BracnchID" class="text-danger"></span>
                             </div>
                         </div>
-                        <div class="col-md-12 col-lg-2">
+
+                        <div class="col-md-12 col-lg-4">
+                            <div class="form-floating form-floating-outline mb-4">
+                                <input asp-for="BranchName" class="form-control" placeholder="Branch Name" value="@Model.BranchName" />
+                                <label asp-for="BranchName" class="control-label">Branch Name</label>
+
+                                <span asp-validation-for="BranchName" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                             <div class="col-md-12 col-lg-3">
+
+                                <div class="form-floating form-floating-outline mb-4">
+
+                                    <input asp-for="email" class="form-control" placeholder="Email" value="@Model.email" />
+                                    <label asp-for="email" class="control-label">Email</label>
+                                    <span asp-validation-for="email" class="text-danger"></span>
+
+                                </div>
+
+                                 </div>
+
+
+                           
+
+
+                        <div class="col-md-12 col-lg-2" style="width:110px">
                             <button type="submit" style="width:100px" value="Get" name="buttontype" class="btn btn-primary">Get</button>
                         </div>
 
@@ -66,52 +92,62 @@
 
 
 
+
                     <div class="row">
+                        <div class="col-md-12 col-lg-0">
+                        </div>
+                        <div class="col-md-12 col-lg-3">
 
 
-
-                        <div class="col-md-12 col-lg-6">
-
-
-                            <div class="form-floating form-floating-outline mb-4">
-                                <input asp-for="BranchName" class="form-control" placeholder="Branch Name" value="@Model.BranchName"  />
-                                <label asp-for="BranchName" class="control-label">Branch Name</label>
-
-                                <span asp-validation-for="BranchName" class="text-danger"></span>
-                            </div>
+                           
                             <div class="form-floating form-floating-outline mb-4">
                                 <input asp-for="PhoneNumber1" class="form-control" placeholder="Phone Number1" value="@Model.PhoneNumber1" pattern="^\d{10}$" title="Mobile Number should be exactly 10 digits" />
                                 <label asp-for="PhoneNumber1" class="control-label">Phone Number1</label>
 
                                 <span asp-validation-for="PhoneNumber1" class="text-danger"></span>
                             </div>
-                            <div class="form-floating form-floating-outline mb-4">
-                                <input asp-for="PhoneNumber2"  class="form-control" placeholder="PhoneNumber2" value="@Model.PhoneNumber2" pattern="^\d{10}$" title="Mobile Number should be exactly 10 digits" />
-                                <label asp-for="PhoneNumber2" class="control-label">Phone Number2</label>
 
-                                <span asp-validation-for="PhoneNumber2" class="text-danger"></span>
                             </div>
 
-
+                       
+                        <div class="col-md-12 col-lg-4">
                             <div class="form-floating form-floating-outline mb-4">
-                                <textarea asp-for="Address1" value="@Model.Address1" class="form-control" placeholder="Branch Address1" aria-describedby="text-to-speech-addon"></textarea>
-                                <label asp-for="Address1" class="control-label">Branch Address1</label>
+                                <input asp-for="Address1" class="form-control" placeholder="Address1" value="@Model.Address1" />
+                                <label asp-for="Address1" class="control-label">Address1</label>
+
                                 <span asp-validation-for="Address1" class="text-danger"></span>
                             </div>
+                            </div>
 
 
-
+                        <div class="col-md-12 col-lg-3">
                             <div class="form-floating form-floating-outline mb-4">
-                                <textarea asp-for="Address2" value="@Model.Address2" class="form-control" placeholder="Branch Address2" aria-describedby="text-to-speech-addon"></textarea>
-                                <label asp-for="Address2" class="control-label">Branch Address2</label>
+                                <input asp-for="Address2" class="form-control" placeholder="Address2" value="@Model.Address2" />
+                                <label asp-for="Address2" class="control-label">Address2</label>
+
                                 <span asp-validation-for="Address2" class="text-danger"></span>
+                            </div>
                             </div>
 
                         </div>
+               
 
-                        <div class="col-md-12 col-lg-6">
-                           
+                    <div class="row">
+                        <div class="col-md-12 col-lg-0">
+                        </div>
+                        <div class="col-md-12 col-lg-3">
 
+                            
+                                <div class="form-floating form-floating-outline mb-4">
+                                    <input asp-for="PhoneNumber2" class="form-control" placeholder="PhoneNumber2" value="@Model.PhoneNumber2" pattern="^\d{10}$" title="Mobile Number should be exactly 10 digits" />
+                                    <label asp-for="PhoneNumber2" class="control-label">Phone Number2</label>
+
+                                    <span asp-validation-for="PhoneNumber2" class="text-danger"></span>
+                                </div>
+
+                           </div>
+
+                    <div class="col-md-12 col-lg-3">
                             <div class="form-floating form-floating-outline mb-4">
 
                                 <input asp-for="Country" class="form-control" placeholder="Country" value="@Model.Country" />
@@ -119,7 +155,9 @@
 
                                 <span asp-validation-for="Country" class="text-danger"></span>
                             </div>
+                            </div>
 
+                        <div class="col-md-12 col-lg-2">
                             <div class="form-floating form-floating-outline mb-4">
 
                                 <input asp-for="State" class="form-control" placeholder="State" value="@Model.State" />
@@ -127,8 +165,9 @@
 
                                 <span asp-validation-for="State" class="text-danger"></span>
                             </div>
+                            </div>
 
-
+                        <div class="col-md-12 col-lg-2">
                             <div class="form-floating form-floating-outline mb-4">
 
                                 <input asp-for="City" class="form-control" placeholder="City" value="@Model.City" />
@@ -136,8 +175,9 @@
 
                                 <span asp-validation-for="City" class="text-danger"></span>
                             </div>
-                        
+                            </div>
 
+                        <div class="col-md-12 col-lg-2">
                         <div class="form-floating form-floating-outline mb-4">
 
                             <input asp-for="ZipCode" class="form-control" placeholder="ZipCode" value="@Model.ZipCode" />
@@ -146,17 +186,11 @@
                             <span asp-validation-for="ZipCode" class="text-danger"></span>
 
                         </div>
-                        <div class="form-floating form-floating-outline mb-4">
-
-                            <input asp-for="email" class="form-control" placeholder="email" value="@Model.email" />
-                            <label asp-for="email" class="control-label">email</label>
-                            <span asp-validation-for="email" class="text-danger"></span>
-
-                        </div>
+                       </div>
                         
-
-                        
-                            <label class="control-label">IsFranchise</label>
+                       @*  <div class="col-md-12 col-lg-3">
+                            <fieldset class="border p-3">
+                                <legend class="w-auto">IsFranchise</legend>
                             <div class="form-check">
                                 <input asp-for="IsFranchise" class="form-check-input" type="radio" value="Yes" id="Yes" />
                                 <label class="form-check-label" for="Yes">Yes</label>
@@ -167,32 +201,29 @@
                             
                           
                             <span asp-validation-for="IsFranchise" class="text-danger"></span>
+                            </fieldset>
+                        </div> *@
+                       
+
+                        <div class="row mt-3">
+                            <div class="col-md-12 d-flex justify-content-center">
+
+                                <button type="submit"  value="Save" name="buttontype" class="btn btn-primary mx-2">Save</button>
+                                <button type="submit"  value="Delete" name="buttontype" class="btn btn-primaryred mx-2">Delete</button>
+                                <button type="submit"  value="DeleteRetrieve" name="buttontype" class="btn btn-primaryellow mx-2">DeleteRetrieve</button>
+
+
+                            </div>
+
                         </div>
-                        </div>
-
-
-
 
                     </div>
                 </div>
+                </div>
             </div>
         </div>
-        <div class="col-md-12 col-lg-2">
-        </div>
-    </div>
-    <div class="row" style="margin-top:30px">
        
-        <div class="form-group">
-            <br />
-            <center>
-                <button type="submit" style="width:180px" value="Save" name="buttontype" class="btn btn-primary">Save</button>
-                <button type="submit" style="width:180px" value="Delete" name="buttontype" class="btn btn-primary">Delete</button>
-                <button type="submit" style="width:180px" value="DeleteRetrieve" name="buttontype" class="btn btn-primary">DeleteRetrieve</button>
-
-            </center>
-        </div>
-      
-    </div>
+   
 
     @if (ViewBag.Message != null)
     {

@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using StellarBillingSystem.Context;
 
@@ -11,9 +12,11 @@ using StellarBillingSystem.Context;
 namespace StellarBillingSystem.Migrations
 {
     [DbContext(typeof(BillingContext))]
-    partial class BillingContextModelSnapshot : ModelSnapshot
+    [Migration("20240904043133_initial77")]
+    partial class initial77
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -158,8 +161,8 @@ namespace StellarBillingSystem.Migrations
                     b.Property<bool>("IsDelete")
                         .HasColumnType("bit");
 
-                    b.Property<DateTime>("LastUpdatedDate")
-                        .HasColumnType("datetime2");
+                    b.Property<string>("LastUpdatedDate")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("LastUpdatedUser")
                         .HasColumnType("nvarchar(max)");
@@ -288,8 +291,8 @@ namespace StellarBillingSystem.Migrations
                     b.Property<bool>("IsDelete")
                         .HasColumnType("bit");
 
-                    b.Property<DateTime>("LastUpdatedDate")
-                        .HasColumnType("datetime2");
+                    b.Property<string>("LastUpdatedDate")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("LastUpdatedUser")
                         .HasColumnType("nvarchar(max)");
@@ -418,8 +421,8 @@ namespace StellarBillingSystem.Migrations
                     b.Property<bool>("IsDelete")
                         .HasColumnType("bit");
 
-                    b.Property<DateTime>("LastUpdatedDate")
-                        .HasColumnType("datetime2");
+                    b.Property<string>("LastUpdatedDate")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("LastUpdatedUser")
                         .HasColumnType("nvarchar(max)");
@@ -1122,6 +1125,7 @@ namespace StellarBillingSystem.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<byte[]>("IdProofFile")
+                        .IsRequired()
                         .HasColumnType("varbinary(max)");
 
                     b.Property<string>("IdProofId")
@@ -1142,8 +1146,8 @@ namespace StellarBillingSystem.Migrations
                     b.Property<string>("LastUpdatedMachine")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("LastupdatedDate")
-                        .HasColumnType("datetime2");
+                    b.Property<string>("LastupdatedDate")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("LastupdatedUser")
                         .HasColumnType("nvarchar(max)");

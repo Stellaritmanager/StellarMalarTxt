@@ -21,8 +21,8 @@ using System;
     private string cGST;
     private string otherTax;
 
-    private String strLastUpdatedDate;
-        private String strLastUpdatedUser;
+    private DateTime strLastUpdatedDate;
+    private String strLastUpdatedUser;
         private String strLastUpdatedmachine;
     private string branchID;
     private string imeiNumber;
@@ -35,7 +35,7 @@ using System;
         public string? Price { get => strPrice; set => strPrice = value; }
 
         public string? TotalAmount { get => strTotalAmount; set => strTotalAmount = value; }
-        public string? LastUpdatedDate { get => strLastUpdatedDate; set => strLastUpdatedDate = value; }
+       
         public string? LastUpdatedUser { get => strLastUpdatedUser; set => strLastUpdatedUser = value; }
         public string? LastUpdatedmachine { get => strLastUpdatedmachine; set => strLastUpdatedmachine = value; }
         public string? CategoryID { get => strCategoryID; set => strCategoryID = value; }
@@ -48,5 +48,6 @@ using System;
     public string BranchID { get => branchID; set => branchID = value; }
     public string? ImeiNumber { get => imeiNumber; set => imeiNumber = value; }
     public string? SerialNumber { get => serialNumber; set => serialNumber = value; }
+    public DateTime LastUpdatedDate { get => strLastUpdatedDate; set => strLastUpdatedDate = value; }
 }
 

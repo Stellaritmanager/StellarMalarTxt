@@ -22,6 +22,102 @@ namespace StellarBillingSystem.Business
             _billingContext = billingContext;
         }
 
+        /*
+              // Query to get all Product
+                public DataTable GetProductData(string branchId)
+                {
+                    // Define the SQL query
+                    string sqlQuery = "SELECT ProductID, ProductName, BarcodeId, Price FROM SHProductMaster WHERE BranchID = '"+ branchId +"' AND IsDelete = 0";
+
+                    // Define the parameters for the SQL query
+                    var parameters = new[]
+                    {
+                    new SqlParameter("@BranchID", branchId)
+                };
+
+                    // Use the DataTable method from BusinessClassCommon to execute the query
+                    return BusinessClassCommon.DataTable(_billingContext, sqlQuery, parameters);
+               }
+
+        */
+
+
+
+
+        public static DataTable ConvertToDataTableProductMaster(IEnumerable<ProductMatserModel> entities)
+        {
+            var dataTable = new DataTable();
+
+            // Add columns
+            dataTable.Columns.Add("ProductID", typeof(string));
+            dataTable.Columns.Add("ProductName", typeof(string));
+            dataTable.Columns.Add("BarcodeId", typeof(string));
+            dataTable.Columns.Add("Price", typeof(string));
+        
+            // Add rows
+            foreach (var entity in entities)
+            {
+                dataTable.Rows.Add(entity.ProductID, entity.ProductName, entity.BarcodeId, entity.Price);
+            }
+
+            return dataTable;
+        }
+
+        public static DataTable ConvertToDataTableGodown(IEnumerable<GodownModel> entities)
+        {
+            var dataTable = new DataTable();
+
+            // Add columns
+            dataTable.Columns.Add("ProductID", typeof(string));
+            dataTable.Columns.Add("NumberofStocks", typeof(string));
+           
+            // Add rows
+            foreach (var entity in entities)
+            {
+                dataTable.Rows.Add(entity.ProductID, entity.NumberofStocks);
+            }
+
+            return dataTable;
+        }
+
+        public static DataTable ConvertToDataTableStaff(IEnumerable<StaffAdminModel> entities)
+        {
+            var dataTable = new DataTable();
+
+            // Add columns
+            dataTable.Columns.Add("StaffID", typeof(string));
+            dataTable.Columns.Add("FullName", typeof(string));
+            dataTable.Columns.Add("ResourceTypeID", typeof(string));
+            dataTable.Columns.Add("PhoneNumber", typeof(string));
+            dataTable.Columns.Add("EmailId", typeof(string));
+           
+
+            // Add rows
+            foreach (var entity in entities)
+            {
+                dataTable.Rows.Add(entity.StaffID, entity.FullName,entity.ResourceTypeID,entity.PhoneNumber,entity.EmailId);
+            }
+
+            return dataTable;
+        }
+
+
+
+        public static DataTable convertToDataTableCategoryMaster(IEnumerable<CategoryMasterModel> entities)
+        {
+            var dataTable = new DataTable();
+            dataTable.Columns.Add("CategoryID", typeof(string));
+            dataTable.Columns.Add("CategoryName", typeof(string));
+
+            foreach (var entity in entities)
+            {
+                dataTable.Rows.Add(entity.CategoryID, entity.CategoryName);
+            }
+
+            return dataTable;
+        }
+
+
         /*Product Dropdown*/
 
         public List<CategoryMasterModel> GetCatid(string BranchID)
