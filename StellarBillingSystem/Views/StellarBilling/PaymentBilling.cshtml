@@ -42,6 +42,11 @@
 <form asp-controller="StellarBilling">
     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
     
+    <input type="hidden" id="billId" name="BillID" value="@ViewBag.BillID" />
+    <input type="hidden" id="billDate" name="BillDate" value="@ViewBag.BillDate" />
+    <input type="hidden" id="billValue" name="BillValue" value="@ViewBag.BillValue" />
+    <input type="hidden" id="branchID" name="BranchID" value="@ViewBag.BranchID" />
+
 
     <div class="row">
         <div class="col-md-12 col-lg-1">
@@ -73,91 +78,52 @@
                 <div class="card-body dividerblack ">
 
                     <div class="row gy-4">
+
                         <div class="col-md-12 col-lg-5">
 
+                            <button type="submit" class="btn btn-primary" name="buttonType" value="AddPayment">AddPayment</button>
 
-                            <div class="form-floating form-floating-outline mb-4">
-
-                                <input type="text" class="form-control" id="BillId" name="BillId" placeholder="BillId" value="@Model.BillId" required />
-                                <label for="BillId" class="control-label">Bill ID</label>
-                            </div>
                         </div>
-                        <div class="col-md-12 col-lg-5">
-                            <div class="form-floating form-floating-outline mb-4 custom-date-picker">
+                    </div>
 
-                                <input type="date" class="form-control" id="BillDate" name="BillDate" placeholder="Bill Date" value="@Model.BillDate" required />
-                                <label for="BillDate" class="control-label">Bill Date</label>
-
-                            </div>
-                        </div>
+                    <div class="row gy-4">
                         <div class="col-md-12 col-lg-2" style="align-items:center">
-                            <div class="form-group">
+                        
+                           
+                          
+
                                 <center>
 
-                                    <button type="submit" asp-action="PaymentAction" class="btn btn-primary" name="buttonType" value="GetBill">GetBill</button>
+                                <label class="form-label" for="showToastPlacement">&nbsp;</label>
+                                <button type="button" id="viewBillButton" class="btn btn-primary d-block">ViewBill</button>
+
+
+
+
+                                
 
                                 </center>
                             </div>
+                            </div>
+                            </div>
 
 
                         </div>
+                       
                     </div>
                     <br/>
-                    <div class="row gy-4">
-                        <div class="col-md-12 col-lg-10">
-
-                            <div class="form-floating form-floating-outline mb-4">
-
-                                <input type="text" class="form-control" id="BillValue" name="BillValue" placeholder="BillValue" value="@Model.Balance" readonly/>
-                                <label for="BillValue" class="control-label">BillValue</label>
-                            </div>
-
-                        </div>
-                      
-                    </div>
                  
-                    <div class="row gy-4">
-                        <div class="col-md-12 col-lg-10">
-
-                            <div class="form-floating form-floating-outline mb-4">
-
-                                <input type="text" class="form-control" id="Balance" name="Balance" value="@Model.StrBillvalue" placeholder="Balance" readonly/>
-                                <label for="Balance" class="control-label">Balance</label>
-                            </div>
-
-                        </div>
-
-                    </div>
-                    <div class="row gy-4">
-                        <div class="col-md-12 col-lg-10">
-
-                            <div class="form-floating form-floating-outline mb-4">
-
-                                <input type="text" class="form-control" id="PaymentId" name="PaymentId" placeholder="Payment ID" value="@Model.PaymentId" />
-                                <label for="PaymentId" class="control-label">Payment ID</label>
-
-                            </div>
-                        </div>
-                        <div class="col-md-12 col-lg-2">
-                            <div class="form-group">
-                                <center>
-
-                                    <button type="submit" class="btn btn-primary" name="buttonType" value="GetPayment">GetPayment</button>
-                                </center>
-
-                            </div>
-                        </div>
-
-                    </div>
-
-                    <button type="submit" class="btn btn-primary" name="buttonType" value="AddPayment">AddPayment</button>
+              
+           
 
 
 
-                </div>
-            </div>
+
         </div>
     </div>
+
+
+  
 
     <div class="row gy-4">
         <div class="col-md-12 col-lg-1">
@@ -285,3 +251,68 @@
 </form>
 
 
+
+
+
+<!-- Toast Container -->
+<div id="toastContainer" class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 1055;">
+    <div id="customToast" class="toast fade" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="toast-header">
+            <strong class="me-auto">Billing Info</strong>
+            <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+        <div class="toast-body">
+            <!-- Toast content will be injected here -->
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        var viewBillButton = document.getElementById("viewBillButton");
+
+        viewBillButton.addEventListener("click", function (event) {
+            event.preventDefault(); // Prevent default form submission
+
+            // Prepare AJAX request to call PaymentActionget
+            var xhr = new XMLHttpRequest();
+            xhr.open("GET", "/StellarBilling/PaymentActionget", true);
+            xhr.setRequestHeader("Content-Type", "application/json");
+
+            xhr.onload = function () {
+                if (xhr.status === 200) {
+                    // Parse the response JSON
+                    var response = JSON.parse(xhr.responseText);
+
+                    // Get the values from the response
+                    var billId = response.billId;
+                    var billDate = response.billDate;
+                    var netPrice = response.billValue;
+                    var balance = response.balance;
+
+                    // Create toast content
+                    var toastBody = `Bill ID: ${billId}<br>Bill Date: ${billDate}<br>Net Price: ${netPrice}<br>Balance: ${balance}`;
+
+                    // Update the toast body with the dynamic content
+                    var toastElement = document.querySelector("#customToast .toast-body");
+                    toastElement.innerHTML = toastBody;
+
+                    // Initialize and show the toast
+                    var toast = new bootstrap.Toast(document.getElementById("customToast"), {
+                        autohide: true,
+                        delay: 5000 // Optional: Set the toast to hide automatically after 5 seconds
+                    });
+
+                    toast.show();
+                } else {
+                    // Handle error
+                    console.error("Failed to fetch payment details.");
+                }
+            };
+
+            xhr.send();
+        });
+    });
+
+
+</script>

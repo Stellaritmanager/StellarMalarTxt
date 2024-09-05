@@ -2738,7 +2738,7 @@ namespace StellarBillingSystem.Controllers
 
         [HttpPost]
 
-        public async Task<IActionResult> getCustomerBill(BillProductlistModel model, string buttonType, string BillID, string BillDate, string CustomerNumber, string TotalPrice, BillingMasterModel masterModel, BillingDetailsModel detailModel, string Quantity)
+        public async Task<IActionResult> getCustomerBill(BillProductlistModel model, string buttonType, string BillID, string BillDate, string CustomerNumber,string BranchID, string TotalPrice, BillingMasterModel masterModel, BillingDetailsModel detailModel, string Quantity)
         {
 
 
@@ -2779,7 +2779,7 @@ namespace StellarBillingSystem.Controllers
 
             if (buttonType == "Payment")
             {
-                return RedirectToAction("PaymentBilling", new { BillID = model.BillID });
+                return RedirectToAction("PaymentBilling", new { BillID = model.BillID, BranchID = model.BranchID });
             }
 
             if (buttonType == "Add Product")
@@ -3702,12 +3702,103 @@ namespace StellarBillingSystem.Controllers
             return View(model);
         }
 
-        public IActionResult PaymentBilling()
+        public IActionResult PaymentBilling(string BillID, string BranchID)
         {
             PaymentTableViewModel obj = new PaymentTableViewModel();
+
+            // Fetch the bill details from the BillMaster table
+            var billDetails = _billingsoftware.SHbillmaster
+                                        .Where(b => b.BillID == BillID && b.BranchID == BranchID)
+                                        .Select(b => new
+                                        {
+                                            b.BillID,
+                                            b.BillDate,
+                                            b.NetPrice
+                                        })
+                                        .FirstOrDefault();
+
+            // Fetch the payment details from the PaymentMaster table based on the BillID
+            var paymentDetails = _billingsoftware.SHPaymentMaster
+                                           .Where(p => p.BillId == BillID && p.BranchID == BranchID)
+                                           .Select(p => new
+                                           {
+                                               p.Balance
+                                           })
+                                           .FirstOrDefault();
+
+            // Check if billDetails were found
+            if (billDetails != null)
+            {
+                obj.BillId = billDetails.BillID;
+                obj.BillDate = billDetails.BillDate;
+                obj.StrBillvalue = billDetails.NetPrice;
+            }
+            else
+            {
+                ViewBag.Message = "Bill details not found.";
+                return View(obj); // Early return if no bill found
+            }
+
+            // Check if paymentDetails were found and set the Balance
+            if (paymentDetails != null)
+            {
+                obj.Balance = paymentDetails.Balance;
+            }
+            else
+            {
+                // If there is no entry in PaymentMaster, set balance as NetPrice
+                obj.Balance = obj.StrBillvalue;
+            }
+
+            TempData["BillID"] = obj.BillId;
+            TempData["BillDate"] = obj.BillDate;
+            TempData["BillValue"] = obj.StrBillvalue;
+            TempData["Balance"] = obj.Balance;
+
+            // Return the view with the populated PaymentTableViewModel
             return View(obj);
 
         }
+
+
+       
+     
+            public async Task<IActionResult> PaymentActionget()
+            {
+                var billId = TempData["BillID"]?.ToString();
+                var billDate = TempData["BillDate"]?.ToString();
+                var billValue = TempData["BillValue"]?.ToString();
+                var branchID = TempData["BranchID"]?.ToString();
+
+                // Fetch the current balance from PaymentMaster based on the BillID and BranchID
+                var paymentDetails = _billingsoftware.SHPaymentMaster
+                                                    .Where(p => p.BillId == billId && p.BranchID == branchID)
+                                                    .Select(p => new
+                                                    {
+                                                        p.Balance
+                                                    })
+                                                    .FirstOrDefault();
+
+                var balance = paymentDetails != null ? paymentDetails.Balance : billValue;
+
+                // Prepare the JSON response
+                var response = new
+                {
+                    billId,
+                    billDate,
+                    billValue,
+                    balance
+                };
+
+                return Json(response);
+            }
+
+        
+
+
+
+
+
 
         [HttpPost]
         public async Task<IActionResult> PaymentAction(PaymentTableViewModel model, string buttonType, string selectedSlotId, PaymentDetailsModel detailmodel)
@@ -3720,14 +3811,9 @@ namespace StellarBillingSystem.Controllers
 
             //   model.StrBillvalue = BusinessClassCommon.getbalance(_billingsoftware, model.PaymentId, model.BillId,model.BranchID, model.BillDate,detailmodel.PaymentAmount);
 
-            if (buttonType == "GetBill")
-            {
-                var exbill = await _billingsoftware.SHbillmaster.Where(x => x.BillID == model.BillId && x.BillDate == model.BillDate && x.BranchID == model.BranchID).FirstOrDefaultAsync();
-                if (exbill != null)
-                    model.Balance = exbill.NetPrice;
-                else
-                    ViewBag.Message = "Bill ID given was not available, Either it was belongs to different branch,enter correct Bill ID";
-            }
+           
+           
+        
 
             if (buttonType == "DeletePayment")
             {
