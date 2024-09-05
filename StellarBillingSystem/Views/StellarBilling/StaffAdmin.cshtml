@@ -144,7 +144,7 @@
                                
                             </div>
 
-                            <div class="form-floating form-floating-outline mb-4">
+                        @*     <div class="form-floating form-floating-outline mb-4">
                                 <input asp-for="FirstName" value="@Model.FirstName" class="form-control" placeholder="First Name" pattern="^[A-Za-z\s]+$" title="First Name should contain only letters and spaces" />
                                 <label asp-for="FirstName" class="control-label">First Name</label>
                                 <span asp-validation-for="FirstName" class="text-danger"></span>
@@ -157,14 +157,14 @@
                                 <label asp-for="LastName" class="control-label">Last Name</label>
                                 <span asp-validation-for="LastName" class="text-danger"></span>
                             </div>
+ *@
 
-
-                          @*   <div class="form-floating form-floating-outline mb-4">
+                            <div class="form-floating form-floating-outline mb-4">
 
                                 <input asp-for="FullName" value="@Model.FullName" class="form-control" placeholder="Full Name" pattern="^[A-Za-z\s]+$" title="Full Name should contain only letters and spaces" />
                                 <label asp-for="FullName" class="control-label">Full Name</label>
                                 <span asp-validation-for="FullName" class="text-danger"></span>
-                            </div> *@
+                            </div> 
 
                             <div class="form-floating form-floating-outline mb-4">
 
@@ -191,7 +191,7 @@
                         <div class="col-md-12 col-lg-4">
 
                             <div class="form-floating form-floating-outline mb-4 custom-date-picker">
-                                <input asp-for="DateofBirth" type="date" value="@Model.DateofBirth" class="form-control" placeholder="DateofBirth" />
+                                <input asp-for="DateofBirth" type="date" value="@Model.DateofBirth" class="form-control" placeholder="DateofBirth" max="@DateTime.Now.ToString("yyyy-MM-dd")" />
                                 <label asp-for="DateofBirth" class="control-label">Date of Birth</label>
                                 <span asp-validation-for="DateofBirth" class="text-danger"></span>
                             </div>
@@ -203,22 +203,17 @@
                                 <span asp-validation-for="Age" class="text-danger"></span>
                             </div> *@
 
-                            <div class="form-group">
-                                <label class="control-label">Gender:</label><br />
-                                <div class="form-check form-check-inline">
-                                    <input asp-for="Gender" value="@Model.Gender" class="form-check-input" type="radio" value="Male" id="maleRadio" />
-                                    <label class="form-check-label" for="maleRadio">Male</label>
-                                </div>
-                                <div class="form-check form-check-inline">
-                                    <input asp-for="Gender" value="@Model.Gender" class="form-check-input" type="radio" value="Female" id="femaleRadio" />
-                                    <label class="form-check-label" for="femaleRadio">Female</label>
-                                </div>
-                                <div class="form-check form-check-inline">
-                                    <input asp-for="Gender" value="@Model.Gender" class="form-check-input" type="radio" value="Other" id="otherRadio" />
-                                    <label class="form-check-label" for="otherRadio">Other</label>
-                                </div>
+                            <div class="form-floating form-floating-custom mb-4">
+                                <select asp-for="Gender" class="form-control" id="genderSelect">
+                                    <option value="">-- Select Gender --</option>
+                                    <option value="Male">Male</option>
+                                    <option value="Female">Female</option>
+                                    <option value="Other">Other</option>
+                                </select>
+                                <label for="genderSelect">Gender</label>
                                 <span asp-validation-for="Gender" class="text-danger"></span>
                             </div>
+
                             <div class="form-floating form-floating-outline mb-4">
                                 <textarea asp-for="Address1" value="@Model.Address1" class="form-control" placeholder="Address" aria-describedby="text-to-speech-addon"></textarea>
                                 <label asp-for="Address1" class="control-label">Address</label>
@@ -296,28 +291,35 @@
                                 }
                             </div>
                             <div>
-                                <label>Upload Image:</label>
-                                <input type="file" name="imageFile" value="@Model.IdProofFile" />
+                                <label class="btn btn-primary">Upload Image</label>
+                                <input type="file" class="account-file-input" name="imageFile" accept="image/png, image/jpeg" value="@Model.IdProofFile" />
                             </div>
 
+
+
+
                         </div>
+
+
+                        <div class="col-md-12 d-flex justify-content-center">
+
+
+                            <center>
+                                <button type="submit" value="Save" name="buttonType" class="btn btn-primary mx-2">Save</button>
+
+                                <button type="submit" value="Delete" name="buttonType" class="btn btn-primaryred mx-2">Delete</button>
+                                <button type="submit" value="DeleteRetrieve" name="buttonType" class="btn btn-primaryellow mx-2">Delete Retrieve</button>
+                            </center>
+
+                        </div>
+
                     </div>
                 </div>
             </div>
             <div class="col-md-12 col-lg-2">
             </div>
         </div>
-        <div class="row" style="margin-top:30px">
-
-            <div class="form-group">
-                <center>
-                   <button type="submit"  value="Save" name="buttonType" class="btn btn-primary">Save</button>
-
-                    <button type="submit" value="Delete" name="buttonType" class="btn btn-primaryred">Delete</button>
-                    <button type="submit"  value="DeleteRetrieve" name="buttonType" class="btn btn-primaryellow">Delete Retrieve</button>
-                </center>
-            </div>
-        </div>
+      
         </div>
 
 
