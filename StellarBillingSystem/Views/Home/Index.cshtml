@@ -140,6 +140,111 @@
 
                             </tbody>
                         </table>
+                            <div id="pagination" class="pagination-container" style="text-align: center; margin-top: 10px;">
+                                <!-- Pagination links will be injected here by JavaScript -->
+                                <script>
+                                    document.addEventListener("DOMContentLoaded", function () {
+                                        const rowsPerPage = 2;
+                                        let currentPage = 1;
+                                        let filteredRows = [];
+
+                                        const filterDropdown = document.getElementById('filterDropdown');
+                                        const dataTable = document.getElementById('dataTable');
+                                        const rows = dataTable.querySelectorAll('tbody tr');
+
+                                        function filterTable(filterValue) {
+                                            const today = new Date();
+                                            let startDate;
+
+                                            switch (filterValue) {
+                                                case 'today':
+                                                    startDate = new Date(today.setHours(0, 0, 0, 0));
+                                                    break;
+                                                case 'week':
+                                                    const firstDayOfWeek = today.getDate() - today.getDay() + (today.getDay() === 0 ? -6 : 1);
+                                                    startDate = new Date(today.setDate(firstDayOfWeek));
+                                                    break;
+                                                case 'three_months':
+                                                    startDate = new Date(today.setMonth(today.getMonth() - 3));
+                                                    break;
+                                                default:
+                                                    startDate = null;
+                                                    break;
+                                            }
+
+                                            filteredRows = [];
+                                            rows.forEach(row => {
+                                                const billDate = new Date(row.querySelector('td:nth-child(2)').textContent);
+                                                if (startDate) {
+                                                    if (billDate >= startDate) {
+                                                        row.style.display = '';
+                                                        filteredRows.push(row);
+                                                    } else {
+                                                        row.style.display = 'none';
+                                                    }
+                                                } else {
+                                                    row.style.display = '';
+                                                    filteredRows.push(row);
+                                                }
+                                            });
+
+                                            // Reset to page 1 when filter changes
+                                            currentPage = 1;
+                                            displayTable(currentPage);
+                                        }
+
+                                        function displayTable(page) {
+                                            const startIndex = (page - 1) * rowsPerPage;
+                                            const endIndex = startIndex + rowsPerPage;
+
+                                            // Hide all rows
+                                            filteredRows.forEach((row, index) => {
+                                                row.style.display = 'none';
+                                            });
+
+                                            // Show rows for the current page
+                                            for (let i = startIndex; i < endIndex && i < filteredRows.length; i++) {
+                                                filteredRows[i].style.display = '';
+                                            }
+
+                                            updatePagination(page);
+                                        }
+
+                                        function updatePagination(currentPage) {
+                                            const pageCount = Math.ceil(filteredRows.length / rowsPerPage);
+                                            const paginationContainer = document.getElementById("pagination");
+                                            paginationContainer.innerHTML = "";
+
+                                            for (let i = 1; i <= pageCount; i++) {
+                                                const pageLink = document.createElement("a");
+                                                pageLink.href = "#";
+                                                pageLink.innerText = i;
+                                                pageLink.onclick = function () {
+                                                    displayTable(i);
+                                                };
+                                                if (i === currentPage) {
+                                                    pageLink.style.fontWeight = "bold";
+                                                }
+                                                paginationContainer.appendChild(pageLink);
+                                                paginationContainer.appendChild(document.createTextNode(" "));
+                                            }
+                                        }
+
+                                        // Initialize the filter to show only today's data
+                                        filterDropdown.value = 'today';
+                                        filterTable('today');
+
+                                        filterDropdown.addEventListener('change', function () {
+                                            filterTable(filterDropdown.value);
+                                        });
+
+                                        // Initial display
+                                        displayTable(currentPage);
+                                    });
+                                </script>
+
+
+                            </div>
 
                         <br />
                         <center>
@@ -157,52 +262,7 @@
                                         
 
 
-        <script>
-            document.addEventListener('DOMContentLoaded', function () {
-                const filterDropdown = document.getElementById('filterDropdown');
-                const dataTable = document.getElementById('dataTable');
-                const rows = dataTable.querySelectorAll('tbody tr');
-
-                function filterTable(filterValue) {
-                    const today = new Date();
-                    let startDate;
-
-                    switch (filterValue) {
-                        case 'today':
-                            startDate = new Date(today.setHours(0, 0, 0, 0));
-                            break;
-                        case 'week':
-                            const firstDayOfWeek = today.getDate() - today.getDay() + (today.getDay() === 0 ? -6 : 1);
-                            startDate = new Date(today.setDate(firstDayOfWeek));
-                            break;
-                        case 'three_months':
-                            startDate = new Date(today.setMonth(today.getMonth() - 3));
-                            break;
-                        default:
-                            startDate = null;
-                            break;
-                    }
-
-                    rows.forEach(row => {
-                        const billDate = new Date(row.querySelector('td:nth-child(2)').textContent);
-                        if (startDate) {
-                            row.style.display = billDate >= startDate ? '' : 'none';
-                        } else {
-                            row.style.display = '';
-                        }
-                    });
-                }
-
-                // Initialize the filter to show only today's data
-                filterDropdown.value = 'today';
-                filterTable('today');
-
-                filterDropdown.addEventListener('change', function () {
-                    filterTable(filterDropdown.value);
-                });
-            });
-        </script>
-
+       
 
 
                       
