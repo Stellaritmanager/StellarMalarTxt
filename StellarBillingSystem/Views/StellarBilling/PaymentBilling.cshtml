@@ -48,104 +48,72 @@
     <input type="hidden" id="branchID" name="BranchID" value="@TempData["BranchID"]" />
 
     <div class="row">
-        <div class="col-md-12 col-lg-1">
-        </div>
-        <div class="col-md-12 col-lg-10">
-            <div class="card">
+        <div class="col-md-12 col-lg-0"></div>
+        <div class="col-md-12 col-lg-12" style="padding: 0;">
+            <div class="card" style="height:40px;">
                 <div class="card-body dividerblack">
-                    <div class="card-header d-flex justify-content-between align-items-center">
-                        <div class="container">
-                            <center>
-                            <h2 class="centered text-white" style="font-family:'Lucida Bright';">Payment Screen</h2>
-                            </center>
+                    <div style="display: flex; align-items: center; height: 100%;">
+                        <div class="container" style="text-align: left; width: 100%;">
+                            <h2 class="centered text-white" style="font-family:'Lucida Bright'; margin: 0;">
+                                Payment Screen
+                            </h2>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+
     <br />
 
-    <div class="row" style="height:8%">
-    </div>
 
-    <div class="row gy-4">
-        <div class="col-md-12 col-lg-1">
-        </div>
-        <div class="col-md-12 col-lg-10">
-            <div class="card">
-                <div class="card-body dividerblack ">
 
-                    <div class="row gy-4">
+    <div class="row d-flex justify-content-center align-items-center" style="margin-top: 60px;">
+       
+        <div class="col-md-12 col-lg-4">
+    <div class="card">
+        <div class="card-body dividerblack">
 
-                        <div class="col-md-12 col-lg-5">
-
+            <div class="row gy-4" >
+            <div class="col-md-12 d-flex justify-content-center">
+                            
                             <button type="submit" class="btn btn-primary" asp-action="PaymentAction" name="buttonType" value="AddPayment">AddPayment</button>
-
-                        </div>
-                    </div>
-
-                    <div class="row gy-4">
-                        <div class="col-md-12 col-lg-2" style="align-items:center">
-                        
-                           
-                          
-
-                                <center>
+                            
 
                                 <label class="form-label" for="showToastPlacement">&nbsp;</label>
                                 <button type="button" id="viewBillButton" class="btn btn-primary d-block">ViewBill</button>
 
-
-
-
-                                
-
-                                </center>
-                            </div>
-                            </div>
-
-                    <!-- Toast Container -->
-                    <div id="toastContainer" class="toast-container position-fixed top-50 end-0 p-3" style="z-index: 1055; display: none;">
-                        <div id="customToast" class="bs-toast toast fade bg-dark" role="alert" aria-live="assertive" aria-atomic="true">
-                            <div class="toast-header">
-                                <div class="me-auto fw-medium">Payment Details</div>
-                                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
-                            </div>
-                            <div class="toast-body">
-                                <p id="billDetailsLine1"></p>
-                                <p id="billDetailsLine2"></p>
-                            </div>
+                                </div> 
                         </div>
-                    </div>
+    
+                   </div>
+                   </div>
+                   </div>
+                   </div>
+                   
+    
 
-                            </div>
-
-
-                        </div>
-                       
-                    </div>
-                    <br/>
-                 
-              
-           
-
-
-
-
+    <!-- Toast Container -->
+    <div id="toastContainer" class="toast-container position-fixed top-50 end-0 p-3" style="z-index: 1055; display: none;">
+        <div id="customToast" class="bs-toast toast fade bg-dark" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="toast-header">
+                <div class="me-auto fw-medium">Payment Details</div>
+                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+            <div class="toast-body">
+                <p id="billDetailsLine1"></p>
+                <p id="billDetailsLine2"></p>
+            </div>
         </div>
     </div>
-
-
-
   
 
-    <div class="row gy-4">
+    <div class="row gy-4" style="margin-top:10px">
         <div class="col-md-12 col-lg-1">
         </div>
         <div class="col-md-12 col-lg-10">
             <div class="card">
-                <div class="card-body dividerblack">
+                <div class="">
 
                     @if (Model.Viewpayment != null)
                     {
@@ -232,9 +200,9 @@
     <center>
         <div class="row mt-4">
             <div class="col-md-12">
-                <button type="submit" class="btn btn-primary" name="buttonType" value="Save">SavePayment</button>
-                <button type="submit" class="btn btn-primary" name="buttonType" value="DeletePaymentDetail">DeletePaymentDetail</button>
-                <button type="submit" class="btn btn-primary" name="buttonType" value="DeletePayment">DeletePayment</button>
+                <button type="submit" class="btn btn-primary" asp-action="PaymentAction" name="buttonType" value="Save">SavePayment</button>
+                <button type="submit" class="btn btn-primary" asp-action="PaymentAction" name="buttonType" value="DeletePaymentDetail">DeletePaymentDetail</button>
+                <button type="submit" class="btn btn-primary" asp-action="PaymentAction" name="buttonType" value="DeletePayment">DeletePayment</button>
                </div>
         </div>
     </center>
