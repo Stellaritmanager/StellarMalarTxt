@@ -3163,7 +3163,7 @@ namespace StellarBillingSystem.Controllers
                     updateMaster.CustomerNumber = masterModel.CustomerNumber;
                     updateMaster.Totalprice = masterModel.Totalprice;
                     updateMaster.TotalDiscount = masterModel.TotalDiscount;
-                    updateMaster.NetPrice = masterModel.NetPrice;
+                    updateMaster.NetPrice = masterModel.NetPrice ?? masterModel.Totalprice;
                     updateMaster.CGSTPercentage = masterModel.CGSTPercentage;
                     updateMaster.CGSTPercentageAmt = masterModel.CGSTPercentageAmt;
                     updateMaster.SGSTPercentage = masterModel.SGSTPercentage;
@@ -3179,7 +3179,7 @@ namespace StellarBillingSystem.Controllers
                 }
                 else
                 {
-
+                    masterModel.NetPrice = masterModel.NetPrice ?? masterModel.Totalprice;
                     masterModel.Billby = User.Claims.First().Value.ToString();
                     masterModel.Lastupdateduser = User.Claims.First().Value.ToString();
                     masterModel.Lastupdatedmachine = Request.HttpContext.Connection.RemoteIpAddress.ToString();
@@ -4684,7 +4684,7 @@ namespace StellarBillingSystem.Controllers
 
             // Query to get details of selected products
             var exbillingDetails = _billingsoftware.SHbilldetails
-        .Where(d =>  d.BranchID == model.BranchID && d.IsDelete == false && d.CustomerNumber == customerNumber)
+        .Where(d =>  d.BranchID == model.BranchID && d.IsDelete == false && d.CustomerNumber == customerNumber && d.BillID == billID && d.BillDate == billDate)
         .ToList();
 
             // Create ViewModel
