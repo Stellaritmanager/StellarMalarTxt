@@ -16,21 +16,32 @@
         popupText.textContent = message; // Set the message text
         popup.style.display = "block";
 
+        // Close popup when OK button is clicked
         popupOKButton.addEventListener("click", function () {
-            popup.style.display = "none"; // Hide the popup when OK button is clicked
+            closePopup();
         });
+
+        // Close popup when clicking outside of the message box
+        document.addEventListener("click", function (event) {
+            if (!popup.contains(event.target) && !popupOKButton.contains(event.target)) {
+                closePopup();
+            }
+        });
+    }
+
+    function closePopup() {
+        var popup = document.getElementById("popupMessage");
+        popup.style.display = "none"; // Hide the popup
     }
 
     function handleMessages(message) {
         showPopup(message);
     }
-
 </script>
 
-
-<div id="popupMessage" class="dividerblack popborder" style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background-color: #f0f0f0; color: #fff; padding: 30px; border-radius: 10px; z-index: 1000; display: none; text-align: center;">
+<div id="popupMessage" style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); color:black; padding: 30px; border: 1px solid #000000; border-radius: 10px; z-index: 1000; display: none; text-align: center;">
     <span id="popupMessageText" style="display: block; margin-bottom: 10px;"></span>
-    <button id="popupOKButton" style="padding: 10px 20px; color: white; border: none; border-radius: 5px; cursor: pointer;">OK</button>
+    <button id="popupOKButton" style="padding: 10px 20px; background-color: rgba(255, 255, 255, 0.2); color: black; border: none; border-radius: 5px; cursor: pointer;">OK</button>
 </div>
 
 <style>
@@ -38,6 +49,7 @@
         border: 10px solid #fff;
     }
 </style>
+
 
 <form asp-controller="StellarBilling">
     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
