@@ -140,13 +140,10 @@
 
                             </tbody>
                         </table>
-                           <div id="pagination-controls" style="text-align: center; margin-top: 10px;">
-    <button id="prev-btn" style="background-color: black; color: white; border: none; padding: 5px 10px; cursor: pointer; font-size: 16px; border-radius: 5px; margin: 0 5px;">pre</button>
-    <span id="page-info" style="font-size: 16px; color: black; background-color: white; padding: 5px 10px; border-radius: 5px; margin: 0 5px;"></span>
-    <button id="next-btn" style="background-color: black; color: white; border: none; padding: 5px 10px; cursor: pointer; font-size: 16px; border-radius: 5px; margin: 0 5px;">next</button>
-</div>
-
+                            <div id="pagination" class="pagination-container" style="text-align: center; margin-top: 10px;">
                                 <!-- Pagination links will be injected here by JavaScript -->
+                            </div>
+
                             <script>
                                 document.addEventListener("DOMContentLoaded", function () {
                                     const rowsPerPage = 2;
@@ -168,9 +165,11 @@
                                             case 'week':
                                                 const firstDayOfWeek = today.getDate() - today.getDay() + (today.getDay() === 0 ? -6 : 1);
                                                 startDate = new Date(today.setDate(firstDayOfWeek));
+                                                startDate.setHours(0, 0, 0, 0); // Ensure hours are set to the start of the day
                                                 break;
                                             case 'three_months':
                                                 startDate = new Date(today.setMonth(today.getMonth() - 3));
+                                                startDate.setHours(0, 0, 0, 0); // Ensure hours are set to the start of the day
                                                 break;
                                             default:
                                                 startDate = null;
@@ -179,17 +178,23 @@
 
                                         filteredRows = [];
                                         rows.forEach(row => {
-                                            const billDate = new Date(row.querySelector('td:nth-child(2)').textContent);
-                                            if (startDate) {
-                                                if (billDate >= startDate) {
+                                            const billDateText = row.querySelector('td:nth-child(2)').textContent.trim();
+                                            const billDate = new Date(billDateText);
+
+                                            if (!isNaN(billDate.getTime())) { // Ensure billDate is valid
+                                                if (startDate) {
+                                                    if (billDate >= startDate) {
+                                                        row.style.display = '';
+                                                        filteredRows.push(row);
+                                                    } else {
+                                                        row.style.display = 'none';
+                                                    }
+                                                } else {
                                                     row.style.display = '';
                                                     filteredRows.push(row);
-                                                } else {
-                                                    row.style.display = 'none';
                                                 }
                                             } else {
-                                                row.style.display = '';
-                                                filteredRows.push(row);
+                                                row.style.display = 'none'; // Handle invalid date formats
                                             }
                                         });
 
@@ -217,16 +222,60 @@
 
                                     function updatePagination(currentPage) {
                                         const pageCount = Math.ceil(filteredRows.length / rowsPerPage);
-                                        const pageInfo = document.getElementById("page-info");
-                                        const prevBtn = document.getElementById("prev-btn");
-                                        const nextBtn = document.getElementById("next-btn");
+                                        const paginationContainer = document.getElementById("pagination");
+                                        paginationContainer.innerHTML = "";
 
-                                        // Update page info
-                                        pageInfo.innerText = `Page ${currentPage} of ${pageCount}`;
+                                        // Create "Previous" button
+                                        const prevButton = document.createElement("a");
+                                        prevButton.href = "#";
+                                        prevButton.innerText = "Previous";
+                                        prevButton.onclick = function () {
+                                            if (currentPage > 1) {
+                                                displayTable(currentPage - 1);
+                                            }
+                                            return false;
+                                        };
+                                        if (currentPage === 1) {
+                                            prevButton.style.visibility = "hidden";
+                                        }
+                                        paginationContainer.appendChild(prevButton);
 
-                                        // Enable/Disable buttons
-                                        prevBtn.disabled = currentPage === 1;
-                                        nextBtn.disabled = currentPage === pageCount || filteredRows.length === 0;
+                                        // Create page number links
+                                        const pageNumbersContainer = document.createElement("span");
+                                        pageNumbersContainer.style.margin = "0 10px";
+
+                                        for (let i = 1; i <= pageCount; i++) {
+                                            const pageLink = document.createElement("a");
+                                            pageLink.href = "#";
+                                            pageLink.innerText = i;
+                                            pageLink.style.margin = "0 5px";
+                                            pageLink.onclick = function () {
+                                                displayTable(i);
+                                                return false;
+                                            };
+                                            if (i === currentPage) {
+                                                pageLink.style.fontWeight = "bold";
+                                                pageLink.style.textDecoration = "underline";
+                                            }
+                                            pageNumbersContainer.appendChild(pageLink);
+                                        }
+
+                                        paginationContainer.appendChild(pageNumbersContainer);
+
+                                        // Create "Next" button
+                                        const nextButton = document.createElement("a");
+                                        nextButton.href = "#";
+                                        nextButton.innerText = "Next";
+                                        nextButton.onclick = function () {
+                                            if (currentPage < pageCount) {
+                                                displayTable(currentPage + 1);
+                                            }
+                                            return false;
+                                        };
+                                        if (currentPage === pageCount) {
+                                            nextButton.style.visibility = "hidden";
+                                        }
+                                        paginationContainer.appendChild(nextButton);
                                     }
 
                                     // Initialize the filter to show only today's data
@@ -237,25 +286,14 @@
                                         filterTable(filterDropdown.value);
                                     });
 
-                                    document.getElementById('prev-btn').addEventListener('click', function () {
-                                        if (currentPage > 1) {
-                                            currentPage--;
-                                            displayTable(currentPage);
-                                        }
-                                    });
-
-                                    document.getElementById('next-btn').addEventListener('click', function () {
-                                        const pageCount = Math.ceil(filteredRows.length / rowsPerPage);
-                                        if (currentPage < pageCount) {
-                                            currentPage++;
-                                            displayTable(currentPage);
-                                        }
-                                    });
-
                                     // Initial display
                                     displayTable(currentPage);
                                 });
                             </script>
+
+                           
+
+                                </div>
 
 
 
@@ -274,7 +312,7 @@
                  
                 </div>
             </div>
-                          </div>                 
+                                         
                                         
 
 
