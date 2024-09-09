@@ -36,6 +36,7 @@
     function handleMessages(message) {
         showPopup(message);
     }
+
 </script>
 
 <div id="popupMessage" style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); color:black; padding: 30px; border: 1px solid #000000; border-radius: 10px; z-index: 1000; display: none; text-align: center;">
@@ -52,7 +53,7 @@
 
 
 
-<form asp-action="AddStaff" enctype="multipart/form-data" asp-controller="StellarBilling">
+<form asp-action="AddStaff" enctype="multipart/form-data" id="StaffAdmin" asp-controller="StellarBilling">
     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
     <div class="row">
         <div class="col-md-12 col-lg-0">
@@ -181,7 +182,7 @@
                             </div> *@
 
                             <div class="form-floating form-floating-outline mb-4">
-                                <input asp-for="PhoneNumber" value="@Model.PhoneNumber" class="form-control" placeholder="Mobile Number" />
+                                <input type="tel" pattern="\d{10}" maxlength="10" asp-for="PhoneNumber" value="@Model.PhoneNumber" id="PhoneNumber" class="form-control" placeholder="Mobile Number" />
                                 <label asp-for="PhoneNumber" class="control-label">Phone Number</label>
                                 <span asp-validation-for="PhoneNumber" class="text-danger"></span>
                             </div>
@@ -241,9 +242,9 @@
 
                         <div class="col-md-12 col-lg-4">
                             <div class="form-floating form-floating-outline mb-4">
-                                <input asp-for="EmailId" value="@Model.EmailId" type="email" class="form-control" placeholder="Email" />
+                                <input asp-for="EmailId" id="EmailId" type="email" value="@Model.EmailId" type="email" class="form-control" placeholder="Email" />
                                 <label asp-for="EmailId" class="control-label">Email</label>
-                                <span asp-validation-for="EmailId" class="text-danger"></span>
+                                <span asp-validation-for="EmailId" id="emailError" class="text-danger">Invalid email format</span>
                             </div>
                            
                           @*   <div class="form-floating form-floating-outline mb-4">
@@ -402,6 +403,31 @@
 
                             showPage(currentPage);
                         });
+                        const emailInput = document.getElementById('EmailId');
+                        const emailError = document.getElementById('emailError');
+
+                        window.addEventListener('DOMContentLoaded', function () {
+                            emailError.style.display = 'none';
+                        });
+
+                        // Validate email format when typing
+                        emailInput.addEventListener('input', function () {
+                            // Check if the email is valid using the built-in checkValidity function
+                            if (!emailInput.checkValidity()) {
+                                emailError.style.display = 'inline'; // Show error message
+                            } else {
+                                emailError.style.display = 'none'; // Hide error message
+                            }
+                        });
+
+                        // Prevent form submission if the email is invalid
+                        document.getElementById('StaffAdmin').addEventListener('submit', function (e) {
+                            if (!emailInput.checkValidity()) {
+                                emailError.style.display = 'inline'; // Show error message
+                                e.preventDefault(); // Prevent form submission
+                            }
+                        });
+
                     </script>
 
                 </div>
@@ -479,3 +505,24 @@
         }
 
 </form>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const phoneInput = document.getElementById('PhoneNumber');
+
+        phoneInput.addEventListener('input', function (e) {
+            // Remove non-numeric characters
+            this.value = this.value.replace(/\D/g, '');
+        });
+
+        phoneInput.addEventListener('keydown', function (e) {
+            // Allow backspace, delete, tab, escape, enter, and arrow keys
+            if ([46, 8, 9, 27, 13, 37, 38, 39, 40].indexOf(e.keyCode) !== -1) {
+                return;
+            }
+            // Prevent typing if the input already has 10 characters
+            if (this.value.length >= 10) {
+                e.preventDefault();
+            }
+        });
+    });
+</script>
