@@ -41,130 +41,79 @@
 
 <form asp-controller="StellarBilling">
     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-    
+
+    <input type="hidden" id="billId" name="BillID" value="@TempData["BillID"]" />
+    <input type="hidden" id="billDate" name="BillDate" value="@TempData["BillDate"]" />
+    <input type="hidden" id="billValue" name="BillValue" value="@TempData["BillValue"]" />
+    <input type="hidden" id="branchID" name="BranchID" value="@TempData["BranchID"]" />
 
     <div class="row">
-        <div class="col-md-12 col-lg-1">
-        </div>
-        <div class="col-md-12 col-lg-10">
-            <div class="card">
+        <div class="col-md-12 col-lg-0"></div>
+        <div class="col-md-12 col-lg-12" style="padding: 0;">
+            <div class="card" style="height:40px;">
                 <div class="card-body dividerblack">
-                    <div class="card-header d-flex justify-content-between align-items-center">
-                        <div class="container">
-                            <center>
-                            <h2 class="centered text-white" style="font-family:'Lucida Bright';">Payment Screen</h2>
-                            </center>
+                    <div style="display: flex; align-items: center; height: 100%;">
+                        <div class="container" style="text-align: left; width: 100%;">
+                            <h2 class="centered text-white" style="font-family:'Lucida Bright'; margin: 0;">
+                                Payment Screen
+                            </h2>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+
     <br />
 
-    <div class="row" style="height:8%">
-    </div>
-
-    <div class="row gy-4">
-        <div class="col-md-12 col-lg-1">
-        </div>
-        <div class="col-md-12 col-lg-10">
-            <div class="card">
-                <div class="card-body dividerblack ">
-
-                    <div class="row gy-4">
-                        <div class="col-md-12 col-lg-5">
 
 
-                            <div class="form-floating form-floating-outline mb-4">
+    <div class="row d-flex justify-content-center align-items-center" style="margin-top: 60px;">
+       
+        <div class="col-md-12 col-lg-4">
+    <div class="card">
+        <div class="card-body dividerblack">
 
-                                <input type="text" class="form-control" id="BillId" name="BillId" placeholder="BillId" value="@Model.BillId" required />
-                                <label for="BillId" class="control-label">Bill ID</label>
-                            </div>
+            <div class="row gy-4" >
+            <div class="col-md-12 d-flex justify-content-center">
+                            
+                            <button type="submit" class="btn btn-primary" asp-action="PaymentAction" name="buttonType" value="AddPayment">AddPayment</button>
+                            
+
+                                <label class="form-label" for="showToastPlacement">&nbsp;</label>
+                                <button type="button" id="viewBillButton" class="btn btn-primary d-block">ViewBill</button>
+
+                                </div> 
                         </div>
-                        <div class="col-md-12 col-lg-5">
-                            <div class="form-floating form-floating-outline mb-4 custom-date-picker">
+    
+                   </div>
+                   </div>
+                   </div>
+                   </div>
+                   
+    
 
-                                <input type="date" class="form-control" id="BillDate" name="BillDate" placeholder="Bill Date" value="@Model.BillDate" required />
-                                <label for="BillDate" class="control-label">Bill Date</label>
-
-                            </div>
-                        </div>
-                        <div class="col-md-12 col-lg-2" style="align-items:center">
-                            <div class="form-group">
-                                <center>
-
-                                    <button type="submit" asp-action="PaymentAction" class="btn btn-primary" name="buttonType" value="GetBill">GetBill</button>
-
-                                </center>
-                            </div>
-
-
-                        </div>
-                    </div>
-                    <br/>
-                    <div class="row gy-4">
-                        <div class="col-md-12 col-lg-10">
-
-                            <div class="form-floating form-floating-outline mb-4">
-
-                                <input type="text" class="form-control" id="BillValue" name="BillValue" placeholder="BillValue" value="@Model.Balance" readonly/>
-                                <label for="BillValue" class="control-label">BillValue</label>
-                            </div>
-
-                        </div>
-                      
-                    </div>
-                 
-                    <div class="row gy-4">
-                        <div class="col-md-12 col-lg-10">
-
-                            <div class="form-floating form-floating-outline mb-4">
-
-                                <input type="text" class="form-control" id="Balance" name="Balance" value="@Model.StrBillvalue" placeholder="Balance" readonly/>
-                                <label for="Balance" class="control-label">Balance</label>
-                            </div>
-
-                        </div>
-
-                    </div>
-                    <div class="row gy-4">
-                        <div class="col-md-12 col-lg-10">
-
-                            <div class="form-floating form-floating-outline mb-4">
-
-                                <input type="text" class="form-control" id="PaymentId" name="PaymentId" placeholder="Payment ID" value="@Model.PaymentId" />
-                                <label for="PaymentId" class="control-label">Payment ID</label>
-
-                            </div>
-                        </div>
-                        <div class="col-md-12 col-lg-2">
-                            <div class="form-group">
-                                <center>
-
-                                    <button type="submit" class="btn btn-primary" name="buttonType" value="GetPayment">GetPayment</button>
-                                </center>
-
-                            </div>
-                        </div>
-
-                    </div>
-
-                    <button type="submit" class="btn btn-primary" name="buttonType" value="AddPayment">AddPayment</button>
-
-
-
-                </div>
+    <!-- Toast Container -->
+    <div id="toastContainer" class="toast-container position-absolute top-0 end-0 p-3" style="z-index: 2055; display: none;">
+        <div id="customToast" class="bs-toast toast fade bg-dark" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="toast-header">
+                <div class="me-auto fw-medium">Payment Details</div>
+                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+            <div class="toast-body">
+                <p id="billDetailsLine1"></p>
+                <p id="billDetailsLine2"></p>
             </div>
         </div>
     </div>
+  
 
-    <div class="row gy-4">
+    <div class="row gy-4" style="margin-top:10px">
         <div class="col-md-12 col-lg-1">
         </div>
         <div class="col-md-12 col-lg-10">
             <div class="card">
-                <div class="card-body dividerblack">
+                <div class="">
 
                     @if (Model.Viewpayment != null)
                     {
@@ -251,9 +200,9 @@
     <center>
         <div class="row mt-4">
             <div class="col-md-12">
-                <button type="submit" class="btn btn-primary" name="buttonType" value="Save">SavePayment</button>
-                <button type="submit" class="btn btn-primary" name="buttonType" value="DeletePaymentDetail">DeletePaymentDetail</button>
-                <button type="submit" class="btn btn-primary" name="buttonType" value="DeletePayment">DeletePayment</button>
+                <button type="submit" class="btn btn-primary" asp-action="PaymentAction" name="buttonType" value="Save">SavePayment</button>
+                <button type="submit" class="btn btn-primary" asp-action="PaymentAction" name="buttonType" value="DeletePaymentDetail">DeletePaymentDetail</button>
+                <button type="submit" class="btn btn-primary" asp-action="PaymentAction" name="buttonType" value="DeletePayment">DeletePayment</button>
                </div>
         </div>
     </center>
@@ -285,3 +234,59 @@
 </form>
 
 
+
+<script>
+    document.getElementById('viewBillButton').addEventListener('click', function () {
+        // Get values from TempData or any other source
+        var billId = '@TempData["BillID"]';
+        var branchID = '@TempData["BranchID"]';
+        var billDate = '@TempData["BillDate"]';
+
+        // Make AJAX call to get updated data
+        fetch(`/StellarBilling/PaymentActionget?billID=${billId}&branchID=${branchID}&billdate=${billDate}`)
+            .then(response => response.json())
+            .then(data => {
+                // Show toast with updated values
+                showToast(data.billId, data.billDate, data.billValue, data.balance);
+            })
+            .catch(error => console.error('Error fetching bill details:', error));
+    });
+
+    function showToast(billId, billDate, billValue, balance) {
+        document.getElementById("billDetailsLine1").textContent = `Bill ID: ${billId} | Bill Date: ${billDate}`;
+        document.getElementById("billDetailsLine2").textContent = `Bill Value: ${billValue} | Balance: ${balance}`;
+
+        var toastContainer = document.getElementById('toastContainer');
+        toastContainer.style.display = "block"; // Show the toast container
+        var toast = new bootstrap.Toast(document.getElementById('customToast'));
+        toast.show(); // Trigger the Bootstrap toast
+    }
+</script>
+
+
+
+
+@* 
+<script>
+    // Function to display the toast with the bill details
+    function showToast(billId, billDate, billValue, balance) {
+        document.getElementById("billDetailsLine1").textContent = `Bill ID: ${billId} | Bill Date: ${billDate}`;
+        document.getElementById("billDetailsLine2").textContent = `Bill Value: ${billValue} | Balance: ${balance}`;
+
+        var toastContainer = document.getElementById('toastContainer');
+        toastContainer.style.display = "block"; // Show the toast container
+        var toast = new bootstrap.Toast(document.getElementById('customToast'));
+        toast.show(); // Trigger the Bootstrap toast
+    }
+
+    document.getElementById('viewBillButton').addEventListener('click', function () {
+        // Fetch the bill details from the server or variables (you can adapt it based on your data flow)
+        var billId = '@TempData["BillID"]';
+        var billDate = '@TempData["BillDate"]';
+        var billValue = '@TempData["BillValue"]';
+        var balance = '@TempData["Balance"]';
+
+        // Trigger the toast with bill details when the view button is clicked
+        showToast(billId, billDate, billValue, balance);
+    });
+</script> *@

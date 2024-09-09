@@ -122,7 +122,7 @@
         <div class="col-md-12 col-lg-2">
 
                             <div class="form-floating form-floating-outline mb-4 custom-date-picker">
-                                <input asp-for="DateofBirth" type="date" value="@Model.DateofBirth" class="form-control" placeholder="DateofBirth" />
+                                <input asp-for="DateofBirth" type="date" value="@Model.DateofBirth" class="form-control" placeholder="DateofBirth" max="@DateTime.Now.ToString("yyyy-MM-dd")" />
                                 <label asp-for="DateofBirth" class="control-label">Date of Birth</label>
                                 <span asp-validation-for="DateofBirth" class="text-danger"></span>
                             </div>
@@ -130,22 +130,16 @@
         </div>
 
                         <div class="col-md-12 col-lg-3">
-                            <fieldset class="border p-3">
-                                <legend class="w-auto">Gender</legend>
-                            <div class="form-check">
-                                <input asp-for="Gender" class="form-check-input" type="radio" value="Male" id="genderMale" />
-                                <label class="form-check-label" for="genderMale">Male</label>
+                            <div class="form-floating form-floating-custom mb-4">
+                                <select asp-for="Gender" class="form-control" id="genderSelect">
+                                    <option value="">-- Select Gender --</option>
+                                    <option value="Male">Male</option>
+                                    <option value="Female">Female</option>
+                                    <option value="Other">Other</option>
+                                </select>
+                                <label for="genderSelect">Gender</label>
+                                <span asp-validation-for="Gender" class="text-danger"></span>
                             </div>
-                            <div class="form-check">
-                                <input asp-for="Gender" class="form-check-input" type="radio" value="Female" id="genderFemale" />
-                                <label class="form-check-label" for="genderFemale">Female</label>
-                            </div>
-                            <div class="form-check">
-                                <input asp-for="Gender" class="form-check-input" type="radio" value="Other" id="genderOther" />
-                                <label class="form-check-label" for="genderOther">Other</label>
-                            </div>
-                            <span asp-validation-for="Gender" class="text-danger"></span>
-                            </fieldset>
                         </div>
 
                         <div class="col-md-12 col-lg-4">

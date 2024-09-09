@@ -94,30 +94,26 @@
 
 
         <div class="row gy-4">
-            <div class="col-md-12 col-lg-0.5">
-            </div>
+           
             <div class="col-md-12 col-lg-12">
 
                 <div class="card">
-                    <div class="card-body ">
-                        <div class="table-responsive">
-                            <center>
-                                                <h3 class="centered text-white" style="font-family:'Lucida Bright';">@ViewBag.Reportname</h3>
-
-                            </center>
-                            <br />
-                            <div class="filter-container mb-3">
-                                <label for="filterDropdown" class="form-label text-white">Filter by Time Period:</label>
-                                <select id="filterDropdown" class="form-select form-select-lg">
-                                    <option value="">Select Time Period</option>
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h3 class="centered text-black" style="font-family:'Lucida Bright'; color: #fff;">@ViewBag.Reportname</h3>
+                            <div class="filter-container">
+                                <label for="filterDropdown" class="form-label text-black custom-label">Filter by Time Period</label>
+                                <select id="filterDropdown" class="form-select">
+                                    
                                     <option value="today">Today</option>
                                     <option value="week">This Week</option>
                                     <option value="three_months">Last Three Months</option>
                                 </select>
                             </div>
-
-                            <table id="dataTable" class="table table-dark" style="font-size: 18px;">
-                            <thead class="card-body dividerblack">
+                        </div>
+                        <div class="table-responsive">
+                            <table id="dataTable" class="table table-striped table-bordered" style="border: 0px solid #fff;">
+                                <thead style="background-color: black; color: white;">
                                 <tr>
                                     @foreach (DataColumn column in Model.Columns)
                                     {
@@ -144,16 +140,184 @@
 
                             </tbody>
                         </table>
+                            <div id="pagination" class="pagination-container" style="text-align: center; margin-top: 10px;">
+                                <!-- Pagination links will be injected here by JavaScript -->
+                            </div>
+
+                            <script>
+                                document.addEventListener("DOMContentLoaded", function () {
+                                    const rowsPerPage = 2;
+                                    let currentPage = 1;
+                                    let filteredRows = [];
+
+                                    const filterDropdown = document.getElementById('filterDropdown');
+                                    const dataTable = document.getElementById('dataTable');
+                                    const rows = dataTable.querySelectorAll('tbody tr');
+
+                                    function filterTable(filterValue) {
+                                        const today = new Date();
+                                        let startDate;
+
+                                        switch (filterValue) {
+                                            case 'today':
+                                                startDate = new Date(today.setHours(0, 0, 0, 0));
+                                                break;
+                                            case 'week':
+                                                const firstDayOfWeek = today.getDate() - today.getDay() + (today.getDay() === 0 ? -6 : 1);
+                                                startDate = new Date(today.setDate(firstDayOfWeek));
+                                                startDate.setHours(0, 0, 0, 0); // Ensure hours are set to the start of the day
+                                                break;
+                                            case 'three_months':
+                                                startDate = new Date(today.setMonth(today.getMonth() - 3));
+                                                startDate.setHours(0, 0, 0, 0); // Ensure hours are set to the start of the day
+                                                break;
+                                            default:
+                                                startDate = null;
+                                                break;
+                                        }
+
+                                        filteredRows = [];
+                                        rows.forEach(row => {
+                                            const billDateText = row.querySelector('td:nth-child(2)').textContent.trim();
+                                            const billDate = new Date(billDateText);
+
+                                            if (!isNaN(billDate.getTime())) { // Ensure billDate is valid
+                                                if (startDate) {
+                                                    if (billDate >= startDate) {
+                                                        row.style.display = '';
+                                                        filteredRows.push(row);
+                                                    } else {
+                                                        row.style.display = 'none';
+                                                    }
+                                                } else {
+                                                    row.style.display = '';
+                                                    filteredRows.push(row);
+                                                }
+                                            } else {
+                                                row.style.display = 'none'; // Handle invalid date formats
+                                            }
+                                        });
+
+                                        // Reset to page 1 when filter changes
+                                        currentPage = 1;
+                                        displayTable(currentPage);
+                                    }
+
+                                    function displayTable(page) {
+                                        const startIndex = (page - 1) * rowsPerPage;
+                                        const endIndex = startIndex + rowsPerPage;
+
+                                        // Hide all rows
+                                        filteredRows.forEach((row, index) => {
+                                            row.style.display = 'none';
+                                        });
+
+                                        // Show rows for the current page
+                                        for (let i = startIndex; i < endIndex && i < filteredRows.length; i++) {
+                                            filteredRows[i].style.display = '';
+                                        }
+
+                                        updatePagination(page);
+                                    }
+
+                                    function updatePagination(currentPage) {
+                                        const pageCount = Math.ceil(filteredRows.length / rowsPerPage);
+                                        const paginationContainer = document.getElementById("pagination");
+                                        paginationContainer.innerHTML = "";
+
+                                        // Create "Previous" button
+                                        const prevButton = document.createElement("a");
+                                        prevButton.href = "#";
+                                        prevButton.innerText = "Previous";
+                                        prevButton.onclick = function () {
+                                            if (currentPage > 1) {
+                                                displayTable(currentPage - 1);
+                                            }
+                                            return false;
+                                        };
+                                        if (currentPage === 1) {
+                                            prevButton.style.visibility = "hidden";
+                                        }
+                                        paginationContainer.appendChild(prevButton);
+
+                                        // Create page number links
+                                        const pageNumbersContainer = document.createElement("span");
+                                        pageNumbersContainer.style.margin = "0 10px";
+
+                                        for (let i = 1; i <= pageCount; i++) {
+                                            const pageLink = document.createElement("a");
+                                            pageLink.href = "#";
+                                            pageLink.innerText = i;
+                                            pageLink.style.margin = "0 5px";
+                                            pageLink.onclick = function () {
+                                                displayTable(i);
+                                                return false;
+                                            };
+                                            if (i === currentPage) {
+                                                pageLink.style.fontWeight = "bold";
+                                                pageLink.style.textDecoration = "underline";
+                                            }
+                                            pageNumbersContainer.appendChild(pageLink);
+                                        }
+
+                                        paginationContainer.appendChild(pageNumbersContainer);
+
+                                        // Create "Next" button
+                                        const nextButton = document.createElement("a");
+                                        nextButton.href = "#";
+                                        nextButton.innerText = "Next";
+                                        nextButton.onclick = function () {
+                                            if (currentPage < pageCount) {
+                                                displayTable(currentPage + 1);
+                                            }
+                                            return false;
+                                        };
+                                        if (currentPage === pageCount) {
+                                            nextButton.style.visibility = "hidden";
+                                        }
+                                        paginationContainer.appendChild(nextButton);
+                                    }
+
+                                    // Initialize the filter to show only today's data
+                                    filterDropdown.value = 'today';
+                                    filterTable('today');
+
+                                    filterDropdown.addEventListener('change', function () {
+                                        filterTable(filterDropdown.value);
+                                    });
+
+                                    // Initial display
+                                    displayTable(currentPage);
+                                });
+                            </script>
+
+                           
+
+                                </div>
+
+
+
+
+                            </div>
+
                         <br />
                         <center>
 
-                            <button class="btn btn-primary" onclick="exportToExcel()">Export to Excel</button>
+                                <button class="btn" onclick="exportToExcel()" style="background-color: #fff; color: #000000; border: 1px solid #000000;" onmouseover="this.style.backgroundColor='#edebeb';"
+                                        onmouseout="this.style.backgroundColor='#fff';">
+                                    Export to Excel
+                                </button>
                         </center>
                     </div>
+                 
                 </div>
             </div>
-                                            </div>
-                                        </div>
+                                         
+                                        
+
+
+       
+
 
                       
 
