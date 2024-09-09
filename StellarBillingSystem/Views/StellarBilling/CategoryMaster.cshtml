@@ -139,7 +139,7 @@
 
                     <script>
                         document.addEventListener('DOMContentLoaded', function () {
-                            const rowsPerPage = 2;
+                            const rowsPerPage = 4;
                             const table = document.querySelector('.table tbody');
                             const rows = Array.from(table.querySelectorAll('tr'));
                             const totalRows = rows.length;
@@ -176,21 +176,7 @@
                     </script>
 
 
-                    <script>
-                        $(document).ready(function () {
-                            $('.table').DataTable({
-                                "pageLength": 2, // Set the initial number of rows per page
-                                "lengthMenu": [2, 5, 10, 25, 50], // Options for number of rows per page
-                                "language": {
-                                    "paginate": {
-                                        "previous": "Prev",
-                                        "next": "Next"
-                                    }
-                                }
-                            });
-                        });
-                    </script>
-
+                    
 
 
 

@@ -324,6 +324,50 @@
         </tbody>
     </table>
 
+                    <div id="pagination-controls" style="text-align: center; margin-top: 10px;">
+                        <button id="prev-btn" style="background-color: black;color: white; border: none;padding: 5px 10px; cursor: pointer; font-size: 16px;border-radius: 5px; margin: 0 5px;"><<</button>
+                        <span id="page-info" style=" font-size: 16px; color: black; background-color: white;padding: 5px 10px;border-radius: 5px;margin: 0 5px; "></span>
+                        <button id="next-btn" style=" background-color: black; color: white; border: none; padding: 5px 10px; cursor: pointer; font-size: 16px; border-radius: 5px;margin: 0 5px; "> >> </button>
+                    </div>
+
+                    <script>
+                        document.addEventListener('DOMContentLoaded', function () {
+                            const rowsPerPage = 2;
+                            const table = document.querySelector('.table tbody');
+                            const rows = Array.from(table.querySelectorAll('tr'));
+                            const totalRows = rows.length;
+                            const totalPages = Math.ceil(totalRows / rowsPerPage);
+
+                            let currentPage = 1;
+
+                            function showPage(page) {
+                                rows.forEach((row, index) => {
+                                    row.style.display = (Math.floor(index / rowsPerPage) + 1 === page) ? '' : 'none';
+                                });
+
+                                document.getElementById('page-info').textContent = `Page ${page} of ${totalPages}`;
+                                document.getElementById('prev-btn').disabled = (page === 1);
+                                document.getElementById('next-btn').disabled = (page === totalPages);
+                            }
+
+                            document.getElementById('prev-btn').addEventListener('click', () => {
+                                if (currentPage > 1) {
+                                    currentPage--;
+                                    showPage(currentPage);
+                                }
+                            });
+
+                            document.getElementById('next-btn').addEventListener('click', () => {
+                                if (currentPage < totalPages) {
+                                    currentPage++;
+                                    showPage(currentPage);
+                                }
+                            });
+
+                            showPage(currentPage);
+                        });
+                    </script>
+
                 </div>
             </div>
         </div>
