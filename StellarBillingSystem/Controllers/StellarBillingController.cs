@@ -4538,14 +4538,14 @@ namespace StellarBillingSystem.Controllers
                 existingProduct.OtherTax = model.OtherTax;
                 existingProduct.Price = model.Price;
                 existingProduct.DiscountCategory = model.DiscountCategory;
-                existingProduct.TotalAmount = model.TotalAmount;
+                existingProduct.TotalAmount = model.Price;
                 existingProduct.BranchID = model.BranchID;
-
-
+              
                 // existingProduct.TotalAmount = model.TotalAmount - (model.Price * model.Discount / 100 = model.TotalAmount);
                 existingProduct.LastUpdatedDate = DateTime.Now;
                 existingProduct.LastUpdatedUser = User.Claims.First().Value.ToString();
                 existingProduct.LastUpdatedmachine = Request.HttpContext.Connection.RemoteIpAddress.ToString();
+                
 
                 _billingsoftware.Entry(existingProduct).State = EntityState.Modified;
             }
@@ -4557,6 +4557,7 @@ namespace StellarBillingSystem.Controllers
                 model.LastUpdatedDate = DateTime.Now;
                 model.LastUpdatedUser = User.Claims.First().Value.ToString();
                 model.LastUpdatedmachine = Request.HttpContext.Connection.RemoteIpAddress.ToString();
+                model.TotalAmount = model.Price;
 
                 _billingsoftware.SHProductMaster.Add(model);
             }

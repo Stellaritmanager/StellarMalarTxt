@@ -382,44 +382,44 @@
             <div class="modal-body">
                 <form id="modalSearchForm" asp-controller="StellarBilling" asp-action="AddProductPop" method="post">
 
-                 
-                    <div class="form-control black-text-input">
 
-                        <label asp-for="ProductID" class="control-label">Product ID</label>
+                    <div class="col mb-3">
 
-                        <input type="text" class="form-control" id="ProductID" name="ProductID" />
+                        <label asp-for="ProductID">Product ID</label>
+
+                        <input type="text" class="form-control" id="ProductID" name="ProductID" placeholder="Product ID" />
 
                        
 
-                        <span asp-validation-for="ProductID" class="alert-danger">Product ID</span>
+@*                         <span asp-validation-for="ProductID" class="alert-danger">Product ID</span> *@
 
 
                     </div>
 
-                    <div class="form-control black-text-input">
+                    <div class="col mb-3">
                         <label for="searchInput">Barcode ID </label>
-                        <input type="text" class="form-control" id="BarcodeId" name="BarcodeId" />
+                        <input type="text" class="form-control" id="BarcodeId" name="BarcodeId" placeholder="Barcode ID" />
 
-                        <span asp-validation-for="BarCode" class="alert-danger">Bar ID</span>
-
+                       @*  <span asp-validation-for="BarCode" class="alert-danger">Bar ID</span>
+ *@
                     </div>
 
-                    <div class="form-control black-text-input">
+                    <div class="col mb-3">
                         <label for="searchInput">Product Name</label>
-                        <input type="text" class="form-control" id="ProductName" name="ProductName" />
+                        <input type="text" class="form-control" id="ProductName" name="ProductName" placeholder="Product Name" />
 
 
                     </div>
 
 
-                    <div class="form-control black-text-input">
+                    <div class="col mb-3">
                         <label for="searchInput">Price </label>
-                        <input type="text" class="form-control" id="Price" name="Price" />
+                        <input type="text" class="form-control" id="Price" name="Price" placeholder="Price" />
                     </div>
 
-                    <div class="form-control black-text-input">
+                    <div class="col mb-3">
                         <label for="searchInput">Number of Stock</label>
-                        <input type="text" class="form-control" id="NumberofStock" name="NumberofStock" />
+                        <input type="text" class="form-control" id="NumberofStock" name="NumberofStock" placeholder="Number Of Stock" />
                     </div>
 
 
@@ -490,25 +490,25 @@
 
                 <form id="modalSearchFormcus" asp-controller="StellarBilling" asp-action="AddCustomerPop" method="post">
               
-                    <div class="form-control black-text-input">
+                    <div class="col mb-3">
 
 
-                        <label asp-for="CustomerNumber" class="control-label">Mobile Number</label>
-                        <input type="text" class="form-control" id="MobileNumber" name="MobileNumber" />
+                        <label asp-for="CustomerNumber" >Mobile Number</label>
+                        <input type="text" class="form-control" id="MobileNumber" name="MobileNumber" placeholder="Mobile Number" />
 
                         
 
                     </div>
 
-                    <div class="form-control black-text-input">
-                        <label for="searchInput">Customer Name </label>
-                        <input type="text" class="form-control" id="CustomerName" name="CustomerName" />
+                    <div class="col mb-3">
+                        <label for="searchInput">Customer Name </label> 
+                        <input type="text" class="form-control" id="CustomerName" name="CustomerName" placeholder="Customer Name"/>
                     </div>
 
 
-                    <div class="form-control black-text-input">
+                    <div class="col mb-3">
                         <label for="searchInput">Customer Address </label>
-                        <input type="text" class="form-control" id="Address" name="Address" />
+                        <input type="text" class="form-control" id="Address" name="Address" placeholder="Address" />
                     </div>
 
                 </form>
