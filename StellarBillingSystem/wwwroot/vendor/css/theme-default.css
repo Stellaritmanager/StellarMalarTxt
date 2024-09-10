@@ -215,6 +215,21 @@ button.list-group-item-primary.active {
   color: #435971;
 }
 
+.btn-primarywhite {
+    color: #000000;
+    background-color: #fff;
+    border-color: #fff;
+    box-shadow: #fff;
+}
+
+    .btn-primaryred:hover {
+        color: #fff;
+        background-color: rgba(255, 255, 255, 0.15);
+        border-color: #fff;
+    }
+
+
+
 .btn-primary {
     color: #fff;
     background-color: #000000;
