@@ -61,7 +61,8 @@
                         </div>
                         </div> *@
                         <div class="mb-3" style="margin-top:20px">
-                            <button class="btn btn-primary d-grid w-100" asp-action="Login"  type="submit">Sign in</button>
+                            <center>
+                                <button class="btn btn-primarywhite mx-2" asp-action="Login" type="submit">Sign in</button>
                             @if (ViewBag.Message != null)
                             {
                                 <div class="alert alert-danger">
@@ -70,6 +71,7 @@
                                     @ViewBag.Message
                                 </div>
                             }
+                            </center>
                         </div>
                     </form>
 
