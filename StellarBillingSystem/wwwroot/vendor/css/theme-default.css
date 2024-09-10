@@ -222,6 +222,13 @@ button.list-group-item-primary.active {
     box-shadow: #fff;
 }
 
+    .btn-primarywhite:hover {
+        color: #000000;
+        background-color: #efd296;
+        border-color: #fff;
+        box-shadow: #fff;
+    }
+
     .btn-primaryred:hover {
         color: #fff;
         background-color: rgba(255, 255, 255, 0.15);
@@ -736,7 +743,7 @@ a:hover {
   color: #fff;
 }
     .bg-menu-theme .menu-item.active > .menu-link:not(.menu-toggle) {
-        background-color: #fff;
+        background-color: #000000;
     }
 .bg-menu-theme.menu-horizontal .menu-sub > .menu-item.active > .menu-link:not(.menu-toggle) {
   background-color: white;
