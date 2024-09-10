@@ -101,9 +101,9 @@
                         </div>
                         <div class="col-md-12 col-lg-3">
                             <div class="input-group">
-                                <input asp-for="CustomerNumber" name="CustomerNumber" class="form-control" placeholder="Customer Number" value="@Model.CustomerNumber" required />
+                                <input type="tel" pattern="\d{10}" maxlength="10" id="CustomerNumber" asp-for="CustomerNumber" name="CustomerNumber" class="form-control" placeholder="Customer Number" value="@Model.CustomerNumber" required />
+                                <span asp-validation-for="CustomerNumber" class="text-danger"></span>
                                 <label class="control-label" for="CustomerNumber"></label>
-
                                 <button class="btn btn-primary menu-icon tf-icons bx bx-user-plus" type="button" id="button-addon2" data-bs-toggle="modal" data-bs-target="#customerModal"></button>
                             </div>
                         </div>
@@ -512,6 +512,7 @@
               
                     <div class="col mb-3">
 
+                       
 
                         <label asp-for="CustomerNumber" >Mobile Number</label>
                         <input type="text" class="form-control" id="MobileNumber" name="MobileNumber" placeholder="Mobile Number" />
@@ -853,5 +854,26 @@
 
         setupEventListeners();
     });
+</script>
+<script>
+        document.addEventListener('DOMContentLoaded', function () {
+        const phoneInput = document.getElementById('CustomerNumber');
+
+            phoneInput.addEventListener('input', function (e) {
+                // Remove non-numeric characters
+                this.value = this.value.replace(/\D/g, '');
+            });
+
+            phoneInput.addEventListener('keydown', function (e) {
+                // Allow backspace, delete, tab, escape, enter, and arrow keys
+                if ([46, 8, 9, 27, 13, 37, 38, 39, 40].indexOf(e.keyCode) !== -1) {
+                    return;
+                }
+                // Prevent typing if the input already has 10 characters
+                if (this.value.length >= 10) {
+                    e.preventDefault();
+                }
+            });
+        });
 </script>
 
