@@ -3045,6 +3045,17 @@ namespace StellarBillingSystem.Controllers
                         CustomerNumber = customerNumber
                     };
 
+                    var billingPoints = await _billingsoftware.SHBillingPoints.Where(bp => bp.CustomerNumber == CustomerNumber
+                      && !bp.IsUsed && bp.BillID != BillID
+                      && _billingsoftware.SHbillmaster
+                          .Any(bm => bm.CustomerNumber == bp.CustomerNumber
+                                     && bm.IsDelete == false)).ToListAsync();
+
+
+                    var totalPoints = billingPoints.Sum(bp => decimal.TryParse(bp.Points, out decimal pts) ? pts : 0);
+
+                    ViewBag.Points = totalPoints.ToString("F2");
+
                     ViewBag.TotalPrice = updatedMasterex?.Totalprice;
                     ViewBag.TotalDiscount = updatedMasterex?.TotalDiscount;
                     ViewBag.NetPrice = updatedMasterex?.NetPrice;
