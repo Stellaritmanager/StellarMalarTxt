@@ -3224,7 +3224,7 @@ namespace StellarBillingSystem.Controllers
                         {
                             BillID = BillID,
                             CustomerNumber = CustomerNumber,
-                            NetPrice = masterModel.NetPrice,
+                            NetPrice = masterModel.NetPrice ?? masterModel.Totalprice,
                             Points = points.ToString("F2"),
                             IsUsed = false,
                             DateofReedem = null
