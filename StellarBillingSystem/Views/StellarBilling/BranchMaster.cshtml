@@ -114,18 +114,11 @@
 
                              <div class="col-md-12 col-lg-3">
 
-                                 <div class="form-floating form-floating-outline mb-4">
-                                <input asp-for="email" id="EmailId" type="email" value="@Model.email" class="form-control" placeholder="Email" />
+                            <div class="form-floating form-floating-outline mb-4">
+                                <input asp-for="email" id="EmailId" type="email" value="@Model.email" class="form-control" placeholder="Email" required />
                                 <label asp-for="email" class="control-label">Email</label>
                                 <span asp-validation-for="email" id="emailError" class="text-danger">Invalid email format</span>
-                                </div>
-  
-                           @*  <div class="form-floating form-floating-outline mb-4">
-                                <input asp-for="email" id="EmailId" type="email" value="@Model.email" class="form-control" placeholder="Email"/>
-                                <label asp-for="email" class="control-label">Email</label>
-                                <span asp-validation-for="email" id="emailError" class="text-danger">Invalid email format</span>
-                            </div>  *@
-
+                            </div>
 
                                  </div>
 
@@ -345,39 +338,11 @@
 
     </script>
 
-     <script>
-        const emailInput = document.getElementById('EmailId');
-        const emailError = document.getElementById('emailError');
-
-        phoneInput.addEventListener('input', function (e) {
-            // Remove non-numeric characters
-            this.value = this.value.replace(/\D/g, '');
-        });
-
-        phoneInput.addEventListener('keydown', function (e) {
-            // Allow backspace, delete, tab, escape, enter, and arrow keysS
-            if ([46, 8, 9, 27, 13, 37, 38, 39, 40].indexOf(e.keyCode) !== -1) {
-                return;
-            }
-            // Prevent typing if the input already has 10 characters
-            if (this.value.length >= 10) {
-                e.preventDefault();
-            }
-        });
-
-        // Prevent form submission if the email is invalid
-        document.getElementById('StaffAdmin').addEventListener('submit', function (e) {
-            if (!emailInput.checkValidity()) {
-                emailError.style.display = 'inline'; // Show error message
-                e.preventDefault(); // Prevent form submission
-            }
-            });
-    </script>
  
    
 </form>
 
-<@* script>
+<script>
     const emailInput = document.getElementById('EmailId');
     const emailError = document.getElementById('emailError');
 
@@ -401,8 +366,7 @@
             e.preventDefault(); // Prevent form submission
         }
     });
-</script> *@
-
+</script>
 
 <script>
     document.addEventListener('DOMContentLoaded', function () {
