@@ -122,7 +122,7 @@
 
 
 
-                                <input asp-for="CustomerName" class="form-control" placeholder="Customer Name"  value="@Model.CustomerName" pattern="^[A-Za-z\s]+$" title="Customer Name should contain only letters and spaces" />
+                                <input asp-for="CustomerName" class="form-control" placeholder="Customer Name" value="@Model.CustomerName" pattern="^[A-Za-z\s]+$" title="Customer Name should contain only letters and spaces" oninput="validateInput(this)" />
                                 <label asp-for="CustomerName" class="control-label">Customer Name</label>
                                 <span asp-validation-for="CustomerName" class="text-danger"></span>
                             </div>
