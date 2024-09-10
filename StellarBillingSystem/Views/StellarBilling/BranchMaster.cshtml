@@ -114,15 +114,18 @@
 
                              <div class="col-md-12 col-lg-3">
 
-                                <div class="form-floating form-floating-outline mb-4">
-                                @*@<input asp-for="EmailId" id="EmailId" type="email" value="@Model.EmailId" type="email" class="form-control" placeholder="Email" />
-                                <label asp-for="EmailId" class="control-label">Email</label>
-                                <span asp-validation-for="EmailId" id="emailError" class="text-danger">Invalid email format</span>*@
-
+                                 <div class="form-floating form-floating-outline mb-4">
                                 <input asp-for="email" id="EmailId" type="email" value="@Model.email" class="form-control" placeholder="Email" />
                                 <label asp-for="email" class="control-label">Email</label>
                                 <span asp-validation-for="email" id="emailError" class="text-danger">Invalid email format</span>
                                 </div>
+  
+                           @*  <div class="form-floating form-floating-outline mb-4">
+                                <input asp-for="email" id="EmailId" type="email" value="@Model.email" class="form-control" placeholder="Email"/>
+                                <label asp-for="email" class="control-label">Email</label>
+                                <span asp-validation-for="email" id="emailError" class="text-danger">Invalid email format</span>
+                            </div>  *@
+
 
                                  </div>
 
@@ -342,12 +345,9 @@
 
     </script>
 
-
-   
-</form>
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const phoneInput = document.getElementById('PhoneNumber1');
+     <script>
+        const emailInput = document.getElementById('EmailId');
+        const emailError = document.getElementById('emailError');
 
         phoneInput.addEventListener('input', function (e) {
             // Remove non-numeric characters
@@ -364,8 +364,46 @@
                 e.preventDefault();
             }
         });
+
+        // Prevent form submission if the email is invalid
+        document.getElementById('StaffAdmin').addEventListener('submit', function (e) {
+            if (!emailInput.checkValidity()) {
+                emailError.style.display = 'inline'; // Show error message
+                e.preventDefault(); // Prevent form submission
+            }
+            });
+    </script>
+ 
+   
+</form>
+
+<@* script>
+    const emailInput = document.getElementById('EmailId');
+    const emailError = document.getElementById('emailError');
+
+    window.addEventListener('DOMContentLoaded', function () {
+        emailError.style.display = 'none';
     });
-</script>
+
+    // Validate email format when typing
+    emailInput.addEventListener('input', function () {
+        if (!emailInput.checkValidity()) {
+            emailError.style.display = 'inline'; // Show error message
+        } else {
+            emailError.style.display = 'none'; // Hide error message
+        }
+    });
+
+    // Prevent form submission if the email is invalid
+    document.getElementById('StaffAdmin').addEventListener('submit', function (e) {
+        if (!emailInput.checkValidity()) {
+            emailError.style.display = 'inline'; // Show error message
+            e.preventDefault(); // Prevent form submission
+        }
+    });
+</script> *@
+
+
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         const phoneInput = document.getElementById('PhoneNumber2');

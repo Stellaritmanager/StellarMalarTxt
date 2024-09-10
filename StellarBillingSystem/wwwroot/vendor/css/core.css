@@ -157,6 +157,14 @@ hr {
   opacity: 1;
 }
 
+.product-row {
+    border-bottom: 2px solid black; /* Black line between rows */
+}
+
+    .product-row:last-child {
+        border-bottom: none; /* No border for the last row */
+    }
+
 h6, .h6, h5, .h5, h4, .h4, h3, .h3, h2, .h2, h1, .h1 {
   margin-top: 0;
   margin-bottom: 1rem;
@@ -7099,7 +7107,7 @@ a.invert-bg-dark:hover, a.invert-bg-dark:focus {
   }
 }
 .table th {
-  text-transform: uppercase;
+  text-transform: capitalize;
   font-size: 0.75rem;
   letter-spacing: 1px;
 }
