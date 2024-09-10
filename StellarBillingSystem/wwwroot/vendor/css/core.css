@@ -408,6 +408,7 @@ select,
 optgroup,
 textarea {
   margin: 0;
+  color:#000000;
   font-family: inherit;
   font-size: inherit;
   line-height: inherit;
@@ -2110,7 +2111,7 @@ progress {
     font-size: 0.9375rem;
     font-weight: 400;
     line-height: 1.53;
-    color: #697a8d;
+    color: #697a8z;
     appearance: none;
     background-color: #fff;
     background-clip: padding-box;
@@ -8550,8 +8551,8 @@ button:focus-visible {
 
 .form-label,
 .col-form-label {
-  font-size: 0.75rem;
-  text-transform: uppercase;
+  font-size: 0.95rem;
+  text-transform: capitalize;
   letter-spacing: inherit;
 }
 
