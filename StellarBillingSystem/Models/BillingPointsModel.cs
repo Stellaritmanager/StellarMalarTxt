@@ -18,6 +18,6 @@
         public string? Points { get => points; set => points = value; }
         public bool IsUsed { get => isUsed; set => isUsed = value; }
         public string? DateofReedem { get => dateofReedem; set => dateofReedem = value; }
-        public string? BranchID { get => branchID; set => branchID = value; }
+        public string BranchID { get => branchID; set => branchID = value; }
     }
 }
