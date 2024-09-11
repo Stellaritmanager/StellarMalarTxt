@@ -2532,6 +2532,7 @@ textarea.form-control-lg {
   height: calc(3.5rem + calc(var(--bs-border-width) * 2));
   min-height: calc(3.5rem + calc(var(--bs-border-width) * 2));
   line-height: 1.25;
+  color:#000000;
 }
 .form-floating > label {
   position: absolute;
@@ -2602,6 +2603,7 @@ textarea.form-control-lg {
 }
 .form-floating > .form-control-plaintext ~ label {
   border-width: var(--bs-border-width) 0;
+  
 }
 .form-floating > :disabled ~ label,
 .form-floating > .form-control:disabled ~ label {
@@ -6675,6 +6677,7 @@ select:-webkit-autofill:hover,
 select:-webkit-autofill:focus,
 input:-internal-autofill-selected {
   background-clip: text !important;
+ 
   -webkit-background-clip: text !important;
 }
 
