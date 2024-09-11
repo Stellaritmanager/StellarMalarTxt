@@ -475,6 +475,8 @@ namespace StellarBillingSystem.Controllers
                         model.Price = productToRetrieve.Price;
                         model.DiscountCategory = productToRetrieve.DiscountCategory;
                         model.TotalAmount = productToRetrieve.TotalAmount;
+                        model.ImeiNumber = productToRetrieve.ImeiNumber;
+                        model.SerialNumber = productToRetrieve.SerialNumber;
                         model.BarcodeId = productToRetrieve.BarcodeId;
                         model.SGST = productToRetrieve.SGST;
                         model.CGST = productToRetrieve.CGST;
