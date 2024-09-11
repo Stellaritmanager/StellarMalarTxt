@@ -107,9 +107,9 @@
                                 <button class="btn btn-primary menu-icon tf-icons bx bx-user-plus" type="button" id="button-addon2" data-bs-toggle="modal" data-bs-target="#customerModal"></button>
                             </div>
                         </div>
-                        <div class="col-md-12 col-lg-3">
-                            <button type="button" class="btn btn-primary" id="getCustomerDataButton">Get</button>
-                        </div>
+
+                        <button type="button" style="width:95px; height:50px;" class="btn btn-primary ms-2" id="getCustomerDataButton">Get</button>
+                        
                     </div>
                     <br />
 
@@ -765,7 +765,7 @@
                     if (Array.isArray(response) && response.length > 0) {
                         response.forEach(function (item) {
                             var row = $('<tr>');
-                            row.append('<td><input type="radio" name="selectedProduct" value="' + item.productID + '"></td>');
+                            row.append('<td><input type="radio" class="form-check-input" name="selectedProduct" value="' + item.productID + '"></td>');
                             row.append('<td>' + (item.billID || '') + '</td>');
                             row.append('<td>' + (item.billDate || '') + '</td>');
                             row.append('<td>' + (item.productName || '') + '</td>');
