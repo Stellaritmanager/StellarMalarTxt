@@ -4714,7 +4714,7 @@ namespace StellarBillingSystem.Controllers
                  && !bp.IsUsed && bp.BillID != billID
                  && _billingsoftware.SHbillmaster
                      .Any(bm => bm.CustomerNumber == bp.CustomerNumber
-                                && bm.IsDelete == false)).ToList();
+                                && bm.IsDelete == false && bm.BranchID == model.BranchID)).ToList();
 
 
             var totalPoints = billingPoints.Sum(bp => decimal.TryParse(bp.Points, out decimal pts) ? pts : 0);
