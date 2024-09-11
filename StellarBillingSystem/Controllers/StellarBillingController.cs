@@ -2770,8 +2770,10 @@ namespace StellarBillingSystem.Controllers
 
                 var Table = BusinessClassCommon.DataTable(_billingsoftware, Query);
 
-
+                PrintDocument(Busbill.PrintBillDetails(Table, model.BranchID));
+                
                 return File(Busbill.PrintBillDetails(Table, model.BranchID), "application/vnd.openxmlformats-officedocument.wordprocessingml.document", "Bill_" + TempData["BillID"] + ".docx");
+                
 
 
 
@@ -3363,7 +3365,24 @@ namespace StellarBillingSystem.Controllers
             return View("CustomerBilling", model);
         }
 
+        public void PrintDocument(byte[] fileContent)
+        {
+            string tempFilePath = Path.Combine(Path.GetTempPath(), "tempfile.docx");
+            System.IO.File.WriteAllBytes(tempFilePath, fileContent);
 
+            // Create a new process to print the file
+            var process = new System.Diagnostics.Process();
+            process.StartInfo = new System.Diagnostics.ProcessStartInfo
+            {
+                CreateNoWindow = true,
+                Verb = "print",
+                FileName = tempFilePath, // Path to the file you want to print
+                WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden
+            };
+
+            process.Start();
+            process.WaitForExit();
+        }
         public IActionResult DeleteProduct(string productId, string billID, string billDate, string customerNumber, BillProductlistModel model)
         {
 
