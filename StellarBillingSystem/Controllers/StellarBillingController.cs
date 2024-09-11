@@ -2770,7 +2770,7 @@ namespace StellarBillingSystem.Controllers
 
                 var Table = BusinessClassCommon.DataTable(_billingsoftware, Query);
 
-                PrintDocument(Busbill.PrintBillDetails(Table, model.BranchID));
+               // PrintDocument(Busbill.PrintBillDetails(Table, model.BranchID));
                 
                 return File(Busbill.PrintBillDetails(Table, model.BranchID), "application/vnd.openxmlformats-officedocument.wordprocessingml.document", "Bill_" + TempData["BillID"] + ".docx");
                 
