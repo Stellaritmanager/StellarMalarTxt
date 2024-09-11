@@ -2738,7 +2738,7 @@ namespace StellarBillingSystem.Controllers
 
         [HttpPost]
 
-        public async Task<IActionResult> getCustomerBill(BillProductlistModel model, string buttonType, string BillID, string BillDate, string CustomerNumber, string TotalPrice, BillingMasterModel masterModel, BillingDetailsModel detailModel, string Quantity)
+        public async Task<IActionResult> getCustomerBill(BillProductlistModel model, string buttonType, string BillID, string BillDate, string CustomerNumber,string BranchID, string TotalPrice, BillingMasterModel masterModel, BillingDetailsModel detailModel, string Quantity)
         {
 
 
@@ -2779,7 +2779,7 @@ namespace StellarBillingSystem.Controllers
 
             if (buttonType == "Payment")
             {
-                return RedirectToAction("PaymentBilling", new { BillID = model.BillID });
+                return RedirectToAction("PaymentBilling", new { BillID = model.BillID, BranchID = model.BranchID });
             }
 
             if (buttonType == "Add Product")
@@ -3163,7 +3163,7 @@ namespace StellarBillingSystem.Controllers
                     updateMaster.CustomerNumber = masterModel.CustomerNumber;
                     updateMaster.Totalprice = masterModel.Totalprice;
                     updateMaster.TotalDiscount = masterModel.TotalDiscount;
-                    updateMaster.NetPrice = masterModel.NetPrice;
+                    updateMaster.NetPrice = masterModel.NetPrice ?? masterModel.Totalprice;
                     updateMaster.CGSTPercentage = masterModel.CGSTPercentage;
                     updateMaster.CGSTPercentageAmt = masterModel.CGSTPercentageAmt;
                     updateMaster.SGSTPercentage = masterModel.SGSTPercentage;
@@ -3179,7 +3179,7 @@ namespace StellarBillingSystem.Controllers
                 }
                 else
                 {
-
+                    masterModel.NetPrice = masterModel.NetPrice ?? masterModel.Totalprice;
                     masterModel.Billby = User.Claims.First().Value.ToString();
                     masterModel.Lastupdateduser = User.Claims.First().Value.ToString();
                     masterModel.Lastupdatedmachine = Request.HttpContext.Connection.RemoteIpAddress.ToString();
@@ -3702,44 +3702,253 @@ namespace StellarBillingSystem.Controllers
             return View(model);
         }
 
-        public IActionResult PaymentBilling()
+        public IActionResult PaymentBilling(string BillID, string BranchID)
         {
             PaymentTableViewModel obj = new PaymentTableViewModel();
+
+            // Fetch the bill details from the BillMaster table
+            var billDetails = _billingsoftware.SHbillmaster
+                                             .Where(b => b.BillID == BillID && b.BranchID == BranchID)
+                                             .Select(b => new
+                                             {
+                                                 b.BillID,
+                                                 b.BillDate,
+                                                 b.NetPrice
+                                             })
+                                             .FirstOrDefault();
+
+            // Fetch the payment details from the PaymentMaster and PaymentDetails tables based on the BillID
+            var paymentDetails = (from pm in _billingsoftware.SHPaymentMaster
+                                  join pd in _billingsoftware.SHPaymentDetails
+                                  on pm.PaymentId equals pd.PaymentId
+                                  where pm.BillId == BillID && pm.BranchID == BranchID && pd.BranchID == BranchID
+                                  select new
+                                  {
+                                      pd.PaymentId,
+                                      pd.PaymentDiscription,
+                                      pd.PaymentDate,
+                                      pd.PaymentMode,
+                                      pd.PaymentTransactionNumber,
+                                      pd.PaymentAmount,
+                                      pm.Balance // Fetch the balance from the PaymentMaster table
+                                  }).ToList();
+
+            // Check if bill details were found
+            if (billDetails != null)
+            {
+                obj.BillId = billDetails.BillID;
+                obj.BillDate = billDetails.BillDate;
+                obj.StrBillvalue = billDetails.NetPrice;
+            }
+            else
+            {
+                ViewBag.Message = "Bill details not found.";
+                return View(obj); // Early return if no bill found
+            }
+
+            // Check if payment details exist and assign balance accordingly
+            if (paymentDetails != null && paymentDetails.Any())
+            {
+                // If payments exist, use the balance from the PaymentMaster
+                obj.Balance = paymentDetails.First().Balance;
+
+                obj.Viewpayment = paymentDetails.Select(pd => new PaymentDetailsModel
+                {
+                    PaymentDate = pd.PaymentDate,
+                    PaymentDiscription = pd.PaymentDiscription,
+                    PaymentMode = pd.PaymentMode,
+                    PaymentTransactionNumber = pd.PaymentTransactionNumber,
+                    PaymentAmount = pd.PaymentAmount
+                }).ToList();
+            }
+            else
+            {
+                // If no payment exists, set the balance to the bill's NetPrice
+                obj.Balance = obj.StrBillvalue;
+            }
+
+            // Store values in TempData to pass between requests
+            TempData["BillID"] = obj.BillId;
+            TempData["BillDate"] = DateTime.Parse(obj.BillDate).ToString("yyyy-MM-dd");
+            TempData["BillValue"] = obj.StrBillvalue;
+            TempData["Balance"] = obj.Balance;
+            TempData["BranchID"] = BranchID;
+
             return View(obj);
 
+
+
+            /* PaymentTableViewModel obj = new PaymentTableViewModel();
+
+             // Fetch the bill details from the BillMaster table
+             var billDetails = _billingsoftware.SHbillmaster
+                                         .Where(b => b.BillID == BillID && b.BranchID == BranchID)
+                                         .Select(b => new
+                                         {
+                                             b.BillID,
+                                             b.BillDate,
+                                             b.NetPrice
+                                         })
+                                         .FirstOrDefault();
+
+             // Fetch the payment details from the PaymentMaster table based on the BillID
+             var paymentDetails = _billingsoftware.SHPaymentMaster
+                                            .Where(p => p.BillId == BillID && p.BranchID == BranchID)
+                                            .Select(p => new
+                                            {
+                                                p.Balance
+                                            })
+                                            .FirstOrDefault();
+
+             // Check if billDetails were found
+             if (billDetails != null)
+             {
+                 obj.BillId = billDetails.BillID;
+                 obj.BillDate = billDetails.BillDate;
+                 obj.StrBillvalue = billDetails.NetPrice;
+             }
+             else
+             {
+                 ViewBag.Message = "Bill details not found.";
+                 return View(obj); // Early return if no bill found
+             }
+
+             // Check if paymentDetails were found and set the Balance
+             if (paymentDetails != null)
+             {
+                 obj.Balance = paymentDetails.Balance;
+             }
+             else
+             {
+                 // If there is no entry in PaymentMaster, set balance as NetPrice
+                 obj.Balance = obj.StrBillvalue;
+             }
+
+             TempData["BillID"] = obj.BillId;
+             TempData["BillDate"] = DateTime.Parse(obj.BillDate).ToString("yyyy-MM-dd");
+             TempData["BillValue"] = obj.StrBillvalue;
+             TempData["Balance"] = obj.Balance;
+             TempData["BranchID"] = BranchID;
+
+
+             // Return the view with the populated PaymentTableViewModel
+             return View(obj);
+ */
         }
 
-        [HttpPost]
-        public async Task<IActionResult> PaymentAction(PaymentTableViewModel model, string buttonType, string selectedSlotId, PaymentDetailsModel detailmodel)
+
+
+
+        public IActionResult PaymentActionget(string billID, string branchID,string billdate)
         {
+
+            string formattedBillDate = billdate;
+
+            // Try parsing the billDate
+            DateTime parsedBillDate;
+            if (DateTime.TryParseExact(billdate, "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out parsedBillDate))
+            {
+                // If parsing succeeds, format the date correctly
+                formattedBillDate = parsedBillDate.ToString("yyyy-MM-dd");
+            }
+            else
+            {
+                // If parsing fails, convert the billDate to DateTime and then format it
+                DateTime tempDate;
+                if (DateTime.TryParse(billdate, out tempDate))
+                {
+                    formattedBillDate = tempDate.ToString("yyyy-MM-dd");
+                }
+
+            }
+
+            // Fetch the current balance from PaymentMaster
+            var paymentDetails = _billingsoftware.SHPaymentMaster
+                                                .Where(p => p.BillId == billID && p.BranchID == branchID && p.BillDate == formattedBillDate)
+                                                .Select(p => new
+                                                {
+                                                    p.Balance
+                                                })
+                                                .FirstOrDefault();
+
+            var billDetails = _billingsoftware.SHbillmaster
+                                     .Where(b => b.BillID == billID && b.BranchID == branchID)
+                                     .Select(b => new
+                                     {
+                                         b.BillID,
+                                         b.BillDate,
+                                         b.NetPrice
+                                     })
+                                     .FirstOrDefault();
+
+            // Return the result as JSON to be displayed in the toast
+            return Json(new
+            {
+                billId = billDetails?.BillID ?? "N/A",
+                billDate = formattedBillDate ?? "N/A",
+                billValue = billDetails.NetPrice,
+                balance = paymentDetails?.Balance ?? billDetails?.NetPrice
+            });
+        }
+
+
+
+
+
+
+
+
+        [HttpPost]
+        public async Task<IActionResult> PaymentAction(PaymentTableViewModel model, string buttonType, string selectedSlotId, PaymentDetailsModel detailmodel,string billId, string branchID,string billDate,string billValue)
+        {
+
+
+
             if (TempData["BranchID"] != null)
             {
                 model.BranchID = TempData["BranchID"].ToString();
                 TempData.Keep("BranchID");
             }
 
+
+            string formattedBillDate = billDate;
+
+            // Try parsing the billDate
+            DateTime parsedBillDate;
+            if (DateTime.TryParseExact(billDate, "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out parsedBillDate))
+            {
+                // If parsing succeeds, format the date correctly
+                formattedBillDate = parsedBillDate.ToString("yyyy-MM-dd");
+            }
+            else
+            {
+                // If parsing fails, convert the billDate to DateTime and then format it
+                DateTime tempDate;
+                if (DateTime.TryParse(billDate, out tempDate))
+                {
+                    formattedBillDate = tempDate.ToString("yyyy-MM-dd");
+                }
+               
+            }
+
+
             //   model.StrBillvalue = BusinessClassCommon.getbalance(_billingsoftware, model.PaymentId, model.BillId,model.BranchID, model.BillDate,detailmodel.PaymentAmount);
 
-            if (buttonType == "GetBill")
-            {
-                var exbill = await _billingsoftware.SHbillmaster.Where(x => x.BillID == model.BillId && x.BillDate == model.BillDate && x.BranchID == model.BranchID).FirstOrDefaultAsync();
-                if (exbill != null)
-                    model.Balance = exbill.NetPrice;
-                else
-                    ViewBag.Message = "Bill ID given was not available, Either it was belongs to different branch,enter correct Bill ID";
-            }
+            var paymentid = "pay1";
+
+
 
             if (buttonType == "DeletePayment")
             {
                 //Delete Details from DB
                 //Delete from database
 
-                var Dbdelete = _billingsoftware.SHPaymentMaster.SingleOrDefault(x => x.BillId == model.BillId && x.BranchID == model.BranchID && x.BillDate == model.BillDate);
+                var Dbdelete = _billingsoftware.SHPaymentMaster.SingleOrDefault(x => x.BillId == billId && x.BranchID == branchID && x.BillDate == formattedBillDate);
 
                 if (Dbdelete != null)
                 {
 
-                    var selectedDBpayment = _billingsoftware.SHPaymentDetails.Where(x => x.PaymentId == model.PaymentId && x.BranchID == model.BranchID).ToList();
+                    var selectedDBpayment = _billingsoftware.SHPaymentDetails.Where(x => x.PaymentId == paymentid && x.BranchID == branchID).ToList();
 
                     if (selectedDBpayment.Count == 0)
                     {
@@ -3755,7 +3964,7 @@ namespace StellarBillingSystem.Controllers
 
 
                     //Delete Master
-                    var SelectedPayMas = _billingsoftware.SHPaymentMaster.SingleOrDefault(x => x.BillId == model.BillId && x.BillDate == model.BillDate && x.PaymentId == model.PaymentId && x.BranchID == model.BranchID);
+                    var SelectedPayMas = _billingsoftware.SHPaymentMaster.SingleOrDefault(x => x.BillId == billId && x.BillDate == formattedBillDate && x.PaymentId == paymentid && x.BranchID == branchID);
 
                     _billingsoftware.SHPaymentMaster.Remove(SelectedPayMas);
                     _billingsoftware.SaveChanges();
@@ -3817,7 +4026,7 @@ namespace StellarBillingSystem.Controllers
 
 
                 //Delete from database
-                var selectedDBpayment = _billingsoftware.SHPaymentDetails.SingleOrDefault(x => x.PaymentDiscription == selectedSlotId && x.PaymentId == model.PaymentId && x.BranchID == model.BranchID);
+                var selectedDBpayment = _billingsoftware.SHPaymentDetails.SingleOrDefault(x => x.PaymentDiscription == selectedSlotId && x.PaymentId == paymentid && x.BranchID == branchID);
                 if (selectedDBpayment != null)
                 {
                     _billingsoftware.SHPaymentDetails.Remove(selectedDBpayment);
@@ -3836,9 +4045,9 @@ namespace StellarBillingSystem.Controllers
                     ViewBag.Message = "PaymentID Not Found";
                 }
 
-                model.StrBillvalue = BusinessClassCommon.getbalance(_billingsoftware, model.PaymentId, model.BillId, model.BranchID, model.BillDate, detailmodel.PaymentAmount);
+                model.StrBillvalue = BusinessClassCommon.getbalance(_billingsoftware, paymentid, billId, branchID, formattedBillDate, detailmodel.PaymentAmount);
 
-                var exbalance = _billingsoftware.SHPaymentMaster.Where(x => x.BillId == model.BillId && x.BranchID == model.BranchID && x.PaymentId == model.PaymentId && x.BillDate == model.BillDate).FirstOrDefault();
+                var exbalance = _billingsoftware.SHPaymentMaster.Where(x => x.BillId == billId && x.BranchID == branchID && x.PaymentId == paymentid && x.BillDate == formattedBillDate).FirstOrDefault();
 
 
                 if (exbalance != null)
@@ -3848,7 +4057,7 @@ namespace StellarBillingSystem.Controllers
                     _billingsoftware.SaveChanges();
                 }
 
-                var exbilltotal = await _billingsoftware.SHbillmaster.Where(x => x.BillID == model.BillId && x.BillDate == model.BillDate && x.BranchID == model.BranchID).FirstOrDefaultAsync();
+                var exbilltotal = await _billingsoftware.SHbillmaster.Where(x => x.BillID == billId && x.BillDate == formattedBillDate && x.BranchID == branchID).FirstOrDefaultAsync();
                 if (exbilltotal != null)
                     model.Balance = exbilltotal.NetPrice;
 
@@ -3862,13 +4071,13 @@ namespace StellarBillingSystem.Controllers
 
             if (buttonType == "Save")
             {
-
+/*
                 // Check if PaymentId is not provided
                 if (string.IsNullOrEmpty(model.PaymentId))
                 {
                     ViewBag.Message = "Please enter Payment ID.";
                     return View("PaymentBilling", model);
-                }
+                }*/
 
                 // Check if no radio button is selected
                 if (string.IsNullOrEmpty(selectedSlotId))
@@ -3878,7 +4087,7 @@ namespace StellarBillingSystem.Controllers
                 }
 
 
-                var existingPaymentCheck = _billingsoftware.SHPaymentMaster
+               /* var existingPaymentCheck = _billingsoftware.SHPaymentMaster
                        .Where(x => x.PaymentId == model.PaymentId && x.BillId != model.BillId && x.IsDelete == false)
                        .FirstOrDefault();
 
@@ -3887,7 +4096,7 @@ namespace StellarBillingSystem.Controllers
                     ViewBag.Message = "Payment ID already exists for a different Bill.";
                     return View("PaymentBilling", model);
                 }
-
+*/
 
 
                 double totalpayamount = 0.0;
@@ -3897,19 +4106,19 @@ namespace StellarBillingSystem.Controllers
                 }
 
                 var billAmount = _billingsoftware.SHbillmaster
-                 .Where(x => x.BillID == model.BillId && x.BillDate == model.BillDate && x.BranchID == model.BranchID)
+                 .Where(x => x.BillID == billId && x.BillDate == formattedBillDate && x.BranchID == branchID)
                  .Select(x => x.NetPrice)
                  .FirstOrDefault();
 
                 // Check if total payment amount exceeds the bill amount
                 if (totalpayamount > double.Parse(billAmount))
                 {
-                    ViewBag.Message = HttpUtility.JavaScriptStringEncode($"Payment amount '{totalpayamount}' exceeds the total bill amount '{billAmount}'");
+                    ViewBag.Message = HttpUtility.JavaScriptStringEncode($"Payment amount '{totalpayamount}' exceeds the total bill amount '{billValue}'");
                     return View("PaymentBilling", model);
                 }
 
-                var existingPayment = _billingsoftware.SHPaymentMaster
-       .Where(x => x.BillId == model.BillId && x.BranchID == model.BranchID && x.PaymentId != model.PaymentId && x.IsDelete == false && x.BillDate == model.BillDate)
+               /* var existingPayment = _billingsoftware.SHPaymentMaster
+       .Where(x => x.BillId == billId && x.BranchID == branchID && x.PaymentId != model.PaymentId && x.IsDelete == false && x.BillDate == billDate)
        .FirstOrDefault();
 
 
@@ -3919,29 +4128,32 @@ namespace StellarBillingSystem.Controllers
                 {
                     ViewBag.Message = HttpUtility.JavaScriptStringEncode($"Your Payment ID is '{existingPayment.PaymentId}' cannot insert another ID.");
                     return View("PaymentBilling", model);
-                }
+                }*/
 
                 var objbillmaster = new PaymentMasterModel()
                 {
-                    BillDate = model.BillDate,
-                    PaymentId = model.PaymentId,
-                    BranchID = model.BranchID,
-                    Balance = model.StrBillvalue,
-                    BillId = model.BillId
+                    BillDate = formattedBillDate,
+                    PaymentId = paymentid,
+                    BranchID = branchID,
+                    Balance = billValue,
+                    BillId = billId,
+                    Lastupdateddate = DateTime.Now.ToString(),
+                    Lastupdatedmachine = Request.HttpContext.Connection.RemoteIpAddress.ToString(),
+                    Lastupdateduser = User.Claims.First().Value.ToString()
 
                 };
 
-                var objpaymas = _billingsoftware.SHPaymentMaster.Where(x => x.BillId == model.BillId && x.BranchID == model.BranchID && x.PaymentId == model.PaymentId && x.BillDate == model.BillDate).FirstOrDefault();
+                var objpaymas = _billingsoftware.SHPaymentMaster.Where(x => x.BillId == billId && x.BranchID == branchID && x.PaymentId == paymentid && x.BillDate == formattedBillDate).FirstOrDefault();
 
                 if (objpaymas != null)
                 {
-                    objpaymas.BranchID = model.BranchID;
+                    objpaymas.BranchID = branchID;
                     objpaymas.Lastupdateddate = DateTime.Now.ToString();
                     objpaymas.Lastupdateduser = User.Claims.First().Value.ToString();
                     objpaymas.Lastupdatedmachine = Request.HttpContext.Connection.RemoteIpAddress.ToString();
-                    objpaymas.Balance = model.StrBillvalue;
-                    objpaymas.BillDate = model.BillDate;
-                    objpaymas.BillId = model.BillId;
+                    objpaymas.Balance = billValue;
+                    objpaymas.BillDate = formattedBillDate;
+                    objpaymas.BillId = billId;
 
                     _billingsoftware.Entry(objpaymas).State = EntityState.Modified;
                 }
@@ -3954,11 +4166,11 @@ namespace StellarBillingSystem.Controllers
 
                 foreach (var objdetail in model.Viewpayment)
                 {
-                    var obpaydet = _billingsoftware.SHPaymentDetails.Where(x => x.BranchID == model.BranchID && x.PaymentDiscription == objdetail.PaymentDiscription && x.PaymentId == model.PaymentId).FirstOrDefault();
+                    var obpaydet = _billingsoftware.SHPaymentDetails.Where(x => x.BranchID == branchID && x.PaymentDiscription == objdetail.PaymentDiscription && x.PaymentId == paymentid).FirstOrDefault();
 
                     if (obpaydet != null)
                     {
-                        obpaydet.BranchID = model.BranchID;
+                        obpaydet.BranchID = branchID;
                         obpaydet.Lastupdateduser = User.Claims.First().Value.ToString();
                         obpaydet.Lastupdateddate = DateTime.Now.ToString();
                         obpaydet.Lastupdatedmachine = Request.HttpContext.Connection.RemoteIpAddress.ToString();
@@ -3974,8 +4186,8 @@ namespace StellarBillingSystem.Controllers
                     }
                     else
                     {
-                        objdetail.PaymentId = model.PaymentId;
-                        objdetail.BranchID = model.BranchID;
+                        objdetail.PaymentId = paymentid;
+                        objdetail.BranchID = branchID;
                         _billingsoftware.SHPaymentDetails.Add(objdetail);
                     }
                 }
@@ -3986,9 +4198,9 @@ namespace StellarBillingSystem.Controllers
 
 
 
-                model.StrBillvalue = BusinessClassCommon.getbalance(_billingsoftware, model.PaymentId, model.BillId, model.BranchID, model.BillDate, totalpayamount.ToString());
+                model.StrBillvalue = BusinessClassCommon.getbalance(_billingsoftware,paymentid, billId,branchID, formattedBillDate, totalpayamount.ToString());
 
-                var exbalance = _billingsoftware.SHPaymentMaster.Where(x => x.BillId == model.BillId && x.BranchID == model.BranchID && x.PaymentId == model.PaymentId && x.BillDate == model.BillDate).FirstOrDefault();
+                var exbalance = _billingsoftware.SHPaymentMaster.FirstOrDefault(x => x.BillId == billId && x.BranchID == branchID && x.PaymentId == paymentid && x.BillDate == formattedBillDate);
 
 
                 if (exbalance != null)
@@ -3998,7 +4210,7 @@ namespace StellarBillingSystem.Controllers
                     _billingsoftware.SaveChanges();
                 }
 
-                var exbilltotal = await _billingsoftware.SHbillmaster.Where(x => x.BillID == model.BillId && x.BillDate == model.BillDate && x.BranchID == model.BranchID).FirstOrDefaultAsync();
+                var exbilltotal = await _billingsoftware.SHbillmaster.FirstOrDefaultAsync(x => x.BillID == billId && x.BillDate == formattedBillDate && x.BranchID == branchID);
                 if (exbilltotal != null)
                     model.Balance = exbilltotal.NetPrice;
 
@@ -4010,64 +4222,66 @@ namespace StellarBillingSystem.Controllers
             }
             if (buttonType == "AddPayment")
             {
-                if (string.IsNullOrEmpty(model.PaymentId))
+                /*if (string.IsNullOrEmpty(model.PaymentId))
                 {
                     ViewBag.Message = "Please enter Payment ID.";
                     return View("PaymentBilling", model);
                 }
+*/
+
+
+                /* var existingPayment = _billingsoftware.SHPaymentMaster
+        .Where(x => x.BillId == model.BillId && x.BranchID == model.BranchID && x.PaymentId != model.PaymentId && x.IsDelete == false && x.BillDate == model.BillDate)
+        .FirstOrDefault();
 
 
 
-                var existingPayment = _billingsoftware.SHPaymentMaster
-       .Where(x => x.BillId == model.BillId && x.BranchID == model.BranchID && x.PaymentId != model.PaymentId && x.IsDelete == false && x.BillDate == model.BillDate)
-       .FirstOrDefault();
+
+                 if (existingPayment != null)
+                 {
+                     ViewBag.Message = HttpUtility.JavaScriptStringEncode($"Your Payment ID is '{existingPayment.PaymentId}' cannot insert another ID");
+                     return View("PaymentBilling", model);
+                 }
 
 
+                 var existingPaymentCheck = _billingsoftware.SHPaymentMaster
+                       .Where(x => x.PaymentId == model.PaymentId && x.BillId != model.BillId && x.IsDelete == false)
+                       .FirstOrDefault();
 
+                 if (existingPaymentCheck != null)
+                 {
+                     ViewBag.Message = "Payment ID already exists for a different Bill.";
+                     return View("PaymentBilling", model);
+                 }
 
-                if (existingPayment != null)
-                {
-                    ViewBag.Message = HttpUtility.JavaScriptStringEncode($"Your Payment ID is '{existingPayment.PaymentId}' cannot insert another ID");
-                    return View("PaymentBilling", model);
-                }
-
-
-                var existingPaymentCheck = _billingsoftware.SHPaymentMaster
-                      .Where(x => x.PaymentId == model.PaymentId && x.BillId != model.BillId && x.IsDelete == false)
-                      .FirstOrDefault();
-
-                if (existingPaymentCheck != null)
-                {
-                    ViewBag.Message = "Payment ID already exists for a different Bill.";
-                    return View("PaymentBilling", model);
-                }
-
-
+ */
+               
 
                 BusinessClassBilling obj = new BusinessClassBilling(_billingsoftware);
-                PaymentDetailsModel objNewPayment = new PaymentDetailsModel();
-                objNewPayment.PaymentDiscription = obj.GeneratePaymentDescriptionreport(model.PaymentId);
-                objNewPayment.PaymentId = model.PaymentId;
-                objNewPayment.BranchID = model.BranchID;
-
-                List<PaymentDetailsModel> Objlistpayment = new List<PaymentDetailsModel>();
-                Objlistpayment.Add(objNewPayment);
-
-                if (model.Viewpayment == null)
-                    model.Viewpayment = Objlistpayment;
-                else
+                PaymentDetailsModel objNewPayment = new PaymentDetailsModel
+                {
+                    PaymentDiscription = obj.GeneratePaymentDescriptionreport(paymentid),
+                    PaymentId = paymentid,
+                    BranchID = branchID, // Use the branch ID passed in the method
+                    
+                };
+             
+                    if (model.Viewpayment == null)
+                        model.Viewpayment = new List<PaymentDetailsModel>();
+                   
                     model.Viewpayment.Add(objNewPayment);
-
-                var exbill = await _billingsoftware.SHbillmaster.Where(x => x.BillID == model.BillId && x.BillDate == model.BillDate && x.BranchID == model.BranchID).FirstOrDefaultAsync();
+                   
+                
+                var exbill = await _billingsoftware.SHbillmaster.FirstOrDefaultAsync(x => x.BillID == billId && x.BillDate == formattedBillDate && x.BranchID == branchID && x.IsDelete==false);
                 model.Balance = exbill.NetPrice;
 
-                var exbalance = _billingsoftware.SHPaymentMaster.Where(x => x.BillId == model.BillId && x.BranchID == model.BranchID && x.PaymentId == model.PaymentId && x.BillDate == model.BillDate).FirstOrDefault();
+                var exbalance = _billingsoftware.SHPaymentMaster.FirstOrDefault(x => x.BillId == billId && x.BranchID == branchID && x.PaymentId == paymentid && x.BillDate == formattedBillDate);
 
                 if (exbalance != null)
                 {
                     model.StrBillvalue = exbalance.Balance;
                 }
-
+                _billingsoftware.SaveChanges();
 
             }
 
@@ -4324,14 +4538,14 @@ namespace StellarBillingSystem.Controllers
                 existingProduct.OtherTax = model.OtherTax;
                 existingProduct.Price = model.Price;
                 existingProduct.DiscountCategory = model.DiscountCategory;
-                existingProduct.TotalAmount = model.TotalAmount;
+                existingProduct.TotalAmount = model.Price;
                 existingProduct.BranchID = model.BranchID;
-
-
+              
                 // existingProduct.TotalAmount = model.TotalAmount - (model.Price * model.Discount / 100 = model.TotalAmount);
                 existingProduct.LastUpdatedDate = DateTime.Now;
                 existingProduct.LastUpdatedUser = User.Claims.First().Value.ToString();
                 existingProduct.LastUpdatedmachine = Request.HttpContext.Connection.RemoteIpAddress.ToString();
+                
 
                 _billingsoftware.Entry(existingProduct).State = EntityState.Modified;
             }
@@ -4343,6 +4557,7 @@ namespace StellarBillingSystem.Controllers
                 model.LastUpdatedDate = DateTime.Now;
                 model.LastUpdatedUser = User.Claims.First().Value.ToString();
                 model.LastUpdatedmachine = Request.HttpContext.Connection.RemoteIpAddress.ToString();
+                model.TotalAmount = model.Price;
 
                 _billingsoftware.SHProductMaster.Add(model);
             }
@@ -4469,7 +4684,7 @@ namespace StellarBillingSystem.Controllers
 
             // Query to get details of selected products
             var exbillingDetails = _billingsoftware.SHbilldetails
-        .Where(d =>  d.BranchID == model.BranchID && d.IsDelete == false && d.CustomerNumber == customerNumber)
+        .Where(d =>  d.BranchID == model.BranchID && d.IsDelete == false && d.CustomerNumber == customerNumber && d.BillID == billID && d.BillDate == billDate)
         .ToList();
 
             // Create ViewModel

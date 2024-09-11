@@ -140,6 +140,165 @@
 
                             </tbody>
                         </table>
+                            <div id="pagination" class="pagination-container" style="text-align: center; margin-top: 10px;">
+                                <!-- Pagination links will be injected here by JavaScript -->
+                            </div>
+
+                            <script>
+                                document.addEventListener("DOMContentLoaded", function () {
+                                    const rowsPerPage = 2;
+                                    let currentPage = 1;
+                                    let filteredRows = [];
+
+                                    const filterDropdown = document.getElementById('filterDropdown');
+                                    const dataTable = document.getElementById('dataTable');
+                                    const rows = dataTable.querySelectorAll('tbody tr');
+
+                                    function filterTable(filterValue) {
+                                        const today = new Date();
+                                        let startDate;
+
+                                        switch (filterValue) {
+                                            case 'today':
+                                                startDate = new Date(today.setHours(0, 0, 0, 0));
+                                                break;
+                                            case 'week':
+                                                const firstDayOfWeek = today.getDate() - today.getDay() + (today.getDay() === 0 ? -6 : 1);
+                                                startDate = new Date(today.setDate(firstDayOfWeek));
+                                                startDate.setHours(0, 0, 0, 0); // Ensure hours are set to the start of the day
+                                                break;
+                                            case 'three_months':
+                                                startDate = new Date(today.setMonth(today.getMonth() - 3));
+                                                startDate.setHours(0, 0, 0, 0); // Ensure hours are set to the start of the day
+                                                break;
+                                            default:
+                                                startDate = null;
+                                                break;
+                                        }
+
+                                        filteredRows = [];
+                                        rows.forEach(row => {
+                                            const billDateText = row.querySelector('td:nth-child(2)').textContent.trim();
+                                            const billDate = new Date(billDateText);
+
+                                            if (!isNaN(billDate.getTime())) { // Ensure billDate is valid
+                                                if (startDate) {
+                                                    if (billDate >= startDate) {
+                                                        row.style.display = '';
+                                                        filteredRows.push(row);
+                                                    } else {
+                                                        row.style.display = 'none';
+                                                    }
+                                                } else {
+                                                    row.style.display = '';
+                                                    filteredRows.push(row);
+                                                }
+                                            } else {
+                                                row.style.display = 'none'; // Handle invalid date formats
+                                            }
+                                        });
+
+                                        // Reset to page 1 when filter changes
+                                        currentPage = 1;
+                                        displayTable(currentPage);
+                                    }
+
+                                    function displayTable(page) {
+                                        const startIndex = (page - 1) * rowsPerPage;
+                                        const endIndex = startIndex + rowsPerPage;
+
+                                        // Hide all rows
+                                        filteredRows.forEach((row, index) => {
+                                            row.style.display = 'none';
+                                        });
+
+                                        // Show rows for the current page
+                                        for (let i = startIndex; i < endIndex && i < filteredRows.length; i++) {
+                                            filteredRows[i].style.display = '';
+                                        }
+
+                                        updatePagination(page);
+                                    }
+
+                                    function updatePagination(currentPage) {
+                                        const pageCount = Math.ceil(filteredRows.length / rowsPerPage);
+                                        const paginationContainer = document.getElementById("pagination");
+                                        paginationContainer.innerHTML = "";
+
+                                        // Create "Previous" button
+                                        const prevButton = document.createElement("a");
+                                        prevButton.href = "#";
+                                        prevButton.innerText = "Previous";
+                                        prevButton.onclick = function () {
+                                            if (currentPage > 1) {
+                                                displayTable(currentPage - 1);
+                                            }
+                                            return false;
+                                        };
+                                        if (currentPage === 1) {
+                                            prevButton.style.visibility = "hidden";
+                                        }
+                                        paginationContainer.appendChild(prevButton);
+
+                                        // Create page number links
+                                        const pageNumbersContainer = document.createElement("span");
+                                        pageNumbersContainer.style.margin = "0 10px";
+
+                                        for (let i = 1; i <= pageCount; i++) {
+                                            const pageLink = document.createElement("a");
+                                            pageLink.href = "#";
+                                            pageLink.innerText = i;
+                                            pageLink.style.margin = "0 5px";
+                                            pageLink.onclick = function () {
+                                                displayTable(i);
+                                                return false;
+                                            };
+                                            if (i === currentPage) {
+                                                pageLink.style.fontWeight = "bold";
+                                                pageLink.style.textDecoration = "underline";
+                                            }
+                                            pageNumbersContainer.appendChild(pageLink);
+                                        }
+
+                                        paginationContainer.appendChild(pageNumbersContainer);
+
+                                        // Create "Next" button
+                                        const nextButton = document.createElement("a");
+                                        nextButton.href = "#";
+                                        nextButton.innerText = "Next";
+                                        nextButton.onclick = function () {
+                                            if (currentPage < pageCount) {
+                                                displayTable(currentPage + 1);
+                                            }
+                                            return false;
+                                        };
+                                        if (currentPage === pageCount) {
+                                            nextButton.style.visibility = "hidden";
+                                        }
+                                        paginationContainer.appendChild(nextButton);
+                                    }
+
+                                    // Initialize the filter to show only today's data
+                                    filterDropdown.value = 'today';
+                                    filterTable('today');
+
+                                    filterDropdown.addEventListener('change', function () {
+                                        filterTable(filterDropdown.value);
+                                    });
+
+                                    // Initial display
+                                    displayTable(currentPage);
+                                });
+                            </script>
+
+                           
+
+                                </div>
+
+
+
+
+                            </div>
 
                         <br />
                         <center>
@@ -153,56 +312,11 @@
                  
                 </div>
             </div>
-                          </div>                  </div>
+                                         
                                         
 
 
-        <script>
-            document.addEventListener('DOMContentLoaded', function () {
-                const filterDropdown = document.getElementById('filterDropdown');
-                const dataTable = document.getElementById('dataTable');
-                const rows = dataTable.querySelectorAll('tbody tr');
-
-                function filterTable(filterValue) {
-                    const today = new Date();
-                    let startDate;
-
-                    switch (filterValue) {
-                        case 'today':
-                            startDate = new Date(today.setHours(0, 0, 0, 0));
-                            break;
-                        case 'week':
-                            const firstDayOfWeek = today.getDate() - today.getDay() + (today.getDay() === 0 ? -6 : 1);
-                            startDate = new Date(today.setDate(firstDayOfWeek));
-                            break;
-                        case 'three_months':
-                            startDate = new Date(today.setMonth(today.getMonth() - 3));
-                            break;
-                        default:
-                            startDate = null;
-                            break;
-                    }
-
-                    rows.forEach(row => {
-                        const billDate = new Date(row.querySelector('td:nth-child(2)').textContent);
-                        if (startDate) {
-                            row.style.display = billDate >= startDate ? '' : 'none';
-                        } else {
-                            row.style.display = '';
-                        }
-                    });
-                }
-
-                // Initialize the filter to show only today's data
-                filterDropdown.value = 'today';
-                filterTable('today');
-
-                filterDropdown.addEventListener('change', function () {
-                    filterTable(filterDropdown.value);
-                });
-            });
-        </script>
-
+       
 
 
                       

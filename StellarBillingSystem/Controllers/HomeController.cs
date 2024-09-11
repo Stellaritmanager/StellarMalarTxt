@@ -78,7 +78,7 @@ namespace StellarBillingSystem.Controllers
         private string GetSalesComparison()
         {
             string branchId = string.Empty;
-
+             
             if (TempData["BranchID"] != null)
             {
                 branchId = TempData["BranchID"].ToString();

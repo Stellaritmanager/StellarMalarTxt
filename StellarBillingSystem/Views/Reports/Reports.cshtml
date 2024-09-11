@@ -143,20 +143,20 @@
                         <div class="table-responsive">
 
                         <center>
-                            <h2 class="centered text-white" style="font-family:'Lucida Bright';">@ViewBag.Reportname</h2>
+                                <h2 class="centered text-black" style="font-family:'Lucida Bright'; color: #fff;">@ViewBag.Reportname</h2>
                         </center>
                         <br/>
-                        <table id="dataTable" class="table table-dark" style="font-size: 15px;">
-                            <thead>
+                            <table id="dataTable" class="table table-striped table-bordered" style="border: 0px solid #fff;">
+                                <thead style="background-color: black; color: white;">
                                 <tr>
                                     @foreach (DataColumn column in Model.Columns)
                                     {
-                                        <th style="font-size: 15px; color:white;border: 1px solid #fff;">@column.ColumnName</th>
+                                            <th style="font-size: 18px; color:white;border: 1px solid #fff;">@column.ColumnName</th>
                                     }
                                 </tr>
                             </thead>
 
-                            <tbody >
+                                <tbody class="card-body dividerblack">
                               
                                 @foreach (DataRow row in Model.Rows)
                                 {
@@ -165,7 +165,7 @@
                                        
                                         @foreach (var cell in row.ItemArray)
                                         {
-                                            <td style ="border: 1px solid #fff;">@cell</td>
+                                                <td style="border: 1px solid #fff;">@cell</td>
                                         }
                                        
                                     </tr>
@@ -178,7 +178,7 @@
                         <br/>
                         <center>
 
-                            <button class="btn btn-primary" onclick="exportToExcel()">Export to Excel</button>
+                            <button class="btn btn-primarywhite" onclick="exportToExcel()">Export to Excel</button>
                         </center>
                     </div>
                 </div>

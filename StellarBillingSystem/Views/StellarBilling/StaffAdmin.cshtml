@@ -36,6 +36,7 @@
     function handleMessages(message) {
         showPopup(message);
     }
+
 </script>
 
 <div id="popupMessage" style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); color:black; padding: 30px; border: 1px solid #000000; border-radius: 10px; z-index: 1000; display: none; text-align: center;">
@@ -52,7 +53,7 @@
 
 
 
-<form asp-action="AddStaff" enctype="multipart/form-data" asp-controller="StellarBilling">
+<form asp-action="AddStaff" enctype="multipart/form-data" id="StaffAdmin" asp-controller="StellarBilling">
     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
     <div class="row">
         <div class="col-md-12 col-lg-0">
@@ -135,7 +136,7 @@
                                     .Select(m => new SelectListItem
             {
                 Value = m.BracnchID.ToString(), // Assuming ScreenId is of type int
-                Text = $"{m.BracnchID} - {m.BranchName}"
+                Text = $"{m.BranchName}"
             });
                                 }
 
@@ -158,14 +159,12 @@
                                 <span asp-validation-for="LastName" class="text-danger"></span>
                             </div>
  *@
-
                             <div class="form-floating form-floating-outline mb-4">
-
-                                <input asp-for="FullName" value="@Model.FullName" class="form-control" placeholder="Full Name" pattern="^[A-Za-z\s]+$" title="Full Name should contain only letters and spaces" />
+                                <input asp-for="FullName" value="@Model.FullName" class="form-control" placeholder="Full Name"
+                                       oninput="validateInput(this)" />
                                 <label asp-for="FullName" class="control-label">Full Name</label>
                                 <span asp-validation-for="FullName" class="text-danger"></span>
-                            </div> 
-
+                            </div>
                             <div class="form-floating form-floating-outline mb-4">
 
                                 <input asp-for="Initial" value="@Model.Initial" class="form-control" placeholder="Initial" pattern="^[A-Za-z\s.]+$" title="Initial should contain only letters,spaces and dots" />
@@ -181,7 +180,7 @@
                             </div> *@
 
                             <div class="form-floating form-floating-outline mb-4">
-                                <input asp-for="PhoneNumber" value="@Model.PhoneNumber" class="form-control" placeholder="Mobile Number" />
+                                <input type="tel" pattern="\d{10}" maxlength="10" asp-for="PhoneNumber" value="@Model.PhoneNumber" id="PhoneNumber" class="form-control" placeholder="Mobile Number" />
                                 <label asp-for="PhoneNumber" class="control-label">Phone Number</label>
                                 <span asp-validation-for="PhoneNumber" class="text-danger"></span>
                             </div>
@@ -241,9 +240,9 @@
 
                         <div class="col-md-12 col-lg-4">
                             <div class="form-floating form-floating-outline mb-4">
-                                <input asp-for="EmailId" value="@Model.EmailId" type="email" class="form-control" placeholder="Email" />
+                                <input asp-for="EmailId" id="EmailId" type="email" value="@Model.EmailId" type="email" class="form-control" placeholder="Email" />
                                 <label asp-for="EmailId" class="control-label">Email</label>
-                                <span asp-validation-for="EmailId" class="text-danger"></span>
+                                <span asp-validation-for="EmailId" id="emailError" class="text-danger">Invalid email format</span>
                             </div>
                            
                           @*   <div class="form-floating form-floating-outline mb-4">
@@ -279,11 +278,11 @@
                             }
 
                             <div>
-                                <label>ID Proof File:</label>
+                            
                                 @if (!string.IsNullOrEmpty(imageUrl))
                                 {
                                     <!-- Link to download the image -->
-                                    <a href="@imageUrl" download="id-proof.jpg">Download ID Proof Image</a>
+                                    <a href="@imageUrl" download="id-proof.jpg">Download ID Proof</a>
                                 }
                                 else
                                 {
@@ -291,8 +290,8 @@
                                 }
                             </div>
                             <div>
-                                <label class="btn btn-primary">Upload Image</label>
-                                <input type="file" class="account-file-input" name="imageFile" accept="image/png, image/jpeg" value="@Model.IdProofFile" />
+                               
+                                <input type="file" class="btn btn-primary" name="imageFile" accept="image/png, image/jpeg" value="@Model.IdProofFile" style="width: 290px; height: 40px; padding: 5px;" />
                             </div>
 
 
@@ -359,6 +358,115 @@
                             }
                         </tbody>
                     </table>
+
+                   <div id="pagination-controls" style="text-align: center; margin-top: 10px;">
+                        <button id="prev-btn" style="background-color: black; color: white; border: none; padding: 2px 5px; cursor: pointer; font-size: 16px; border-radius: 5px; margin: 0 5px;">&lt;&lt;</button>
+                        <div id="page-numbers" style="display: inline-block; vertical-align: middle;"></div>
+                        <button id="next-btn" style="background-color: black; color: white; border: none; padding: 2px 5px; cursor: pointer; font-size: 16px; border-radius: 5px; margin: 0 5px;">&gt;&gt;</button>
+                    </div>
+
+                    <script>
+                        document.addEventListener('DOMContentLoaded', function () {
+                            const rowsPerPage = 4; // Number of rows per page
+                            const table = document.querySelector('.table tbody'); // Select the table body
+                            const rows = Array.from(table.querySelectorAll('tr')); // Get all rows
+                            const totalRows = rows.length; // Total number of rows
+                            const totalPages = Math.ceil(totalRows / rowsPerPage); // Calculate total pages
+
+                            let currentPage = 1; // Current page number
+
+                            // Function to display rows for a given page
+                            function showPage(page) {
+                                rows.forEach((row, index) => {
+                                    row.style.display = (Math.floor(index / rowsPerPage) + 1 === page) ? '' : 'none'; // Show or hide row
+                                });
+
+                                updatePageNumbers(); // Update the page number buttons
+                                document.getElementById('prev-btn').disabled = (page === 1); // Disable 'prev' button if on first page
+                                document.getElementById('next-btn').disabled = (page === totalPages); // Disable 'next' button if on last page
+                            }
+
+                            // Function to create and update page number buttons
+                            function updatePageNumbers() {
+                                const pageNumbersContainer = document.getElementById('page-numbers');
+                                pageNumbersContainer.innerHTML = ''; // Clear previous buttons
+
+                                // Create page number buttons
+                                for (let i = 1; i <= totalPages; i++) {
+                                    const pageButton = document.createElement('button');
+                                    pageButton.textContent = i;
+                                    pageButton.style.backgroundColor = (i === currentPage) ? 'black' : 'white'; // Highlight current page
+                                    pageButton.style.color = (i === currentPage) ? 'white' : 'black';
+                                    pageButton.style.border = 'none';
+                                    pageButton.style.padding = '5px 10px';
+                                    pageButton.style.cursor = 'pointer';
+                                    pageButton.style.fontSize = '16px';
+                                    pageButton.style.borderRadius = '5px';
+                                    pageButton.style.margin = '0 3px';
+
+                                    // Add click event listener to update current page
+                                    pageButton.addEventListener('click', () => {
+                                        currentPage = i;
+                                        showPage(currentPage);
+                                    });
+
+                                    pageNumbersContainer.appendChild(pageButton); // Add button to container
+                                }
+                            }
+
+                            // Event listener for 'prev' button
+                            document.getElementById('prev-btn').addEventListener('click', () => {
+                                if (currentPage > 1) {
+                                    currentPage--;
+                                    showPage(currentPage);
+                                }
+                            });
+
+                            // Event listener for 'next' button
+                            document.getElementById('next-btn').addEventListener('click', () => {
+                                if (currentPage < totalPages) {
+                                    currentPage++;
+                                    showPage(currentPage);
+                                }
+                            });
+
+                            showPage(currentPage); // Initial page display
+                        });
+                        const emailInput = document.getElementById('EmailId');
+                        const emailError = document.getElementById('emailError');
+
+                        window.addEventListener('DOMContentLoaded', function () {
+                            emailError.style.display = 'none';
+                        });
+
+                        // Validate email format when typing
+                        emailInput.addEventListener('input', function () {
+                            // Check if the email is valid using the built-in checkValidity function
+                            if (!emailInput.checkValidity()) {
+                                emailError.style.display = 'inline'; // Show error message
+                            } else {
+                                emailError.style.display = 'none'; // Hide error message
+                            }
+                        });
+
+                        // Prevent form submission if the email is invalid
+                        document.getElementById('StaffAdmin').addEventListener('submit', function (e) {
+                            if (!emailInput.checkValidity()) {
+                                emailError.style.display = 'inline'; // Show error message
+                                e.preventDefault(); // Prevent form submission
+                            }
+                        });
+
+
+                    </script>
+
+
+
+
+
+
+
+
 
                 </div>
             </div>
@@ -435,3 +543,38 @@
         }
 
 </form>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const phoneInput = document.getElementById('PhoneNumber');
+
+        phoneInput.addEventListener('input', function (e) {
+            // Remove non-numeric characters
+            this.value = this.value.replace(/\D/g, '');
+        });
+
+        phoneInput.addEventListener('keydown', function (e) {
+            // Allow backspace, delete, tab, escape, enter, and arrow keys
+            if ([46, 8, 9, 27, 13, 37, 38, 39, 40].indexOf(e.keyCode) !== -1) {
+                return;
+            }
+            // Prevent typing if the input already has 10 characters
+            if (this.value.length >= 10) {
+                e.preventDefault();
+            }
+        });
+    });
+</script>
+
+
+<script>
+    function validateInput(input) {
+        // Store the cursor position
+        const cursorPos = input.selectionStart;
+
+        // Replace invalid characters
+        input.value = input.value.replace(/[^A-Za-z\s]/g, '');
+
+        // Restore cursor position
+        input.setSelectionRange(cursorPos, cursorPos);
+    }
+</script>
