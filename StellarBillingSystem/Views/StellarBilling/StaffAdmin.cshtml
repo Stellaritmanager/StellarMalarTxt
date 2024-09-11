@@ -115,7 +115,7 @@
                     <div class="row">
                         <div class="col-md-12 col-lg-4">
 
-                            <div class="form-floating form-floating-outline mb-4">
+                           @*  <div class="form-floating form-floating-outline mb-4">
                                 @{
                                     var screenList = ((IEnumerable<ResourceTypeMasterModel>)ViewData["resoruseid"])
                                     .Select(m => new SelectListItem
@@ -128,7 +128,7 @@
                                 @Html.DropDownListFor(model => model.ResourceTypeID, screenList, "Select Resource", new { @class = "form-control" })
                                 <label asp-for="ResourceTypeID" class="control-label">Resource Type</label>
                                 <span asp-validation-for="ResourceTypeID" class="text-danger"></span>
-                            </div>
+                            </div> *@
 
                             <div class="form-floating form-floating-outline mb-4">
                                 @{
@@ -185,15 +185,18 @@
                                 <span asp-validation-for="PhoneNumber" class="text-danger"></span>
                             </div>
 
-                        </div>
-
-                        <div class="col-md-12 col-lg-4">
 
                             <div class="form-floating form-floating-outline mb-4 custom-date-picker">
                                 <input asp-for="DateofBirth" type="date" value="@Model.DateofBirth" class="form-control" placeholder="DateofBirth" max="@DateTime.Now.ToString("yyyy-MM-dd")" />
                                 <label asp-for="DateofBirth" class="control-label">Date of Birth</label>
                                 <span asp-validation-for="DateofBirth" class="text-danger"></span>
                             </div>
+
+                        </div>
+
+                        <div class="col-md-12 col-lg-4">
+
+                          
 
                           @*   <div class="form-floating form-floating-outline mb-4">
 
@@ -214,8 +217,8 @@
                             </div>
 
                             <div class="form-floating form-floating-outline mb-4">
-                                <textarea asp-for="Address1" value="@Model.Address1" class="form-control" placeholder="Address" aria-describedby="text-to-speech-addon"></textarea>
-                                <label asp-for="Address1" class="control-label">Address</label>
+                                <input asp-for="Address1" value="@Model.Address1" class="form-control" placeholder="Address1" />
+                                <label asp-for="Address1" class="control-label">Address1</label>
                                 <span asp-validation-for="Address1" class="text-danger"></span>
                             </div>
                           

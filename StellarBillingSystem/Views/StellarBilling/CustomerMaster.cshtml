@@ -104,7 +104,7 @@
                     <div class="row gy-4">
                         <div class="col-md-12 col-lg-0"></div>
 
-                        <div class="col-md-12 col-lg-4">
+                        <div class="col-md-12 col-lg-3">
                             <div class="form-floating form-floating-outline mb-4">
                                 <input type="tel" pattern="\d{10}" maxlength="10" asp-for="MobileNumber" value="@Model.MobileNumber" id="MobileNumber" class="form-control" placeholder="Mobile Number" />
                                 <label asp-for="MobileNumber" class="control-label">Mobile Number</label>
@@ -112,7 +112,7 @@
                             </div>
                         </div>
 
-                        <div class="col-md-12 col-lg-4">
+                        <div class="col-md-12 col-lg-3">
                             <div class="form-floating form-floating-outline mb-4">
 
                                 @*@<input asp-for="FullName" value="@Model.FullName" class="form-control" placeholder="Full Name"
@@ -142,7 +142,7 @@
                
     <div class="row">
                         <div class="col-md-12 col-lg-0"></div>
-        <div class="col-md-12 col-lg-2">
+        <div class="col-md-12 col-lg-3">
 
                             <div class="form-floating form-floating-outline mb-4 custom-date-picker">
                                 <input asp-for="DateofBirth" type="date" value="@Model.DateofBirth" class="form-control" placeholder="DateofBirth" max="@DateTime.Now.ToString("yyyy-MM-dd")" />
@@ -165,7 +165,7 @@
                             </div>
                         </div>
 
-                        <div class="col-md-12 col-lg-4">
+                        <div class="col-md-12 col-lg-3">
                             <div class="form-floating form-floating-outline mb-4">
 
                                 <input asp-for="Address" class="form-control" placeholder="Address" value="@Model.Address" />
