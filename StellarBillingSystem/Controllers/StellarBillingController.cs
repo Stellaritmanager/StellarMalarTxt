@@ -3045,6 +3045,8 @@ namespace StellarBillingSystem.Controllers
                         CustomerNumber = customerNumber
                     };
 
+               
+
                     ViewBag.TotalPrice = updatedMasterex?.Totalprice;
                     ViewBag.TotalDiscount = updatedMasterex?.TotalDiscount;
                     ViewBag.NetPrice = updatedMasterex?.NetPrice;
@@ -3203,7 +3205,7 @@ namespace StellarBillingSystem.Controllers
                 if (pointsMaster != null && pointsMaster.NetPrice != null && pointsMaster.NetPoints != null && pointsMaster.BranchID == model.BranchID)
                 {
                     decimal netPointsRatio = Convert.ToDecimal(pointsMaster.NetPoints) / Convert.ToDecimal(pointsMaster.NetPrice);
-                    decimal points = Convert.ToDecimal(masterModel.NetPrice) * netPointsRatio;
+                    decimal points = Convert.ToDecimal(masterModel.NetPrice ?? masterModel.Totalprice) * netPointsRatio;
 
                     if (checkpoints != null)
                     {
@@ -3222,7 +3224,7 @@ namespace StellarBillingSystem.Controllers
                         {
                             BillID = BillID,
                             CustomerNumber = CustomerNumber,
-                            NetPrice = masterModel.NetPrice,
+                            NetPrice = masterModel.NetPrice ?? masterModel.Totalprice,
                             Points = points.ToString("F2"),
                             IsUsed = false,
                             DateofReedem = null
@@ -3721,7 +3723,7 @@ namespace StellarBillingSystem.Controllers
             var paymentDetails = (from pm in _billingsoftware.SHPaymentMaster
                                   join pd in _billingsoftware.SHPaymentDetails
                                   on pm.PaymentId equals pd.PaymentId
-                                  where pm.BillId == BillID && pm.BranchID == BranchID && pd.BranchID == BranchID
+                                  where pm.BillId == BillID && pm.BranchID == BranchID && pd.BranchID == BranchID 
                                   select new
                                   {
                                       pd.PaymentId,
@@ -4707,6 +4709,17 @@ namespace StellarBillingSystem.Controllers
                 BillDate = billDate,
                 CustomerNumber = customerNumber
             };
+
+            var billingPoints =  _billingsoftware.SHBillingPoints.Where(bp => bp.CustomerNumber == customerNumber
+                 && !bp.IsUsed && bp.BillID != billID
+                 && _billingsoftware.SHbillmaster
+                     .Any(bm => bm.CustomerNumber == bp.CustomerNumber
+                                && bm.IsDelete == false && bm.BranchID == model.BranchID)).ToList();
+
+
+            var totalPoints = billingPoints.Sum(bp => decimal.TryParse(bp.Points, out decimal pts) ? pts : 0);
+
+            ViewBag.Points = totalPoints.ToString("F2");
 
             ViewBag.TotalPrice = updatedMasterex?.Totalprice;
             ViewBag.TotalDiscount = updatedMasterex?.TotalDiscount;

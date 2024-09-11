@@ -157,6 +157,14 @@ hr {
   opacity: 1;
 }
 
+.product-row {
+    border-bottom: 2px solid black; /* Black line between rows */
+}
+
+    .product-row:last-child {
+        border-bottom: none; /* No border for the last row */
+    }
+
 h6, .h6, h5, .h5, h4, .h4, h3, .h3, h2, .h2, h1, .h1 {
   margin-top: 0;
   margin-bottom: 1rem;
@@ -400,6 +408,7 @@ select,
 optgroup,
 textarea {
   margin: 0;
+  color:#000000;
   font-family: inherit;
   font-size: inherit;
   line-height: inherit;
@@ -2102,7 +2111,7 @@ progress {
     font-size: 0.9375rem;
     font-weight: 400;
     line-height: 1.53;
-    color: #697a8d;
+    color: #697a8z;
     appearance: none;
     background-color: #fff;
     background-clip: padding-box;
@@ -2523,6 +2532,7 @@ textarea.form-control-lg {
   height: calc(3.5rem + calc(var(--bs-border-width) * 2));
   min-height: calc(3.5rem + calc(var(--bs-border-width) * 2));
   line-height: 1.25;
+  color:#000000;
 }
 .form-floating > label {
   position: absolute;
@@ -2593,6 +2603,7 @@ textarea.form-control-lg {
 }
 .form-floating > .form-control-plaintext ~ label {
   border-width: var(--bs-border-width) 0;
+  
 }
 .form-floating > :disabled ~ label,
 .form-floating > .form-control:disabled ~ label {
@@ -6666,6 +6677,7 @@ select:-webkit-autofill:hover,
 select:-webkit-autofill:focus,
 input:-internal-autofill-selected {
   background-clip: text !important;
+ 
   -webkit-background-clip: text !important;
 }
 
@@ -7099,7 +7111,7 @@ a.invert-bg-dark:hover, a.invert-bg-dark:focus {
   }
 }
 .table th {
-  text-transform: uppercase;
+  text-transform: capitalize;
   font-size: 0.75rem;
   letter-spacing: 1px;
 }
@@ -8542,8 +8554,8 @@ button:focus-visible {
 
 .form-label,
 .col-form-label {
-  font-size: 0.75rem;
-  text-transform: uppercase;
+  font-size: 0.95rem;
+  text-transform: capitalize;
   letter-spacing: inherit;
 }
 

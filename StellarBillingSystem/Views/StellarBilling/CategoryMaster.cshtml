@@ -48,7 +48,7 @@
     }
 </style>
 
-<form asp-controller="StellarBilling">
+<form asp-controller="StellarBilling" autocomplete="off">
     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
 
@@ -82,13 +82,13 @@
                         <div class="col-md-12 col-lg-2"></div>
                         <div class="col-md-12 col-lg-4">
                             <div class="form-floating form-floating-outline mb-4">
-                                <input type="CategoryID" class="form-control" placeholder="Category ID" name="CategoryID" value="@Model.CategoryID" required />
+                                <input type="CategoryID" class="form-control" placeholder="Category ID" name="CategoryID" value="@Model.CategoryID"  required />
                                 <label asp-for="CategoryID" class="control-label">Category ID</label>
                             </div>
                         </div>
                         <div class="col-md-12 col-lg-4">
                             <div class="form-floating form-floating-outline mb-4">
-                                <input type="CategoryName" class="form-control" placeholder="Category Name" name="CategoryName" value="@Model.CategoryName" required/>
+                                <input type="CategoryName" class="form-control" placeholder="Category Name" name="CategoryName" value="@Model.CategoryName" />
                                 <label asp-for="CategoryName" class="control-label">Category Name</label>
                             </div>
                         </div>
@@ -121,7 +121,7 @@
             <div class="card">
                 <div class="card-body dividerblack">
                     <h3 class="centered text-white" style="font-family: 'Lucida Bright'; margin-bottom: 20px; text-align: center;">Categories</h3>
-                    <table class="table table-striped table-bordered" style="border: 3px solid black;">
+                    <table class="table table-bordered" style="border: 1px solid black;">
                         <thead style="background-color: black; color: white;">
             <tr>
                 <th>CategoryID</th>

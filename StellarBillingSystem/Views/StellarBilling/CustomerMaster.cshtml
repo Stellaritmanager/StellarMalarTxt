@@ -39,6 +39,28 @@
         showPopup(message);
     }
 
+    $(document).ready(function () {
+        var message = "@ViewBag.Message";
+        if (message) {
+            showPopup(message);
+        }
+
+        var errorMessage = "@ViewBag.ErrorMessage";
+        if (errorMessage) {
+            showPopup(errorMessage);
+        }
+
+        var delMessage = "@ViewBag.delMessage";
+        if (delMessage) {
+            showPopup(delMessage);
+        }
+
+        var delRetrieve = "@ViewBag.DelRetrieve";
+        if (delRetrieve) {
+            showPopup(delRetrieve);
+        }
+    });
+
 </script>
 
 <div id="popupMessage" style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); color:black; padding: 30px; border: 1px solid #000000; border-radius: 10px; z-index: 1000; display: none; text-align: center;">
@@ -82,21 +104,26 @@
                     <div class="row gy-4">
                         <div class="col-md-12 col-lg-0"></div>
 
-                        <div class="col-md-12 col-lg-4">
+                        <div class="col-md-12 col-lg-3">
                             <div class="form-floating form-floating-outline mb-4">
-
-                                <input asp-for="MobileNumber" class="form-control" placeholder="Mobile Number" pattern="^\d{10}$" title="Mobile Number should be exactly 10 digits" value="@Model.MobileNumber" required />
+                                <input type="tel" pattern="\d{10}" maxlength="10" asp-for="MobileNumber" value="@Model.MobileNumber" id="MobileNumber" class="form-control" placeholder="Mobile Number" />
                                 <label asp-for="MobileNumber" class="control-label">Mobile Number</label>
-
                                 <span asp-validation-for="MobileNumber" class="text-danger"></span>
                             </div>
                         </div>
 
-                        <div class="col-md-12 col-lg-4">
+                        <div class="col-md-12 col-lg-3">
                             <div class="form-floating form-floating-outline mb-4">
-                                <input asp-for="CustomerName" class="form-control" placeholder="Customer Name" value="@Model.CustomerName" pattern="^[A-Za-z\s]+$" title="Customer Name should contain only letters and spaces" />
-                                <label asp-for="CustomerName" class="control-label">Customer Name</label>
 
+                                @*@<input asp-for="FullName" value="@Model.FullName" class="form-control" placeholder="Full Name"
+                                       oninput="validateInput(this)" />
+                                <label asp-for="FullName" class="control-label">Full Name</label>
+                                <span asp-validation-for="FullName" class="text-danger"></span>*@
+
+
+
+                                <input asp-for="CustomerName" class="form-control" placeholder="Customer Name" value="@Model.CustomerName" pattern="^[A-Za-z\s]+$" title="Customer Name should contain only letters and spaces" oninput="validateInput(this)" />
+                                <label asp-for="CustomerName" class="control-label">Customer Name</label>
                                 <span asp-validation-for="CustomerName" class="text-danger"></span>
                             </div>
 
@@ -115,7 +142,7 @@
                
     <div class="row">
                         <div class="col-md-12 col-lg-0"></div>
-        <div class="col-md-12 col-lg-2">
+        <div class="col-md-12 col-lg-3">
 
                             <div class="form-floating form-floating-outline mb-4 custom-date-picker">
                                 <input asp-for="DateofBirth" type="date" value="@Model.DateofBirth" class="form-control" placeholder="DateofBirth" max="@DateTime.Now.ToString("yyyy-MM-dd")" />
@@ -138,7 +165,7 @@
                             </div>
                         </div>
 
-                        <div class="col-md-12 col-lg-4">
+                        <div class="col-md-12 col-lg-3">
                             <div class="form-floating form-floating-outline mb-4">
 
                                 <input asp-for="Address" class="form-control" placeholder="Address" value="@Model.Address" />
@@ -193,6 +220,39 @@
     </div>
 
 </form>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const phoneInput = document.getElementById('MobileNumber');
+
+        phoneInput.addEventListener('input', function (e) {
+            // Remove non-numeric characters
+            this.value = this.value.replace(/\D/g, '');
+        });
+
+        phoneInput.addEventListener('keydown', function (e) {
+            // Allow backspace, delete, tab, escape, enter, and arrow keys
+            if ([46, 8, 9, 27, 13, 37, 38, 39, 40].indexOf(e.keyCode) !== -1) {
+                return;
+            }
+            // Prevent typing if the input already has 10 characters
+            if (this.value.length >= 10) {
+                e.preventDefault();
+            }
+        });
+    });
+</script>
+<script>
+    function validateInput(input) {
+        // Store the cursor position
+        const cursorPos = input.selectionStart;
+
+        // Replace invalid characters
+        input.value = input.value.replace(/[^A-Za-z\s]/g, '');
+
+        // Restore cursor position
+        input.setSelectionRange(cursorPos, cursorPos);
+    }
+</script>
 
 
 

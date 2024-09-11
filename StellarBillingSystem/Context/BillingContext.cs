@@ -91,7 +91,7 @@ namespace StellarBillingSystem.Context
             modelBuilder.Entity<WebErrorsModel>()
         .HasKey(i => new { i.ErrodDesc, i.ErrDateTime, i.ScreenName });
 
-            modelBuilder.Entity<BillingPointsModel>().HasKey(i => new { i.BillID, i.CustomerNumber });
+            modelBuilder.Entity<BillingPointsModel>().HasKey(i => new { i.BillID, i.CustomerNumber,i.BranchID });
             modelBuilder.Entity<BranchMasterModel>().HasKey(i => new { i.BracnchID, i.BranchName });
 
             modelBuilder.Entity<BillingMasterModel>().HasKey(i => new { i.BillID, i.BillDate,i.BranchID });

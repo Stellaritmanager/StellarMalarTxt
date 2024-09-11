@@ -325,8 +325,9 @@ namespace StellarBillingSystem.Business
         {
             var adminRT = (
                         from pr in _billingContext.SHStaffAdmin
-                        join p in _billingContext.SHresourceType on pr.ResourceTypeID equals p.ResourceTypeID
-                        where pr.IsDelete == false && pr.UserName == Username && p.ResourceTypeName == "Admin"
+                        join ram in _billingContext.SHrollaccess on pr.StaffID equals ram.StaffID
+                        join rol in _billingContext.SHrollType on ram.RollID equals rol.RollID
+                        where pr.IsDelete == false && pr.UserName == Username && rol.RollName == "Admin" && ram.IsDelete == false && rol.IsDelete== false
                         select new StaffAdminModel
                         {
                             UserName = pr.UserName
