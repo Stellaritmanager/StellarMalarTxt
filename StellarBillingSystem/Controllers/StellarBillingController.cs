@@ -2770,8 +2770,10 @@ namespace StellarBillingSystem.Controllers
 
                 var Table = BusinessClassCommon.DataTable(_billingsoftware, Query);
 
-
+                PrintDocument(Busbill.PrintBillDetails(Table, model.BranchID));
+                
                 return File(Busbill.PrintBillDetails(Table, model.BranchID), "application/vnd.openxmlformats-officedocument.wordprocessingml.document", "Bill_" + TempData["BillID"] + ".docx");
+                
 
 
 
@@ -3199,7 +3201,7 @@ namespace StellarBillingSystem.Controllers
               
 
                 // Save points calculation
-                var checkpoints = await _billingsoftware.SHBillingPoints.FirstOrDefaultAsync(x => x.BillID == model.BillID && x.CustomerNumber == CustomerNumber);
+                var checkpoints = await _billingsoftware.SHBillingPoints.FirstOrDefaultAsync(x => x.BillID == model.BillID && x.CustomerNumber == CustomerNumber && x.BranchID == model.BranchID);
                 var pointsMaster = await _billingsoftware.SHPointsMaster.FirstOrDefaultAsync(x => x.BranchID == model.BranchID);
 
                 if (pointsMaster != null && pointsMaster.NetPrice != null && pointsMaster.NetPoints != null && pointsMaster.BranchID == model.BranchID)
@@ -3214,6 +3216,7 @@ namespace StellarBillingSystem.Controllers
                         checkpoints.Points = points.ToString("F2");
                         checkpoints.IsUsed = false;
                         checkpoints.DateofReedem = null;
+                        checkpoints.BranchID = model.BranchID;
 
                         _billingsoftware.Entry(checkpoints).State = EntityState.Modified;
                     }
@@ -3227,7 +3230,8 @@ namespace StellarBillingSystem.Controllers
                             NetPrice = masterModel.NetPrice ?? masterModel.Totalprice,
                             Points = points.ToString("F2"),
                             IsUsed = false,
-                            DateofReedem = null
+                            DateofReedem = null,
+                            BranchID = model.BranchID
                         };
 
                         _billingsoftware.SHBillingPoints.Add(billingPoints);
@@ -3363,7 +3367,24 @@ namespace StellarBillingSystem.Controllers
             return View("CustomerBilling", model);
         }
 
+        public void PrintDocument(byte[] fileContent)
+        {
+            string tempFilePath = Path.Combine(Path.GetTempPath(), "tempfile.docx");
+            System.IO.File.WriteAllBytes(tempFilePath, fileContent);
 
+            // Create a new process to print the file
+            var process = new System.Diagnostics.Process();
+            process.StartInfo = new System.Diagnostics.ProcessStartInfo
+            {
+                CreateNoWindow = true,
+                Verb = "print",
+                FileName = tempFilePath, // Path to the file you want to print
+                WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden
+            };
+
+            process.Start();
+            process.WaitForExit();
+        }
         public IActionResult DeleteProduct(string productId, string billID, string billDate, string customerNumber, BillProductlistModel model)
         {
 
@@ -4711,7 +4732,7 @@ namespace StellarBillingSystem.Controllers
             };
 
             var billingPoints =  _billingsoftware.SHBillingPoints.Where(bp => bp.CustomerNumber == customerNumber
-                 && !bp.IsUsed && bp.BillID != billID
+                 && !bp.IsUsed && bp.BillID != billID && bp.BranchID == model.BranchID
                  && _billingsoftware.SHbillmaster
                      .Any(bm => bm.CustomerNumber == bp.CustomerNumber
                                 && bm.IsDelete == false && bm.BranchID == model.BranchID)).ToList();
