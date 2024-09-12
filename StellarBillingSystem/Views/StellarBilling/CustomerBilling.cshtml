@@ -134,10 +134,10 @@
 
 
                                 <input type="text" id="productDropdownInput" class="form-control"  placeholder="Product Name" onkeyup="filterDropdown(event, 'productDropdownInput', 'productDropdown')" onclick="showDropdown('productDropdown')">
-                                <ul id="productDropdown" class="list-group mt-2" style="display: none; position: absolute; z-index: 1000; width: 100%; max-height: 200px; overflow-y: auto; background-color: white; list-style-type: none; padding: 0;">
+                                <ul id="productDropdown" class="list-group mt-2" style="display: none; margin-top: 4rem; position: absolute; z-index: 1000; width: 100%; max-height: 200px; overflow-y: auto; list-style-type: none; padding: 0;">
                                     @foreach (var item in PatientID)
                                     {
-                                        <li class="list-group-item" data-value="@item.Value" onclick="selectDropdownItem('productDropdownInput', 'productID', '@item.Text', '@item.Value')" style="background-color: white; border: none;">@item.Text</li>
+                                        <li class="list-group-item" data-value="@item.Value" onclick="selectDropdownItem('productDropdownInput', 'productID', '@item.Text', '@item.Value')" style="background-color:#fff; border: none;color: #000000;margin-right: 9px;">@item.Text</li>
                                     }
                                 </ul>
                                 <input type="hidden" name="ProductID" id="productID" value="ProductID" />
@@ -645,6 +645,7 @@
         function updateHighlight(visibleItems) {
             visibleItems.forEach((item, index) => {
                 item.style.backgroundColor = (index === highlightedIndex) ? '#000000' : 'white';
+                item.style.color = '#ffffff';
             });
             visibleItems[highlightedIndex]?.scrollIntoView({ block: 'nearest' });
         }
