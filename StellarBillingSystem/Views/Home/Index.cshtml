@@ -18,32 +18,30 @@
 @* ************** Content ************** *@
 
 <div class="row">
-    <div class="col-lg-8 mb-4 order-0">
+    <div class="col-lg-6 mb-4 order-0">
         <form action="@Url.Action("RedirectToReports","Home")" method="post" class="mb-0">
-            <div class="card" style="cursor: pointer;" onclick="this.closest('form').submit();">
+            <div class="card" style="cursor: pointer; height:150px; width:590px" onclick="this.closest('form').submit();">
+                <img src="~/img/illustrations/man-with-laptop-light.png" height="140" alt="View Badge User" style="position: absolute; top: 10px; right: 10px;" data-app-dark-img="illustrations/man-with-laptop-dark.png" data-app-light-img="illustrations/man-with-laptop-light.png">
                 <div class="d-flex align-items-end row">
-                    <div class="col-sm-7">
-                        <div class="card-body">
 
-                            <p class="mb-4" style="font-size: 18px; margin-left: 22px;color: #fff;">@ViewBag.SalesMessage</p>
+                    <div class="col-sm-12">
+                       
 
+                            <p class="mb-4" style="font-size: 18px; margin-top:30px; margin-left: 22px;color: #fff;">@ViewBag.SalesMessage</p>
 
-                        </div>
+                       
+                       
                     </div>
-                    <div class="col-sm-5 text-center text-sm-left">
-                        <div class="card-body pb-0 px-0 px-md-4">
-                            <img src="~/img/illustrations/man-with-laptop-light.png" height="140" alt="View Badge User" data-app-dark-img="illustrations/man-with-laptop-dark.png" data-app-light-img="illustrations/man-with-laptop-light.png">
-                        </div>
-                    </div>
+                   
                 </div>
             </div>
         </form>
     </div>
-    <div class="col-lg-4 col-md-4 order-1">
+    <div class="col-lg-6 col-md-4 order-1">
         <div class="row">
             <div class="col-lg-6 col-md-12 col-6 mb-4">
                 <form action="@Url.Action("RedirectToReports","Home")" method="post" class="mb-0">
-                    <div class="card" style="cursor: pointer;" onclick="this.closest('form').submit();">
+                    <div class="card" style="cursor: pointer; height:150px; width:230px; margin-left:40px;" onclick="this.closest('form').submit();">
 
                         <div class="card-body">
                             <div class="card-title d-flex align-items-start justify-content-between">
@@ -62,7 +60,7 @@
 
             <div class="col-lg-6 col-md-12 col-6 mb-4">
                 <form action="@Url.Action("RedirectToReports","Home")" method="post" class="mb-0">
-                    <div class="card" style="cursor: pointer;" onclick="this.closest('form').submit();">
+                    <div class="card" style="cursor: pointer; height:150px; width:200px" onclick="this.closest('form').submit();">
                         <div class="card-body">
                             <div class="card-title d-flex align-items-start justify-content-between">
                                 <div class="avatar flex-shrink-0">
@@ -235,6 +233,13 @@
                                             }
                                             return false;
                                         };
+                                        prevButton.style.backgroundColor = "white";
+                                        prevButton.style.color = "black";
+                                        // Adjust padding as needed
+                                        prevButton.style.textDecoration = "none"; // Remove underline
+                                        prevButton.style.border = "1px solid black"; // Optional border
+                                        prevButton.style.borderRadius = "5px";
+                                        prevButton.style.fontSize = "18px"; // Adjust font size as needed
                                         if (currentPage === 1) {
                                             prevButton.style.visibility = "hidden";
                                         }
@@ -272,6 +277,15 @@
                                             }
                                             return false;
                                         };
+
+                                        nextButton.style.backgroundColor = "white";
+                                        nextButton.style.color = "black";
+                                        // Adjust padding as needed
+                                        nextButton.style.textDecoration = "none"; // Remove underline
+                                        nextButton.style.border = "1px solid black"; // Optional border
+                                        nextButton.style.borderRadius = "5px";
+                                        nextButton.style.fontSize = "18px";
+
                                         if (currentPage === pageCount) {
                                             nextButton.style.visibility = "hidden";
                                         }

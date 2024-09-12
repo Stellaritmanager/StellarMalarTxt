@@ -102,17 +102,15 @@
 
                         </div>
 
-                         <div class="col-md-12 col-lg-4">
-
-                            <div class="form-group" style="width:80px">
-                                <center>
-                                    <button type="submit" value="Get" name="buttonType" asp-action="GodDown" class="btn btn-primary">Get</button>
-
-                                </center>
-                            </div>
+                        
 
 
-                            </div>    
+                            <button type="submit" style="width:95px; height:50px;" value="Get" name="buttonType" asp-action="GodDown" class="btn btn-primary ms-2">Get</button>
+
+                             
+
+
+                            
 
                     </div>
 
@@ -143,8 +141,8 @@
                         <div class="col-md-12 col-lg-4">
                             <div class="form-floating form-floating-outline mb-4">
 
-                                <input asp-for="NumberofStocks" value="@Model.NumberofStocks" class="form-control" placeholder="Number of Stocks" />
-                                <label asp-for="NumberofStocks" class="control-label">Number of Stocks</label>
+                                <input asp-for="NumberofStocks" value="@Model.NumberofStocks" class="form-control" placeholder="Number of Stock" />
+                                <label asp-for="NumberofStocks" class="control-label">Number of Stock</label>
                                 <span asp-validation-for="NumberofStocks" class="text-danger"></span>
                             </div>
 
@@ -185,7 +183,7 @@
                         <thead style="background-color: black; color: white;">
                             <tr>
                         <tr>
-                            <th>ProductID</th>
+                            <th>Product ID</th>
                             <th>Number Of Stock</th>
                         </tr>
                     </thead>
@@ -205,9 +203,9 @@
                 </table>
 
                     </table><div id="pagination-controls" style="text-align: center; margin-top: 10px;">
-                        <button id="prev-btn" style="background-color: black; color: white; border: none; padding: 2px 5px; cursor: pointer; font-size: 16px; border-radius: 5px; margin: 0 5px;">&lt;&lt;</button>
+                        <button id="prev-btn" style="background-color: black; color: white; border: none; padding: 0px 6px; cursor: pointer; font-size: 16px; border-radius: 5px; margin: 0 5px;">Previous</button>
                         <div id="page-numbers" style="display: inline-block; vertical-align: middle;"></div>
-                        <button id="next-btn" style="background-color: black; color: white; border: none; padding: 2px 5px; cursor: pointer; font-size: 16px; border-radius: 5px; margin: 0 5px;">&gt;&gt;</button>
+                        <button id="next-btn" style="background-color: black; color: white; border: none; padding: 0px 6px; cursor: pointer; font-size: 16px; border-radius: 5px; margin: 0 5px;">Next</button>
                     </div>
 
                     <script>
