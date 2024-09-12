@@ -1,14 +1,19 @@
 ﻿
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.CodeAnalysis;
 using StellarBillingSystem.Models;
 namespace StellarBillingSystem.Context
 {
     public class BillingContext : DbContext
     {
+        private readonly IHttpContextAccessor _httpContextAccessor;
+
         public BillingContext() { }
 
-        public BillingContext(DbContextOptions options) : base(options)
+        public BillingContext(DbContextOptions options, IHttpContextAccessor httpContextAccessor) : base(options)
         {
+            _httpContextAccessor = httpContextAccessor;
         }
 
         //LogTable
@@ -157,6 +162,9 @@ namespace StellarBillingSystem.Context
         // Override SaveChangesAsync to auto-generate the Ids for various screens with the prefix
         public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
         {
+
+            var branchId = _httpContextAccessor.HttpContext?.Session.GetString("BranchID");
+
             //Category Master
             var catMas = ChangeTracker
                         .Entries<CategoryMasterModel>()
@@ -166,7 +174,7 @@ namespace StellarBillingSystem.Context
             if (catMas.Any())
             {
                 // Get the latest BillNumber from the database
-                var lastCat = await this.SHCategoryMaster.OrderByDescending(b => b.Id).FirstOrDefaultAsync();
+                var lastCat = await this.SHCategoryMaster.Where(x=>x.BranchID == branchId) .OrderByDescending(b => b.Id).FirstOrDefaultAsync();
                 int lastNumber = 100; // Starting point, e.g., Bill_100
 
                 if (lastCat != null)

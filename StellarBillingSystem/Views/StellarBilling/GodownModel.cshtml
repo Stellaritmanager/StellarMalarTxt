@@ -120,7 +120,7 @@
                             <div class="col-md-12 col-lg-4">
 
                                 <div class="form-floating form-floating-outline mb-4 custom-date-picker">
-                                    <input asp-for="DatefofPurchase" type="date" value="@Model.DatefofPurchase" class="form-control" placeholder="Date of Purchase"  />
+                                <input asp-for="DatefofPurchase" type="date" value="@Model.DatefofPurchase" class="form-control" placeholder="Date of Purchase" max="@DateTime.Now.ToString("yyyy-MM-dd")" />
                                     <label asp-for="DatefofPurchase" class="control-label">Date of Purchase</label>
                                     <span asp-validation-for="DatefofPurchase" class="text-danger"></span>
                                 </div>

@@ -121,29 +121,24 @@
 
 
                         <div class="col-md-12 col-lg-4">
-
                             <div class="input-group">
                                 @{
                                     var PatientID = ((IEnumerable<ProductMatserModel>)ViewData["productid"])
                                     .Select(m => new SelectListItem
             {
-                Value = m.ProductID.ToString(), // Assuming ScreenId is of type int
+                Value = m.ProductID.ToString(), // Assuming ProductID is of type int
                 Text = $"{m.ProductName}"
             });
                                 }
 
-
-                                <input type="text" id="productDropdownInput" class="form-control"  placeholder="Product Name" onkeyup="filterDropdown(event, 'productDropdownInput', 'productDropdown')" onclick="showDropdown('productDropdown')">
-                                <ul id="productDropdown" class="list-group mt-2" style="display: none; margin-top: 4rem; position: absolute; z-index: 1000; width: 100%; max-height: 200px; overflow-y: auto; list-style-type: none; padding: 0;">
+                                <input type="text" id="productDropdownInput" class="form-control" placeholder="Product Name" onkeyup="filterDropdown(event, 'productDropdownInput', 'productDropdown')" onclick="showDropdown('productDropdown')">
+                                <ul id="productDropdown" class="list-group mt-2" style="display: none; position: absolute; z-index: 1000; width: 100%; max-height: 200px; overflow-y: auto; list-style-type: none; padding: 0;">
                                     @foreach (var item in PatientID)
                                     {
-                                        <li class="list-group-item" data-value="@item.Value" onclick="selectDropdownItem('productDropdownInput', 'productID', '@item.Text', '@item.Value')" style="background-color:#fff; border: none;color: #000000;margin-right: 9px;">@item.Text</li>
+                                        <li class="list-group-item" data-value="@item.Value" onclick="selectDropdownItem('productDropdownInput', 'productID', '@item.Text', '@item.Value')" style="background-color:#ffffff; border: none; color: #000000; margin-right: 9px;">@item.Text</li>
                                     }
                                 </ul>
                                 <input type="hidden" name="ProductID" id="productID" value="ProductID" />
-
-                                @*   @Html.DropDownListFor(model => model.PatientID, PatientID, "Select Patient ID", new { @class = "form-control", @required = "required" }) *@
-                                <label class="control-label" for="ProductID"></label>
 
                                 <button class="btn btn-primary menu-icon tf-icons bx bx-cart" type="button" id="button-addon2" data-bs-toggle="modal" data-bs-target="#modalCenter"></button>
 
@@ -562,8 +557,6 @@
         });
 
         dropdown.style.display = 'block'; // Show dropdown when filtering
-
-       
     }
 
     function showDropdown(dropdownId) {
@@ -574,7 +567,6 @@
     function selectDropdownItem(inputId, hiddenId, text, value) {
         const input = document.getElementById(inputId);
         const dropdown = document.getElementById('productDropdown');
-
 
         // Set the selected value in the input and hidden input
         input.value = text;
@@ -596,7 +588,8 @@
         const input = document.getElementById('productDropdownInput');
         const dropdown = document.getElementById('productDropdown');
 
-        dropdown.style.marginTop = '4rem';
+        // Adjust margin-top as needed
+        dropdown.style.marginTop = '4rem'; // Adjust margin-top to ensure dropdown doesn't overlap with the label
 
         let highlightedIndex = -1;
 
@@ -644,8 +637,13 @@
 
         function updateHighlight(visibleItems) {
             visibleItems.forEach((item, index) => {
-                item.style.backgroundColor = (index === highlightedIndex) ? '#000000' : 'white';
-                item.style.color = '#ffffff';
+                if (index === highlightedIndex) {
+                    item.style.backgroundColor = '#000000';
+                    item.style.color = '#ffffff';
+                } else {
+                    item.style.backgroundColor = '#ffffff';
+                    item.style.color = '#000000'; // Set non-selected text color to black
+                }
             });
             visibleItems[highlightedIndex]?.scrollIntoView({ block: 'nearest' });
         }

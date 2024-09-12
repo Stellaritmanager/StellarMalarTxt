@@ -178,7 +178,8 @@ namespace StellarBillingSystem.Controllers
 
             else if (buttonType == "DeleteRetrieve")
             {
-                var categorytoretrieve = await _billingsoftware.SHCategoryMaster.FindAsync(model.CategoryID, model.BranchID);
+                var categorytoretrieve = await _billingsoftware.SHCategoryMaster.FirstOrDefaultAsync(x => x.CategoryID == model.CategoryID && x.BranchID == model.BranchID);
+
                 if (categorytoretrieve != null)
                 {
                     if (categorytoretrieve.IsDelete == true)
@@ -215,7 +216,10 @@ namespace StellarBillingSystem.Controllers
             }
             else if (buttonType == "save")
             {
-                var existingCategory = await _billingsoftware.SHCategoryMaster.FindAsync(model.CategoryID, model.BranchID);
+                HttpContext.Session.SetString("BranchID", model.BranchID);
+
+                var existingCategory = await _billingsoftware.SHCategoryMaster.FirstOrDefaultAsync(x => x.CategoryID == model.CategoryID && x.BranchID == model.BranchID);
+
                 if (existingCategory != null)
                 {
                     if (existingCategory.IsDelete)
@@ -520,7 +524,7 @@ namespace StellarBillingSystem.Controllers
 
 
 
-                var existingProduct = await _billingsoftware.SHProductMaster.FindAsync(model.ProductID, model.BranchID);
+                var existingProduct = await _billingsoftware.SHProductMaster.FirstOrDefaultAsync(x=>x.ProductID == model.ProductID && x.BranchID==model.BranchID);
                 if (existingProduct != null)
                 {
                     if (existingProduct.IsDelete)
