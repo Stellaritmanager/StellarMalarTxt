@@ -41,7 +41,7 @@ namespace StellarBillingSystem.Controllers
             _billingsoftware = billingsoftware;
             _configuration = configuration;
         }   
-        public IActionResult CategoryMaster()
+        public async Task<IActionResult> CategoryMaster()
         {
             CategoryMasterModel model = new CategoryMasterModel();
             if (TempData["BranchID"] != null)
@@ -49,7 +49,7 @@ namespace StellarBillingSystem.Controllers
                 model.BranchID = TempData["BranchID"].ToString();
                 TempData.Keep("BranchID");
             }
-                ViewData["Categorydata"] = AdditionalCategoryMasterFun(model.BranchID);
+                ViewData["Categorydata"] = await AdditionalCategoryMasterFun(model.BranchID);
               
                 return View("CategoryMaster",model);
             
@@ -262,7 +262,7 @@ namespace StellarBillingSystem.Controllers
 
 
 
-        public IActionResult ProductMaster()
+        public async Task<IActionResult> ProductMaster()
         {
             var model = new ProductMatserModel();
 
@@ -277,7 +277,7 @@ namespace StellarBillingSystem.Controllers
             ViewData["discountid"] = business.Getdiscountid(model.BranchID);
           
 
-            ViewData["ProductData"] = AdditionalProductMasterFun(model.BranchID);
+            ViewData["ProductData"] =await AdditionalProductMasterFun(model.BranchID);
 
             return View("ProductMaster", model);
 
@@ -595,17 +595,16 @@ namespace StellarBillingSystem.Controllers
 
         public async Task<DataTable> AdditionalGodownFun(string branchID)
         {
-            using (var context = new BillingContext())
-            {
+            
                 // Step 1: Perform the query
-                var entities = context.SHGodown
+                var entities = _billingsoftware.SHGodown
                                       .Where(e => e.BranchID == branchID && e.IsDelete == false).OrderByDescending(e=> e.LastUpdatedDate)
                                       .ToList();
 
                 // Step 2: Convert to DataTable
                 return BusinessClassBilling.ConvertToDataTableGodown(entities);
 
-            }
+            
         }
 
 
@@ -1723,11 +1722,10 @@ namespace StellarBillingSystem.Controllers
 
         public async Task<DataTable> AdditionalStaffFun(string branchID)
         {
-            using (var context = new BillingContext())
-            {
+            
                 // Step 1: Perform the query
-                var entities = await (from staff in context.SHStaffAdmin
-                                      join resource in context.SHresourceType 
+                var entities = await (from staff in _billingsoftware.SHStaffAdmin
+                                      join resource in _billingsoftware.SHresourceType 
                                       on staff.ResourceTypeID equals resource.ResourceTypeID
                                       where staff.BranchID == branchID && staff.IsDelete == false && resource.BranchID == branchID && resource.IsDelete == false
                                       orderby staff.LastupdatedDate descending
@@ -1743,7 +1741,7 @@ namespace StellarBillingSystem.Controllers
                 // Step 2: Convert to DataTable
                 return BusinessClassBilling.ConvertToDataTableStaff(entities);
 
-            }
+            
         }
 
 
