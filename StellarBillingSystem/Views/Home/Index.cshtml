@@ -21,15 +21,18 @@
     <div class="col-lg-6 mb-4 order-0">
         <form action="@Url.Action("RedirectToReports","Home")" method="post" class="mb-0">
             <div class="card" style="cursor: pointer; height:150px; width:590px" onclick="this.closest('form').submit();">
+                <img src="~/img/illustrations/man-with-laptop-light.png" height="140" alt="View Badge User" style="position: absolute; top: 10px; right: 10px;" data-app-dark-img="illustrations/man-with-laptop-dark.png" data-app-light-img="illustrations/man-with-laptop-light.png">
                 <div class="d-flex align-items-end row">
+
                     <div class="col-sm-12">
                        
 
                             <p class="mb-4" style="font-size: 18px; margin-top:30px; margin-left: 22px;color: #fff;">@ViewBag.SalesMessage</p>
 
-
-                      
+                       
+                       
                     </div>
+                   
                 </div>
             </div>
         </form>
