@@ -20,7 +20,7 @@
 <div class="row">
     <div class="col-lg-6 mb-4 order-0">
         <form action="@Url.Action("RedirectToReports","Home")" method="post" class="mb-0">
-            <div class="card" style="cursor: pointer; height:150px; width:500px" onclick="this.closest('form').submit();">
+            <div class="card" style="cursor: pointer; height:150px; width:590px" onclick="this.closest('form').submit();">
                 <div class="d-flex align-items-end row">
                     <div class="col-sm-12">
                        
@@ -34,11 +34,11 @@
             </div>
         </form>
     </div>
-    <div class="col-lg-4 col-md-4 order-1">
+    <div class="col-lg-6 col-md-4 order-1">
         <div class="row">
             <div class="col-lg-6 col-md-12 col-6 mb-4">
                 <form action="@Url.Action("RedirectToReports","Home")" method="post" class="mb-0">
-                    <div class="card" style="cursor: pointer; height:150px; width:200px; margin-right: 100px;" onclick="this.closest('form').submit();">
+                    <div class="card" style="cursor: pointer; height:150px; width:230px; margin-left:40px;" onclick="this.closest('form').submit();">
 
                         <div class="card-body">
                             <div class="card-title d-flex align-items-start justify-content-between">
@@ -230,6 +230,13 @@
                                             }
                                             return false;
                                         };
+                                        prevButton.style.backgroundColor = "white";
+                                        prevButton.style.color = "black";
+                                        // Adjust padding as needed
+                                        prevButton.style.textDecoration = "none"; // Remove underline
+                                        prevButton.style.border = "1px solid black"; // Optional border
+                                        prevButton.style.borderRadius = "5px";
+                                        prevButton.style.fontSize = "18px"; // Adjust font size as needed
                                         if (currentPage === 1) {
                                             prevButton.style.visibility = "hidden";
                                         }
@@ -267,6 +274,15 @@
                                             }
                                             return false;
                                         };
+
+                                        nextButton.style.backgroundColor = "white";
+                                        nextButton.style.color = "black";
+                                        // Adjust padding as needed
+                                        nextButton.style.textDecoration = "none"; // Remove underline
+                                        nextButton.style.border = "1px solid black"; // Optional border
+                                        nextButton.style.borderRadius = "5px";
+                                        nextButton.style.fontSize = "18px";
+
                                         if (currentPage === pageCount) {
                                             nextButton.style.visibility = "hidden";
                                         }
