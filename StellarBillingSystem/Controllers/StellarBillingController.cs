@@ -40,14 +40,7 @@ namespace StellarBillingSystem.Controllers
         {
             _billingsoftware = billingsoftware;
             _configuration = configuration;
-        }
-
-
-
-
-
-
-
+        }   
         public IActionResult CategoryMaster()
         {
             CategoryMasterModel model = new CategoryMasterModel();
@@ -56,38 +49,23 @@ namespace StellarBillingSystem.Controllers
                 model.BranchID = TempData["BranchID"].ToString();
                 TempData.Keep("BranchID");
             }
-            using (var context = new BillingContext())
-            {
-                // Step 1: Perform the query
-                var entities = context.SHCategoryMaster
-                                      .Where(e => e.BranchID == model.BranchID && e.IsDelete == false)
-                                      .ToList();
-
-                // Step 2: Convert to DataTable
-                var dataTable = BusinessClassBilling.convertToDataTableCategoryMaster(entities);
-                // Store the DataTable in ViewData for access in the view
-
-                ViewData["Categorydata"] = dataTable;
+                ViewData["Categorydata"] = AdditionalCategoryMasterFun(model.BranchID);
               
                 return View("CategoryMaster",model);
-            }
+            
         }
-
-
-
         public async Task<DataTable> AdditionalCategoryMasterFun(string branchID)
         {
-            using (var context = new BillingContext())
-            {
+            
                 // Step 1: Perform the query
-                var entities = context.SHCategoryMaster
+                var entities = _billingsoftware.SHCategoryMaster
                                       .Where(e => e.BranchID == branchID && e.IsDelete == false).OrderByDescending(e=>e.LastUpdatedDate)
                                       .ToList();
 
                 // Step 2: Convert to DataTable
                 return BusinessClassBilling.convertToDataTableCategoryMaster(entities);
 
-            }
+            
         }
 
 
@@ -297,38 +275,27 @@ namespace StellarBillingSystem.Controllers
             BusinessClassBilling business = new BusinessClassBilling(_billingsoftware);
             ViewData["categoryid"] = business.GetCatid(model.BranchID);
             ViewData["discountid"] = business.Getdiscountid(model.BranchID);
-            using (var context = new BillingContext())
-            {
-                // Step 1: Perform the query
-                var entities = context.SHProductMaster
-                                      .Where(e => e.BranchID == model.BranchID && e.IsDelete == false)
-                                      .ToList();
+          
 
-                // Step 2: Convert to DataTable
-                var dataTable = BusinessClassBilling.ConvertToDataTableProductMaster(entities);
-                // Store the DataTable in ViewData for access in the view
+            ViewData["ProductData"] = AdditionalProductMasterFun(model.BranchID);
 
-                ViewData["ProductData"] = dataTable;
+            return View("ProductMaster", model);
 
-                return View("ProductMaster", model);
-
-            }
         }
 
 
         public async Task<DataTable> AdditionalProductMasterFun(string branchID)
         {
-            using (var context = new BillingContext())
-            {
+    
                 // Step 1: Perform the query
-                var entities = context.SHProductMaster
+                var entities = _billingsoftware.SHProductMaster
                                       .Where(e => e.BranchID == branchID && e.IsDelete == false).OrderByDescending(e => e.LastUpdatedDate)
                                       .ToList();
 
                 // Step 2: Convert to DataTable
                 return BusinessClassBilling.ConvertToDataTableProductMaster(entities);
                 
-            }
+            
         }
 
 
@@ -502,15 +469,15 @@ namespace StellarBillingSystem.Controllers
             }
             else if (buttonType == "Save")
             {
-                if (string.IsNullOrEmpty(model.ProductID))
-                {
-                    ViewBag.ValidationMessage = "Please enter  ProductID";
-                    var dataTable = await AdditionalProductMasterFun(model.BranchID);
+                //if (string.IsNullOrEmpty(model.ProductID))
+                //{
+                //    ViewBag.ValidationMessage = "Please enter  ProductID";
+                //    var dataTable = await AdditionalProductMasterFun(model.BranchID);
 
-                    // Store the DataTable in ViewData for access in the view
-                    ViewData["ProductData"] = dataTable;
-                    return View("ProductMaster", model);
-                }
+                //    // Store the DataTable in ViewData for access in the view
+                //    ViewData["ProductData"] = dataTable;
+                //    return View("ProductMaster", model);
+                //}
 
                 if (string.IsNullOrEmpty(model.BarcodeId))
                 {

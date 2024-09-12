@@ -109,9 +109,13 @@ namespace StellarBillingSystem.Context
 
 
             modelBuilder.Entity<LogsModel>().HasKey(i => new { i.LogID, i.BranchID });
-            modelBuilder.Entity<CategoryMasterModel>().HasKey(i => new { i.CategoryID,i.BranchID });
+            
+            modelBuilder.Entity<CategoryMasterModel>().Property(i => i.Id).UseIdentityColumn(101, 1);
 
-            modelBuilder.Entity<ProductMatserModel>().HasKey(i => new { i.ProductID,i.BranchID });
+            modelBuilder.Entity<CategoryMasterModel>().HasKey(i => new { i.Id, i.BranchID });
+
+            modelBuilder.Entity<ProductMatserModel>().Property(i => i.Id).UseIdentityColumn(101,1);
+            modelBuilder.Entity<ProductMatserModel>().HasKey(i => new { i.Id,i.BranchID });
 
             modelBuilder.Entity<CustomerMasterModel>().HasKey(i => new { i.MobileNumber, i.BranchID });
 
@@ -148,6 +152,73 @@ namespace StellarBillingSystem.Context
             modelBuilder.Entity<ReedemHistoryModel>().HasKey(i => new { i.CustomerNumber, i.DateOfReedem,i.BranchID });
 
 
+        }
+
+        // Override SaveChangesAsync to auto-generate the Ids for various screens with the prefix
+        public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+        {
+            //Category Master
+            var catMas = ChangeTracker
+                        .Entries<CategoryMasterModel>()
+                        .Where(e => e.State == EntityState.Added)
+                        .ToList();
+
+            if (catMas.Any())
+            {
+                // Get the latest BillNumber from the database
+                var lastCat = await this.SHCategoryMaster.OrderByDescending(b => b.Id).FirstOrDefaultAsync();
+                int lastNumber = 100; // Starting point, e.g., Bill_100
+
+                if (lastCat != null)
+                {
+                    // Extract the numeric part of the last BillNumber and increment it
+                    string lastBillNumber = lastCat.CategoryID.Replace("Cat_", "");
+                    if (int.TryParse(lastBillNumber, out int number))
+                    {
+                        lastNumber = number;
+                    }
+                }
+
+                // Assign the new BillNumber for each new bill
+                foreach (var billEntry in catMas)
+                {
+                    lastNumber++;
+                    billEntry.Entity.CategoryID = $"Cat_{lastNumber}";
+                }
+            }
+
+            //Product Master
+            var ProdMas = ChangeTracker
+                        .Entries<ProductMatserModel>()
+                        .Where(e => e.State == EntityState.Added)
+                        .ToList();
+
+            if (ProdMas.Any())
+            {
+                // Get the latest BillNumber from the database
+                var lastProd = await this.SHProductMaster.OrderByDescending(b => b.Id).FirstOrDefaultAsync();
+                int lastProdNumber = 100; // Starting point, e.g., Bill_100
+
+                if (lastProd != null)
+                {
+                    // Extract the numeric part of the last BillNumber and increment it
+                    string lastProdNum = lastProd.ProductID.Replace("Pro_", "");
+                    if (int.TryParse(lastProdNum, out int number))
+                    {
+                        lastProdNumber = number;
+                    }
+                }
+
+                // Assign the new BillNumber for each new bill
+                foreach (var billEntry in ProdMas)
+                {
+                    lastProdNumber++;
+                    billEntry.Entity.ProductID = $"Pro_{lastProdNumber}";
+                }
+            }
+
+
+            return await base.SaveChangesAsync(cancellationToken);
         }
     }
 }
