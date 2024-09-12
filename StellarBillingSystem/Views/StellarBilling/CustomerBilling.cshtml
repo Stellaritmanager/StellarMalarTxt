@@ -545,56 +545,123 @@
 </div>
 
 
-
-
 <script>
-
-    var selectedproductid = null;
-
-    function setSelectedIDs(ProductID) {
-        selectedproductid = ProductID;
-
-    }
+    let suppressInputEvent = false;
 
     function filterDropdown(event, inputId, dropdownId) {
-        var input = document.getElementById(inputId);
-        var filter = input.value.toUpperCase();
-        var dropdown = document.getElementById(dropdownId);
-        var items = dropdown.getElementsByTagName("li");
+        if (suppressInputEvent) return; // Prevent filtering if input event is suppressed
 
-        for (var i = 0; i < items.length; i++) {
-            items[i].classList.remove("active");
-            var txtValue = items[i].textContent || items[i].innerText;
-            if (txtValue.toUpperCase().indexOf(filter) > -1) {
-                items[i].style.display = "";
-            } else {
-                items[i].style.display = "none";
-            }
-        }
+        const input = document.getElementById(inputId);
+        const dropdown = document.getElementById(dropdownId);
+        const filter = input.value.toLowerCase();
+        const items = dropdown.querySelectorAll('li');
 
-        dropdown.style.display = input.value === "" ? "none" : "block";
+        items.forEach(item => {
+            const text = item.textContent.toLowerCase();
+            item.style.display = text.includes(filter) ? '' : 'none';
+        });
+
+        dropdown.style.display = 'block'; // Show dropdown when filtering
+
+       
     }
 
     function showDropdown(dropdownId) {
-        document.getElementById(dropdownId).style.display = "block";
+        const dropdown = document.getElementById(dropdownId);
+        dropdown.style.display = 'block';
     }
 
-    document.addEventListener("click", function (event) {
-        if (!event.target.matches('.form-control')) {
-            document.getElementById("productDropdown").style.display = "none";
+    function selectDropdownItem(inputId, hiddenId, text, value) {
+        const input = document.getElementById(inputId);
+        const dropdown = document.getElementById('productDropdown');
 
+
+        // Set the selected value in the input and hidden input
+        input.value = text;
+        document.getElementById(hiddenId).value = value;
+
+        // Hide the dropdown after selection
+        dropdown.style.display = 'none';
+
+        // Set the flag to suppress the input event momentarily
+        suppressInputEvent = true;
+
+        // Remove suppression after a short delay to allow normal input behavior again
+        setTimeout(() => {
+            suppressInputEvent = false;
+        }, 200);
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const input = document.getElementById('productDropdownInput');
+        const dropdown = document.getElementById('productDropdown');
+
+        dropdown.style.marginTop = '4rem';
+
+        let highlightedIndex = -1;
+
+        function getVisibleItems() {
+            return Array.from(dropdown.querySelectorAll('li')).filter(item => item.style.display !== 'none');
         }
+
+        input.addEventListener('input', (event) => {
+            filterDropdown(event, 'productDropdownInput', 'productDropdown');
+            highlightedIndex = -1; // Reset highlight when input changes
+        });
+
+        input.addEventListener('keydown', (event) => {
+            const visibleItems = getVisibleItems();
+
+            switch (event.key) {
+                case 'ArrowDown':
+                    if (highlightedIndex < visibleItems.length - 1) {
+                        highlightedIndex++;
+                        updateHighlight(visibleItems);
+                        event.preventDefault(); // Prevent default behavior
+                    }
+                    break;
+                case 'ArrowUp':
+                    if (highlightedIndex > 0) {
+                        highlightedIndex--;
+                        updateHighlight(visibleItems);
+                        event.preventDefault(); // Prevent default behavior
+                    }
+                    break;
+                case 'Enter':
+                    if (highlightedIndex >= 0) {
+                        const item = visibleItems[highlightedIndex];
+                        selectDropdownItem('productDropdownInput', 'productID', item.textContent, item.getAttribute('data-value'));
+                        highlightedIndex = -1;
+                        event.preventDefault(); // Prevent default behavior
+                    }
+                    break;
+                case 'Escape':
+                    dropdown.style.display = 'none'; // Close dropdown on escape
+                    highlightedIndex = -1;
+                    break;
+            }
+        });
+
+        function updateHighlight(visibleItems) {
+            visibleItems.forEach((item, index) => {
+                item.style.backgroundColor = (index === highlightedIndex) ? '#000000' : 'white';
+            });
+            visibleItems[highlightedIndex]?.scrollIntoView({ block: 'nearest' });
+        }
+
+        // Click event to close dropdown when clicking outside
+        document.addEventListener('click', (event) => {
+            const target = event.target;
+            if (!dropdown.contains(target) && target !== input) {
+                dropdown.style.display = 'none';
+            }
+        });
     });
-
-    function selectDropdownItem(inputId, hiddenInputId, text, value) {
-
-        document.getElementById(inputId).value = text;
-        document.getElementById(hiddenInputId).value = value;
-        document.getElementById(inputId).dispatchEvent(new Event('input')); // Trigger validation
-        document.getElementById("productDropdown").style.display = "none";
-
-    }
 </script>
+
+
+
+
 
 
 <!-- Add Bootstrap JavaScript and jQuery  -->
