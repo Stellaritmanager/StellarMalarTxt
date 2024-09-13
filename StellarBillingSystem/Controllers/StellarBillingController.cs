@@ -2958,7 +2958,7 @@ namespace StellarBillingSystem.Controllers
 
                 // Calculate total price for SHbillmaster
                 var billDetails = await _billingsoftware.SHbilldetails
-         .Where(x => x.BillID == model.BillID && x.BillDate == model.BillDate && x.CustomerNumber == model.CustomerNumber && x.BranchID == model.BranchID && x.IsDelete == false)
+         .Where(x => x.BillID == detailModel.BillID && x.BillDate == model.BillDate && x.CustomerNumber == model.CustomerNumber && x.BranchID == model.BranchID && x.IsDelete == false)
          .Select(x => x.Totalprice)
          .ToListAsync();
 
@@ -2968,7 +2968,7 @@ namespace StellarBillingSystem.Controllers
                     .Sum();
 
                 var existingbillmaster = await _billingsoftware.SHbillmaster
-           .FirstOrDefaultAsync(x => x.BillID == model.BillID && x.BillDate == model.BillDate && x.CustomerNumber == model.CustomerNumber && x.BranchID == model.BranchID &&  x.IsDelete == false);
+           .FirstOrDefaultAsync(x => x.BillID == detailModel.BillID && x.BillDate == model.BillDate && x.CustomerNumber == model.CustomerNumber && x.BranchID == model.BranchID &&  x.IsDelete == false);
 
              if(existingbillmaster!=null)
                 {
@@ -3003,7 +3003,7 @@ namespace StellarBillingSystem.Controllers
 
 
                 productlist = await _billingsoftware.SHbilldetails
-          .Where(d => d.BillID == BillID && d.BillDate == BillDate && d.CustomerNumber == CustomerNumber && d.BranchID == detailModel.BranchID)
+          .Where(d => d.BillID == detailModel.BillID && d.BillDate == BillDate && d.CustomerNumber == CustomerNumber && d.BranchID == detailModel.BranchID)
           .Select(d => new BillingDetailsModel
           {
               ProductID = d.ProductID,
@@ -3336,8 +3336,9 @@ namespace StellarBillingSystem.Controllers
 
             }
 
+            BillProductlistModel bmod = new BillProductlistModel();
 
-            return View("CustomerBilling", model);
+            return View("CustomerBilling", bmod);
         }
 
         public void PrintDocument(byte[] fileContent)
