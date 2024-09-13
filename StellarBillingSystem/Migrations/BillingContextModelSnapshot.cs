@@ -585,10 +585,12 @@ namespace StellarBillingSystem.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"), 101L);
 
                     b.Property<string>("ProductID")
-                        .HasColumnType("nvarchar(450)");
+                        .HasMaxLength(10)
+                        .HasColumnType("nvarchar(10)");
 
                     b.Property<string>("BranchID")
-                        .HasColumnType("nvarchar(450)");
+                        .HasMaxLength(10)
+                        .HasColumnType("nvarchar(10)");
 
                     b.Property<string>("BillDate")
                         .HasColumnType("nvarchar(max)");
@@ -641,17 +643,18 @@ namespace StellarBillingSystem.Migrations
 
             modelBuilder.Entity("StellarBillingSystem.Models.BillingMasterModel", b =>
                 {
-                    b.Property<long>("Id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
+                        .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"), 101L);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 101L);
 
                     b.Property<string>("BillDate")
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("BranchID")
-                        .HasColumnType("nvarchar(450)");
+                        .HasMaxLength(10)
+                        .HasColumnType("nvarchar(10)");
 
                     b.Property<string>("BillID")
                         .IsRequired()
@@ -671,7 +674,8 @@ namespace StellarBillingSystem.Migrations
 
                     b.Property<string>("CustomerNumber")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(10)
+                        .HasColumnType("nvarchar(10)");
 
                     b.Property<bool>("IsDelete")
                         .HasColumnType("bit");

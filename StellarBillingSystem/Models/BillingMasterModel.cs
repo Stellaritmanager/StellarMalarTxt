@@ -1,4 +1,6 @@
-﻿namespace StellarBillingSystem.Models
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace StellarBillingSystem.Models
 {
     public class BillingMasterModel
     {
@@ -21,10 +23,11 @@
         private string branchID;
         private string billby;
         private bool billInsertion;
-        private long id;
+        private int id;
 
         public string BillID { get => billID; set => billID = value; }
         public string BillDate { get => billDate; set => billDate = value; }
+        [MaxLength(10)]
         public string CustomerNumber { get => customerNumber; set => customerNumber = value; }
         public string? Totalprice { get => totalprice; set => totalprice = value; }
         public string? TotalDiscount { get => totalDiscount; set => totalDiscount = value; }
@@ -33,6 +36,7 @@
         public string? Lastupdateduser { get => lastupdateduser; set => lastupdateduser = value; }
         public string? Lastupdateddate { get => lastupdateddate; set => lastupdateddate = value; }
         public string? Lastupdatedmachine { get => lastupdatedmachine; set => lastupdatedmachine = value; }
+        [MaxLength(10)]
         public string BranchID { get => branchID; set => branchID = value; }
         public string? CGSTPercentage { get => cGSTPercentage; set => cGSTPercentage = value; }
         public string? SGSTPercentage { get => sGSTPercentage; set => sGSTPercentage = value; }
@@ -40,6 +44,6 @@
         public string? SGSTPercentageAmt { get => sGSTPercentageAmt; set => sGSTPercentageAmt = value; }
         public string? Billby { get => billby; set => billby = value; }
         public bool BillInsertion { get => billInsertion; set => billInsertion = value; }
-        public long Id { get => id; set => id = value; }
+        public int Id { get => id; set => id = value; }
     }
 }
