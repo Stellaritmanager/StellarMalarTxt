@@ -2764,6 +2764,8 @@ namespace StellarBillingSystem.Controllers
                 return RedirectToAction("PaymentBilling", new { BillID = model.BillID, BranchID = model.BranchID });
             }
 
+
+
             if (buttonType == "Add Product")
             {
 
@@ -2773,6 +2775,7 @@ namespace StellarBillingSystem.Controllers
                     TempData.Keep("BranchID");
                 }
 
+                //Validation Message for Product or Barcode is Empty while Add Product
                 if ((string.IsNullOrWhiteSpace(model.ProductID) || model.ProductID == "ProductID") &&
                       string.IsNullOrWhiteSpace(model.BarCode) || model.ProductID == "Barcode")
                 {
@@ -2797,7 +2800,7 @@ namespace StellarBillingSystem.Controllers
 
 
 
-                //Check  ProductID
+                //Check  ProductID is already is available for Particular BillID
 
                 var existingProductInBillDetails = await _billingsoftware.SHbilldetails
                      .FirstOrDefaultAsync(x => x.ProductID == model.ProductID
@@ -2806,7 +2809,7 @@ namespace StellarBillingSystem.Controllers
                                   && x.CustomerNumber == model.CustomerNumber
                                   && x.BranchID == model.BranchID
                                   && x.IsDelete == false);
-
+                
                 if (existingProductInBillDetails != null)
                 {
                     // ProductID already exists in billdetails
@@ -2815,7 +2818,7 @@ namespace StellarBillingSystem.Controllers
                 }
 
 
-
+                // Validation to check whether the given ProductID or Barcode is Available in Product Master
                 var productlist = await _billingsoftware.SHProductMaster
                              .Where(p => (p.ProductID == model.ProductID || p.BarcodeId == model.BarCode) && p.IsDelete == false && p.BranchID == model.BranchID)
                              .Select(p => new BillingDetailsModel
@@ -2836,6 +2839,8 @@ namespace StellarBillingSystem.Controllers
                 }
 
 
+
+                //Validation to check the given quantity is greater than stock in godown
                 var rackProducts = await (from p in _billingsoftware.SHProductMaster
                                           join g in _billingsoftware.SHGodown on p.ProductID equals g.ProductID
                                           where (p.ProductID == model.ProductID || p.BarcodeId == model.BarCode) && g.BranchID == model.BranchID && g.IsDelete == false
@@ -2890,6 +2895,7 @@ namespace StellarBillingSystem.Controllers
                     detailModel.Lastupdatedmachine = Request.HttpContext.Connection.RemoteIpAddress.ToString();
                     detailModel.Lastupdateddate = DateTime.Now.ToString();
 
+                    //Validation to check the given quantity and Price is in Correct Format
                     var product = productlist.First();
                     if (product != null)
                     {
@@ -3054,6 +3060,7 @@ namespace StellarBillingSystem.Controllers
 
                 var checkbillpay = _billingsoftware.SHPaymentMaster.FirstOrDefault(x => x.BillId == model.BillID && x.BillDate == model.BillDate && x.BranchID == model.BranchID);
 
+                
                 if (checkbillpay != null)
                 {
                     ViewBag.DelMessage = "You Have Payment For This BillID. Please Delete Payment First";
