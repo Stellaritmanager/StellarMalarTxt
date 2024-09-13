@@ -788,6 +788,10 @@ namespace StellarBillingSystem.Controllers
                 var getStock = await _billingsoftware.SHGodown.FirstOrDefaultAsync(x => x.IsDelete == false && x.ProductID == model.ProductID && x.IsDelete==false && x.BranchID == model.BranchID);
                 if (getStock != null)
                 {
+                    var dataTable9 = await AdditionalGodownFun(model.BranchID);
+
+                    // Store the DataTable in ViewData for access in the view
+                    ViewData["GodownData"] = dataTable9;
 
                     return View("GodownModel", getStock);
                 }
