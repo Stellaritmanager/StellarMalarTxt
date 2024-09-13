@@ -26,6 +26,7 @@ using SkiaSharp;
 using Newtonsoft.Json;
 using Microsoft.EntityFrameworkCore.Metadata;
 using System.Globalization;
+using Microsoft.AspNetCore.Http;
 
 namespace StellarBillingSystem.Controllers
 {
@@ -2721,6 +2722,11 @@ namespace StellarBillingSystem.Controllers
         public async Task<IActionResult> getCustomerBill(BillProductlistModel model, string buttonType, string BillID, string BillDate, string CustomerNumber,string BranchID, string TotalPrice, BillingMasterModel masterModel, BillingDetailsModel detailModel, string Quantity)
         {
 
+            if (model.BillID != null)
+            {
+                HttpContext.Session.SetString("BillID", model.BillID);
+            }
+        
 
             if (TempData["BranchID"] != null)
             {
@@ -2728,8 +2734,11 @@ namespace StellarBillingSystem.Controllers
                 TempData.Keep("BranchID");
             }
 
+            HttpContext.Session.SetString("BranchID", model.BranchID);
 
-            BusinessClassBilling Busbill = new BusinessClassBilling(_billingsoftware);
+        
+
+                BusinessClassBilling Busbill = new BusinessClassBilling(_billingsoftware);
             ViewData["productid"] = Busbill.Getproduct(model.BranchID);
 
 

@@ -20,6 +20,7 @@
         private string lastupdateddate;
         private string lastupdatedmachine;
         private string branchID;
+        private long id;
 
 
         public string BillID { get => billID; set => billID = value; }
@@ -39,5 +40,6 @@
         public string? BillDate { get => billDate; set => billDate = value; }
         public string? CustomerNumber { get => customerNumber; set => customerNumber = value; }
         public string BranchID { get => branchID; set => branchID = value; }
+        public long Id { get => id; set => id = value; }
     }
 }
