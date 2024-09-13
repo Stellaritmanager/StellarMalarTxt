@@ -1729,15 +1729,18 @@ namespace StellarBillingSystem.Controllers
             
                 // Step 1: Perform the query
                 var entities = await (from staff in _billingsoftware.SHStaffAdmin
-                                      join resource in _billingsoftware.SHresourceType 
-                                      on staff.ResourceTypeID equals resource.ResourceTypeID
-                                      where staff.BranchID == branchID && staff.IsDelete == false && resource.BranchID == branchID && resource.IsDelete == false
+                                      join rol in _billingsoftware.SHrollaccess 
+                                      on staff.StaffID equals rol.StaffID into rolacc
+                                      from s in rolacc.DefaultIfEmpty()
+                                      join rolname in _billingsoftware.SHrollType on s.RollID equals rolname.RollID into roll
+                                       from r in roll.DefaultIfEmpty()
+                                      where staff.BranchID == branchID && staff.IsDelete == false 
                                       orderby staff.LastupdatedDate descending
                                       select new StaffAdminModel
                                       {
                                           StaffID = staff.StaffID,
                                           FullName = staff.FullName,
-                                          ResourceTypeID = resource.ResourceTypeName,
+                                          ResourceTypeID = r.RollName,
                                           PhoneNumber = staff.PhoneNumber,
                                           EmailId = staff.EmailId
                                       }).ToListAsync();
