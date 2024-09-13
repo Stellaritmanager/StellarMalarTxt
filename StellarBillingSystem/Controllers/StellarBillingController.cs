@@ -2716,7 +2716,7 @@ namespace StellarBillingSystem.Controllers
 
         }
 
-
+        //This Method used for Customer Billing
         [HttpPost]
         public async Task<IActionResult> getCustomerBill(BillProductlistModel model, string buttonType, string BillID, string BillDate, string CustomerNumber,string BranchID, string TotalPrice, BillingMasterModel masterModel, BillingDetailsModel detailModel, string Quantity)
         {
@@ -3064,11 +3064,7 @@ namespace StellarBillingSystem.Controllers
                 var billMaster = _billingsoftware.SHbillmaster.FirstOrDefault(b => b.BillID == model.BillID && !b.IsDelete && b.BillDate == model.BillDate && model.BranchID == model.BranchID);
                 if (billMaster != null)
                 {
-                    if (billMaster.IsDelete)
-                    {
-                        ViewBag.DelMessage = "BillID Already Deleted";
-                        return View("CustomerBilling", model);
-                    }
+                    
 
                     _billingsoftware.SHbillmaster.Remove(billMaster);
 
@@ -3250,50 +3246,13 @@ namespace StellarBillingSystem.Controllers
 
             }
 
-            if (buttonType == "Get Points")
-            {
-
-                var billingPoints = await _billingsoftware.SHBillingPoints.Where(bp => bp.CustomerNumber == CustomerNumber
-                      && !bp.IsUsed && bp.BillID != BillID
-                      && _billingsoftware.SHbillmaster
-                          .Any(bm => bm.CustomerNumber == bp.CustomerNumber
-                                     && bm.IsDelete == false)).ToListAsync();
-
-
-                var totalPoints = billingPoints.Sum(bp => decimal.TryParse(bp.Points, out decimal pts) ? pts : 0);
-
-                ViewBag.Points = totalPoints.ToString("F2");
-
-
-                var updatedMaster = await _billingsoftware.SHbillmaster
-          .FirstOrDefaultAsync(m => m.BillID == BillID && m.BranchID == model.BranchID && m.BillDate == BillDate && m.CustomerNumber == CustomerNumber && m.IsDelete == false);
-
-                if (updatedMaster != null)
-                {
-                    ViewBag.TotalPrice = updatedMaster.Totalprice;
-                    ViewBag.TotalDiscount = updatedMaster.TotalDiscount;
-                    ViewBag.NetPrice = updatedMaster.NetPrice;
-                    ViewBag.CGSTPercentage = updatedMaster.CGSTPercentage;
-                    ViewBag.SGSTPercentage = updatedMaster.SGSTPercentage;
-
-                }
-
-                var billingDetails = await _billingsoftware.SHbilldetails
-                    .Where(d => d.BillID == BillID && d.BranchID == model.BranchID && d.BillDate == BillDate && d.CustomerNumber == CustomerNumber && d.IsDelete == false)
-                    .ToListAsync();
-
-                model.MasterModel = updatedMaster;
-                model.Viewbillproductlist = billingDetails;
-
-
-            }
 
             if (buttonType == "Reedem Points")
             {
 
 
                 var billingPoints = await _billingsoftware.SHBillingPoints
-           .Where(bp => bp.CustomerNumber == CustomerNumber && !bp.IsUsed && bp.BillID != BillID)
+           .Where(bp => bp.CustomerNumber == CustomerNumber && !bp.IsUsed && bp.BillID != BillID &&bp.BranchID == model.BranchID)
            .ToListAsync();
 
                 var totalPoints = billingPoints.Sum(bp => decimal.TryParse(bp.Points, out decimal pts) ? pts : 0);
@@ -3646,7 +3605,7 @@ namespace StellarBillingSystem.Controllers
             return View();
         }  
 
-        //this method is used to 
+        //This method is used to load cutomer Billing Screen
         public IActionResult CustomerBilling(string productid, string billid, string SelectedProductID)
         {
             var model = new BillProductlistModel();
@@ -4641,7 +4600,7 @@ namespace StellarBillingSystem.Controllers
         //Get Customer Data Pop
 
         [HttpPost]
-        public async Task<IActionResult> getcustomerpop(BillProductlistModel model, string BillID, string BillDate, string CustomerNumber)
+        public async Task<IActionResult> getcustomerpop(BillProductlistModel model,string CustomerNumber)
         {
             if (TempData["BranchID"] != null)
             {
@@ -4667,11 +4626,12 @@ namespace StellarBillingSystem.Controllers
 
         }
 
+
+
         //This Method is used to Load bill from Modal
         public IActionResult loadbill(string productID, string billID, string billDate, string customerNumber,BillProductlistModel model)
         {
 
-            //var selectedProductIDs = JsonConvert.DeserializeObject<List<string>>(selectedValues);
 
             if (TempData["BranchID"] != null)
             {
