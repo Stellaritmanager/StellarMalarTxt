@@ -2774,7 +2774,20 @@ namespace StellarBillingSystem.Controllers
 
             if (buttonType == "Payment")
             {
-                return RedirectToAction("PaymentBilling", new { BillID = model.BillID, BranchID = model.BranchID });
+
+                var checkbillexist = await _billingsoftware.SHbillmaster.FirstOrDefaultAsync(x => x.BillID == model.BillID && x.BillDate == model.BillDate && x.CustomerNumber == model.CustomerNumber && x.IsDelete == false);
+
+                if (checkbillexist == null)
+                {
+                    ViewBag.Getnotfound = "Bill Not Saved ";
+
+                    return View("CustomerBilling", model);
+                }
+                else
+                {
+
+                    return RedirectToAction("PaymentBilling", new { BillID = model.BillID, BranchID = model.BranchID });
+                }
             }
 
 
@@ -2945,7 +2958,7 @@ namespace StellarBillingSystem.Controllers
 
                 // Calculate total price for SHbillmaster
                 var billDetails = await _billingsoftware.SHbilldetails
-         .Where(x => x.BillID == model.BillID && x.BillDate == model.BillDate && x.CustomerNumber == model.CustomerNumber && x.BranchID == model.BranchID && x.IsDelete == false)
+         .Where(x => x.BillID == detailModel.BillID && x.BillDate == model.BillDate && x.CustomerNumber == model.CustomerNumber && x.BranchID == model.BranchID && x.IsDelete == false)
          .Select(x => x.Totalprice)
          .ToListAsync();
 
@@ -2955,7 +2968,7 @@ namespace StellarBillingSystem.Controllers
                     .Sum();
 
                 var existingbillmaster = await _billingsoftware.SHbillmaster
-           .FirstOrDefaultAsync(x => x.BillID == model.BillID && x.BillDate == model.BillDate && x.CustomerNumber == model.CustomerNumber && x.BranchID == model.BranchID &&  x.IsDelete == false);
+           .FirstOrDefaultAsync(x => x.BillID == detailModel.BillID && x.BillDate == model.BillDate && x.CustomerNumber == model.CustomerNumber && x.BranchID == model.BranchID &&  x.IsDelete == false);
 
              if(existingbillmaster!=null)
                 {
@@ -2990,7 +3003,7 @@ namespace StellarBillingSystem.Controllers
 
 
                 productlist = await _billingsoftware.SHbilldetails
-          .Where(d => d.BillID == BillID && d.BillDate == BillDate && d.CustomerNumber == CustomerNumber && d.BranchID == detailModel.BranchID)
+          .Where(d => d.BillID == detailModel.BillID && d.BillDate == BillDate && d.CustomerNumber == CustomerNumber && d.BranchID == detailModel.BranchID)
           .Select(d => new BillingDetailsModel
           {
               ProductID = d.ProductID,
@@ -3323,8 +3336,9 @@ namespace StellarBillingSystem.Controllers
 
             }
 
+            BillProductlistModel bmod = new BillProductlistModel();
 
-            return View("CustomerBilling", model);
+            return View("CustomerBilling", bmod);
         }
 
         public void PrintDocument(byte[] fileContent)
@@ -3822,9 +3836,8 @@ namespace StellarBillingSystem.Controllers
 
 
 
-        public IActionResult PaymentActionget(string billID, string branchID,string billdate)
+        public IActionResult PaymentActionget(string billID, string branchID, string billdate)
         {
-
             string formattedBillDate = billdate;
 
             // Try parsing the billDate
@@ -3842,37 +3855,37 @@ namespace StellarBillingSystem.Controllers
                 {
                     formattedBillDate = tempDate.ToString("yyyy-MM-dd");
                 }
-
             }
 
             // Fetch the current balance from PaymentMaster
             var paymentDetails = _billingsoftware.SHPaymentMaster
-                                                .Where(p => p.BillId == billID && p.BranchID == branchID && p.BillDate == formattedBillDate)
-                                                .Select(p => new
-                                                {
-                                                    p.Balance
-                                                })
-                                                .FirstOrDefault();
+                                                  .Where(p => p.BillId == billID && p.BranchID == branchID && p.BillDate == formattedBillDate)
+                                                  .Select(p => new
+                                                  {
+                                                      p.Balance
+                                                  })
+                                                  .FirstOrDefault();
 
             var billDetails = _billingsoftware.SHbillmaster
-                                     .Where(b => b.BillID == billID && b.BranchID == branchID)
-                                     .Select(b => new
-                                     {
-                                         b.BillID,
-                                         b.BillDate,
-                                         b.NetPrice
-                                     })
-                                     .FirstOrDefault();
+                                       .Where(b => b.BillID == billID && b.BranchID == branchID)
+                                       .Select(b => new
+                                       {
+                                           b.BillID,
+                                           b.BillDate,
+                                           b.NetPrice
+                                       })
+                                       .FirstOrDefault();
 
-            // Return the result as JSON to be displayed in the toast
+            // Ensure null values are explicitly handled
             return Json(new
             {
-                billId = billDetails?.BillID ?? "N/A",
-                billDate = formattedBillDate ?? "N/A",
-                billValue = billDetails.NetPrice,
-                balance = paymentDetails?.Balance ?? billDetails?.NetPrice
+                billId = billDetails?.BillID ?? "null",
+                billDate = formattedBillDate ?? "null",
+                billValue = billDetails?.NetPrice ?? "null",
+                balance = paymentDetails?.Balance ?? (billDetails?.NetPrice ?? "null")
             });
         }
+
 
 
 
@@ -3919,6 +3932,13 @@ namespace StellarBillingSystem.Controllers
 
             var paymentid = "pay_" + billId;
 
+
+            if(billId==null && formattedBillDate == null)
+            {
+
+                ViewBag.Message = "BillID Not Found";
+                return View("PaymentBilling", model);
+            }
 
 
             if (buttonType == "DeletePayment")
