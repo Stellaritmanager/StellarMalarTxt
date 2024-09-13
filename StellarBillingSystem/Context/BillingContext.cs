@@ -204,7 +204,7 @@ namespace StellarBillingSystem.Context
             if (ProdMas.Any())
             {
                 // Get the latest BillNumber from the database
-                var lastProd = await this.SHProductMaster.OrderByDescending(b => b.Id).FirstOrDefaultAsync();
+                var lastProd = await this.SHProductMaster.Where(x=>x.BranchID==branchId) .OrderByDescending(b => b.Id).FirstOrDefaultAsync();
                 int lastProdNumber = 100; // Starting point, e.g., Bill_100
 
                 if (lastProd != null)

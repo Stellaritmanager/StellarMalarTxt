@@ -249,7 +249,7 @@ namespace StellarBillingSystem.Business
                     select new StaffAdminModel
                     {
                         StaffID = pr.StaffID,
-                        FullName = pr.FullName
+                        FullName = string.IsNullOrEmpty(pr.FullName) ? "Please enter Name in Staff Admin" : pr.FullName
                     }
                 ).ToList();
 

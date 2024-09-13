@@ -483,6 +483,8 @@ namespace StellarBillingSystem.Controllers
                 //    return View("ProductMaster", model);
                 //}
 
+                HttpContext.Session.SetString("BranchID", model.BranchID);
+
                 if (string.IsNullOrEmpty(model.BarcodeId))
                 {
                     ViewBag.ValidationMessage = "Please enter  BarcodeID.";
@@ -599,17 +601,22 @@ namespace StellarBillingSystem.Controllers
 
         public async Task<DataTable> AdditionalGodownFun(string branchID)
         {
-            
-                // Step 1: Perform the query
-                var entities = _billingsoftware.SHGodown
-                                      .Where(e => e.BranchID == branchID && e.IsDelete == false).OrderByDescending(e=> e.LastUpdatedDate)
-                                      .ToList();
 
-                // Step 2: Convert to DataTable
-                return BusinessClassBilling.ConvertToDataTableGodown(entities);
+            var entities = (
+                           from g in _billingsoftware.SHGodown
+                           join pm in _billingsoftware.SHProductMaster on g.ProductID equals pm.ProductID
+                           where g.BranchID == branchID && g.IsDelete == false && pm.BranchID == branchID && pm.IsDelete == false
+                                 orderby g.LastUpdatedDate descending
+                                select new GodownModel
+                                {
+                                  ProductID = pm.ProductName,
+                                  NumberofStocks = g.NumberofStocks
+                                 }).ToList();
 
-            
-        }
+            // Step 2: Convert to DataTable
+            return BusinessClassBilling.ConvertToDataTableGodown(entities);
+        
+    }
 
 
 
