@@ -3938,7 +3938,7 @@ namespace StellarBillingSystem.Controllers
 
             //   model.StrBillvalue = BusinessClassCommon.getbalance(_billingsoftware, model.PaymentId, model.BillId,model.BranchID, model.BillDate,detailmodel.PaymentAmount);
 
-            var paymentid = "pay1";
+            var paymentid = "pay_" + billId;
 
 
 
