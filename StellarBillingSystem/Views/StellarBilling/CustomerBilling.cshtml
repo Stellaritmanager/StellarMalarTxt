@@ -50,7 +50,7 @@
 </style>
 
 
-<form asp-controller="StellarBilling" asp-action="getCustomerBill" >
+<form asp-controller="StellarBilling" asp-action="getCustomerBill" autocomplete="off" >
     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
     <div class="row">
 
@@ -399,7 +399,7 @@
                 <form id="modalSearchForm" asp-controller="StellarBilling" asp-action="AddProductPop" method="post">
 
 
-                    <div class="col mb-3">
+        @*             <div class="col mb-3">
 
                         <label asp-for="ProductID">Product ID</label>
 
@@ -407,10 +407,10 @@
 
                        
 
-@*                         <span asp-validation-for="ProductID" class="alert-danger">Product ID</span> *@
 
 
-                    </div>
+
+                    </div> *@
 
                     <div class="col mb-3">
                         <label for="searchInput">Barcode ID </label>
