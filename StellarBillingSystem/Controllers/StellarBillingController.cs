@@ -2718,7 +2718,6 @@ namespace StellarBillingSystem.Controllers
 
 
         [HttpPost]
-
         public async Task<IActionResult> getCustomerBill(BillProductlistModel model, string buttonType, string BillID, string BillDate, string CustomerNumber,string BranchID, string TotalPrice, BillingMasterModel masterModel, BillingDetailsModel detailModel, string Quantity)
         {
 
@@ -3305,6 +3304,7 @@ namespace StellarBillingSystem.Controllers
                 if (updatedMaster != null)
                 {
                     decimal netPrice = decimal.TryParse(updatedMaster.NetPrice, out decimal price) ? price : 0;
+                   
                     var Total = netPrice - totalPoints;
 
                     updatedMaster.NetPrice = Total.ToString("F2");
@@ -3366,6 +3366,8 @@ namespace StellarBillingSystem.Controllers
             process.Start();
             process.WaitForExit();
         }
+
+        //
         public IActionResult DeleteProduct(string productId, string billID, string billDate, string customerNumber, BillProductlistModel model)
         {
 
@@ -3380,14 +3382,14 @@ namespace StellarBillingSystem.Controllers
             }
 
             var product = _billingsoftware.SHbilldetails
-      .Where(p => p.ProductID == productId && p.BranchID == model.BranchID && p.BillID == billID && p.BillDate == billDate && p.CustomerNumber == customerNumber)
-      .Select(p => new
-      {
-          p.Quantity,
-          p.BranchID,
-          p.IsDelete
-      })
-      .FirstOrDefault();
+                          .Where(p => p.ProductID == productId && p.BranchID == model.BranchID && p.BillID == billID && p.BillDate == billDate && p.CustomerNumber == customerNumber)
+                          .Select(p => new
+                          {
+                              p.Quantity,
+                              p.BranchID,
+                              p.IsDelete
+                          })
+                          .FirstOrDefault();
 
             if (product != null)
             {
@@ -3397,14 +3399,14 @@ namespace StellarBillingSystem.Controllers
                     return View("CustomerBilling", model);
                 }
 
-                // Update the IsDelete field to true
+                // Delete the Product from the Product Details
                 var productToUpdate = _billingsoftware.SHbilldetails
                     .First(p => p.ProductID == productId && p.BranchID == model.BranchID && p.BillID == billID && p.BillDate == billDate && p.CustomerNumber == customerNumber);
 
                 _billingsoftware.SHbilldetails.Remove(productToUpdate);
                 _billingsoftware.SaveChanges();
 
-                // Update SHRackPartionProduct to add back the quantity
+                // Update Godown to add back the quantity
                 var rackProduct = _billingsoftware.SHGodown
                     .FirstOrDefault(r => r.ProductID == productId && r.BranchID == product.BranchID && r.IsDelete == false);
 
@@ -3425,18 +3427,18 @@ namespace StellarBillingSystem.Controllers
 
 
             var billDetail = _billingsoftware.SHbilldetails
-        .Where(b => b.BillID == billID && b.BranchID == model.BranchID && b.BillDate == billDate && b.CustomerNumber == customerNumber)
-        .Select(b => new BillingDetailsModel
-        {
-            ProductID = b.ProductID,
-            ProductName = b.ProductName,
-            Price = b.Price, // Assuming you want to use the price from the database
-            Quantity = b.Quantity,
-            BillDate = b.BillDate,
-            CustomerNumber = b.CustomerNumber,
-            BillID = b.BillID
-        })
-        .ToList();
+                    .Where(b => b.BillID == billID && b.BranchID == model.BranchID && b.BillDate == billDate && b.CustomerNumber == customerNumber)
+                    .Select(b => new BillingDetailsModel
+                    {
+                        ProductID = b.ProductID,
+                        ProductName = b.ProductName,
+                        Price = b.Price, // Assuming you want to use the price from the database
+                        Quantity = b.Quantity,
+                        BillDate = b.BillDate,
+                        CustomerNumber = b.CustomerNumber,
+                        BillID = b.BillID
+                    })
+                    .ToList();
 
             if (billDetail != null)
             {
@@ -3642,11 +3644,9 @@ namespace StellarBillingSystem.Controllers
         public IActionResult VoucherMaster()
         {
             return View();
-        }
+        }  
 
-   
-
-
+        //this method is used to 
         public IActionResult CustomerBilling(string productid, string billid, string SelectedProductID)
         {
             var model = new BillProductlistModel();
@@ -4667,7 +4667,7 @@ namespace StellarBillingSystem.Controllers
 
         }
 
-
+        //This Method is used to Load bill from Modal
         public IActionResult loadbill(string productID, string billID, string billDate, string customerNumber,BillProductlistModel model)
         {
 
@@ -4680,6 +4680,7 @@ namespace StellarBillingSystem.Controllers
             }
 
             BusinessClassBilling Busbill = new BusinessClassBilling(_billingsoftware);
+           
             ViewData["productid"] = Busbill.Getproduct(model.BranchID);
 
 
