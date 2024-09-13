@@ -4429,66 +4429,15 @@ namespace StellarBillingSystem.Controllers
             ViewData["discountid"] = business.Getdiscountid(model.BranchID);
             ViewData["productid"] = business.Getproduct(model.BranchID);
 
-
-            /*if (string.IsNullOrEmpty(model.ProductID))
-            {
-                ViewBag.ErrorMessage = "Please enter  ProductID";
-
-                return View("ProductMaster",model);
-
-
-            }
-
-            if (string.IsNullOrEmpty(model.BarcodeId))
-            {
-                ViewBag.ErrorMessage = "Please enter  BarcodeID.";
-                return View("CustomerBilling");
-            }
-*/
-
-            decimal price;
-            if (!decimal.TryParse(model.Price, out price))
-            {
-                ViewBag.PriceErrorMessage = "Please enter a valid price.";
-                return View("PopupViewProduct", model);
-            }
-
-
-            var existinggodwnstock = _billingsoftware.SHGodown.FirstOrDefault(x => x.ProductID == productID && x.BranchID == model.BranchID);
-
-
-            if (existinggodwnstock == null)
-            {
-
-                // Create a new instance of SHGodown
-                existinggodwnstock = new GodownModel
-                {
-                    ProductID = productID,
-                    BranchID = model.BranchID,
-                    NumberofStocks = NumberofStock
-                };
-
-
-                _billingsoftware.SHGodown.Add(existinggodwnstock);
-
-            }
-            else
-            {
-
-                if (int.TryParse(existinggodwnstock.NumberofStocks, out int currentStock) && int.TryParse(NumberofStock, out int stockToAdd))
-                {
-                    // Add the stocks and convert back to string
-                    int updatedStock = currentStock + stockToAdd;
-                    existinggodwnstock.NumberofStocks = updatedStock.ToString();
-                }
-            }
-
-
-            _billingsoftware.SaveChanges();
+            HttpContext.Session.SetString("BranchID", model.BranchID);
 
 
 
-            var existingProduct = await _billingsoftware.SHProductMaster.FindAsync(model.ProductID, model.BranchID);
+           
+
+
+
+            var existingProduct = await _billingsoftware.SHProductMaster.FirstOrDefaultAsync(x=>x.ProductID == model.ProductID && x.BranchID==model.BranchID);
             if (existingProduct != null)
             {
                 if (existingProduct.IsDelete)
@@ -4538,7 +4487,49 @@ namespace StellarBillingSystem.Controllers
 
             await _billingsoftware.SaveChangesAsync();
 
+            decimal price;
+            if (!decimal.TryParse(model.Price, out price))
+            {
+                ViewBag.PriceErrorMessage = "Please enter a valid price.";
+                return View("PopupViewProduct", model);
+            }
 
+
+            var existinggodwnstock = _billingsoftware.SHGodown.FirstOrDefault(x => x.ProductID == model.ProductID && x.BranchID == model.BranchID);
+
+
+            if (existinggodwnstock == null)
+            {
+
+                // Create a new instance of SHGodown
+                existinggodwnstock = new GodownModel
+                {
+                    ProductID = model.ProductID,
+                    BranchID = model.BranchID,
+                    NumberofStocks = NumberofStock,
+                    DatefofPurchase = DateTime.Now.ToString()
+                };
+
+
+                _billingsoftware.SHGodown.Add(existinggodwnstock);
+
+            }
+            else
+            {
+
+                if (int.TryParse(existinggodwnstock.NumberofStocks, out int currentStock) && int.TryParse(NumberofStock, out int stockToAdd))
+                {
+                    // Add the stocks and convert back to string
+                    int updatedStock = currentStock + stockToAdd;
+                    existinggodwnstock.NumberofStocks = updatedStock.ToString();
+                    existinggodwnstock.DatefofPurchase = DateTime.Now.ToString();
+
+                    _billingsoftware.Entry(existinggodwnstock).State = EntityState.Modified;
+                }
+            }
+
+
+            _billingsoftware.SaveChanges();
 
 
 
