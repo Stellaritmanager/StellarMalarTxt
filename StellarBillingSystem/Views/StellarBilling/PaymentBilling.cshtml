@@ -260,21 +260,30 @@
         fetch(`/StellarBilling/PaymentActionget?billID=${billId}&branchID=${branchID}&billdate=${billDate}`)
             .then(response => response.json())
             .then(data => {
-                // Show toast with updated values
+                // Show toast with updated values, passing null-friendly values
                 showToast(data.billId, data.billDate, data.billValue, data.balance);
             })
             .catch(error => console.error('Error fetching bill details:', error));
     });
 
     function showToast(billId, billDate, billValue, balance) {
-        document.getElementById("billDetailsLine1").textContent = `Bill ID: ${billId} | Bill Date: ${billDate}`;
-        document.getElementById("billDetailsLine2").textContent = `Bill Value: ${billValue} | Balance: ${balance}`;
+        // Handle 'null' values gracefully
+        const billIdText = billId !== "null" ? billId : "N/A";
+        const billDateText = billDate !== "null" ? billDate : "N/A";
+        const billValueText = billValue !== "null" ? billValue : "N/A";
+        const balanceText = balance !== "null" ? balance : "N/A";
+
+        // Display the formatted text in the toast
+        document.getElementById("billDetailsLine1").textContent = `Bill ID: ${billIdText} | Bill Date: ${billDateText}`;
+        document.getElementById("billDetailsLine2").textContent = `Bill Value: ${billValueText} | Balance: ${balanceText}`;
 
         var toastContainer = document.getElementById('toastContainer');
         toastContainer.style.display = "block"; // Show the toast container
         var toast = new bootstrap.Toast(document.getElementById('customToast'));
         toast.show(); // Trigger the Bootstrap toast
     }
+
+
 </script>
 
 
