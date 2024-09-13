@@ -99,8 +99,12 @@ namespace StellarBillingSystem.Context
             modelBuilder.Entity<BillingPointsModel>().HasKey(i => new { i.BillID, i.CustomerNumber,i.BranchID });
             modelBuilder.Entity<BranchMasterModel>().HasKey(i => new { i.BracnchID, i.BranchName });
 
-            modelBuilder.Entity<BillingMasterModel>().HasKey(i => new { i.BillID, i.BillDate,i.BranchID });
-            modelBuilder.Entity<BillingDetailsModel>().HasKey(i => new { i.BillID, i.ProductID,i.BranchID });
+            modelBuilder.Entity<BillingMasterModel>().Property(i => i.Id).UseIdentityColumn(101, 1);
+            modelBuilder.Entity<BillingMasterModel>().HasKey(i => new { i.Id, i.BillDate,i.BranchID });
+
+            modelBuilder.Entity<BillingDetailsModel>().Property(i => i.Id).UseIdentityColumn(101, 1);
+            modelBuilder.Entity<BillingDetailsModel>().HasKey(i => new { i.Id, i.ProductID,i.BranchID });
+
             modelBuilder.Entity<GenericReportModel>().HasKey(i => new { i.ReportId,i.BranchID});
 
             modelBuilder.Entity<StaffAdminModel>().HasKey(i => new { i.StaffID,i.BranchID});
@@ -164,6 +168,8 @@ namespace StellarBillingSystem.Context
         {
 
             var branchId = _httpContextAccessor.HttpContext?.Session.GetString("BranchID");
+            var BillId = _httpContextAccessor.HttpContext?.Session.GetString("BillID");
+
 
             //Category Master
             var catMas = ChangeTracker
@@ -225,6 +231,75 @@ namespace StellarBillingSystem.Context
                 }
             }
 
+
+            //Bill Master
+            var BillDet = ChangeTracker
+                        .Entries<BillingDetailsModel>()
+                        .Where(e => e.State == EntityState.Added)
+                        .ToList();
+
+
+            if(BillDet.Any() && BillId == null)
+            {
+                // Get the latest BillNumber from the database
+                var lastBill = await this.SHbillmaster.Where(x => x.BranchID == branchId).OrderByDescending(b => b.Id).FirstOrDefaultAsync();
+                int lastBillNumber = 101; // Starting point, e.g., Bill_100
+
+                if (lastBill != null)
+                {
+                    // Extract the numeric part of the last BillNumber and increment it
+                    string lastBillNum = lastBill.BillID.Replace("Bill_", "");
+                    if (int.TryParse(lastBillNum, out int number))
+                    {
+                        lastBillNumber = number;
+                    }
+                }
+
+                lastBillNumber++;
+                // Assign the new BillNumber for each new bill
+                foreach (var billEntry in BillDet)
+                {                    
+                    billEntry.Entity.BillID = $"Bill_{lastBillNumber}";
+                }
+            }
+            else
+            {
+                foreach (var billEntry in BillDet)
+                {
+                    billEntry.Entity.BillID = BillId;
+                }
+            }
+
+            //Bill Master
+            var BillMas = ChangeTracker
+                        .Entries<BillingMasterModel>()
+                        .Where(e => e.State == EntityState.Added)
+                        .ToList();
+
+
+            if (BillMas.Any())
+            {
+                // Get the latest BillNumber from the database
+                var lastmasBill = await this.SHbillmaster.Where(x => x.BranchID == branchId).OrderByDescending(b => b.Id).FirstOrDefaultAsync();
+                int lastmasBillNumber = 101; // Starting point, e.g., Bill_100
+
+                if (lastmasBill != null)
+                {
+                    // Extract the numeric part of the last BillNumber and increment it
+                    string lastBillNum = lastmasBill.BillID.Replace("Bill_", "");
+                    if (int.TryParse(lastBillNum, out int number))
+                    {
+                        lastmasBillNumber = number;
+                    }
+                }
+               
+                // Assign the new BillNumber for each new bill
+                foreach (var billEntry in BillMas)
+                {
+                    lastmasBillNumber++;
+                    billEntry.Entity.BillID = $"Bill_{lastmasBillNumber}";
+                }
+            }
 
             return await base.SaveChangesAsync(cancellationToken);
         }

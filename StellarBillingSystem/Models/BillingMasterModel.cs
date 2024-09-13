@@ -21,6 +21,7 @@
         private string branchID;
         private string billby;
         private bool billInsertion;
+        private long id;
 
         public string BillID { get => billID; set => billID = value; }
         public string BillDate { get => billDate; set => billDate = value; }
@@ -32,12 +33,13 @@
         public string? Lastupdateduser { get => lastupdateduser; set => lastupdateduser = value; }
         public string? Lastupdateddate { get => lastupdateddate; set => lastupdateddate = value; }
         public string? Lastupdatedmachine { get => lastupdatedmachine; set => lastupdatedmachine = value; }
-    public string BranchID { get => branchID; set => branchID = value; }
+        public string BranchID { get => branchID; set => branchID = value; }
         public string? CGSTPercentage { get => cGSTPercentage; set => cGSTPercentage = value; }
         public string? SGSTPercentage { get => sGSTPercentage; set => sGSTPercentage = value; }
         public string? CGSTPercentageAmt { get => cGSTPercentageAmt; set => cGSTPercentageAmt = value; }
         public string? SGSTPercentageAmt { get => sGSTPercentageAmt; set => sGSTPercentageAmt = value; }
         public string? Billby { get => billby; set => billby = value; }
         public bool BillInsertion { get => billInsertion; set => billInsertion = value; }
+        public long Id { get => id; set => id = value; }
     }
 }
