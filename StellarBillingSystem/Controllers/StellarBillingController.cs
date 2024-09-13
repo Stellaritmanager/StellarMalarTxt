@@ -4507,7 +4507,8 @@ namespace StellarBillingSystem.Controllers
                     ProductID = model.ProductID,
                     BranchID = model.BranchID,
                     NumberofStocks = NumberofStock,
-                    DatefofPurchase = DateTime.Now.ToString()
+                    DatefofPurchase = DateTime.Now.ToString(),
+                    LastUpdatedDate = DateTime.Now 
                 };
 
 
@@ -4523,6 +4524,7 @@ namespace StellarBillingSystem.Controllers
                     int updatedStock = currentStock + stockToAdd;
                     existinggodwnstock.NumberofStocks = updatedStock.ToString();
                     existinggodwnstock.DatefofPurchase = DateTime.Now.ToString();
+                    existinggodwnstock.LastUpdatedDate = DateTime.Now;
 
                     _billingsoftware.Entry(existinggodwnstock).State = EntityState.Modified;
                 }
