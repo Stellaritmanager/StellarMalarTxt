@@ -337,7 +337,6 @@ namespace StellarBillingSystem.Business
         }
 
         public List<ProductMatserModel> Getproduct(string BranchID)
-
         {
             var productid = (
                         from product in _billingContext.SHProductMaster
