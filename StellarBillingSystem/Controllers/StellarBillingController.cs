@@ -3347,7 +3347,14 @@ namespace StellarBillingSystem.Controllers
 
                 await _billingsoftware.SaveChangesAsync();
 
+                var billingDetailsre = await _billingsoftware.SHbilldetails
+          .Where(d => d.BillID == masterModel.BillID && d.BranchID == model.BranchID && d.BillDate == masterModel.BillDate && d.CustomerNumber == masterModel.CustomerNumber)
+          .ToListAsync();
 
+              
+                model.Viewbillproductlist = billingDetailsre;
+
+                return View("CustomerBilling", model);
             }
 
             BillProductlistModel bmod = new BillProductlistModel();
