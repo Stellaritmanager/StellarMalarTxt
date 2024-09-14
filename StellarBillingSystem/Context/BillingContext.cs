@@ -239,7 +239,7 @@ namespace StellarBillingSystem.Context
                         .ToList();
 
 
-            if(BillDet.Any() && BillId == null)
+            if(BillDet.Any() && (BillId == null || BillId == string.Empty))
             {
                 // Get the latest BillNumber from the database
                 var lastBill = await this.SHbillmaster.Where(x => x.BranchID == branchId).OrderByDescending(b => b.Id).FirstOrDefaultAsync();

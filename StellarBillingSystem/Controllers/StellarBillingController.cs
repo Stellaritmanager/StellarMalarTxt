@@ -2730,6 +2730,10 @@ namespace StellarBillingSystem.Controllers
             {
                 HttpContext.Session.SetString("BillID", model.BillID);
             }
+            else
+            {
+                HttpContext.Session.SetString("BillID", string.Empty);
+            }
         
 
             if (TempData["BranchID"] != null)
@@ -3017,6 +3021,7 @@ namespace StellarBillingSystem.Controllers
                 model.Viewbillproductlist = productlist;
 
                 ViewBag.TotalPrice = totalPrice;
+                model.BillID = detailModel.BillID;
 
                 return View("CustomerBilling", model);
             }
@@ -3153,6 +3158,15 @@ namespace StellarBillingSystem.Controllers
 
                 BusinessClassBilling busbill = new BusinessClassBilling(_billingsoftware);
 
+                // This query is used to check Bill has Product in BillDetails
+                var checkproduct = await _billingsoftware.SHbilldetails.FirstOrDefaultAsync(x=>x.BillID == masterModel.BillID && x.BillDate == masterModel.BillDate && x.CustomerNumber == masterModel.CustomerNumber && x.BranchID == masterModel.BranchID);
+
+                if(checkproduct == null)
+                {
+                    ViewBag.SaveMessage = "Please Add a Product";
+                    return View("CustomerBilling", model);
+                }
+                
 
                 // Retrieve the existing master record
                 var updateMaster = await _billingsoftware.SHbillmaster
@@ -3204,7 +3218,7 @@ namespace StellarBillingSystem.Controllers
                 }
 
 
-                _billingsoftware.SaveChanges();
+               await  _billingsoftware.SaveChangesAsync();
 
 
               
@@ -3250,7 +3264,7 @@ namespace StellarBillingSystem.Controllers
                 }
 
 
-
+/*
                 var updatedMaster = await _billingsoftware.SHbillmaster
            .Where(m => m.BillID == masterModel.BillID && m.BranchID == model.BranchID && m.BillDate == masterModel.BillDate && m.CustomerNumber == masterModel.CustomerNumber)
            .FirstOrDefaultAsync();
@@ -3263,14 +3277,14 @@ namespace StellarBillingSystem.Controllers
                     ViewBag.CGSTPercentage = updatedMaster.CGSTPercentage;
                     ViewBag.SGSTPercentage = updatedMaster.SGSTPercentage;
 
-                }
+                }*/
 
 
                 var billingDetails = await _billingsoftware.SHbilldetails
            .Where(d => d.BillID == masterModel.BillID && d.BranchID == model.BranchID && d.BillDate == masterModel.BillDate && d.CustomerNumber == masterModel.CustomerNumber)
            .ToListAsync();
 
-                model.MasterModel = updatedMaster;
+               /* model.MasterModel = updatedMaster*/;
                 model.Viewbillproductlist = billingDetails;
 
 
@@ -3429,7 +3443,8 @@ namespace StellarBillingSystem.Controllers
                         Quantity = b.Quantity,
                         BillDate = b.BillDate,
                         CustomerNumber = b.CustomerNumber,
-                        BillID = b.BillID
+                        BillID = b.BillID,
+                        NetPrice = b.NetPrice
                     })
                     .ToList();
 
@@ -3443,7 +3458,27 @@ namespace StellarBillingSystem.Controllers
                 model.Viewbillproductlist = new List<BillingDetailsModel>();
             }
 
+          
 
+            var totalPriceList = _billingsoftware.SHbilldetails
+                        .Where(x => x.BillID == billID
+                                    && x.BillDate == billDate
+                                    && x.CustomerNumber == customerNumber
+                                    && x.BranchID == model.BranchID)
+                        .Select(x => x.Totalprice)
+                        .ToList();
+
+            // Convert the list of strings to decimals and calculate the sum
+            decimal totalPriceSum = totalPriceList
+                .Where(price => decimal.TryParse(price, out _))  // Filter out invalid strings
+                .Sum(price => decimal.Parse(price));             // Sum valid prices
+
+
+            if (totalPriceSum > 0)
+            {
+
+                ViewBag.TotalPrice = totalPriceSum;
+            }
 
             return View("CustomerBilling", model);
 
@@ -4643,7 +4678,7 @@ namespace StellarBillingSystem.Controllers
 
             var getdata = from bd in _billingsoftware.SHbilldetails
                           join bm in _billingsoftware.SHbillmaster on bd.BillID equals bm.BillID
-                          where bd.CustomerNumber == CustomerNumber && bd.BranchID == model.BranchID && bm.BranchID == model.BranchID
+                          where bd.CustomerNumber == CustomerNumber && bd.BranchID == model.BranchID && bm.BranchID == model.BranchID && bm.CustomerNumber == CustomerNumber
                           select new BillProductlistModel
                           {
                              BillID = bd.BillID,
