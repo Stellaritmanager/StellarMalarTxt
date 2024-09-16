@@ -3094,7 +3094,7 @@ namespace StellarBillingSystem.Controllers
                 
                 if (checkbillpay != null)
                 {
-                    ViewBag.DelMessage = "You Have Payment For This BillID. Please Delete Payment First";
+                    ViewBag.DelMessage = "There is a payment linked to this bill. Please remove the payment before attempting to delete the bill.";
                     return View("CustomerBilling", model);
 
                 }
