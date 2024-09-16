@@ -1306,7 +1306,7 @@ namespace StellarBillingSystem.Controllers
 
 
 
-        //point Master
+        //points Master
 
         public async Task<IActionResult> PointsMaster()
         {
@@ -3325,7 +3325,7 @@ namespace StellarBillingSystem.Controllers
                 }
 
 
-/*
+
                 var updatedMaster = await _billingsoftware.SHbillmaster
            .Where(m => m.BillID == masterModel.BillID && m.BranchID == model.BranchID && m.BillDate == masterModel.BillDate && m.CustomerNumber == masterModel.CustomerNumber)
            .FirstOrDefaultAsync();
@@ -3338,7 +3338,7 @@ namespace StellarBillingSystem.Controllers
                     ViewBag.CGSTPercentage = updatedMaster.CGSTPercentage;
                     ViewBag.SGSTPercentage = updatedMaster.SGSTPercentage;
 
-                }*/
+                }
 
 
                 var billingDetails = await _billingsoftware.SHbilldetails
@@ -3353,6 +3353,16 @@ namespace StellarBillingSystem.Controllers
 
 
             }
+
+            if(buttonType=="Clear")
+            {
+
+                var clr = new BillProductlistModel();
+                ViewBag.ClearMessage = "Fields have been cleared.";
+
+                return View("CustomerBilling",clr);
+            }
+
 
 
             if (buttonType == "Reedem Points")
@@ -3418,9 +3428,9 @@ namespace StellarBillingSystem.Controllers
                 return View("CustomerBilling", model);
             }
 
-            BillProductlistModel bmod = new BillProductlistModel();
+            
 
-            return View("CustomerBilling", bmod);
+            return View("CustomerBilling",model);
         }
 
         public void PrintDocument(byte[] fileContent)
