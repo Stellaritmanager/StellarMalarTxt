@@ -767,6 +767,7 @@ namespace StellarBillingSystem.Controllers
                 await _billingsoftware.SaveChangesAsync();
                 ViewBag.Message = "saved Successfully";
 
+
             }
             if (buttonType == "Delete")
             {
@@ -834,6 +835,8 @@ namespace StellarBillingSystem.Controllers
 
             }
 
+           
+
             ViewBag.Message = "Saved Successfully";
 
             var dataTable8 = await AdditionalGodownFun(model.BranchID);
@@ -841,7 +844,11 @@ namespace StellarBillingSystem.Controllers
             // Store the DataTable in ViewData for access in the view
             ViewData["GodownData"] = dataTable8;
 
+
+           
             model = new GodownModel();
+
+           
 
             return View("GodownModel", model);
 
