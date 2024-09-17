@@ -1871,13 +1871,30 @@ namespace StellarBillingSystem.Controllers
                 var getstaff = await _billingsoftware.SHStaffAdmin.FirstOrDefaultAsync(x => x.StaffID == model.StaffID && x.IsDelete == false && x.BranchID == model.BranchID);
                 if (getstaff != null)
                 {
-                    // Prepare the image URL
-                    ViewBag.ImageUrl = Url.Action("GetIdProofImage", new { staffId = getstaff.StaffID, branchId = getstaff.BranchID });
-                    var dataTable1 = await AdditionalStaffFun(model.BranchID);
 
-                    // Store the DataTable in ViewData for access in the view
-                    ViewData["StaffData"] = dataTable1;
-                    return View("StaffAdmin", getstaff);
+
+                    var checkid = await _billingsoftware.SHStaffAdmin.FirstOrDefaultAsync(x => x.StaffID == model.StaffID && x.IsDelete == false && x.BranchID == model.BranchID && x.IdProofFile!=null);
+
+                    if (checkid != null)
+                    {
+
+                        // Prepare the image URL
+                        ViewBag.ImageUrl = Url.Action("GetIdProofImage", new { staffId = getstaff.StaffID, branchId = getstaff.BranchID });
+                        var dataTable1 = await AdditionalStaffFun(model.BranchID);
+
+                        // Store the DataTable in ViewData for access in the view
+                        ViewData["StaffData"] = dataTable1;
+                        return View("StaffAdmin", getstaff);
+                    }
+                    else
+                    {
+                        var dataTable1 = await AdditionalStaffFun(model.BranchID);
+
+                        // Store the DataTable in ViewData for access in the view
+                        ViewData["StaffData"] = dataTable1;
+                        return View("StaffAdmin", getstaff);
+
+                    }
                 }
                 else
                 {
@@ -1978,6 +1995,7 @@ namespace StellarBillingSystem.Controllers
                         model.Password = stafftoretrieve.Password;
                         model.IdProofId = stafftoretrieve.IdProofId;
                         model.IdProofName = stafftoretrieve.IdProofName;
+                        model.IdProofFile = stafftoretrieve.IdProofFile;
 
                         ViewBag.retMessage = "Deleted StaffID retrieved successfully";
                     }
@@ -1999,7 +2017,7 @@ namespace StellarBillingSystem.Controllers
 
 
 
-            var staffcheck = await _billingsoftware.SHStaffAdmin.FirstOrDefaultAsync(x => x.StaffID == model.StaffID && x.BranchID == model.BranchID && x.UserName == model.UserName && x.Password == model.Password);
+            var staffcheck = await _billingsoftware.SHStaffAdmin.FirstOrDefaultAsync(x => x.StaffID == model.StaffID && x.BranchID == model.BranchID && (x.UserName != model.UserName || x.Password != model.Password));
 
 
 
@@ -2092,13 +2110,13 @@ namespace StellarBillingSystem.Controllers
             }
             else
             {
-                StaffAdminModel mod = new StaffAdminModel();
-                ViewBag.ExistMessage = "Username and Password Already Exist";
+              
+                ViewBag.ExistMessage = "Cannot Update Username and Password";
                 var dataTable10 = await AdditionalStaffFun(model.BranchID);
 
                 // Store the DataTable in ViewData for access in the view
                 ViewData["StaffData"] = dataTable10;
-                return View("StaffAdmin", mod);
+                return View("StaffAdmin", model);
             }
             await _billingsoftware.SaveChangesAsync();
 
@@ -3082,6 +3100,7 @@ namespace StellarBillingSystem.Controllers
                 model.Viewbillproductlist = productlist;
 
                 ViewBag.TotalPrice = totalPrice;
+                ViewBag.NetPrice = totalPrice;
                 model.BillID = detailModel.BillID;
 
                 return View("CustomerBilling", model);
