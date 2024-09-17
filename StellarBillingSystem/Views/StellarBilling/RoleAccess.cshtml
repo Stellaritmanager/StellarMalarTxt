@@ -88,12 +88,12 @@
                                     .Select(m => new SelectListItem
             {
                 Value = m.RollID.ToString(), // Assuming ScreenId is of type int
-                Text = $"{m.RollID} - {m.RollName}"
+                Text = $"{m.RollName}"
             });
                                 }
 
-                                @Html.DropDownListFor(model => model.RollID, rollList, "Select Roll ID", new { @class = "form-control", @required = "required" })
-                                <label asp-for="RollID" class="control-label"></label>
+                                @Html.DropDownListFor(model => model.RollID, rollList, "Select Roll", new { @class = "form-control", @required = "required" })
+                                <label asp-for="RollID" class="control-label">Roll Name</label>
                                 <span asp-validation-for="RollID" class="text-danger"></span>
                             </div>
 
@@ -108,12 +108,12 @@
                                     .Select(m => new SelectListItem
             {
                 Value = m.ScreenId.ToString(), // Assuming ScreenId is of type int
-                Text = $"{m.ScreenId} - {m.ScreenName}"
+                Text = $"{m.ScreenName}"
             });
                                 }
 
                                 @Html.DropDownListFor(model => model.ScreenID, screenList, "Select Screen", new { @class = "form-control", @required = "required" })
-                                <label asp-for="ScreenID" class="control-label">Screen ID</label>
+                                <label asp-for="ScreenID" class="control-label">Screen Name</label>
                                 <span asp-validation-for="ScreenID" class="text-danger"></span>
                             </div>
                         </div>
@@ -133,23 +133,7 @@
 
                     <div class="row">
                         <div class="col-md-12 col-lg-2"></div>
-                        <div class="col-md-12 col-lg-4">
-                            <div class="form-group">
-                                <label class="control-label">Read Write Access:</label><br />
-
-
-
-                                <div class="form-check">
-                                    <input asp-for="Access" class="form-check-input" type="radio" value="R" id="ReadRadio" />
-                                    <label class="form-check-label" for="ReadRadio">Read</label>
-                                </div>
-                                <div class="form-check">
-                                    <input asp-for="Access" class="form-check-input" type="radio" value="W" id="WriteRadio" />
-                                    <label class ="form-check-label" for="WriteRadio">Write</label>
-                                </div>
-                               
-                            </div>
-                        </div>
+                      
                         <div class="col-md-12 col-lg-4">
                             <div class="form-group">
                                 <label class="control-label">Authorized:</label> <br />

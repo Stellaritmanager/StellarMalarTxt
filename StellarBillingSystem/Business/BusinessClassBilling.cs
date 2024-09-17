@@ -103,6 +103,22 @@ namespace StellarBillingSystem.Business
 
 
 
+
+        //points Master
+        public static DataTable convetToDataTablePointMaster(IEnumerable<PointsMasterModel> entities)
+        {
+            var dataTable = new DataTable();
+            dataTable.Columns.Add("NetPrice",typeof(string));
+            dataTable.Columns.Add("NetPoints",typeof (string));
+            foreach (var entity in entities)
+            {
+                dataTable.Rows.Add(entity.NetPrice, entity.NetPoints);
+                
+            }
+            return dataTable;
+        }
+
+
         public static DataTable convertToDataTableCategoryMaster(IEnumerable<CategoryMasterModel> entities)
         {
             var dataTable = new DataTable();
@@ -249,7 +265,7 @@ namespace StellarBillingSystem.Business
                     select new StaffAdminModel
                     {
                         StaffID = pr.StaffID,
-                        FullName = pr.FullName
+                        FullName = string.IsNullOrEmpty(pr.FullName) ? "Please enter Name in Staff Admin" : pr.FullName
                     }
                 ).ToList();
 
@@ -337,7 +353,6 @@ namespace StellarBillingSystem.Business
         }
 
         public List<ProductMatserModel> Getproduct(string BranchID)
-
         {
             var productid = (
                         from product in _billingContext.SHProductMaster

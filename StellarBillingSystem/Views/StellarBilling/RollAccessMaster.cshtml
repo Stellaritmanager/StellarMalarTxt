@@ -87,12 +87,12 @@
                     .Select(m => new SelectListItem
             {
                 Value = m.StaffID.ToString(), // Assuming ScreenId is of type int
-                Text = $"{m.StaffID} - {m.FullName}"
+                Text = $"{m.FullName}"
             });
                 }
 
-                @Html.DropDownListFor(model => model.StaffID, Staffid, "Select Staff ID", new { @class = "form-control", required = "required" })
-                                <label asp-for="StaffID" class="control-label">Staff ID</label>
+                @Html.DropDownListFor(model => model.StaffID, Staffid, "Select Staff ", new { @class = "form-control", required = "required" })
+                                <label asp-for="StaffID" class="control-label">Staff Name</label>
                 <span asp-validation-for="StaffID" class="text-danger"></span>
             </div>
 

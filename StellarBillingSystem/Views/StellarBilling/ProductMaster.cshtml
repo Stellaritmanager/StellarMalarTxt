@@ -141,12 +141,12 @@
                                     .Select(m => new SelectListItem
             {
                 Value = m.CategoryID.ToString(), // Assuming ScreenId is of type int
-                Text = $"{m.CategoryID} - {m.CategoryName}"
+                Text = $"{m.CategoryName}"
             });
                                 }
 
-                                @Html.DropDownListFor(model => model.CategoryID, getscheduleid, "Select Category ID", new { @class = "form-control" })
-                                <label asp-for="CategoryID" class="control-label">Category ID</label>
+                                @Html.DropDownListFor(model => model.CategoryID, getscheduleid, "Select Category", new { @class = "form-control" })
+                                <label asp-for="CategoryID" class="control-label">Category Name</label>
                                 <span asp-validation-for="CategoryID" class="text-danger"></span>
                             </div>
 
@@ -344,7 +344,7 @@
 
                     <script>
                         document.addEventListener('DOMContentLoaded', function () {
-                            const rowsPerPage = 4; // Number of rows per page
+                            const rowsPerPage = 5; // Number of rows per page
                             const table = document.querySelector('.table tbody'); // Select the table body
                             const rows = Array.from(table.querySelectorAll('tr')); // Get all rows
                             const totalRows = rows.length; // Total number of rows

@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using StellarBillingSystem.Context;
 
@@ -11,9 +12,11 @@ using StellarBillingSystem.Context;
 namespace StellarBillingSystem.Migrations
 {
     [DbContext(typeof(BillingContext))]
-    partial class BillingContextModelSnapshot : ModelSnapshot
+    [Migration("20240912070000_Intial83")]
+    partial class Intial83
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -146,11 +149,8 @@ namespace StellarBillingSystem.Migrations
 
             modelBuilder.Entity("CategoryMasterModel", b =>
                 {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
+                    b.Property<long>("CatID")
                         .HasColumnType("bigint");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"), 101L);
 
                     b.Property<string>("BranchID")
                         .HasColumnType("nvarchar(450)");
@@ -174,7 +174,7 @@ namespace StellarBillingSystem.Migrations
                     b.Property<string>("LastUpdatedmachine")
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("Id", "BranchID");
+                    b.HasKey("CatID", "BranchID");
 
                     b.ToTable("SHCategoryMaster");
                 });
@@ -398,11 +398,8 @@ namespace StellarBillingSystem.Migrations
 
             modelBuilder.Entity("ProductMatserModel", b =>
                 {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"), 101L);
+                    b.Property<string>("ProductID")
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("BranchID")
                         .HasColumnType("nvarchar(450)");
@@ -443,10 +440,6 @@ namespace StellarBillingSystem.Migrations
                     b.Property<string>("Price")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("ProductID")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("ProductName")
                         .HasColumnType("nvarchar(max)");
 
@@ -459,7 +452,7 @@ namespace StellarBillingSystem.Migrations
                     b.Property<string>("TotalAmount")
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("Id", "BranchID");
+                    b.HasKey("ProductID", "BranchID");
 
                     b.ToTable("SHProductMaster");
                 });
@@ -578,25 +571,16 @@ namespace StellarBillingSystem.Migrations
 
             modelBuilder.Entity("StellarBillingSystem.Models.BillingDetailsModel", b =>
                 {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"), 101L);
+                    b.Property<string>("BillID")
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("ProductID")
-                        .HasMaxLength(10)
-                        .HasColumnType("nvarchar(10)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("BranchID")
-                        .HasMaxLength(10)
-                        .HasColumnType("nvarchar(10)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("BillDate")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("BillID")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("CustomerNumber")
@@ -636,29 +620,21 @@ namespace StellarBillingSystem.Migrations
                     b.Property<string>("Totalprice")
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("Id", "ProductID", "BranchID");
+                    b.HasKey("BillID", "ProductID", "BranchID");
 
                     b.ToTable("SHbilldetails");
                 });
 
             modelBuilder.Entity("StellarBillingSystem.Models.BillingMasterModel", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 101L);
+                    b.Property<string>("BillID")
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("BillDate")
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("BranchID")
-                        .HasMaxLength(10)
-                        .HasColumnType("nvarchar(10)");
-
-                    b.Property<string>("BillID")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<bool>("BillInsertion")
                         .HasColumnType("bit");
@@ -674,8 +650,7 @@ namespace StellarBillingSystem.Migrations
 
                     b.Property<string>("CustomerNumber")
                         .IsRequired()
-                        .HasMaxLength(10)
-                        .HasColumnType("nvarchar(10)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("IsDelete")
                         .HasColumnType("bit");
@@ -704,7 +679,7 @@ namespace StellarBillingSystem.Migrations
                     b.Property<string>("Totalprice")
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("Id", "BillDate", "BranchID");
+                    b.HasKey("BillID", "BillDate", "BranchID");
 
                     b.ToTable("SHbillmaster");
                 });
