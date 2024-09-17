@@ -1,7 +1,4 @@
-﻿
-using DocumentFormat.OpenXml.InkML;
-using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.Operations;
+﻿using Microsoft.CodeAnalysis;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using StellarBillingSystem.Context;
@@ -53,7 +50,7 @@ namespace StellarBillingSystem.Business
             dataTable.Columns.Add("ProductName", typeof(string));
             dataTable.Columns.Add("BarcodeId", typeof(string));
             dataTable.Columns.Add("Price", typeof(string));
-        
+
             // Add rows
             foreach (var entity in entities)
             {
@@ -70,7 +67,7 @@ namespace StellarBillingSystem.Business
             // Add columns
             dataTable.Columns.Add("ProductID", typeof(string));
             dataTable.Columns.Add("NumberofStocks", typeof(string));
-           
+
             // Add rows
             foreach (var entity in entities)
             {
@@ -90,12 +87,12 @@ namespace StellarBillingSystem.Business
             dataTable.Columns.Add("ResourceTypeID", typeof(string));
             dataTable.Columns.Add("PhoneNumber", typeof(string));
             dataTable.Columns.Add("EmailId", typeof(string));
-           
+
 
             // Add rows
             foreach (var entity in entities)
             {
-                dataTable.Rows.Add(entity.StaffID, entity.FullName,entity.ResourceTypeID,entity.PhoneNumber,entity.EmailId);
+                dataTable.Rows.Add(entity.StaffID, entity.FullName, entity.ResourceTypeID, entity.PhoneNumber, entity.EmailId);
             }
 
             return dataTable;
@@ -108,12 +105,12 @@ namespace StellarBillingSystem.Business
         public static DataTable convetToDataTablePointMaster(IEnumerable<PointsMasterModel> entities)
         {
             var dataTable = new DataTable();
-            dataTable.Columns.Add("NetPrice",typeof(string));
-            dataTable.Columns.Add("NetPoints",typeof (string));
+            dataTable.Columns.Add("NetPrice", typeof(string));
+            dataTable.Columns.Add("NetPoints", typeof(string));
             foreach (var entity in entities)
             {
                 dataTable.Rows.Add(entity.NetPrice, entity.NetPoints);
-                
+
             }
             return dataTable;
         }
@@ -155,7 +152,7 @@ namespace StellarBillingSystem.Business
         {
             var pointreedemcustomerid = (
                 from pr in _billingContext.SHCustomerMaster
-                select new CustomerMasterModel 
+                select new CustomerMasterModel
                 {
                     CustomerID = pr.CustomerID,
                     CustomerName = pr.CustomerName,
@@ -343,7 +340,7 @@ namespace StellarBillingSystem.Business
                         from pr in _billingContext.SHStaffAdmin
                         join ram in _billingContext.SHrollaccess on pr.StaffID equals ram.StaffID
                         join rol in _billingContext.SHrollType on ram.RollID equals rol.RollID
-                        where pr.IsDelete == false && pr.UserName == Username && rol.RollName == "Admin" && ram.IsDelete == false && rol.IsDelete== false
+                        where pr.IsDelete == false && pr.UserName == Username && rol.RollName == "Admin" && ram.IsDelete == false && rol.IsDelete == false
                         select new StaffAdminModel
                         {
                             UserName = pr.UserName
@@ -398,7 +395,7 @@ namespace StellarBillingSystem.Business
         }
 
 
-     
+
 
 
         public List<GenericReportModel> GetReportId()
@@ -440,22 +437,22 @@ namespace StellarBillingSystem.Business
                 document.ReplaceText("<<total>>", pbillData.Rows[0]["MasterTotalprice"].ToString());
                 document.ReplaceText("<<cgst>>", pbillData.Rows[0]["CGSTPercentage"].ToString());
                 document.ReplaceText("<<sgst>>", pbillData.Rows[0]["SGSTPercentage"].ToString());
-             
+
 
 
                 document.ReplaceText("{Placeholder2}", "Dynamic Value 2");
 
-               // Insert a new paragraph
-                 
+                // Insert a new paragraph
+
 
                 //Add a table
-              
+
                 int rowcount = 1;
                 //Row data
                 foreach (DataRow objRow in pbillData.Rows)
                 {
-                    document.ReplaceText("<<sno" + rowcount.ToString() + ">>",rowcount.ToString());
-                    document.ReplaceText("<<description"+rowcount.ToString()+">>", pbillData.Rows[0]["ProductName"].ToString());
+                    document.ReplaceText("<<sno" + rowcount.ToString() + ">>", rowcount.ToString());
+                    document.ReplaceText("<<description" + rowcount.ToString() + ">>", pbillData.Rows[0]["ProductName"].ToString());
                     document.ReplaceText("<<h" + rowcount.ToString() + ">>", pbillData.Rows[0]["Quantity"].ToString());
                     document.ReplaceText("<<q" + rowcount.ToString() + ">>", pbillData.Rows[0]["Quantity"].ToString());
                     document.ReplaceText("<<up" + rowcount.ToString() + ">>", pbillData.Rows[0]["Price"].ToString());
@@ -464,8 +461,8 @@ namespace StellarBillingSystem.Business
                     rowcount++;
                 }
 
-                
-                for (int emptycount = 1; emptycount <=6; emptycount++)
+
+                for (int emptycount = 1; emptycount <= 6; emptycount++)
                 {
                     document.ReplaceText("<<sno" + emptycount.ToString() + ">>", string.Empty);
                     document.ReplaceText("<<description" + emptycount.ToString() + ">>", string.Empty);
@@ -491,7 +488,7 @@ namespace StellarBillingSystem.Business
             }
             return null;
         }
-        public byte[] PrintBillDetails(DataTable billDetails,string BranchID)
+        public byte[] PrintBillDetails(DataTable billDetails, string BranchID)
         {
             // Determine the template name based on the BranchID
             string templateName = BranchID == "Lee_Mobile" ? "BillTemplate Branch1.docx" : "BillTemplate Branch2.docx";
@@ -502,7 +499,7 @@ namespace StellarBillingSystem.Business
             return ModifyBillDoc(templatePath, billDetails);
         }
 
-        
+
         public string GeneratePaymentDescriptionreport(string paymentId)
         {
             string timestamp = DateTime.Now.ToString("HH:mm:ss");
@@ -524,11 +521,11 @@ namespace StellarBillingSystem.Business
                 document.ReplaceText("<<billdate>>", pbillData.Rows[0]["BillDate"].ToString());
                 document.ReplaceText("<<billno>>", pbillData.Rows[0]["BillID"].ToString());
                 document.ReplaceText("<<paymentno>>", pbillData.Rows[0]["PaymentId"].ToString());
-               
+
 
                 // Add a table
                 var table = document.AddTable(pbillData.Rows.Count + 1, 5);
-                
+
                 table.Rows[0].Cells[0].Paragraphs[0].Append("Payment Description");
                 table.Rows[0].Cells[1].Paragraphs[0].Append("Payment Mode");
                 table.Rows[0].Cells[2].Paragraphs[0].Append("Payment Transaction Number");
@@ -554,7 +551,7 @@ namespace StellarBillingSystem.Business
                 {
                     foreach (var cell in row.Cells)
                     {
-                        cell.Paragraphs[0].Font(new Font("Arial")).FontSize(14);                     
+                        cell.Paragraphs[0].Font(new Font("Arial")).FontSize(14);
                     }
                 }
 
@@ -613,45 +610,45 @@ namespace StellarBillingSystem.Business
         }
 
 
-        public async Task<(BillingMasterModel,string Validate)> CalculateBillingDetails(string billID, string billDate, string customerNumber, string discount, string cgstPercentage, string sgstPercentage,string BranchID)
+        public async Task<(BillingMasterModel, string Validate)> CalculateBillingDetails(string billID, string billDate, string customerNumber, string discount, string cgstPercentage, string sgstPercentage, string BranchID)
         {
-            
+
             var billingDetails = await _billingContext.SHbilldetails
                 .Where(x => x.BillID == billID && x.BillDate == billDate && x.CustomerNumber == customerNumber && !x.IsDelete && x.BranchID == BranchID)
                 .ToListAsync();
 
             var billMaster = await _billingContext.SHbillmaster
-                .Where(x => x.BillID == billID && x.BillDate == billDate && !x.IsDelete && x.CustomerNumber == customerNumber && x.BranchID == BranchID )
+                .Where(x => x.BillID == billID && x.BillDate == billDate && !x.IsDelete && x.CustomerNumber == customerNumber && x.BranchID == BranchID)
                 .FirstOrDefaultAsync();
 
-            if ((billingDetails == null || !billingDetails.Any()) && billMaster ==null)
+            if ((billingDetails == null || !billingDetails.Any()) && billMaster == null)
             {
                 return (null, "No billing details found.");
             }
 
-            
+
             // Calculate total price
             decimal totalPrice = billingDetails.Sum(x => decimal.TryParse(x.NetPrice, out decimal price) ? price : 0);
 
             decimal discountDecimal = 0;
-            decimal cgstPercentageDecimal= 0;
+            decimal cgstPercentageDecimal = 0;
             decimal sgstPercentageDecimal = 0;
 
             if (billMaster != null)
             {
 
                 // Convert percentage and discount from string to decimal onyl if the orginal value has change
-                
-                    discountDecimal = decimal.TryParse(billMaster.TotalDiscount , out decimal discountValue) ? discountValue : 0;
-                
-                    cgstPercentageDecimal = decimal.TryParse(billMaster.CGSTPercentage, out decimal cgstPercentageValue) ? cgstPercentageValue : 0;
-                
-                    sgstPercentageDecimal = decimal.TryParse(billMaster.SGSTPercentage, out decimal sgstPercentageValue) ? sgstPercentageValue : 0;
-                
+
+                discountDecimal = decimal.TryParse(billMaster.TotalDiscount, out decimal discountValue) ? discountValue : 0;
+
+                cgstPercentageDecimal = decimal.TryParse(billMaster.CGSTPercentage, out decimal cgstPercentageValue) ? cgstPercentageValue : 0;
+
+                sgstPercentageDecimal = decimal.TryParse(billMaster.SGSTPercentage, out decimal sgstPercentageValue) ? sgstPercentageValue : 0;
+
             }
 
 
-           
+
 
             // Calculate CGST and SGST amounts
             decimal cgstAmount = (totalPrice * cgstPercentageDecimal) / 100;
@@ -673,7 +670,7 @@ namespace StellarBillingSystem.Business
 
             decimal netPrice = totalWithTaxes - discountDecimal;
 
-         
+
 
             return (new BillingMasterModel
             {
@@ -682,8 +679,8 @@ namespace StellarBillingSystem.Business
                 SGSTPercentageAmt = sgstAmount.ToString("F2"),
                 TotalDiscount = discountDecimal.ToString("F2"),
                 NetPrice = netPrice.ToString("F2")
-            },null);
+            }, null);
         }
     }
 
-   }
+}
