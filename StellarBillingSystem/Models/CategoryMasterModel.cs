@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Numerics;
 
+
 public class CategoryMasterModel
     {
         public CategoryMasterModel() { }

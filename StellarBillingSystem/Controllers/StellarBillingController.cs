@@ -27,6 +27,8 @@ using Newtonsoft.Json;
 using Microsoft.EntityFrameworkCore.Metadata;
 using System.Globalization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc.Rendering;
+
 
 namespace StellarBillingSystem.Controllers
 {
@@ -114,6 +116,8 @@ namespace StellarBillingSystem.Controllers
         [HttpPost]
         public async Task<IActionResult> AddCategory(CategoryMasterModel model, string buttonType)
         {
+
+
             if (TempData["BranchID"] != null)
             {
                 model.BranchID = TempData["BranchID"].ToString();
@@ -269,20 +273,37 @@ namespace StellarBillingSystem.Controllers
 
         public async Task<IActionResult> ProductMaster()
         {
-            var model = new ProductMatserModel();
+            BusinessClassBilling business = new BusinessClassBilling(_billingsoftware);
+
+            var categories = business.GetItemsFromDatabase();
+
+            // Convert CategoryMasterModel to SelectListItem
+            var selectListItems = categories.Select(c => new SelectListItem
+            {
+                Value = c.CategoryID.ToString(), 
+                Text = c.CategoryName            
+            }).ToList();
+
+            var model = new ProductDropDownModel
+            {
+                Items = selectListItems,  // Assign converted SelectListItems
+                SelectedItemId = null,
+                ObjPro = new ProductMatserModel() // Ensure ObjPro is initialized to avoid null reference
+            };
+
 
             if (TempData["BranchID"] != null)
             {
-                model.BranchID = TempData["BranchID"].ToString();
+                model.ObjPro.BranchID = TempData["BranchID"].ToString();
                 TempData.Keep("BranchID");
             }
 
-            BusinessClassBilling business = new BusinessClassBilling(_billingsoftware);
-            ViewData["categoryid"] = business.GetCatid(model.BranchID);
-            ViewData["discountid"] = business.Getdiscountid(model.BranchID);
+           
+           // ViewData["categoryid"] = business.GetCatid(model.BranchID);
+            ViewData["discountid"] = business.Getdiscountid(model.ObjPro.BranchID);
           
 
-            ViewData["ProductData"] =await AdditionalProductMasterFun(model.BranchID);
+            ViewData["ProductData"] =await AdditionalProductMasterFun(model.ObjPro.BranchID);
 
             return View("ProductMaster", model);
 
@@ -316,67 +337,104 @@ namespace StellarBillingSystem.Controllers
             }
 
             BusinessClassBilling business = new BusinessClassBilling(_billingsoftware);
+
             ViewData["categoryid"] = business.GetCatid(model.BranchID);
             ViewData["discountid"] = business.Getdiscountid(model.BranchID);
-           
 
+
+
+          
+
+            // Fetch categories and convert them to SelectListItem for dropdown
+            var categories = business.GetItemsFromDatabase();
+            var selectListItems = categories.Select(c => new SelectListItem
+            {
+                Value = c.CategoryID.ToString(),
+                Text = c.CategoryName
+            }).ToList();
+
+            string? selectedCategoryId = null;
 
             if (buttonType == "Get")
             {
-                if (model.ProductID == null && model.BarcodeId == null)
+                // Validation: ensure either ProductID or BarcodeID is entered
+                if (string.IsNullOrEmpty(model.ProductID) && string.IsNullOrEmpty(model.BarcodeId))
                 {
                     ViewBag.ValidationMessage = "Please enter either ProductID or BarcodeID.";
 
-                    var dataTable = await AdditionalProductMasterFun(model.BranchID);
+                    // Fetch and assign product list or additional product data
+                   var dataTable = await AdditionalProductMasterFun(model.BranchID);
 
-                    // Store the DataTable in ViewData for access in the view
                     ViewData["ProductData"] = dataTable;
 
-                    return View("ProductMaster", model);
+
+                    var productDropDownModel = business.CreateProductDropDownModel(selectListItems, selectedCategoryId, model);
+                    
+                    // Return the view with the updated model
+                    return View("ProductMaster", productDropDownModel);
                 }
-                ProductMatserModel? resultpro;
-                if (model.BarcodeId != null && model.BarcodeId != string.Empty)
-                    resultpro = await _billingsoftware.SHProductMaster.FirstOrDefaultAsync(x => x.BarcodeId == model.BarcodeId && !x.IsDelete && x.BranchID == model.BranchID);
+
+                // Fetch product details based on BarcodeID or ProductID
+                ProductMatserModel? resultpro = null;
+                if (!string.IsNullOrEmpty(model.BarcodeId))
+                {
+                    resultpro = await _billingsoftware.SHProductMaster
+                        .FirstOrDefaultAsync(x => x.BarcodeId == model.BarcodeId && !x.IsDelete && x.BranchID == model.BranchID);
+                }
                 else
-                    resultpro = await _billingsoftware.SHProductMaster.FirstOrDefaultAsync(x => x.ProductID == model.ProductID && !x.IsDelete && x.BranchID == model.BranchID);
+                {
+                    resultpro = await _billingsoftware.SHProductMaster
+                        .FirstOrDefaultAsync(x => x.ProductID == model.ProductID && !x.IsDelete && x.BranchID == model.BranchID);
+                }
 
                 if (resultpro != null)
                 {
-                    //get rack noofitems
-                    var noofitemrack = await _billingsoftware.SHRackPartionProduct.Where(x => x.ProductID == model.ProductID && x.BranchID == model.BranchID).Select(x => x.Noofitems).FirstOrDefaultAsync();
+                    selectedCategoryId = resultpro.CategoryID?.ToString() ?? string.Empty;
 
-                    //get godown noofstock
+
+                    // Fetch rack partition and godown details for the product
+                    var noofitemrack = await _billingsoftware.SHRackPartionProduct
+                        .Where(x => x.ProductID == resultpro.ProductID && x.BranchID == resultpro.BranchID)
+                        .Select(x => x.Noofitems).FirstOrDefaultAsync();
+
                     var noofstock = await (
-                                   from godown in _billingsoftware.SHGodown
-                                   join product in _billingsoftware.SHProductMaster
-                                   on godown.ProductID equals product.ProductID
-                                   where (product.BarcodeId == model.BarcodeId || product.ProductID == model.ProductID) && godown.BranchID == model.BranchID && !product.IsDelete && !godown.IsDelete
-                                   select godown.NumberofStocks
-                                      ).FirstOrDefaultAsync();
+                        from godown in _billingsoftware.SHGodown
+                        join product in _billingsoftware.SHProductMaster
+                        on godown.ProductID equals product.ProductID
+                        where (product.BarcodeId == model.BarcodeId || product.ProductID == model.ProductID) &&
+                              godown.BranchID == model.BranchID &&
+                              !product.IsDelete && !godown.IsDelete
+                        select godown.NumberofStocks
+                    ).FirstOrDefaultAsync();
 
-
+                    // Assign rack and godown stock data to ViewBag
                     ViewBag.GodownNoofitems = noofstock;
                     ViewBag.RackNoofitems = noofitemrack;
+
+                    var productDropDownModel = business.CreateProductDropDownModel(selectListItems, selectedCategoryId, model);
+
+
+
+                    // Update the product drop-down model with the fetched data
+                    productDropDownModel.ObjPro = resultpro;
                     var dataTable = await AdditionalProductMasterFun(model.BranchID);
-
-                    // Store the DataTable in ViewData for access in the view
                     ViewData["ProductData"] = dataTable;
-                    var dataTable1 = await AdditionalProductMasterFun(model.BranchID);
 
-                    // Store the DataTable in ViewData for access in the view
-                    ViewData["ProductData"] = dataTable1;
-                    return View("ProductMaster", resultpro);
+
+                    return View("ProductMaster", productDropDownModel);
                 }
                 else
                 {
-                    ProductMatserModel obj = new ProductMatserModel();
+                    // No product found, return an empty product with a message
                     ViewBag.NoProductMessage = "No value for this product ID";
-                    var dataTable = await AdditionalProductMasterFun(model.BranchID);
+                    var productDropDownModel = business.CreateProductDropDownModel(selectListItems, selectedCategoryId, model);
+                    
 
-                    // Store the DataTable in ViewData for access in the view
+                    var dataTable = await AdditionalProductMasterFun(model.BranchID);
                     ViewData["ProductData"] = dataTable;
 
-                    return View("ProductMaster", obj);
+
+                    return View("ProductMaster", productDropDownModel);
                 }
             }
 

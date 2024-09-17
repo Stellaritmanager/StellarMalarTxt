@@ -1,5 +1,6 @@
 ﻿
 using DocumentFormat.OpenXml.InkML;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Operations;
 using Microsoft.Data.SqlClient;
@@ -148,6 +149,28 @@ namespace StellarBillingSystem.Business
                     }).ToList();
             return categoryid;
         }
+
+
+        public IEnumerable<CategoryMasterModel> GetItemsFromDatabase()
+        {
+            // Example data fetching from database
+            return _billingContext.SHCategoryMaster.Select(x => new CategoryMasterModel
+            {
+                CategoryID = x.CategoryID,
+                CategoryName = x.CategoryName 
+            }).ToList();
+        }
+
+        public ProductDropDownModel CreateProductDropDownModel(IEnumerable<SelectListItem> selectListItems, string selectedCategoryId, ProductMatserModel productModel)
+        {
+            return new ProductDropDownModel
+            {
+                Items = selectListItems,
+                SelectedItemId = selectedCategoryId,
+                ObjPro = productModel
+            };
+        }
+
 
         /*Points Reedem Details*/
 
