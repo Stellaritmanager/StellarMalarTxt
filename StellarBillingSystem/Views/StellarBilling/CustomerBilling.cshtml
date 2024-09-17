@@ -81,7 +81,7 @@
                     <div class="row">
                         <div class="col-md-12 col-lg-3">
                             <div class="form-floating form-floating-outline mb-4">
-                                <input type="BillID" class="form-control" placeholder="Bill ID" name="BillID" value="@Model.BillID" />
+                                <input type="BillID" class="form-control" placeholder="Bill ID" name="BillID" value="@Model.BillID" readonly />
                                 <label asp-for="BillID" class="control-label">Bill ID</label>
 
 
@@ -133,10 +133,14 @@
 
 
                                 <input type="text" id="productDropdownInput" class="form-control"  placeholder="Product Name" onkeyup="filterDropdown(event, 'productDropdownInput', 'productDropdown')" onclick="showDropdown('productDropdown')">
-                                <ul id="productDropdown" class="list-group mt-2" style="display: none; position: absolute; z-index: 1000; width: 100%; max-height: 200px; overflow-y: auto; background-color: white; list-style-type: none; padding: 0;">
+                                <ul id="productDropdown" class="list-group mt-2"
+                                    style="display: none; position: absolute; top: 100%; left: 0; width: 100%; max-height: 200px; overflow-y: auto; background-color: white; border: 1px solid #ddd; border-radius: .25rem; box-shadow: 0 0 .5rem rgba(0, 0, 0, .1); z-index: 1000; padding: 0; margin: 0; list-style-type: none;">
                                     @foreach (var item in PatientID)
                                     {
-                                        <li class="list-group-item" data-value="@item.Value" onclick="selectDropdownItem('productDropdownInput', 'productID', '@item.Text', '@item.Value')" style="background-color: white; border: none;">@item.Text</li>
+                                        <li class="list-group-item" data-value="@item.Value" onclick="selectDropdownItem('productDropdownInput', 'productID', '@item.Text', '@item.Value')"
+                                            style="padding: .5rem 1rem; cursor: pointer; background-color: white; border: none; list-style-type: none;">
+                                            @item.Text
+                                        </li>
                                     }
                                 </ul>
                                 <input type="hidden" name="ProductID" id="productID" value="ProductID" />
@@ -346,6 +350,7 @@
         
         <center>
             <button type="submit" value="Save" name="buttonType" class="btn btn-primary">Save</button>
+            <button type="submit" value="Clear" name="buttontype" class="btn btn-primary">Clear</button>
 
             <button type="submit" value="Delete Bill" name="buttonType" class="btn btn-primary">Delete Bill</button>
 
@@ -378,6 +383,13 @@
     {
         <script>
             handleMessages("@ViewBag.DelMessage");
+        </script>
+    }
+
+    @if (ViewBag.ClearMessage != null)
+    {
+        <script>
+            handleMessages("@ViewBag.ClearMessage");
         </script>
     }
 
@@ -557,7 +569,9 @@
             item.style.display = text.includes(filter) ? '' : 'none';
         });
 
-        dropdown.style.display = 'block'; // Show dropdown when filtering
+        if (filter) {
+            dropdown.style.display = 'block'; // Show dropdown when filtering
+        }
     }
 
     function showDropdown(dropdownId) {
@@ -567,11 +581,12 @@
 
     function selectDropdownItem(inputId, hiddenId, text, value) {
         const input = document.getElementById(inputId);
+        const hidden = document.getElementById(hiddenId);
         const dropdown = document.getElementById('productDropdown');
 
         // Set the selected value in the input and hidden input
         input.value = text;
-        document.getElementById(hiddenId).value = value;
+        hidden.value = value;
 
         // Hide the dropdown after selection
         dropdown.style.display = 'none';
@@ -588,9 +603,6 @@
     document.addEventListener('DOMContentLoaded', () => {
         const input = document.getElementById('productDropdownInput');
         const dropdown = document.getElementById('productDropdown');
-
-        // Adjust margin-top as needed
-        dropdown.style.marginTop = '4rem'; // Adjust margin-top to ensure dropdown doesn't overlap with the label
 
         let highlightedIndex = -1;
 
@@ -639,6 +651,7 @@
         function updateHighlight(visibleItems) {
             visibleItems.forEach((item, index) => {
                 item.style.backgroundColor = (index === highlightedIndex) ? '#000000' : 'white';
+                item.style.color = (index === highlightedIndex) ? 'white' : 'black'; // Ensure text color contrasts with background
             });
             visibleItems[highlightedIndex]?.scrollIntoView({ block: 'nearest' });
         }

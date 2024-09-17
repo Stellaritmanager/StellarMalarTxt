@@ -717,8 +717,32 @@ namespace StellarBillingSystem.Controllers
                         return View("GodownModel", model);
                     }
 
+                    // Convert existing NumberofStocks from string to int
+                    int existingNumberOfStocks = 0;
+                    int newNumberOfStocks = 0;
+
+                    // Parse the existing number of stocks
+                    if (!string.IsNullOrEmpty(existinggoddown.NumberofStocks))
+                    {
+                        existingNumberOfStocks = int.Parse(existinggoddown.NumberofStocks);
+                    }
+
+                    // Parse the new number of stocks
+                    if (!string.IsNullOrEmpty(model.NumberofStocks))
+                    {
+                        newNumberOfStocks = int.Parse(model.NumberofStocks);
+                    }
+
+                    // Add the new NumberofStocks to the existing NumberofStocks
+                    int updatedNumberOfStocks = existingNumberOfStocks + newNumberOfStocks;
+
+                    // Update the existing record with the new total
+                    existinggoddown.NumberofStocks = updatedNumberOfStocks.ToString();
+
+
+
                     existinggoddown.ProductID = model.ProductID;
-                    existinggoddown.NumberofStocks = model.NumberofStocks;
+                   
                     existinggoddown.DatefofPurchase = model.DatefofPurchase;
                     existinggoddown.SupplierInformation = model.SupplierInformation;
                     existinggoddown.IsDelete = model.IsDelete;
@@ -1281,6 +1305,41 @@ namespace StellarBillingSystem.Controllers
 
 
 
+
+        //points Master
+
+        public async Task<IActionResult> PointsMaster()
+        {
+            PointsMasterModel par = new PointsMasterModel();
+            if (TempData["BranchID"] != null)
+            {
+                par.BranchID = TempData["BranchID"].ToString();
+                TempData.Keep("BranchID");
+            }
+            ViewData["Pointsdata"] = await convetToDataTablePointMaster(par.BranchID);
+
+            return View("PointsMaster", par);
+        }
+
+
+
+        public async Task<DataTable> convetToDataTablePointMaster(string branchID)
+        {
+
+            // Step 1: Perform the query
+            var en = _billingsoftware.SHPointsMaster
+                                  .Where(e => e.BranchID == branchID ).OrderByDescending(e => e.LastUpdatedDate)
+                                  .ToList();
+
+            // Step 2: Convert to DataTable
+            return BusinessClassBilling.convetToDataTablePointMaster(en);
+
+
+        }
+
+
+
+
         [HttpPost]
 
         public async Task<IActionResult> AddPoints(PointsMasterModel model)
@@ -1298,7 +1357,7 @@ namespace StellarBillingSystem.Controllers
             var existingpoints = await _billingsoftware.SHPointsMaster.FindAsync(pointsID, model.BranchID);
             if (existingpoints != null)
             {
-
+              
                 existingpoints.NetPrice = model.NetPrice;
                 existingpoints.NetPoints = model.NetPoints;
                 existingpoints.BranchID = model.BranchID;
@@ -1307,7 +1366,7 @@ namespace StellarBillingSystem.Controllers
                 existingpoints.LastUpdatedmachine = Request.HttpContext.Connection.RemoteIpAddress.ToString();
 
                 _billingsoftware.Entry(existingpoints).State = EntityState.Modified;
-
+               
             }
             else
             {
@@ -1318,16 +1377,18 @@ namespace StellarBillingSystem.Controllers
 
 
                 _billingsoftware.SHPointsMaster.Add(model);
-
+               
             }
 
             await _billingsoftware.SaveChangesAsync();
 
             ViewBag.Message = "Saved Successfully";
 
+            var dataTable6 = await convetToDataTablePointMaster(model.BranchID);
+
+            // Store the DataTable in ViewData for access in the view
+            ViewData["Pointsdata"] = dataTable6;
             model = new PointsMasterModel();
-
-
 
             return View("PointsMaster", model);
 
@@ -1810,13 +1871,30 @@ namespace StellarBillingSystem.Controllers
                 var getstaff = await _billingsoftware.SHStaffAdmin.FirstOrDefaultAsync(x => x.StaffID == model.StaffID && x.IsDelete == false && x.BranchID == model.BranchID);
                 if (getstaff != null)
                 {
-                    // Prepare the image URL
-                    ViewBag.ImageUrl = Url.Action("GetIdProofImage", new { staffId = getstaff.StaffID, branchId = getstaff.BranchID });
-                    var dataTable1 = await AdditionalStaffFun(model.BranchID);
 
-                    // Store the DataTable in ViewData for access in the view
-                    ViewData["StaffData"] = dataTable1;
-                    return View("StaffAdmin", getstaff);
+
+                    var checkid = await _billingsoftware.SHStaffAdmin.FirstOrDefaultAsync(x => x.StaffID == model.StaffID && x.IsDelete == false && x.BranchID == model.BranchID && x.IdProofFile!=null);
+
+                    if (checkid != null)
+                    {
+
+                        // Prepare the image URL
+                        ViewBag.ImageUrl = Url.Action("GetIdProofImage", new { staffId = getstaff.StaffID, branchId = getstaff.BranchID });
+                        var dataTable1 = await AdditionalStaffFun(model.BranchID);
+
+                        // Store the DataTable in ViewData for access in the view
+                        ViewData["StaffData"] = dataTable1;
+                        return View("StaffAdmin", getstaff);
+                    }
+                    else
+                    {
+                        var dataTable1 = await AdditionalStaffFun(model.BranchID);
+
+                        // Store the DataTable in ViewData for access in the view
+                        ViewData["StaffData"] = dataTable1;
+                        return View("StaffAdmin", getstaff);
+
+                    }
                 }
                 else
                 {
@@ -1917,6 +1995,7 @@ namespace StellarBillingSystem.Controllers
                         model.Password = stafftoretrieve.Password;
                         model.IdProofId = stafftoretrieve.IdProofId;
                         model.IdProofName = stafftoretrieve.IdProofName;
+                        model.IdProofFile = stafftoretrieve.IdProofFile;
 
                         ViewBag.retMessage = "Deleted StaffID retrieved successfully";
                     }
@@ -1938,7 +2017,7 @@ namespace StellarBillingSystem.Controllers
 
 
 
-            var staffcheck = await _billingsoftware.SHStaffAdmin.FirstOrDefaultAsync(x => x.StaffID == model.StaffID && x.BranchID == model.BranchID && x.UserName == model.UserName && x.Password == model.Password);
+            var staffcheck = await _billingsoftware.SHStaffAdmin.FirstOrDefaultAsync(x => x.StaffID == model.StaffID && x.BranchID == model.BranchID && (x.UserName != model.UserName || x.Password != model.Password));
 
 
 
@@ -2031,13 +2110,13 @@ namespace StellarBillingSystem.Controllers
             }
             else
             {
-                StaffAdminModel mod = new StaffAdminModel();
-                ViewBag.ExistMessage = "Username and Password Already Exist";
+              
+                ViewBag.ExistMessage = "Cannot Update Username and Password";
                 var dataTable10 = await AdditionalStaffFun(model.BranchID);
 
                 // Store the DataTable in ViewData for access in the view
                 ViewData["StaffData"] = dataTable10;
-                return View("StaffAdmin", mod);
+                return View("StaffAdmin", model);
             }
             await _billingsoftware.SaveChangesAsync();
 
@@ -3021,6 +3100,7 @@ namespace StellarBillingSystem.Controllers
                 model.Viewbillproductlist = productlist;
 
                 ViewBag.TotalPrice = totalPrice;
+                ViewBag.NetPrice = totalPrice;
                 model.BillID = detailModel.BillID;
 
                 return View("CustomerBilling", model);
@@ -3094,7 +3174,7 @@ namespace StellarBillingSystem.Controllers
                 
                 if (checkbillpay != null)
                 {
-                    ViewBag.DelMessage = "You Have Payment For This BillID. Please Delete Payment First";
+                    ViewBag.DelMessage = "There is a payment linked to this bill. Please remove the payment before attempting to delete the bill.";
                     return View("CustomerBilling", model);
 
                 }
@@ -3264,7 +3344,7 @@ namespace StellarBillingSystem.Controllers
                 }
 
 
-/*
+
                 var updatedMaster = await _billingsoftware.SHbillmaster
            .Where(m => m.BillID == masterModel.BillID && m.BranchID == model.BranchID && m.BillDate == masterModel.BillDate && m.CustomerNumber == masterModel.CustomerNumber)
            .FirstOrDefaultAsync();
@@ -3277,7 +3357,7 @@ namespace StellarBillingSystem.Controllers
                     ViewBag.CGSTPercentage = updatedMaster.CGSTPercentage;
                     ViewBag.SGSTPercentage = updatedMaster.SGSTPercentage;
 
-                }*/
+                }
 
 
                 var billingDetails = await _billingsoftware.SHbilldetails
@@ -3292,6 +3372,16 @@ namespace StellarBillingSystem.Controllers
 
 
             }
+
+            if(buttonType=="Clear")
+            {
+
+                var clr = new BillProductlistModel();
+                ViewBag.ClearMessage = "Fields have been cleared.";
+
+                return View("CustomerBilling",clr);
+            }
+
 
 
             if (buttonType == "Reedem Points")
@@ -3357,9 +3447,9 @@ namespace StellarBillingSystem.Controllers
                 return View("CustomerBilling", model);
             }
 
-            BillProductlistModel bmod = new BillProductlistModel();
+            
 
-            return View("CustomerBilling", bmod);
+            return View("CustomerBilling",model);
         }
 
         public void PrintDocument(byte[] fileContent)
@@ -3640,11 +3730,7 @@ namespace StellarBillingSystem.Controllers
             return View("NetDiscountMaster", par);
         }
 
-        public IActionResult PointsMaster()
-        {
-            PointsMasterModel par = new PointsMasterModel();
-            return View("PointsMaster", par);
-        }
+       
 
         public IActionResult PointsReedemDetails()
         {

@@ -257,22 +257,6 @@
 
                 @if (rollAccessList != null)
                 {
-                    @if (rollAccessList.Contains("ScreenMaster"))
-                    {
-
-
-                        <li class='menu-item@(currentPage == "/StockManagement/ScreenMaster" ? " active" : "")'>
-                            <a asp-controller="StellarBilling" asp-action="ScreenMaster" class="menu-link">
-
-                                <div>Screen Master</div>
-                            </a>
-                        </li>
-
-                    }
-                }
-
-                @if (rollAccessList != null)
-                {
                     @if (rollAccessList.Contains("GodownModel"))
                     {
 
