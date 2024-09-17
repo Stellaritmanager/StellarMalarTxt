@@ -2357,7 +2357,7 @@ namespace StellarBillingSystem.Controllers
                 existingrole.BranchID = model.BranchID;
                 existingrole.RollID = model.RollID;
                 existingrole.ScreenID = model.ScreenID;
-                existingrole.Access = model.Access;
+                existingrole.Access = "true";
                 existingrole.Authorized = model.Authorized;
                 existingrole.lastUpdatedDate = DateTime.Now.ToString();
                 existingrole.lastUpdatedUser = User.Claims.First().Value.ToString();
@@ -2368,7 +2368,7 @@ namespace StellarBillingSystem.Controllers
             }
             else
             {
-
+                model.Access = "true";
                 model.lastUpdatedDate = DateTime.Now.ToString();
                 model.lastUpdatedUser = User.Claims.First().Value.ToString();
                 model.lastUpdatedMachine = Request.HttpContext.Connection.RemoteIpAddress.ToString();
