@@ -273,6 +273,7 @@ namespace StellarBillingSystem.Controllers
 
         public IActionResult ProductMaster()
         {
+          
             BusinessClassBilling business = new BusinessClassBilling(_billingsoftware);
 
             var categories = business.GetItemsFromDatabase();
@@ -302,21 +303,21 @@ namespace StellarBillingSystem.Controllers
            // ViewData["categoryid"] = business.GetCatid(model.BranchID);
             ViewData["discountid"] = business.Getdiscountid(model.ObjPro.BranchID);
           
-            BusinessClassBilling business = new BusinessClassBilling(_billingsoftware);
-            ViewData["categoryid"] = business.GetCatid(model.BranchID);
-            ViewData["discountid"] = business.Getdiscountid(model.BranchID);
+           
+            ViewData["categoryid"] = business.GetCatid(model.ObjPro.BranchID);
+            ViewData["discountid"] = business.Getdiscountid(model.ObjPro.BranchID);
             using (var context = new BillingContext())
             {
                 // Step 1: Perform the query
                 var entities = context.SHProductMaster
-                                      .Where(e => e.BranchID == model.BranchID && e.IsDelete == false)
+                                      .Where(e => e.BranchID == model.ObjPro.BranchID && e.IsDelete == false)
                                       .ToList();
 
                 // Step 2: Convert to DataTable
                 var dataTable = BusinessClassBilling.ConvertToDataTableProductMaster(entities);
                 // Store the DataTable in ViewData for access in the view
 
-            ViewData["ProductData"] =await AdditionalProductMasterFun(model.ObjPro.BranchID);
+           
                 ViewData["ProductData"] = dataTable;
 
                 return View("ProductMaster", model);
