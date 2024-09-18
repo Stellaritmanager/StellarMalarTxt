@@ -167,7 +167,7 @@
                             </div>
                             <div class="form-floating form-floating-outline mb-4">
 
-                                <input asp-for="Initial" value="@Model.Initial" class="form-control" placeholder="Initial" pattern="^[A-Za-z\s.]+$" title="Initial should contain only letters,spaces and dots" />
+                                <input asp-for="Initial" value="@Model.Initial" class="form-control" placeholder="Initial" oninput="validateInput(this)"/>
                                 <label asp-for="Initial" class="control-label">Initial</label>
                                 <span asp-validation-for="Initial" class="text-danger"></span>
                             </div>
@@ -278,6 +278,7 @@
 
                             @{
                                 var imageUrl = ViewBag.ImageUrl as string;
+                                var hasIdProofFile = Model.IdProofFile != null && Model.IdProofFile.Length > 0; // Check if the file exists
                             }
 
                             <div>
@@ -293,8 +294,11 @@
                                 }
                             </div>
                             <div>
-                               
-                                <input type="file" class="btn btn-primary" name="imageFile" accept="image/png, image/jpeg" value="@Model.IdProofFile" style="width: 290px; height: 40px; padding: 5px;" />
+                                <input type="file" class="btn btn-primary" name="imageFile" accept="image/png, image/jpeg" style="width: 290px; height: 40px; padding: 5px;" />
+                                @if (hasIdProofFile)
+                                {
+                                    <span style="margin-left: 10px;">Current ID Proof File: id-proof.jpg</span> <!-- Use a static name or dynamically fetched if available -->
+                                }
                             </div>
 
 

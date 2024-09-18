@@ -306,23 +306,12 @@ namespace StellarBillingSystem.Controllers
 
             ViewData["categoryid"] = business.GetCatid(model.ObjPro.BranchID);
             ViewData["discountid"] = business.Getdiscountid(model.ObjPro.BranchID);
-            using (var context = new BillingContext())
-            {
-                // Step 1: Perform the query
-                var entities = context.SHProductMaster
-                                      .Where(e => e.BranchID == model.ObjPro.BranchID && e.IsDelete == false)
-                                      .ToList();
 
-                // Step 2: Convert to DataTable
-                var dataTable = BusinessClassBilling.ConvertToDataTableProductMaster(entities);
-                // Store the DataTable in ViewData for access in the view
-
-
-                ViewData["ProductData"] = dataTable;
+            ViewData["ProductData"] = await AdditionalProductMasterFun(model.ObjPro.BranchID);
 
                 return View("ProductMaster", model);
 
-            }
+            
         }
 
 
@@ -356,10 +345,10 @@ namespace StellarBillingSystem.Controllers
 
             ViewData["categoryid"] = business.GetCatid(model.BranchID);
             ViewData["discountid"] = business.Getdiscountid(model.BranchID);
-           
 
 
-          
+
+
 
             // Fetch categories and convert them to SelectListItem for dropdown
             var categories = business.GetItemsFromDatabase();
@@ -380,13 +369,13 @@ namespace StellarBillingSystem.Controllers
                     ViewBag.ValidationMessage = "Please enter either ProductID or BarcodeID.";
 
                     // Fetch and assign product list or additional product data
-                   var dataTable = await AdditionalProductMasterFun(model.BranchID);
+                    var dataTable = await AdditionalProductMasterFun(model.BranchID);
 
                     ViewData["ProductData"] = dataTable;
 
 
                     var productDropDownModel = business.CreateProductDropDownModel(selectListItems, selectedCategoryId, model);
-                    
+
                     // Return the view with the updated model
                     return View("ProductMaster", productDropDownModel);
                 }
@@ -445,7 +434,7 @@ namespace StellarBillingSystem.Controllers
                     // No product found, return an empty product with a message
                     ViewBag.NoProductMessage = "No value for this product ID";
                     var productDropDownModel = business.CreateProductDropDownModel(selectListItems, selectedCategoryId, model);
-                    
+
 
                     var dataTable = await AdditionalProductMasterFun(model.BranchID);
                     ViewData["ProductData"] = dataTable;
@@ -484,7 +473,7 @@ namespace StellarBillingSystem.Controllers
                     ViewBag.ErrorMessage = "Product not found";
 
                 }
-                
+
                 var dataTable = await AdditionalProductMasterFun(model.BranchID);
 
                 // Store the DataTable in ViewData for access in the view
@@ -602,7 +591,7 @@ namespace StellarBillingSystem.Controllers
 
 
 
-                var existingProduct = await _billingsoftware.SHProductMaster.FirstOrDefaultAsync(x=>x.ProductID == model.ProductID && x.BranchID==model.BranchID);
+                var existingProduct = await _billingsoftware.SHProductMaster.FirstOrDefaultAsync(x => x.ProductID == model.ProductID && x.BranchID == model.BranchID);
                 if (existingProduct != null)
                 {
                     if (existingProduct.IsDelete)
@@ -658,7 +647,7 @@ namespace StellarBillingSystem.Controllers
                 ViewBag.Message = "Saved Successfully";
             }
 
-           
+
 
             var dataTable2 = await AdditionalProductMasterFun(model.BranchID);
 
@@ -666,10 +655,9 @@ namespace StellarBillingSystem.Controllers
             ViewData["ProductData"] = dataTable2;
 
 
-            model = new ProductMatserModel();
-            return View("ProductMaster", model);
+            var productDropDownModel1 = business.CreateProductDropDownModel(selectListItems, selectedCategoryId, model);
+            return View("ProductMaster", productDropDownModel1);
         }
-
 
 
 
@@ -2099,7 +2087,7 @@ namespace StellarBillingSystem.Controllers
 
 
 
-            var staffcheck = await _billingsoftware.SHStaffAdmin.FirstOrDefaultAsync(x => x.StaffID == model.StaffID && x.BranchID == model.BranchID && (x.UserName != model.UserName || x.Password != model.Password));
+            var staffcheck = await _billingsoftware.SHStaffAdmin.FirstOrDefaultAsync(x => x.StaffID == model.StaffID && x.BranchID == model.BranchID && (x.UserName != model.UserName));
 
 
 
@@ -2123,8 +2111,18 @@ namespace StellarBillingSystem.Controllers
                         await imageFile.CopyToAsync(memoryStream);
                         model.IdProofFile = memoryStream.ToArray();
                     }
+                    
                 }
-               
+                else
+                {
+                    // If no new file is uploaded, retain the existing ID proof file
+                    var mod = await _billingsoftware.SHStaffAdmin.FindAsync(model.StaffID, model.BranchID);
+                    if (mod != null)
+                    {
+                        model.IdProofFile = mod.IdProofFile; // Retain existing file
+                    }
+                }
+
 
 
                 var existingStaffAdmin = await _billingsoftware.SHStaffAdmin.FindAsync(model.StaffID, model.BranchID);
@@ -2157,6 +2155,7 @@ namespace StellarBillingSystem.Controllers
                     existingStaffAdmin.BranchID = model.BranchID;
                     existingStaffAdmin.FirstName = model.FirstName;
                     existingStaffAdmin.LastName = model.LastName;
+                    existingStaffAdmin.FullName = model.FullName;
                     existingStaffAdmin.Initial = model.Initial;
                     existingStaffAdmin.Prefix = model.Prefix;
                     existingStaffAdmin.Age = model.Age;
@@ -2177,6 +2176,7 @@ namespace StellarBillingSystem.Controllers
                     existingStaffAdmin.LastupdatedDate = DateTime.Now;
                     existingStaffAdmin.LastupdatedUser = User.Claims.First().Value.ToString();
                     existingStaffAdmin.LastUpdatedMachine = Request.HttpContext.Connection.RemoteIpAddress.ToString();
+                    existingStaffAdmin.Gender = model.Gender;
 
                     _billingsoftware.Entry(existingStaffAdmin).State = EntityState.Modified;
 
@@ -2193,7 +2193,7 @@ namespace StellarBillingSystem.Controllers
             else
             {
               
-                ViewBag.ExistMessage = "Cannot Update Username and Password";
+                ViewBag.ExistMessage = "Cannot Update Username";
                 var dataTable10 = await AdditionalStaffFun(model.BranchID);
 
                 // Store the DataTable in ViewData for access in the view
