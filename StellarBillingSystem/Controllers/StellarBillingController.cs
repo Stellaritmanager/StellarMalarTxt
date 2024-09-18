@@ -1,7 +1,18 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿
+using DocumentFormat.OpenXml.Bibliography;
+using DocumentFormat.OpenXml.InkML;
+using DocumentFormat.OpenXml.Office2021.Excel.RichDataWebImage;
+using DocumentFormat.OpenXml.Spreadsheet;
+using Humanizer;
+using DocumentFormat.OpenXml.Wordprocessing;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Microsoft.CodeAnalysis.Operations;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
+using NuGet.Protocol;
 using StellarBillingSystem.Business;
 using StellarBillingSystem.Context;
 using StellarBillingSystem.Models;
@@ -10,6 +21,13 @@ using System.Globalization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System.Web;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using Microsoft.AspNetCore.Components.Forms;
+using SkiaSharp;
+using Newtonsoft.Json;
+using Microsoft.EntityFrameworkCore.Metadata;
+using System.Globalization;
+using Microsoft.AspNetCore.Http;
 
 
 namespace StellarBillingSystem.Controllers
@@ -25,15 +43,8 @@ namespace StellarBillingSystem.Controllers
         {
             _billingsoftware = billingsoftware;
             _configuration = configuration;
-        }
-
-
-
-
-
-
-
-        public IActionResult CategoryMaster()
+        }   
+        public async Task<IActionResult> CategoryMaster()
         {
             CategoryMasterModel model = new CategoryMasterModel();
             if (TempData["BranchID"] != null)
@@ -41,38 +52,23 @@ namespace StellarBillingSystem.Controllers
                 model.BranchID = TempData["BranchID"].ToString();
                 TempData.Keep("BranchID");
             }
-            using (var context = new BillingContext())
-            {
-                // Step 1: Perform the query
-                var entities = context.SHCategoryMaster
-                                      .Where(e => e.BranchID == model.BranchID && e.IsDelete == false)
-                                      .ToList();
-
-                // Step 2: Convert to DataTable
-                var dataTable = BusinessClassBilling.convertToDataTableCategoryMaster(entities);
-                // Store the DataTable in ViewData for access in the view
-
-                ViewData["Categorydata"] = dataTable;
-
-                return View("CategoryMaster", model);
-            }
+                ViewData["Categorydata"] = await AdditionalCategoryMasterFun(model.BranchID);
+              
+                return View("CategoryMaster",model);
+            
         }
-
-
-
         public async Task<DataTable> AdditionalCategoryMasterFun(string branchID)
         {
-            using (var context = new BillingContext())
-            {
+            
                 // Step 1: Perform the query
-                var entities = context.SHCategoryMaster
-                                      .Where(e => e.BranchID == branchID && e.IsDelete == false).OrderByDescending(e => e.LastUpdatedDate)
+                var entities = _billingsoftware.SHCategoryMaster
+                                      .Where(e => e.BranchID == branchID && e.IsDelete == false).OrderByDescending(e=>e.LastUpdatedDate)
                                       .ToList();
 
                 // Step 2: Convert to DataTable
                 return BusinessClassBilling.convertToDataTableCategoryMaster(entities);
 
-            }
+            
         }
 
 
@@ -187,7 +183,8 @@ namespace StellarBillingSystem.Controllers
 
             else if (buttonType == "DeleteRetrieve")
             {
-                var categorytoretrieve = await _billingsoftware.SHCategoryMaster.FindAsync(model.CategoryID, model.BranchID);
+                var categorytoretrieve = await _billingsoftware.SHCategoryMaster.FirstOrDefaultAsync(x => x.CategoryID == model.CategoryID && x.BranchID == model.BranchID);
+
                 if (categorytoretrieve != null)
                 {
                     if (categorytoretrieve.IsDelete == true)
@@ -211,8 +208,8 @@ namespace StellarBillingSystem.Controllers
                 else
                 {
                     ViewBag.ErrorMessage = "Category not found";
-
-
+                    
+                   
                 }
                 var dataTable5 = await AdditionalCategoryMasterFun(model.BranchID);
 
@@ -224,7 +221,10 @@ namespace StellarBillingSystem.Controllers
             }
             else if (buttonType == "save")
             {
-                var existingCategory = await _billingsoftware.SHCategoryMaster.FindAsync(model.CategoryID, model.BranchID);
+                HttpContext.Session.SetString("BranchID", model.BranchID);
+
+                var existingCategory = await _billingsoftware.SHCategoryMaster.FirstOrDefaultAsync(x => x.CategoryID == model.CategoryID && x.BranchID == model.BranchID);
+
                 if (existingCategory != null)
                 {
                     if (existingCategory.IsDelete)
@@ -271,7 +271,7 @@ namespace StellarBillingSystem.Controllers
 
 
 
-        public IActionResult ProductMaster()
+        public async Task<IActionResult> ProductMaster()
         {
           
             BusinessClassBilling business = new BusinessClassBilling(_billingsoftware);
@@ -320,25 +320,23 @@ namespace StellarBillingSystem.Controllers
            
                 ViewData["ProductData"] = dataTable;
 
-                return View("ProductMaster", model);
+            return View("ProductMaster", model);
 
-            }
         }
 
 
         public async Task<DataTable> AdditionalProductMasterFun(string branchID)
         {
-            using (var context = new BillingContext())
-            {
+    
                 // Step 1: Perform the query
-                var entities = context.SHProductMaster
+                var entities = _billingsoftware.SHProductMaster
                                       .Where(e => e.BranchID == branchID && e.IsDelete == false).OrderByDescending(e => e.LastUpdatedDate)
                                       .ToList();
 
                 // Step 2: Convert to DataTable
                 return BusinessClassBilling.ConvertToDataTableProductMaster(entities);
-
-            }
+                
+            
         }
 
 
@@ -357,7 +355,7 @@ namespace StellarBillingSystem.Controllers
 
             ViewData["categoryid"] = business.GetCatid(model.BranchID);
             ViewData["discountid"] = business.Getdiscountid(model.BranchID);
-
+           
 
 
           
@@ -485,7 +483,7 @@ namespace StellarBillingSystem.Controllers
                     ViewBag.ErrorMessage = "Product not found";
 
                 }
-
+                
                 var dataTable = await AdditionalProductMasterFun(model.BranchID);
 
                 // Store the DataTable in ViewData for access in the view
@@ -550,15 +548,17 @@ namespace StellarBillingSystem.Controllers
             }
             else if (buttonType == "Save")
             {
-                if (string.IsNullOrEmpty(model.ProductID))
-                {
-                    ViewBag.ValidationMessage = "Please enter  ProductID";
-                    var dataTable = await AdditionalProductMasterFun(model.BranchID);
+                //if (string.IsNullOrEmpty(model.ProductID))
+                //{
+                //    ViewBag.ValidationMessage = "Please enter  ProductID";
+                //    var dataTable = await AdditionalProductMasterFun(model.BranchID);
 
-                    // Store the DataTable in ViewData for access in the view
-                    ViewData["ProductData"] = dataTable;
-                    return View("ProductMaster", model);
-                }
+                //    // Store the DataTable in ViewData for access in the view
+                //    ViewData["ProductData"] = dataTable;
+                //    return View("ProductMaster", model);
+                //}
+
+                HttpContext.Session.SetString("BranchID", model.BranchID);
 
                 if (string.IsNullOrEmpty(model.BarcodeId))
                 {
@@ -601,7 +601,7 @@ namespace StellarBillingSystem.Controllers
 
 
 
-                var existingProduct = await _billingsoftware.SHProductMaster.FindAsync(model.ProductID, model.BranchID);
+                var existingProduct = await _billingsoftware.SHProductMaster.FirstOrDefaultAsync(x=>x.ProductID == model.ProductID && x.BranchID==model.BranchID);
                 if (existingProduct != null)
                 {
                     if (existingProduct.IsDelete)
@@ -657,7 +657,7 @@ namespace StellarBillingSystem.Controllers
                 ViewBag.Message = "Saved Successfully";
             }
 
-
+           
 
             var dataTable2 = await AdditionalProductMasterFun(model.BranchID);
 
@@ -676,18 +676,22 @@ namespace StellarBillingSystem.Controllers
 
         public async Task<DataTable> AdditionalGodownFun(string branchID)
         {
-            using (var context = new BillingContext())
-            {
-                // Step 1: Perform the query
-                var entities = context.SHGodown
-                                      .Where(e => e.BranchID == branchID && e.IsDelete == false).OrderByDescending(e => e.LastUpdatedDate)
-                                      .ToList();
 
-                // Step 2: Convert to DataTable
-                return BusinessClassBilling.ConvertToDataTableGodown(entities);
+            var entities = (
+                           from g in _billingsoftware.SHGodown
+                           join pm in _billingsoftware.SHProductMaster on g.ProductID equals pm.ProductID
+                           where g.BranchID == branchID && g.IsDelete == false && pm.BranchID == branchID && pm.IsDelete == false
+                                 orderby g.LastUpdatedDate descending
+                                select new GodownModel
+                                {
+                                  ProductID = pm.ProductName,
+                                  NumberofStocks = g.NumberofStocks
+                                 }).ToList();
 
-            }
-        }
+            // Step 2: Convert to DataTable
+            return BusinessClassBilling.ConvertToDataTableGodown(entities);
+        
+    }
 
 
 
@@ -787,8 +791,32 @@ namespace StellarBillingSystem.Controllers
                         return View("GodownModel", model);
                     }
 
+                    // Convert existing NumberofStocks from string to int
+                    int existingNumberOfStocks = 0;
+                    int newNumberOfStocks = 0;
+
+                    // Parse the existing number of stocks
+                    if (!string.IsNullOrEmpty(existinggoddown.NumberofStocks))
+                    {
+                        existingNumberOfStocks = int.Parse(existinggoddown.NumberofStocks);
+                    }
+
+                    // Parse the new number of stocks
+                    if (!string.IsNullOrEmpty(model.NumberofStocks))
+                    {
+                        newNumberOfStocks = int.Parse(model.NumberofStocks);
+                    }
+
+                    // Add the new NumberofStocks to the existing NumberofStocks
+                    int updatedNumberOfStocks = existingNumberOfStocks + newNumberOfStocks;
+
+                    // Update the existing record with the new total
+                    existinggoddown.NumberofStocks = updatedNumberOfStocks.ToString();
+
+
+
                     existinggoddown.ProductID = model.ProductID;
-                    existinggoddown.NumberofStocks = model.NumberofStocks;
+                   
                     existinggoddown.DatefofPurchase = model.DatefofPurchase;
                     existinggoddown.SupplierInformation = model.SupplierInformation;
                     existinggoddown.IsDelete = model.IsDelete;
@@ -857,9 +885,13 @@ namespace StellarBillingSystem.Controllers
 
             if (buttonType == "Get")
             {
-                var getStock = await _billingsoftware.SHGodown.FirstOrDefaultAsync(x => x.IsDelete == false && x.ProductID == model.ProductID && x.IsDelete == false && x.BranchID == model.BranchID);
+                var getStock = await _billingsoftware.SHGodown.FirstOrDefaultAsync(x => x.IsDelete == false && x.ProductID == model.ProductID && x.IsDelete==false && x.BranchID == model.BranchID);
                 if (getStock != null)
                 {
+                    var dataTable9 = await AdditionalGodownFun(model.BranchID);
+
+                    // Store the DataTable in ViewData for access in the view
+                    ViewData["GodownData"] = dataTable9;
 
                     return View("GodownModel", getStock);
                 }
@@ -1354,6 +1386,41 @@ namespace StellarBillingSystem.Controllers
 
 
 
+
+        //points Master
+
+        public async Task<IActionResult> PointsMaster()
+        {
+            PointsMasterModel par = new PointsMasterModel();
+            if (TempData["BranchID"] != null)
+            {
+                par.BranchID = TempData["BranchID"].ToString();
+                TempData.Keep("BranchID");
+            }
+            ViewData["Pointsdata"] = await convetToDataTablePointMaster(par.BranchID);
+
+            return View("PointsMaster", par);
+        }
+
+
+
+        public async Task<DataTable> convetToDataTablePointMaster(string branchID)
+        {
+
+            // Step 1: Perform the query
+            var en = _billingsoftware.SHPointsMaster
+                                  .Where(e => e.BranchID == branchID ).OrderByDescending(e => e.LastUpdatedDate)
+                                  .ToList();
+
+            // Step 2: Convert to DataTable
+            return BusinessClassBilling.convetToDataTablePointMaster(en);
+
+
+        }
+
+
+
+
         [HttpPost]
 
         public async Task<IActionResult> AddPoints(PointsMasterModel model)
@@ -1371,7 +1438,7 @@ namespace StellarBillingSystem.Controllers
             var existingpoints = await _billingsoftware.SHPointsMaster.FindAsync(pointsID, model.BranchID);
             if (existingpoints != null)
             {
-
+              
                 existingpoints.NetPrice = model.NetPrice;
                 existingpoints.NetPoints = model.NetPoints;
                 existingpoints.BranchID = model.BranchID;
@@ -1380,7 +1447,7 @@ namespace StellarBillingSystem.Controllers
                 existingpoints.LastUpdatedmachine = Request.HttpContext.Connection.RemoteIpAddress.ToString();
 
                 _billingsoftware.Entry(existingpoints).State = EntityState.Modified;
-
+               
             }
             else
             {
@@ -1391,16 +1458,18 @@ namespace StellarBillingSystem.Controllers
 
 
                 _billingsoftware.SHPointsMaster.Add(model);
-
+               
             }
 
             await _billingsoftware.SaveChangesAsync();
 
             ViewBag.Message = "Saved Successfully";
 
+            var dataTable6 = await convetToDataTablePointMaster(model.BranchID);
+
+            // Store the DataTable in ViewData for access in the view
+            ViewData["Pointsdata"] = dataTable6;
             model = new PointsMasterModel();
-
-
 
             return View("PointsMaster", model);
 
@@ -1444,10 +1513,10 @@ namespace StellarBillingSystem.Controllers
         }
 
 
+       
 
-
-
-
+           
+        
 
         [HttpPost]
         public async Task<IActionResult> AddRackPartition(RackPatrionProductModel model, string buttonType, RackpartitionViewModel viewmodel)
@@ -1811,19 +1880,21 @@ namespace StellarBillingSystem.Controllers
 
         public async Task<DataTable> AdditionalStaffFun(string branchID)
         {
-            using (var context = new BillingContext())
-            {
+            
                 // Step 1: Perform the query
-                var entities = await (from staff in context.SHStaffAdmin
-                                      join resource in context.SHresourceType
-                                      on staff.ResourceTypeID equals resource.ResourceTypeID
-                                      where staff.BranchID == branchID && staff.IsDelete == false && resource.BranchID == branchID && resource.IsDelete == false
+                var entities = await (from staff in _billingsoftware.SHStaffAdmin
+                                      join rol in _billingsoftware.SHrollaccess 
+                                      on staff.StaffID equals rol.StaffID into rolacc
+                                      from s in rolacc.DefaultIfEmpty()
+                                      join rolname in _billingsoftware.SHrollType on s.RollID equals rolname.RollID into roll
+                                       from r in roll.DefaultIfEmpty()
+                                      where staff.BranchID == branchID && staff.IsDelete == false 
                                       orderby staff.LastupdatedDate descending
                                       select new StaffAdminModel
                                       {
                                           StaffID = staff.StaffID,
                                           FullName = staff.FullName,
-                                          ResourceTypeID = resource.ResourceTypeName,
+                                          ResourceTypeID = r.RollName,
                                           PhoneNumber = staff.PhoneNumber,
                                           EmailId = staff.EmailId
                                       }).ToListAsync();
@@ -1831,7 +1902,7 @@ namespace StellarBillingSystem.Controllers
                 // Step 2: Convert to DataTable
                 return BusinessClassBilling.ConvertToDataTableStaff(entities);
 
-            }
+            
         }
 
 
@@ -1868,7 +1939,7 @@ namespace StellarBillingSystem.Controllers
             ViewData["branchid"] = Busbill.Getbranch();
 
 
-
+            
 
             if (buttontype == "Get")
             {
@@ -1881,13 +1952,30 @@ namespace StellarBillingSystem.Controllers
                 var getstaff = await _billingsoftware.SHStaffAdmin.FirstOrDefaultAsync(x => x.StaffID == model.StaffID && x.IsDelete == false && x.BranchID == model.BranchID);
                 if (getstaff != null)
                 {
-                    // Prepare the image URL
-                    ViewBag.ImageUrl = Url.Action("GetIdProofImage", new { staffId = getstaff.StaffID, branchId = getstaff.BranchID });
-                    var dataTable1 = await AdditionalStaffFun(model.BranchID);
 
-                    // Store the DataTable in ViewData for access in the view
-                    ViewData["StaffData"] = dataTable1;
-                    return View("StaffAdmin", getstaff);
+
+                    var checkid = await _billingsoftware.SHStaffAdmin.FirstOrDefaultAsync(x => x.StaffID == model.StaffID && x.IsDelete == false && x.BranchID == model.BranchID && x.IdProofFile!=null);
+
+                    if (checkid != null)
+                    {
+
+                        // Prepare the image URL
+                        ViewBag.ImageUrl = Url.Action("GetIdProofImage", new { staffId = getstaff.StaffID, branchId = getstaff.BranchID });
+                        var dataTable1 = await AdditionalStaffFun(model.BranchID);
+
+                        // Store the DataTable in ViewData for access in the view
+                        ViewData["StaffData"] = dataTable1;
+                        return View("StaffAdmin", getstaff);
+                    }
+                    else
+                    {
+                        var dataTable1 = await AdditionalStaffFun(model.BranchID);
+
+                        // Store the DataTable in ViewData for access in the view
+                        ViewData["StaffData"] = dataTable1;
+                        return View("StaffAdmin", getstaff);
+
+                    }
                 }
                 else
                 {
@@ -1988,6 +2076,7 @@ namespace StellarBillingSystem.Controllers
                         model.Password = stafftoretrieve.Password;
                         model.IdProofId = stafftoretrieve.IdProofId;
                         model.IdProofName = stafftoretrieve.IdProofName;
+                        model.IdProofFile = stafftoretrieve.IdProofFile;
 
                         ViewBag.retMessage = "Deleted StaffID retrieved successfully";
                     }
@@ -2009,7 +2098,7 @@ namespace StellarBillingSystem.Controllers
 
 
 
-            var staffcheck = await _billingsoftware.SHStaffAdmin.FirstOrDefaultAsync(x => x.StaffID == model.StaffID && x.BranchID == model.BranchID && x.UserName == model.UserName && x.Password == model.Password);
+            var staffcheck = await _billingsoftware.SHStaffAdmin.FirstOrDefaultAsync(x => x.StaffID == model.StaffID && x.BranchID == model.BranchID && (x.UserName != model.UserName || x.Password != model.Password));
 
 
 
@@ -2034,7 +2123,7 @@ namespace StellarBillingSystem.Controllers
                         model.IdProofFile = memoryStream.ToArray();
                     }
                 }
-
+               
 
 
                 var existingStaffAdmin = await _billingsoftware.SHStaffAdmin.FindAsync(model.StaffID, model.BranchID);
@@ -2102,13 +2191,13 @@ namespace StellarBillingSystem.Controllers
             }
             else
             {
-                StaffAdminModel mod = new StaffAdminModel();
-                ViewBag.ExistMessage = "Username and Password Already Exist";
+              
+                ViewBag.ExistMessage = "Cannot Update Username and Password";
                 var dataTable10 = await AdditionalStaffFun(model.BranchID);
 
                 // Store the DataTable in ViewData for access in the view
                 ViewData["StaffData"] = dataTable10;
-                return View("StaffAdmin", mod);
+                return View("StaffAdmin", model);
             }
             await _billingsoftware.SaveChangesAsync();
 
@@ -2792,12 +2881,20 @@ namespace StellarBillingSystem.Controllers
 
         }
 
-
+        //This Method used for Customer Billing
         [HttpPost]
-
-        public async Task<IActionResult> getCustomerBill(BillProductlistModel model, string buttonType, string BillID, string BillDate, string CustomerNumber, string BranchID, string TotalPrice, BillingMasterModel masterModel, BillingDetailsModel detailModel, string Quantity)
+        public async Task<IActionResult> getCustomerBill(BillProductlistModel model, string buttonType, string BillID, string BillDate, string CustomerNumber,string BranchID, string TotalPrice, BillingMasterModel masterModel, BillingDetailsModel detailModel, string Quantity)
         {
 
+            if (model.BillID != null)
+            {
+                HttpContext.Session.SetString("BillID", model.BillID);
+            }
+            else
+            {
+                HttpContext.Session.SetString("BillID", string.Empty);
+            }
+        
 
             if (TempData["BranchID"] != null)
             {
@@ -2805,8 +2902,11 @@ namespace StellarBillingSystem.Controllers
                 TempData.Keep("BranchID");
             }
 
+            HttpContext.Session.SetString("BranchID", model.BranchID);
 
-            BusinessClassBilling Busbill = new BusinessClassBilling(_billingsoftware);
+        
+
+                BusinessClassBilling Busbill = new BusinessClassBilling(_billingsoftware);
             ViewData["productid"] = Busbill.Getproduct(model.BranchID);
 
 
@@ -2827,10 +2927,10 @@ namespace StellarBillingSystem.Controllers
 
                 var Table = BusinessClassCommon.DataTable(_billingsoftware, Query);
 
-                // PrintDocument(Busbill.PrintBillDetails(Table, model.BranchID));
-
+               // PrintDocument(Busbill.PrintBillDetails(Table, model.BranchID));
+                
                 return File(Busbill.PrintBillDetails(Table, model.BranchID), "application/vnd.openxmlformats-officedocument.wordprocessingml.document", "Bill_" + TempData["BillID"] + ".docx");
-
+                
 
 
 
@@ -2838,8 +2938,23 @@ namespace StellarBillingSystem.Controllers
 
             if (buttonType == "Payment")
             {
-                return RedirectToAction("PaymentBilling", new { BillID = model.BillID, BranchID = model.BranchID });
+
+                var checkbillexist = await _billingsoftware.SHbillmaster.FirstOrDefaultAsync(x => x.BillID == model.BillID && x.BillDate == model.BillDate && x.CustomerNumber == model.CustomerNumber && x.IsDelete == false);
+
+                if (checkbillexist == null)
+                {
+                    ViewBag.Getnotfound = "Bill Not Saved ";
+
+                    return View("CustomerBilling", model);
+                }
+                else
+                {
+
+                    return RedirectToAction("PaymentBilling", new { BillID = model.BillID, BranchID = model.BranchID });
+                }
             }
+
+
 
             if (buttonType == "Add Product")
             {
@@ -2850,6 +2965,7 @@ namespace StellarBillingSystem.Controllers
                     TempData.Keep("BranchID");
                 }
 
+                //Validation Message for Product or Barcode is Empty while Add Product
                 if ((string.IsNullOrWhiteSpace(model.ProductID) || model.ProductID == "ProductID") &&
                       string.IsNullOrWhiteSpace(model.BarCode) || model.ProductID == "Barcode")
                 {
@@ -2874,7 +2990,7 @@ namespace StellarBillingSystem.Controllers
 
 
 
-                //Check  ProductID
+                //Check  ProductID is already is available for Particular BillID
 
                 var existingProductInBillDetails = await _billingsoftware.SHbilldetails
                      .FirstOrDefaultAsync(x => x.ProductID == model.ProductID
@@ -2883,7 +2999,7 @@ namespace StellarBillingSystem.Controllers
                                   && x.CustomerNumber == model.CustomerNumber
                                   && x.BranchID == model.BranchID
                                   && x.IsDelete == false);
-
+                
                 if (existingProductInBillDetails != null)
                 {
                     // ProductID already exists in billdetails
@@ -2892,7 +3008,7 @@ namespace StellarBillingSystem.Controllers
                 }
 
 
-
+                // Validation to check whether the given ProductID or Barcode is Available in Product Master
                 var productlist = await _billingsoftware.SHProductMaster
                              .Where(p => (p.ProductID == model.ProductID || p.BarcodeId == model.BarCode) && p.IsDelete == false && p.BranchID == model.BranchID)
                              .Select(p => new BillingDetailsModel
@@ -2913,6 +3029,8 @@ namespace StellarBillingSystem.Controllers
                 }
 
 
+
+                //Validation to check the given quantity is greater than stock in godown
                 var rackProducts = await (from p in _billingsoftware.SHProductMaster
                                           join g in _billingsoftware.SHGodown on p.ProductID equals g.ProductID
                                           where (p.ProductID == model.ProductID || p.BarcodeId == model.BarCode) && g.BranchID == model.BranchID && g.IsDelete == false
@@ -2967,6 +3085,7 @@ namespace StellarBillingSystem.Controllers
                     detailModel.Lastupdatedmachine = Request.HttpContext.Connection.RemoteIpAddress.ToString();
                     detailModel.Lastupdateddate = DateTime.Now.ToString();
 
+                    //Validation to check the given quantity and Price is in Correct Format
                     var product = productlist.First();
                     if (product != null)
                     {
@@ -3003,7 +3122,7 @@ namespace StellarBillingSystem.Controllers
 
                 // Calculate total price for SHbillmaster
                 var billDetails = await _billingsoftware.SHbilldetails
-         .Where(x => x.BillID == model.BillID && x.BillDate == model.BillDate && x.CustomerNumber == model.CustomerNumber && x.BranchID == model.BranchID && x.IsDelete == false)
+         .Where(x => x.BillID == detailModel.BillID && x.BillDate == model.BillDate && x.CustomerNumber == model.CustomerNumber && x.BranchID == model.BranchID && x.IsDelete == false)
          .Select(x => x.Totalprice)
          .ToListAsync();
 
@@ -3013,9 +3132,9 @@ namespace StellarBillingSystem.Controllers
                     .Sum();
 
                 var existingbillmaster = await _billingsoftware.SHbillmaster
-           .FirstOrDefaultAsync(x => x.BillID == model.BillID && x.BillDate == model.BillDate && x.CustomerNumber == model.CustomerNumber && x.BranchID == model.BranchID && x.IsDelete == false);
+           .FirstOrDefaultAsync(x => x.BillID == detailModel.BillID && x.BillDate == model.BillDate && x.CustomerNumber == model.CustomerNumber && x.BranchID == model.BranchID &&  x.IsDelete == false);
 
-                if (existingbillmaster != null)
+             if(existingbillmaster!=null)
                 {
                     existingbillmaster.Totalprice = totalPrice.ToString();
                     existingbillmaster.NetPrice = totalPrice.ToString();
@@ -3024,7 +3143,7 @@ namespace StellarBillingSystem.Controllers
                     existingbillmaster.Lastupdateduser = User.Claims.First().Value.ToString();
                     _billingsoftware.Entry(existingbillmaster).State = EntityState.Modified;
                 }
-                else
+             else
                 {
                     // Add new bill master if it does not exist
                     var newBillMaster = new BillingMasterModel
@@ -3048,7 +3167,7 @@ namespace StellarBillingSystem.Controllers
 
 
                 productlist = await _billingsoftware.SHbilldetails
-          .Where(d => d.BillID == BillID && d.BillDate == BillDate && d.CustomerNumber == CustomerNumber && d.BranchID == detailModel.BranchID)
+          .Where(d => d.BillID == detailModel.BillID && d.BillDate == BillDate && d.CustomerNumber == CustomerNumber && d.BranchID == detailModel.BranchID)
           .Select(d => new BillingDetailsModel
           {
               ProductID = d.ProductID,
@@ -3062,6 +3181,8 @@ namespace StellarBillingSystem.Controllers
                 model.Viewbillproductlist = productlist;
 
                 ViewBag.TotalPrice = totalPrice;
+                ViewBag.NetPrice = totalPrice;
+                model.BillID = detailModel.BillID;
 
                 return View("CustomerBilling", model);
             }
@@ -3104,7 +3225,7 @@ namespace StellarBillingSystem.Controllers
                         CustomerNumber = customerNumber
                     };
 
-
+               
 
                     ViewBag.TotalPrice = updatedMasterex?.Totalprice;
                     ViewBag.TotalDiscount = updatedMasterex?.TotalDiscount;
@@ -3131,9 +3252,10 @@ namespace StellarBillingSystem.Controllers
 
                 var checkbillpay = _billingsoftware.SHPaymentMaster.FirstOrDefault(x => x.BillId == model.BillID && x.BillDate == model.BillDate && x.BranchID == model.BranchID);
 
+                
                 if (checkbillpay != null)
                 {
-                    ViewBag.DelMessage = "You Have Payment For This BillID. Please Delete Payment First";
+                    ViewBag.DelMessage = "There is a payment linked to this bill. Please remove the payment before attempting to delete the bill.";
                     return View("CustomerBilling", model);
 
                 }
@@ -3141,11 +3263,7 @@ namespace StellarBillingSystem.Controllers
                 var billMaster = _billingsoftware.SHbillmaster.FirstOrDefault(b => b.BillID == model.BillID && !b.IsDelete && b.BillDate == model.BillDate && model.BranchID == model.BranchID);
                 if (billMaster != null)
                 {
-                    if (billMaster.IsDelete)
-                    {
-                        ViewBag.DelMessage = "BillID Already Deleted";
-                        return View("CustomerBilling", model);
-                    }
+                    
 
                     _billingsoftware.SHbillmaster.Remove(billMaster);
 
@@ -3201,12 +3319,21 @@ namespace StellarBillingSystem.Controllers
 
                 BusinessClassBilling busbill = new BusinessClassBilling(_billingsoftware);
 
+                // This query is used to check Bill has Product in BillDetails
+                var checkproduct = await _billingsoftware.SHbilldetails.FirstOrDefaultAsync(x=>x.BillID == masterModel.BillID && x.BillDate == masterModel.BillDate && x.CustomerNumber == masterModel.CustomerNumber && x.BranchID == masterModel.BranchID);
+
+                if(checkproduct == null)
+                {
+                    ViewBag.SaveMessage = "Please Add a Product";
+                    return View("CustomerBilling", model);
+                }
+                
 
                 // Retrieve the existing master record
                 var updateMaster = await _billingsoftware.SHbillmaster
                     .FirstOrDefaultAsync(m => m.BillID == model.BillID && m.BranchID == model.BranchID && m.BillDate == model.BillDate && m.CustomerNumber == model.CustomerNumber);
 
-
+               
 
                 if (updateMaster != null)
                 {
@@ -3216,7 +3343,7 @@ namespace StellarBillingSystem.Controllers
                         return View("CustomerBilling", model);
                     }
 
-
+                   
 
                     updateMaster.BillInsertion = false;
                     updateMaster.BillID = masterModel.BillID;
@@ -3252,10 +3379,10 @@ namespace StellarBillingSystem.Controllers
                 }
 
 
-                _billingsoftware.SaveChanges();
+               await  _billingsoftware.SaveChangesAsync();
 
 
-
+              
 
                 // Save points calculation
                 var checkpoints = await _billingsoftware.SHBillingPoints.FirstOrDefaultAsync(x => x.BillID == model.BillID && x.CustomerNumber == CustomerNumber && x.BranchID == model.BranchID);
@@ -3318,7 +3445,7 @@ namespace StellarBillingSystem.Controllers
            .Where(d => d.BillID == masterModel.BillID && d.BranchID == model.BranchID && d.BillDate == masterModel.BillDate && d.CustomerNumber == masterModel.CustomerNumber)
            .ToListAsync();
 
-                model.MasterModel = updatedMaster;
+               /* model.MasterModel = updatedMaster*/;
                 model.Viewbillproductlist = billingDetails;
 
 
@@ -3327,50 +3454,23 @@ namespace StellarBillingSystem.Controllers
 
             }
 
-            if (buttonType == "Get Points")
+            if(buttonType=="Clear")
             {
 
-                var billingPoints = await _billingsoftware.SHBillingPoints.Where(bp => bp.CustomerNumber == CustomerNumber
-                      && !bp.IsUsed && bp.BillID != BillID
-                      && _billingsoftware.SHbillmaster
-                          .Any(bm => bm.CustomerNumber == bp.CustomerNumber
-                                     && bm.IsDelete == false)).ToListAsync();
+                var clr = new BillProductlistModel();
+                ViewBag.ClearMessage = "Fields have been cleared.";
 
-
-                var totalPoints = billingPoints.Sum(bp => decimal.TryParse(bp.Points, out decimal pts) ? pts : 0);
-
-                ViewBag.Points = totalPoints.ToString("F2");
-
-
-                var updatedMaster = await _billingsoftware.SHbillmaster
-          .FirstOrDefaultAsync(m => m.BillID == BillID && m.BranchID == model.BranchID && m.BillDate == BillDate && m.CustomerNumber == CustomerNumber && m.IsDelete == false);
-
-                if (updatedMaster != null)
-                {
-                    ViewBag.TotalPrice = updatedMaster.Totalprice;
-                    ViewBag.TotalDiscount = updatedMaster.TotalDiscount;
-                    ViewBag.NetPrice = updatedMaster.NetPrice;
-                    ViewBag.CGSTPercentage = updatedMaster.CGSTPercentage;
-                    ViewBag.SGSTPercentage = updatedMaster.SGSTPercentage;
-
-                }
-
-                var billingDetails = await _billingsoftware.SHbilldetails
-                    .Where(d => d.BillID == BillID && d.BranchID == model.BranchID && d.BillDate == BillDate && d.CustomerNumber == CustomerNumber && d.IsDelete == false)
-                    .ToListAsync();
-
-                model.MasterModel = updatedMaster;
-                model.Viewbillproductlist = billingDetails;
-
-
+                return View("CustomerBilling",clr);
             }
+
+
 
             if (buttonType == "Reedem Points")
             {
 
 
                 var billingPoints = await _billingsoftware.SHBillingPoints
-           .Where(bp => bp.CustomerNumber == CustomerNumber && !bp.IsUsed && bp.BillID != BillID)
+           .Where(bp => bp.CustomerNumber == CustomerNumber && !bp.IsUsed && bp.BillID != BillID &&bp.BranchID == model.BranchID)
            .ToListAsync();
 
                 var totalPoints = billingPoints.Sum(bp => decimal.TryParse(bp.Points, out decimal pts) ? pts : 0);
@@ -3381,6 +3481,7 @@ namespace StellarBillingSystem.Controllers
                 if (updatedMaster != null)
                 {
                     decimal netPrice = decimal.TryParse(updatedMaster.NetPrice, out decimal price) ? price : 0;
+                   
                     var Total = netPrice - totalPoints;
 
                     updatedMaster.NetPrice = Total.ToString("F2");
@@ -3417,11 +3518,19 @@ namespace StellarBillingSystem.Controllers
 
                 await _billingsoftware.SaveChangesAsync();
 
+                var billingDetailsre = await _billingsoftware.SHbilldetails
+          .Where(d => d.BillID == masterModel.BillID && d.BranchID == model.BranchID && d.BillDate == masterModel.BillDate && d.CustomerNumber == masterModel.CustomerNumber)
+          .ToListAsync();
 
+              
+                model.Viewbillproductlist = billingDetailsre;
+
+                return View("CustomerBilling", model);
             }
 
+            
 
-            return View("CustomerBilling", model);
+            return View("CustomerBilling",model);
         }
 
         public void PrintDocument(byte[] fileContent)
@@ -3442,6 +3551,8 @@ namespace StellarBillingSystem.Controllers
             process.Start();
             process.WaitForExit();
         }
+
+        //
         public IActionResult DeleteProduct(string productId, string billID, string billDate, string customerNumber, BillProductlistModel model)
         {
 
@@ -3456,14 +3567,14 @@ namespace StellarBillingSystem.Controllers
             }
 
             var product = _billingsoftware.SHbilldetails
-      .Where(p => p.ProductID == productId && p.BranchID == model.BranchID && p.BillID == billID && p.BillDate == billDate && p.CustomerNumber == customerNumber)
-      .Select(p => new
-      {
-          p.Quantity,
-          p.BranchID,
-          p.IsDelete
-      })
-      .FirstOrDefault();
+                          .Where(p => p.ProductID == productId && p.BranchID == model.BranchID && p.BillID == billID && p.BillDate == billDate && p.CustomerNumber == customerNumber)
+                          .Select(p => new
+                          {
+                              p.Quantity,
+                              p.BranchID,
+                              p.IsDelete
+                          })
+                          .FirstOrDefault();
 
             if (product != null)
             {
@@ -3473,14 +3584,14 @@ namespace StellarBillingSystem.Controllers
                     return View("CustomerBilling", model);
                 }
 
-                // Update the IsDelete field to true
+                // Delete the Product from the Product Details
                 var productToUpdate = _billingsoftware.SHbilldetails
                     .First(p => p.ProductID == productId && p.BranchID == model.BranchID && p.BillID == billID && p.BillDate == billDate && p.CustomerNumber == customerNumber);
 
                 _billingsoftware.SHbilldetails.Remove(productToUpdate);
                 _billingsoftware.SaveChanges();
 
-                // Update SHRackPartionProduct to add back the quantity
+                // Update Godown to add back the quantity
                 var rackProduct = _billingsoftware.SHGodown
                     .FirstOrDefault(r => r.ProductID == productId && r.BranchID == product.BranchID && r.IsDelete == false);
 
@@ -3501,18 +3612,19 @@ namespace StellarBillingSystem.Controllers
 
 
             var billDetail = _billingsoftware.SHbilldetails
-        .Where(b => b.BillID == billID && b.BranchID == model.BranchID && b.BillDate == billDate && b.CustomerNumber == customerNumber)
-        .Select(b => new BillingDetailsModel
-        {
-            ProductID = b.ProductID,
-            ProductName = b.ProductName,
-            Price = b.Price, // Assuming you want to use the price from the database
-            Quantity = b.Quantity,
-            BillDate = b.BillDate,
-            CustomerNumber = b.CustomerNumber,
-            BillID = b.BillID
-        })
-        .ToList();
+                    .Where(b => b.BillID == billID && b.BranchID == model.BranchID && b.BillDate == billDate && b.CustomerNumber == customerNumber)
+                    .Select(b => new BillingDetailsModel
+                    {
+                        ProductID = b.ProductID,
+                        ProductName = b.ProductName,
+                        Price = b.Price, // Assuming you want to use the price from the database
+                        Quantity = b.Quantity,
+                        BillDate = b.BillDate,
+                        CustomerNumber = b.CustomerNumber,
+                        BillID = b.BillID,
+                        NetPrice = b.NetPrice
+                    })
+                    .ToList();
 
             if (billDetail != null)
             {
@@ -3524,7 +3636,27 @@ namespace StellarBillingSystem.Controllers
                 model.Viewbillproductlist = new List<BillingDetailsModel>();
             }
 
+          
 
+            var totalPriceList = _billingsoftware.SHbilldetails
+                        .Where(x => x.BillID == billID
+                                    && x.BillDate == billDate
+                                    && x.CustomerNumber == customerNumber
+                                    && x.BranchID == model.BranchID)
+                        .Select(x => x.Totalprice)
+                        .ToList();
+
+            // Convert the list of strings to decimals and calculate the sum
+            decimal totalPriceSum = totalPriceList
+                .Where(price => decimal.TryParse(price, out _))  // Filter out invalid strings
+                .Sum(price => decimal.Parse(price));             // Sum valid prices
+
+
+            if (totalPriceSum > 0)
+            {
+
+                ViewBag.TotalPrice = totalPriceSum;
+            }
 
             return View("CustomerBilling", model);
 
@@ -3581,7 +3713,7 @@ namespace StellarBillingSystem.Controllers
 
 
 
-
+   
 
         public IActionResult ResourceTypeMaster()
         {
@@ -3679,11 +3811,7 @@ namespace StellarBillingSystem.Controllers
             return View("NetDiscountMaster", par);
         }
 
-        public IActionResult PointsMaster()
-        {
-            PointsMasterModel par = new PointsMasterModel();
-            return View("PointsMaster", par);
-        }
+       
 
         public IActionResult PointsReedemDetails()
         {
@@ -3718,11 +3846,9 @@ namespace StellarBillingSystem.Controllers
         public IActionResult VoucherMaster()
         {
             return View();
-        }
+        }  
 
-
-
-
+        //This method is used to load cutomer Billing Screen
         public IActionResult CustomerBilling(string productid, string billid, string SelectedProductID)
         {
             var model = new BillProductlistModel();
@@ -3801,7 +3927,7 @@ namespace StellarBillingSystem.Controllers
             var paymentDetails = (from pm in _billingsoftware.SHPaymentMaster
                                   join pd in _billingsoftware.SHPaymentDetails
                                   on pm.PaymentId equals pd.PaymentId
-                                  where pm.BillId == BillID && pm.BranchID == BranchID && pd.BranchID == BranchID
+                                  where pm.BillId == BillID && pm.BranchID == BranchID && pd.BranchID == BranchID 
                                   select new
                                   {
                                       pd.PaymentId,
@@ -3921,7 +4047,6 @@ namespace StellarBillingSystem.Controllers
 
         public IActionResult PaymentActionget(string billID, string branchID, string billdate)
         {
-
             string formattedBillDate = billdate;
 
             // Try parsing the billDate
@@ -3939,35 +4064,34 @@ namespace StellarBillingSystem.Controllers
                 {
                     formattedBillDate = tempDate.ToString("yyyy-MM-dd");
                 }
-
             }
 
             // Fetch the current balance from PaymentMaster
             var paymentDetails = _billingsoftware.SHPaymentMaster
-                                                .Where(p => p.BillId == billID && p.BranchID == branchID && p.BillDate == formattedBillDate)
-                                                .Select(p => new
-                                                {
-                                                    p.Balance
-                                                })
-                                                .FirstOrDefault();
+                                                  .Where(p => p.BillId == billID && p.BranchID == branchID && p.BillDate == formattedBillDate)
+                                                  .Select(p => new
+                                                  {
+                                                      p.Balance
+                                                  })
+                                                  .FirstOrDefault();
 
             var billDetails = _billingsoftware.SHbillmaster
-                                     .Where(b => b.BillID == billID && b.BranchID == branchID)
-                                     .Select(b => new
-                                     {
-                                         b.BillID,
-                                         b.BillDate,
-                                         b.NetPrice
-                                     })
-                                     .FirstOrDefault();
+                                       .Where(b => b.BillID == billID && b.BranchID == branchID)
+                                       .Select(b => new
+                                       {
+                                           b.BillID,
+                                           b.BillDate,
+                                           b.NetPrice
+                                       })
+                                       .FirstOrDefault();
 
-            // Return the result as JSON to be displayed in the toast
+            // Ensure null values are explicitly handled
             return Json(new
             {
-                billId = billDetails?.BillID ?? "N/A",
-                billDate = formattedBillDate ?? "N/A",
-                billValue = billDetails.NetPrice,
-                balance = paymentDetails?.Balance ?? billDetails?.NetPrice
+                billId = billDetails?.BillID ?? "null",
+                billDate = formattedBillDate ?? "null",
+                billValue = billDetails?.NetPrice ?? "null",
+                balance = paymentDetails?.Balance ?? (billDetails?.NetPrice ?? "null")
             });
         }
 
@@ -3978,8 +4102,9 @@ namespace StellarBillingSystem.Controllers
 
 
 
+
         [HttpPost]
-        public async Task<IActionResult> PaymentAction(PaymentTableViewModel model, string buttonType, string selectedSlotId, PaymentDetailsModel detailmodel, string billId, string branchID, string billDate, string billValue)
+        public async Task<IActionResult> PaymentAction(PaymentTableViewModel model, string buttonType, string selectedSlotId, PaymentDetailsModel detailmodel,string billId, string branchID,string billDate,string billValue)
         {
 
 
@@ -4008,14 +4133,21 @@ namespace StellarBillingSystem.Controllers
                 {
                     formattedBillDate = tempDate.ToString("yyyy-MM-dd");
                 }
-
+               
             }
 
 
             //   model.StrBillvalue = BusinessClassCommon.getbalance(_billingsoftware, model.PaymentId, model.BillId,model.BranchID, model.BillDate,detailmodel.PaymentAmount);
 
-            var paymentid = "pay1";
+            var paymentid = "pay_" + billId;
 
+
+            if(billId==null && formattedBillDate == null)
+            {
+
+                ViewBag.Message = "BillID Not Found";
+                return View("PaymentBilling", model);
+            }
 
 
             if (buttonType == "DeletePayment")
@@ -4151,13 +4283,13 @@ namespace StellarBillingSystem.Controllers
 
             if (buttonType == "Save")
             {
-                /*
-                                // Check if PaymentId is not provided
-                                if (string.IsNullOrEmpty(model.PaymentId))
-                                {
-                                    ViewBag.Message = "Please enter Payment ID.";
-                                    return View("PaymentBilling", model);
-                                }*/
+/*
+                // Check if PaymentId is not provided
+                if (string.IsNullOrEmpty(model.PaymentId))
+                {
+                    ViewBag.Message = "Please enter Payment ID.";
+                    return View("PaymentBilling", model);
+                }*/
 
                 // Check if no radio button is selected
                 if (string.IsNullOrEmpty(selectedSlotId))
@@ -4167,16 +4299,16 @@ namespace StellarBillingSystem.Controllers
                 }
 
 
-                /* var existingPaymentCheck = _billingsoftware.SHPaymentMaster
-                        .Where(x => x.PaymentId == model.PaymentId && x.BillId != model.BillId && x.IsDelete == false)
-                        .FirstOrDefault();
+               /* var existingPaymentCheck = _billingsoftware.SHPaymentMaster
+                       .Where(x => x.PaymentId == model.PaymentId && x.BillId != model.BillId && x.IsDelete == false)
+                       .FirstOrDefault();
 
-                 if (existingPaymentCheck != null)
-                 {
-                     ViewBag.Message = "Payment ID already exists for a different Bill.";
-                     return View("PaymentBilling", model);
-                 }
- */
+                if (existingPaymentCheck != null)
+                {
+                    ViewBag.Message = "Payment ID already exists for a different Bill.";
+                    return View("PaymentBilling", model);
+                }
+*/
 
 
                 double totalpayamount = 0.0;
@@ -4197,18 +4329,18 @@ namespace StellarBillingSystem.Controllers
                     return View("PaymentBilling", model);
                 }
 
-                /* var existingPayment = _billingsoftware.SHPaymentMaster
-        .Where(x => x.BillId == billId && x.BranchID == branchID && x.PaymentId != model.PaymentId && x.IsDelete == false && x.BillDate == billDate)
-        .FirstOrDefault();
+               /* var existingPayment = _billingsoftware.SHPaymentMaster
+       .Where(x => x.BillId == billId && x.BranchID == branchID && x.PaymentId != model.PaymentId && x.IsDelete == false && x.BillDate == billDate)
+       .FirstOrDefault();
 
 
 
 
-                 if (existingPayment != null)
-                 {
-                     ViewBag.Message = HttpUtility.JavaScriptStringEncode($"Your Payment ID is '{existingPayment.PaymentId}' cannot insert another ID.");
-                     return View("PaymentBilling", model);
-                 }*/
+                if (existingPayment != null)
+                {
+                    ViewBag.Message = HttpUtility.JavaScriptStringEncode($"Your Payment ID is '{existingPayment.PaymentId}' cannot insert another ID.");
+                    return View("PaymentBilling", model);
+                }*/
 
                 var objbillmaster = new PaymentMasterModel()
                 {
@@ -4278,7 +4410,7 @@ namespace StellarBillingSystem.Controllers
 
 
 
-                model.StrBillvalue = BusinessClassCommon.getbalance(_billingsoftware, paymentid, billId, branchID, formattedBillDate, totalpayamount.ToString());
+                model.StrBillvalue = BusinessClassCommon.getbalance(_billingsoftware,paymentid, billId,branchID, formattedBillDate, totalpayamount.ToString());
 
                 var exbalance = _billingsoftware.SHPaymentMaster.FirstOrDefault(x => x.BillId == billId && x.BranchID == branchID && x.PaymentId == paymentid && x.BillDate == formattedBillDate);
 
@@ -4335,7 +4467,7 @@ namespace StellarBillingSystem.Controllers
                  }
 
  */
-
+               
 
                 BusinessClassBilling obj = new BusinessClassBilling(_billingsoftware);
                 PaymentDetailsModel objNewPayment = new PaymentDetailsModel
@@ -4343,16 +4475,16 @@ namespace StellarBillingSystem.Controllers
                     PaymentDiscription = obj.GeneratePaymentDescriptionreport(paymentid),
                     PaymentId = paymentid,
                     BranchID = branchID, // Use the branch ID passed in the method
-
+                    
                 };
-
-                if (model.Viewpayment == null)
-                    model.Viewpayment = new List<PaymentDetailsModel>();
-
-                model.Viewpayment.Add(objNewPayment);
-
-
-                var exbill = await _billingsoftware.SHbillmaster.FirstOrDefaultAsync(x => x.BillID == billId && x.BillDate == formattedBillDate && x.BranchID == branchID && x.IsDelete == false);
+             
+                    if (model.Viewpayment == null)
+                        model.Viewpayment = new List<PaymentDetailsModel>();
+                   
+                    model.Viewpayment.Add(objNewPayment);
+                   
+                
+                var exbill = await _billingsoftware.SHbillmaster.FirstOrDefaultAsync(x => x.BillID == billId && x.BillDate == formattedBillDate && x.BranchID == branchID && x.IsDelete==false);
                 model.Balance = exbill.NetPrice;
 
                 var exbalance = _billingsoftware.SHPaymentMaster.FirstOrDefault(x => x.BillId == billId && x.BranchID == branchID && x.PaymentId == paymentid && x.BillDate == formattedBillDate);
@@ -4520,7 +4652,7 @@ namespace StellarBillingSystem.Controllers
         }
 
 
-
+      
         //ADD PRODUCT POPUP
         public async Task<IActionResult> AddProductPop(ProductMatserModel model, string buttonType, string productID, string NumberofStock, GodownModel gmodel)
         {
@@ -4535,66 +4667,15 @@ namespace StellarBillingSystem.Controllers
             ViewData["discountid"] = business.Getdiscountid(model.BranchID);
             ViewData["productid"] = business.Getproduct(model.BranchID);
 
-
-            /*if (string.IsNullOrEmpty(model.ProductID))
-            {
-                ViewBag.ErrorMessage = "Please enter  ProductID";
-
-                return View("ProductMaster",model);
-
-
-            }
-
-            if (string.IsNullOrEmpty(model.BarcodeId))
-            {
-                ViewBag.ErrorMessage = "Please enter  BarcodeID.";
-                return View("CustomerBilling");
-            }
-*/
-
-            decimal price;
-            if (!decimal.TryParse(model.Price, out price))
-            {
-                ViewBag.PriceErrorMessage = "Please enter a valid price.";
-                return View("PopupViewProduct", model);
-            }
-
-
-            var existinggodwnstock = _billingsoftware.SHGodown.FirstOrDefault(x => x.ProductID == productID && x.BranchID == model.BranchID);
-
-
-            if (existinggodwnstock == null)
-            {
-
-                // Create a new instance of SHGodown
-                existinggodwnstock = new GodownModel
-                {
-                    ProductID = productID,
-                    BranchID = model.BranchID,
-                    NumberofStocks = NumberofStock
-                };
-
-
-                _billingsoftware.SHGodown.Add(existinggodwnstock);
-
-            }
-            else
-            {
-
-                if (int.TryParse(existinggodwnstock.NumberofStocks, out int currentStock) && int.TryParse(NumberofStock, out int stockToAdd))
-                {
-                    // Add the stocks and convert back to string
-                    int updatedStock = currentStock + stockToAdd;
-                    existinggodwnstock.NumberofStocks = updatedStock.ToString();
-                }
-            }
-
-
-            _billingsoftware.SaveChanges();
+            HttpContext.Session.SetString("BranchID", model.BranchID);
 
 
 
-            var existingProduct = await _billingsoftware.SHProductMaster.FindAsync(model.ProductID, model.BranchID);
+           
+
+
+
+            var existingProduct = await _billingsoftware.SHProductMaster.FirstOrDefaultAsync(x=>x.ProductID == model.ProductID && x.BranchID==model.BranchID);
             if (existingProduct != null)
             {
                 if (existingProduct.IsDelete)
@@ -4620,12 +4701,12 @@ namespace StellarBillingSystem.Controllers
                 existingProduct.DiscountCategory = model.DiscountCategory;
                 existingProduct.TotalAmount = model.Price;
                 existingProduct.BranchID = model.BranchID;
-
+              
                 // existingProduct.TotalAmount = model.TotalAmount - (model.Price * model.Discount / 100 = model.TotalAmount);
                 existingProduct.LastUpdatedDate = DateTime.Now;
                 existingProduct.LastUpdatedUser = User.Claims.First().Value.ToString();
                 existingProduct.LastUpdatedmachine = Request.HttpContext.Connection.RemoteIpAddress.ToString();
-
+                
 
                 _billingsoftware.Entry(existingProduct).State = EntityState.Modified;
             }
@@ -4644,7 +4725,51 @@ namespace StellarBillingSystem.Controllers
 
             await _billingsoftware.SaveChangesAsync();
 
+            decimal price;
+            if (!decimal.TryParse(model.Price, out price))
+            {
+                ViewBag.PriceErrorMessage = "Please enter a valid price.";
+                return View("PopupViewProduct", model);
+            }
 
+
+            var existinggodwnstock = _billingsoftware.SHGodown.FirstOrDefault(x => x.ProductID == model.ProductID && x.BranchID == model.BranchID);
+
+
+            if (existinggodwnstock == null)
+            {
+
+                // Create a new instance of SHGodown
+                existinggodwnstock = new GodownModel
+                {
+                    ProductID = model.ProductID,
+                    BranchID = model.BranchID,
+                    NumberofStocks = NumberofStock,
+                    DatefofPurchase = DateTime.Now.ToString(),
+                    LastUpdatedDate = DateTime.Now 
+                };
+
+
+                _billingsoftware.SHGodown.Add(existinggodwnstock);
+
+            }
+            else
+            {
+
+                if (int.TryParse(existinggodwnstock.NumberofStocks, out int currentStock) && int.TryParse(NumberofStock, out int stockToAdd))
+                {
+                    // Add the stocks and convert back to string
+                    int updatedStock = currentStock + stockToAdd;
+                    existinggodwnstock.NumberofStocks = updatedStock.ToString();
+                    existinggodwnstock.DatefofPurchase = DateTime.Now.ToString();
+                    existinggodwnstock.LastUpdatedDate = DateTime.Now;
+
+                    _billingsoftware.Entry(existinggodwnstock).State = EntityState.Modified;
+                }
+            }
+
+
+            _billingsoftware.SaveChanges();
 
 
 
@@ -4717,7 +4842,7 @@ namespace StellarBillingSystem.Controllers
         //Get Customer Data Pop
 
         [HttpPost]
-        public async Task<IActionResult> getcustomerpop(BillProductlistModel model, string BillID, string BillDate, string CustomerNumber)
+        public async Task<IActionResult> getcustomerpop(BillProductlistModel model,string CustomerNumber)
         {
             if (TempData["BranchID"] != null)
             {
@@ -4727,27 +4852,28 @@ namespace StellarBillingSystem.Controllers
 
             var getdata = from bd in _billingsoftware.SHbilldetails
                           join bm in _billingsoftware.SHbillmaster on bd.BillID equals bm.BillID
-                          where bd.CustomerNumber == CustomerNumber && bd.BranchID == model.BranchID && bm.BranchID == model.BranchID
+                          where bd.CustomerNumber == CustomerNumber && bd.BranchID == model.BranchID && bm.BranchID == model.BranchID && bm.CustomerNumber == CustomerNumber
                           select new BillProductlistModel
                           {
-                              BillID = bd.BillID,
-                              BillDate = bd.BillDate,
-                              ProductName = bd.ProductName,
-                              ProductID = bd.ProductID
+                             BillID = bd.BillID,
+                             BillDate = bd.BillDate,
+                             ProductName = bd.ProductName,
+                             ProductID = bd.ProductID 
                           };
 
             var result = await getdata.ToListAsync();
-
+           
 
             return Json(result);
 
         }
 
 
-        public IActionResult loadbill(string productID, string billID, string billDate, string customerNumber, BillProductlistModel model)
+
+        //This Method is used to Load bill from Modal
+        public IActionResult loadbill(string productID, string billID, string billDate, string customerNumber,BillProductlistModel model)
         {
 
-            //var selectedProductIDs = JsonConvert.DeserializeObject<List<string>>(selectedValues);
 
             if (TempData["BranchID"] != null)
             {
@@ -4756,15 +4882,16 @@ namespace StellarBillingSystem.Controllers
             }
 
             BusinessClassBilling Busbill = new BusinessClassBilling(_billingsoftware);
+           
             ViewData["productid"] = Busbill.Getproduct(model.BranchID);
 
 
             var updatedMasterex = _billingsoftware.SHbillmaster.FirstOrDefault(bm => bm.BillID == billID && bm.BillDate == billDate && bm.CustomerNumber == customerNumber && bm.BranchID == model.BranchID);
-
+                                  
 
             // Query to get details of selected products
             var exbillingDetails = _billingsoftware.SHbilldetails
-        .Where(d => d.BranchID == model.BranchID && d.IsDelete == false && d.CustomerNumber == customerNumber && d.BillID == billID && d.BillDate == billDate)
+        .Where(d =>  d.BranchID == model.BranchID && d.IsDelete == false && d.CustomerNumber == customerNumber && d.BillID == billID && d.BillDate == billDate)
         .ToList();
 
             // Create ViewModel
@@ -4780,7 +4907,7 @@ namespace StellarBillingSystem.Controllers
                     NetPrice = updatedMasterex.NetPrice,
                     CGSTPercentage = updatedMasterex.CGSTPercentage,
                     SGSTPercentage = updatedMasterex.SGSTPercentage,
-
+                    
                 } : null,
                 Viewbillproductlist = exbillingDetails,
                 BillID = billID,
@@ -4788,7 +4915,7 @@ namespace StellarBillingSystem.Controllers
                 CustomerNumber = customerNumber
             };
 
-            var billingPoints = _billingsoftware.SHBillingPoints.Where(bp => bp.CustomerNumber == customerNumber
+            var billingPoints =  _billingsoftware.SHBillingPoints.Where(bp => bp.CustomerNumber == customerNumber
                  && !bp.IsUsed && bp.BillID != billID && bp.BranchID == model.BranchID
                  && _billingsoftware.SHbillmaster
                      .Any(bm => bm.CustomerNumber == bp.CustomerNumber
@@ -4806,7 +4933,7 @@ namespace StellarBillingSystem.Controllers
             ViewBag.SGSTPercentage = updatedMasterex?.SGSTPercentage;
 
             // Pass data to the view using ViewBag or ViewModel
-
+            
             return View("CustomerBilling", viewModel);
         }
 
@@ -4815,5 +4942,5 @@ namespace StellarBillingSystem.Controllers
     }
 
 
-}
+    }
 

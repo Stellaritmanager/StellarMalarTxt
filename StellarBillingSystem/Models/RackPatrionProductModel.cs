@@ -1,6 +1,9 @@
-﻿public class RackPatrionProductModel
-{
-    public RackPatrionProductModel() { }
+﻿using System;
+
+
+    public class RackPatrionProductModel
+    {
+        public RackPatrionProductModel() { }
 
     private String strPartitionID;
     private String strProductID;

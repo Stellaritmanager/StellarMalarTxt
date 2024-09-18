@@ -1,16 +1,18 @@
-﻿public class VoucherMasterModel
+﻿using System;
+
+public class VoucherMasterModel
 {
 
     public VoucherMasterModel()
-    {
-    }
+	{
+	}
 
-    private String strVoucherID;
-    private String strVoucherNumber;
-    private String strVocherCost;
-    private String strVocherDetails;
+	private String strVoucherID;
+	private String strVoucherNumber;
+	private String strVocherCost;
+	private String strVocherDetails;
     private String strExpiryDate;
-    private String strLastUpdatedDate;
+	private String strLastUpdatedDate;
     private String strLastUpdatedUser;
     private String strLastUpdatedmachine;
     private string branchID;

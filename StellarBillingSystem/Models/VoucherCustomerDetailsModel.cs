@@ -1,10 +1,12 @@
-﻿public class VoucherCustomerDetailModel
-{
-    public VoucherCustomerDetailModel()
-    {
-    }
+﻿using System;
 
-    private String strVoucherID;
+public class VoucherCustomerDetailModel
+{
+	public VoucherCustomerDetailModel()
+	{
+	}
+
+	private String strVoucherID;
     private String strCustomerID;
     private String strExpiryDate;
     private String strLastUpdatedDate;

@@ -2,7 +2,7 @@
 {
     public class PaymentTableViewModel
     {
-        public PaymentTableViewModel()
+        public PaymentTableViewModel() 
         {
         }
 
@@ -14,7 +14,7 @@
         private string branchID;
         private List<PaymentDetailsModel> viewpayment;
         private String strBillvalue;
-
+       
 
         public string BillId { get => strBillId; set => strBillId = value; }
         public string PaymentId { get => strPaymentId; set => strPaymentId = value; }

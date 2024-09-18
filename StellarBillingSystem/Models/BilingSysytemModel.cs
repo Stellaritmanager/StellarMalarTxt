@@ -1,24 +1,26 @@
-﻿public class BilingSysytemModel
-{
-    public BilingSysytemModel()
-    {
-    }
+﻿using System;
 
-    private String strBillID;
-    private String strCustomerName;
-    private String strDate;
-    private String strCustomerNumber;
-    private String strItems;
-    private String strRate;
-    private String strQuantity;
-    private String strDiscount;
-    private String strTax;
-    private String strDiscountPrice;
-    private String strTotalAmount;
+public class BilingSysytemModel
+{
+	public BilingSysytemModel()
+	{
+	}
+
+	private String strBillID;
+	private String strCustomerName;
+	private String strDate;
+	private String strCustomerNumber;
+	private String strItems;
+	private String strRate;
+	private String strQuantity;
+	private String strDiscount;
+	private String strTax;
+	private String strDiscountPrice;
+	private String strTotalAmount;
     private String strPointsNumber;
     private String strVoucherNumber;
     private String strCategoryBasedDiscount;
-    private String strLastUpdatedDate;
+	private String strLastUpdatedDate;
     private String strLastUpdatedUser;
     private String strLastUpdatedmachine;
     private string branchID;

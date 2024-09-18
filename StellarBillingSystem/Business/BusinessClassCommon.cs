@@ -1,9 +1,16 @@
-﻿using Aspose.Words;
-using Microsoft.Data.SqlClient;
-using Microsoft.EntityFrameworkCore;
-using StellarBillingSystem.Context;
-using System.Data;
+﻿using Microsoft.EntityFrameworkCore;
 using System.Data.Common;
+using System.Data;
+using System.Web;
+using Microsoft.Data.SqlClient;
+using DocumentFormat.OpenXml.Office2016.Drawing.ChartDrawing;
+using Microsoft.CodeAnalysis.Elfie.Model;
+using DocumentFormat.OpenXml.ExtendedProperties;
+using Microsoft.CodeAnalysis.FlowAnalysis;
+using StellarBillingSystem.Context;
+using Microsoft.IdentityModel.Tokens;
+using Aspose.Words;
+using System.Xml;
 
 
 namespace StellarBillingSystem.Business
@@ -53,8 +60,8 @@ namespace StellarBillingSystem.Business
 
 
 
-        public static DataTable DataTable(DbContext context, string sqlQuery,
-                                            params DbParameter[] parameters)
+    public static DataTable DataTable(DbContext context, string sqlQuery,
+                                        params DbParameter[] parameters)
         {
 
 
@@ -64,7 +71,7 @@ namespace StellarBillingSystem.Business
             ///
 
             // Your SQL query
-            string query = sqlQuery;
+            string query = sqlQuery ;
 
 
             // Execute raw SQL query and retrieve data into a DataTable
@@ -90,8 +97,8 @@ namespace StellarBillingSystem.Business
             return dataTable;
         }
 
-        public static DataTable DataTableReport(DbContext context, string sqlQuery, string Datecolumn, string Fromdate, string Todate, string GroupBy, string pbranchID
-                                       , params DbParameter[] parameters)
+        public static DataTable DataTableReport(DbContext context, string sqlQuery, string Datecolumn, string Fromdate, string Todate,string GroupBy,string pbranchID
+                                       ,params DbParameter[] parameters)
         {
 
 
@@ -104,28 +111,28 @@ namespace StellarBillingSystem.Business
             string query = sqlQuery;
 
 
-            if (Fromdate != null & Todate != null)
+            if (Fromdate!=null&Todate!=null)
             {
-                sqlQuery = sqlQuery + " and " + Datecolumn + " between '" + Fromdate + "' and '" + Todate + "' ";
+                sqlQuery = sqlQuery + " and " + Datecolumn + " between '" + Fromdate + "' and '" + Todate +"' ";
             }
-            else if (Fromdate != null)
+            else if (Fromdate!=null)
             {
-                sqlQuery = sqlQuery + " and " + Datecolumn + " >= '" + Fromdate + "'";
+                sqlQuery = sqlQuery + " and " + Datecolumn + " >= '"+ Fromdate +"'";
 
             }
-            else if (Todate != null)
+            else if (Todate!=null)
             {
-                sqlQuery = sqlQuery + Datecolumn + " <= '" + Todate + "'";
+                sqlQuery = sqlQuery + Datecolumn + " <= '" + Todate +"'";
             }
 
-            if (pbranchID != null && pbranchID != string.Empty)
+            if (pbranchID !=null && pbranchID !=string.Empty)
             {
-                sqlQuery = sqlQuery + " and bh.BracnchID ='" + pbranchID + "' ";
+                sqlQuery = sqlQuery + " and bh.BracnchID ='" + pbranchID + "' "; 
             }
-
-            if (GroupBy != string.Empty)
+          
+           if(GroupBy!= string.Empty)
             {
-                sqlQuery = sqlQuery + GroupBy + "";
+                sqlQuery =sqlQuery+ GroupBy + "";  
             }
 
             // Execute raw SQL query and retrieve data into a DataTable
@@ -178,7 +185,7 @@ namespace StellarBillingSystem.Business
             }
 
             return dataTable;
-
+            
         }
 
         public static String getbalance(BillingContext billing, string strPayID, string pBillID, string strBranchid, string pbillDate, string pPaymentAmount)
@@ -188,7 +195,7 @@ namespace StellarBillingSystem.Business
 
             Double dblBalance = 0.0;
 
-
+ 
 
             foreach (var strpayment in paymentList)
             {

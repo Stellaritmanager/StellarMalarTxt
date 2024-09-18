@@ -1,17 +1,19 @@
-﻿public class CustomerMasterModel
+﻿using System;
+
+public class CustomerMasterModel
 {
-    public CustomerMasterModel()
-    {
-    }
+	public CustomerMasterModel()
+	{
+	}
 
-    private String strCustomerID;
-    private String strCustomerName;
-    private String strDateofBirth;
-    private String strGender;
-    private String strAddress;
-    private String strCity;
-    private String strMobileNumber;
-
+	private String strCustomerID;
+	private String strCustomerName;
+	private String strDateofBirth;
+	private String strGender;
+	private String strAddress;
+	private String strCity;
+	private String strMobileNumber;
+	
     private bool strIsDelete;
     private String strLastUpdatedDate;
     private String strLastUpdatedUser;

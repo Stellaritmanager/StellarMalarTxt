@@ -1,4 +1,6 @@
-﻿namespace StellarBillingSystem.Models
+﻿using NonFactors.Mvc.Grid;
+
+namespace StellarBillingSystem.Models
 {
     public class ProductSelectModel
     {

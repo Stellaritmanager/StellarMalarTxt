@@ -1,11 +1,13 @@
-﻿public class GSTMasterModel
+﻿using System;
+
+public class GSTMasterModel
 {
-    public GSTMasterModel()
-    {
-    }
+	public GSTMasterModel()
+	{
+	}
     private String strTaxID;
-    private String strSGST;
-    private String strCGST;
+	private String strSGST;
+	private String strCGST;
     private String strOtherTax;
     private String strLastUpdatedDate;
     private String strLastUpdatedUser;
