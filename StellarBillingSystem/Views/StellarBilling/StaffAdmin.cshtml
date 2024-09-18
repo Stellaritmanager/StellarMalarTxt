@@ -278,6 +278,7 @@
 
                             @{
                                 var imageUrl = ViewBag.ImageUrl as string;
+                                var hasIdProofFile = Model.IdProofFile != null && Model.IdProofFile.Length > 0; // Check if the file exists
                             }
 
                             <div>
@@ -293,8 +294,11 @@
                                 }
                             </div>
                             <div>
-                               
-                                <input type="file" class="btn btn-primary" name="imageFile" accept="image/png, image/jpeg" value="@Model.IdProofFile" style="width: 290px; height: 40px; padding: 5px;" />
+                                <input type="file" class="btn btn-primary" name="imageFile" accept="image/png, image/jpeg" style="width: 290px; height: 40px; padding: 5px;" />
+                                @if (hasIdProofFile)
+                                {
+                                    <span style="margin-left: 10px;">Current ID Proof File: id-proof.jpg</span> <!-- Use a static name or dynamically fetched if available -->
+                                }
                             </div>
 
 

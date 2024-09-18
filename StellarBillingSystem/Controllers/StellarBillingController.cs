@@ -2111,8 +2111,18 @@ namespace StellarBillingSystem.Controllers
                         await imageFile.CopyToAsync(memoryStream);
                         model.IdProofFile = memoryStream.ToArray();
                     }
+                    
                 }
-               
+                else
+                {
+                    // If no new file is uploaded, retain the existing ID proof file
+                    var mod = await _billingsoftware.SHStaffAdmin.FindAsync(model.StaffID, model.BranchID);
+                    if (mod != null)
+                    {
+                        model.IdProofFile = mod.IdProofFile; // Retain existing file
+                    }
+                }
+
 
 
                 var existingStaffAdmin = await _billingsoftware.SHStaffAdmin.FindAsync(model.StaffID, model.BranchID);
