@@ -2099,7 +2099,7 @@ namespace StellarBillingSystem.Controllers
 
 
 
-            var staffcheck = await _billingsoftware.SHStaffAdmin.FirstOrDefaultAsync(x => x.StaffID == model.StaffID && x.BranchID == model.BranchID && (x.UserName != model.UserName || x.Password != model.Password));
+            var staffcheck = await _billingsoftware.SHStaffAdmin.FirstOrDefaultAsync(x => x.StaffID == model.StaffID && x.BranchID == model.BranchID && (x.UserName != model.UserName));
 
 
 
@@ -2193,7 +2193,7 @@ namespace StellarBillingSystem.Controllers
             else
             {
               
-                ViewBag.ExistMessage = "Cannot Update Username and Password";
+                ViewBag.ExistMessage = "Cannot Update Username";
                 var dataTable10 = await AdditionalStaffFun(model.BranchID);
 
                 // Store the DataTable in ViewData for access in the view
