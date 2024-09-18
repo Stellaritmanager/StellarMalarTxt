@@ -273,7 +273,7 @@ namespace StellarBillingSystem.Controllers
 
         public async Task<IActionResult> ProductMaster()
         {
-          
+
             BusinessClassBilling business = new BusinessClassBilling(_billingsoftware);
 
             var categories = business.GetItemsFromDatabase();
@@ -281,8 +281,8 @@ namespace StellarBillingSystem.Controllers
             // Convert CategoryMasterModel to SelectListItem
             var selectListItems = categories.Select(c => new SelectListItem
             {
-                Value = c.CategoryID.ToString(), 
-                Text = c.CategoryName            
+                Value = c.CategoryID.ToString(),
+                Text = c.CategoryName
             }).ToList();
 
             var model = new ProductDropDownModel
@@ -299,11 +299,11 @@ namespace StellarBillingSystem.Controllers
                 TempData.Keep("BranchID");
             }
 
-           
-           // ViewData["categoryid"] = business.GetCatid(model.BranchID);
+
+            // ViewData["categoryid"] = business.GetCatid(model.BranchID);
             ViewData["discountid"] = business.Getdiscountid(model.ObjPro.BranchID);
-          
-           
+
+
             ViewData["categoryid"] = business.GetCatid(model.ObjPro.BranchID);
             ViewData["discountid"] = business.Getdiscountid(model.ObjPro.BranchID);
             using (var context = new BillingContext())
@@ -317,11 +317,12 @@ namespace StellarBillingSystem.Controllers
                 var dataTable = BusinessClassBilling.ConvertToDataTableProductMaster(entities);
                 // Store the DataTable in ViewData for access in the view
 
-           
+
                 ViewData["ProductData"] = dataTable;
 
-            return View("ProductMaster", model);
+                return View("ProductMaster", model);
 
+            }
         }
 
 
