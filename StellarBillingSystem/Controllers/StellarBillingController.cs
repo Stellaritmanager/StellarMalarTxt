@@ -655,8 +655,8 @@ namespace StellarBillingSystem.Controllers
             ViewData["ProductData"] = dataTable2;
 
 
-            model = new ProductMatserModel();
-            return View("ProductMaster", model);
+            var productDropDownModel1 = business.CreateProductDropDownModel(selectListItems, selectedCategoryId, model);
+            return View("ProductMaster", productDropDownModel1);
         }
 
 
