@@ -306,10 +306,9 @@ namespace StellarBillingSystem.Controllers
 
             ViewData["categoryid"] = business.GetCatid(model.ObjPro.BranchID);
             ViewData["discountid"] = business.Getdiscountid(model.ObjPro.BranchID);
-            using (var context = new BillingContext())
-            {
+           
                 // Step 1: Perform the query
-                var entities = context.SHProductMaster
+                var entities = _billingsoftware.SHProductMaster
                                       .Where(e => e.BranchID == model.ObjPro.BranchID && e.IsDelete == false)
                                       .ToList();
 
@@ -322,7 +321,7 @@ namespace StellarBillingSystem.Controllers
 
                 return View("ProductMaster", model);
 
-            }
+            
         }
 
 
