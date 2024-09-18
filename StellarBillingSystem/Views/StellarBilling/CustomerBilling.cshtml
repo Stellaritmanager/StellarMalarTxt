@@ -50,35 +50,50 @@
 </style>
 
 
-<form asp-controller="StellarBilling" asp-action="getCustomerBill" autocomplete="off" >
+<form asp-controller="StellarBilling" asp-action="getCustomerBill" autocomplete="off">
     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-    <div class="row">
 
-        <div class="col-md-12 col-lg-12">
-            <div class="card">
+    <div class="row">
+        <div class="col-md-12 col-lg-0"></div>
+        <div class="col-md-12 col-lg-12" style="padding: 0;">
+            <div class="card" style="height:40px;">
                 <div class="card-body dividerblack">
-                    <div class="card-header d-flex justify-content-between align-items-center">
-                        <div class="container">
-                            <center>
-                            <h2 class="centered text-white" style="font-family:'Lucida Bright';">Customer Billing</h2>
-                            </center>
+                    <div style="display: flex; align-items: center; height: 100%;">
+                        <div class="container" style="text-align: left; width: 100%;">
+                            <h2 class="centered text-white" style="font-family:'Lucida Bright'; margin: 0;">
+                                Customer Billing
+                            </h2>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+
     <br />
 
-    <div class="row" style="height:8%">
-    </div>
+    <div class="row" style="height:8%"></div>
 
-    <div class="row">
+    <div class="row" style="margin-top:60px">
+
+
         <div class="col-md-12 col-lg-12">
             <div class="card">
                 <div class="card-body dividerblack">
 
                     <div class="row">
+                     
+                        <div class="col-md-12 col-lg-4">
+                            <div class="input-group">
+                                <input type="tel" pattern="\d{10}" maxlength="10" id="CustomerNumber" asp-for="CustomerNumber" name="CustomerNumber" class="form-control" placeholder="Customer Number" value="@Model.CustomerNumber" required />
+                                <span asp-validation-for="CustomerNumber" class="text-danger"></span>
+                                <label class="control-label" for="CustomerNumber"></label>
+                                <button class="btn btn-primary menu-icon tf-icons bx bxs-user-plus" type="button" id="button-addon2" data-bs-toggle="modal" data-bs-target="#customerModal"></button>
+                            </div>
+                        </div>
+
+                        <button type="button" style="width:95px; height:50px;" class="btn btn-primary ms-2" id="getCustomerDataButton">Get</button>
+                       
                         <div class="col-md-12 col-lg-3">
                             <div class="form-floating form-floating-outline mb-4">
                                 <input type="BillID" class="form-control" placeholder="Bill ID" name="BillID" value="@Model.BillID" readonly />
@@ -86,8 +101,8 @@
 
 
                             </div>
-                           
-                           
+
+
                         </div>
 
                         <div class="col-md-12 col-lg-3">
@@ -99,28 +114,35 @@
                             </div>
 
                         </div>
-                        <div class="col-md-12 col-lg-3">
-                            <div class="input-group">
-                                <input type="tel" pattern="\d{10}" maxlength="10" id="CustomerNumber" asp-for="CustomerNumber" name="CustomerNumber" class="form-control" placeholder="Customer Number" value="@Model.CustomerNumber" required />
-                                <span asp-validation-for="CustomerNumber" class="text-danger"></span>
-                                <label class="control-label" for="CustomerNumber"></label>
-                                <button class="btn btn-primary menu-icon tf-icons bx bx-user-plus" type="button" id="button-addon2" data-bs-toggle="modal" data-bs-target="#customerModal"></button>
-                            </div>
-                        </div>
 
-                        <button type="button" style="width:95px; height:50px;" class="btn btn-primary ms-2" id="getCustomerDataButton">Get</button>
-                        
+
                     </div>
                     <br />
-
-
-
-
-
                     <div class="row">
+                      
+
+                        <div class="col-md-12 col-lg-3">
+
+                            <div class="form-floating form-floating-outline mb-4">
+                                <input type="text" class="form-control" name="Barcode" placeholder="Barcode" value="@Model.BarCode" />
+                                <label asp-for="BarCode" class="control-label">Barcode</label>
+
+                            </div>
+                        </div>
+                        <div class="col-md-12 col-lg-2">
+
+                            <div class="form-floating form-floating-outline mb-4">
+                                <input type="text" class="form-control" id="Quantity" name="Quantity" placeholder="Quantity" value="@Model.Quantity" />
+                                <label asp-for="Quantity" class="control-label">Quantity</label>
+                                <span asp-validation-for="Quantity" id="QuantityError" class="text-danger"></span>
 
 
-                        <div class="col-md-12 col-lg-4">
+                            </div>
+
+                        </div>
+                       
+                  
+                        <div class="col-md-12 col-lg-5">
                             <div class="input-group">
                                 @{
                                     var PatientID = ((IEnumerable<ProductMatserModel>)ViewData["productid"])
@@ -132,7 +154,7 @@
                                 }
 
 
-                                <input type="text" id="productDropdownInput" class="form-control"  placeholder="Product Name" onkeyup="filterDropdown(event, 'productDropdownInput', 'productDropdown')" onclick="showDropdown('productDropdown')">
+                                <input type="text" id="productDropdownInput" class="form-control" placeholder="Product Name" onkeyup="filterDropdown(event, 'productDropdownInput', 'productDropdown')" onclick="showDropdown('productDropdown')">
                                 <ul id="productDropdown" class="list-group mt-2"
                                     style="display: none; position: absolute; top: 100%; left: 0; width: 100%; max-height: 200px; overflow-y: auto; background-color: white; border: 1px solid #ddd; border-radius: .25rem; box-shadow: 0 0 .5rem rgba(0, 0, 0, .1); z-index: 1000; padding: 0; margin: 0; list-style-type: none;">
                                     @foreach (var item in PatientID)
@@ -145,40 +167,20 @@
                                 </ul>
                                 <input type="hidden" name="ProductID" id="productID" value="ProductID" />
 
-                                <button class="btn btn-primary menu-icon tf-icons bx bx-cart" type="button" id="button-addon2" data-bs-toggle="modal" data-bs-target="#modalCenter"></button>
+                                <button class="btn btn-primary menu-icon tf-icons bx bx-cart-add" type="button" id="button-addon2" data-bs-toggle="modal" data-bs-target="#modalCenter"></button>
 
                             </div>
-
+                           
+                              
                            
 
                         </div>
-                            
+                    
+                        <button type="submit" style="width:145px; height:50px;" class="btn btn-primary ms-2" value="Add Product" name="buttonType" class="btn btn-primary">Add Product</button>
+
+                        
 
 
-
-                            <div class="col-md-12 col-lg-3">
-
-                                <div class="form-floating form-floating-outline mb-4">
-                                    <input type="text" class="form-control" name="Barcode" placeholder="Barcode" value="@Model.BarCode" />
-                                <label asp-for="BarCode" class="control-label">Barcode</label>
-                                                       
-                            </div>
-                        </div>
-                            <div class="col-md-12 col-lg-3">
-                           
-                            <div class="form-floating form-floating-outline mb-4">
-                                <input type="text" class="form-control" id="Quantity" name="Quantity" placeholder="Quantity" value="@Model.Quantity" />
-                                  <label asp-for="Quantity" class="control-label">Quantity</label>
-                                  <span asp-validation-for="Quantity" id="QuantityError" class="text-danger"></span>
-
-
-                            </div>
-
-                        </div>
-
-                        <div class="col-md-12 col-lg-3">
-                            <button type="submit" value="Add Product" name="buttonType" class="btn btn-primary">Add Product</button>
-                        </div>
                     </div>
                 </div>
             </div>
@@ -211,7 +213,7 @@
 
                                             <table class="table  table-bordered" style="border: 3px solid #fff;">
                                                 <thead style="background-color: black; color: white;">
-                                                    <tr >
+                                                    <tr>
                                                         <th style="font-size:16px;color:white;border:1 px solid #fff;">Product ID</th>
                                                         <th style="font-size:16px;color:white;border:1 px solid #fff;">Product Name</th>
                                                         <th style="font-size:16px;color:white;border:1 px solid #fff;">Price</th>
@@ -238,7 +240,7 @@
 
 
                                                     }
-                                                   
+
                                                 </tbody>
                                             </table>
 
@@ -263,110 +265,103 @@
 
     </br>
 
- 
-
-        <div class="card">
-            <div class="card-body dividerblack">
-
-                <div class="row">
-                    <div class="col-md-12 col-lg-4">
-                        <div class="form-floating form-floating-outline mb-4">
-                            <input type="Totalprice" id="Totalprice" class="form-control" name="Totalprice" placeholder="Total price" value="@ViewBag.TotalPrice" readonly />
-                            <label asp-for="Totalprice" class="control-label">Total price</label>
 
 
-                        </div>
+    <div class="card">
+        <div class="card-body dividerblack">
+
+            <div class="row">
+                <div class="col-md-12 col-lg-4">
+                    <div class="form-floating form-floating-outline mb-4">
+                        <input type="Totalprice" id="Totalprice" class="form-control" name="Totalprice" placeholder="Total price" value="@ViewBag.TotalPrice" readonly />
+                        <label asp-for="Totalprice" class="control-label">Total price</label>
+
 
                     </div>
 
-                    <div class="col-md-12 col-lg-2">
+                </div>
 
-                        <div class="form-floating form-floating-outline mb-4">
+                <div class="col-md-12 col-lg-2">
+
+                    <div class="form-floating form-floating-outline mb-4">
                         <input type="text" id="CGSTPercentage" class="form-control" name="CGSTPercentage" placeholder="CGST%" value="@ViewBag.CGSTPercentage" />
                         <label asp-for="CGSTPercentage" class="control-label">CGST%</label>
                         <span asp-validation-for="CGSTPercentage" id="CGSTError" class="text-danger"></span>
-                        </div>
-
                     </div>
-                    <div class="col-md-12 col-lg-2">
 
-                        <div class="form-floating form-floating-outline mb-4">
+                </div>
+                <div class="col-md-12 col-lg-2">
+
+                    <div class="form-floating form-floating-outline mb-4">
                         <input type="text" id="SGSTPercentage" class="form-control" name="SGSTPercentage" placeholder="SGST%" value="@ViewBag.SGSTPercentage" />
                         <label asp-for="SGSTPercentage" class="control-label">SGST%</label>
                         <span asp-validation-for="SGSTPercentage" id="SGSTError" class="text-danger"></span>
-                        </div>
-                    </div>
-
-                    <div class="col-md-12 col-lg-4">
-
-                        <div class="form-floating form-floating-outline mb-4">
-                        <input type="text" id="TotalDiscount" class="form-control" name="TotalDiscount" placeholder="Total Discount" value="@ViewBag.TotalDiscount" />
-                        <label asp-for="TotalDiscount" class="control-label">Total Discount</label>
-                      
-
-                        </div>
-
                     </div>
                 </div>
 
-              
-                            <div class="row">
-                              
-                                <div class="col-md-12 col-lg-4">
-                                    <div class="form-floating form-floating-outline mb-4">
-                                        <input type="Points" class="form-control" name="Points" placeholder="Points" value="@ViewBag.Points" readonly />
-                                        <label class="control-label">Points</label>
-                                    </div>
-                                </div>
-@* 
-                                <div class="col-md-12 col-lg-2">
-                                    <button type="submit" value="Get Points" name="buttonType" class="btn btn-primary">Get Points</button>
-                                </div> *@
-                                <div class="col-md-12 col-lg-2">
-                                    <button type="submit" value="Reedem Points" name="buttonType" class="btn btn-primary">Reedem Points</button>
+                <div class="col-md-12 col-lg-4">
 
-                                </div>
-                    <div class="col-md-12 col-lg-4">
-                        <div class="form-floating form-floating-outline mb-4">
-                        </div>
+                    <div class="form-floating form-floating-outline mb-4">
+                        <input type="text" id="TotalDiscount" class="form-control" name="TotalDiscount" placeholder="Total Discount" value="@ViewBag.TotalDiscount" />
+                        <label asp-for="TotalDiscount" class="control-label">Total Discount</label>
+
+
                     </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-md-12 col-lg-8">
-                        <div class="form-floating form-floating-outline mb-4">
-                                    </div>
+
+                </div>
+            </div>
+
+
+            <div class="row">
+
+                <div class="col-md-12 col-lg-4">
+                    <div class="form-floating form-floating-outline mb-4">
+                        <input type="Points" class="form-control" name="Points" placeholder="Points" value="@ViewBag.Points" readonly />
+                        <label class="control-label">Points</label>
                     </div>
-                            <div class="col-md-12 col-lg-4">
-                                <div class="form-floating form-floating-outline mb-4">
-                            <input type="NetPrice" id="NetPrice" class="form-control" name="NetPrice" placeholder="Net Price" value="@ViewBag.NetPrice" readonly />
-                                    <label asp-for="NetPrice" class="control-label">Net Price</label> </div>
+                </div>
+                @*
+                <div class="col-md-12 col-lg-2">
+                <button type="submit" value="Get Points" name="buttonType" class="btn btn-primary">Get Points</button>
+                </div> *@
+                <div class="col-md-12 col-lg-2">
+                    <button type="submit" style="width:165px; height:50px;" value="Reedem Points" name="buttonType" class="btn btn-primary">Reedem Points</button>
 
-                                </div>
+                </div>
+                <div class="col-md-12 col-lg-2">
+                    </div>
+                <div class="col-md-12 col-lg-4">
+                    <div class="form-floating form-floating-outline mb-4">
+                        <input type="NetPrice" id="NetPrice" class="form-control" name="NetPrice" placeholder="Net Price" value="@ViewBag.NetPrice" readonly />
+                        <label asp-for="NetPrice" class="control-label">Net Price</label>
+                    </div>
 
-                                </div>
+                </div>
 
-                            </div>
-                        </div>
-                    
+            </div>
+
+        </div>
+    </div>
+
 
     </br>
 
     <div class="row">
-        
+
         <center>
-            <button type="submit" value="Save" name="buttonType" class="btn btn-primary">Save</button>
-            <button type="submit" value="Clear" name="buttontype" class="btn btn-primary">Clear</button>
+            <button type="submit" value="Save" name="buttonType" class="btn btn-dark">Save</button>
+            <button type="submit" value="Clear" name="buttontype" class="btn btn-info">Clear</button>
 
-            <button type="submit" value="Delete Bill" name="buttonType" class="btn btn-primary">Delete Bill</button>
+            <button type="submit" value="Delete Bill" name="buttonType" class="btn btn-warning">Delete Bill</button>
 
-            <button type="submit" value="Payment" name="buttonType" class="btn btn-primary">Payment</button>
+            <button type="submit" value="Payment" name="buttonType" class="btn btn-danger">Payment</button>
 
 
-            <button type="submit" value="Download Bill" name="buttonType" class="btn btn-primary">Download Bill</button>
+            <button type="submit" value="Download Bill" name="buttonType" class="btn btn-success">Download Bill</button>
         </center>
 
 
-           
+
 
     </div>
 
@@ -416,13 +411,13 @@
                 <form id="modalSearchForm" asp-controller="StellarBilling" asp-action="AddProductPop" method="post">
 
 
-        @*             <div class="col mb-3">
+                    @*             <div class="col mb-3">
 
-                        <label asp-for="ProductID">Product ID</label>
+                    <label asp-for="ProductID">Product ID</label>
 
-                        <input type="text" class="form-control" id="ProductID" name="ProductID" placeholder="Product ID" />
+                    <input type="text" class="form-control" id="ProductID" name="ProductID" placeholder="Product ID" />
 
-                       
+
 
 
 
@@ -433,8 +428,8 @@
                         <label for="searchInput">Barcode ID </label>
                         <input type="text" class="form-control" id="BarcodeId" name="BarcodeId" placeholder="Barcode ID" />
 
-                       @*  <span asp-validation-for="BarCode" class="alert-danger">Bar ID</span>
- *@
+                        @*  <span asp-validation-for="BarCode" class="alert-danger">Bar ID</span>
+                        *@
                     </div>
 
                     <div class="col mb-3">
@@ -456,9 +451,9 @@
                     </div>
 
 
-                  @*   <input type="hidden" id="SelectedProductID" name="SelectedProductID" value="">
+                    @*   <input type="hidden" id="SelectedProductID" name="SelectedProductID" value="">
                     <div id="modalResults"></div>
- *@
+                    *@
 
 
                 </form>
@@ -495,7 +490,6 @@
                         </tr>
                     </thead>
                     <tbody id="productTableBody">
-                        
                     </tbody>
                 </table>
             </div>
@@ -515,28 +509,28 @@
             <div class="modal-header">
                 <h5 class="modal-title" id="customerModalLabel">Enter Customer Details</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    
+
                 </button>
             </div>
             <div class="modal-body">
 
 
                 <form id="modalSearchFormcus" asp-controller="StellarBilling" asp-action="AddCustomerPop" method="post">
-              
+
                     <div class="col mb-3">
 
-                       
 
-                        <label asp-for="CustomerNumber" >Mobile Number</label>
+
+                        <label asp-for="CustomerNumber">Mobile Number</label>
                         <input type="text" class="form-control" id="MobileNumber" name="MobileNumber" placeholder="Mobile Number" />
 
-                        
+
 
                     </div>
 
                     <div class="col mb-3">
-                        <label for="searchInput">Customer Name </label> 
-                        <input type="text" class="form-control" id="CustomerName" name="CustomerName" placeholder="Customer Name"/>
+                        <label for="searchInput">Customer Name </label>
+                        <input type="text" class="form-control" id="CustomerName" name="CustomerName" placeholder="Customer Name" />
                     </div>
 
 
@@ -547,11 +541,11 @@
 
                 </form>
 
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                        <button type="button" class="btn btn-primary" id="saveCustomer">Save Customer</button>
-                    </div>
-                
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" id="saveCustomer">Save Customer</button>
+                </div>
+
             </div>
         </div>
     </div>
@@ -733,7 +727,7 @@
                     BarcodeId: barcodeID,
                     Price: price,
                     NumberOfStock: numberOfStock,
-                   
+
                 },
                 success: function (result) {
                     $('#modalCenter').modal('hide');
@@ -790,7 +784,7 @@
             var customernumber = $('#MobileNumber').val();
             var customername = $('#CustomerName').val();
             var Address = $('#Address').val();
-           
+
 
             $.ajax({
                 type: 'POST',
@@ -799,7 +793,7 @@
                     MobileNumber: customernumber,
                     CustomerName: customername,
                     Address: Address,
-                   
+
 
                 },
                 success: function (result) {
@@ -823,7 +817,7 @@
 
     $(document).ready(function () {
         $('#getCustomerDataButton').on('click', function () {
-           
+
             var customerNumber = $('input[name="CustomerNumber"]').val();
 
 
@@ -831,7 +825,7 @@
                 url: '@Url.Action("getcustomerpop", "StellarBilling")',
                 type: 'POST',
                 data: {
-                   
+
                     CustomerNumber: customerNumber
                 },
                 success: function (response) {
@@ -875,10 +869,10 @@
                 // Extract the data from the row cells
                 var billID = row.find('td:eq(1)').text().trim();
                 var billDate = row.find('td:eq(2)').text().trim();
-                var customerNumber = $('input[name="CustomerNumber"]').val(); 
-               
+                var customerNumber = $('input[name="CustomerNumber"]').val();
 
-               
+
+
                 if (billID && billDate && customerNumber) {
                     // Redirect to the controller with the extracted values
                     window.location.href = '@Url.Action("LoadBill", "StellarBilling")?billID=' + encodeURIComponent(billID) + '&billDate=' + encodeURIComponent(billDate) + '&customerNumber=' + encodeURIComponent(customerNumber) + '&selectedValues=' + encodeURIComponent(selectedProduct.val());
@@ -930,25 +924,25 @@
     });
 </script>
 <script>
-        document.addEventListener('DOMContentLoaded', function () {
+    document.addEventListener('DOMContentLoaded', function () {
         const phoneInput = document.getElementById('CustomerNumber');
 
-            phoneInput.addEventListener('input', function (e) {
-                // Remove non-numeric characters
-                this.value = this.value.replace(/\D/g, '');
-            });
-
-            phoneInput.addEventListener('keydown', function (e) {
-                // Allow backspace, delete, tab, escape, enter, and arrow keys
-                if ([46, 8, 9, 27, 13, 37, 38, 39, 40].indexOf(e.keyCode) !== -1) {
-                    return;
-                }
-                // Prevent typing if the input already has 10 characters
-                if (this.value.length >= 10) {
-                    e.preventDefault();
-                }
-            });
+        phoneInput.addEventListener('input', function (e) {
+            // Remove non-numeric characters
+            this.value = this.value.replace(/\D/g, '');
         });
+
+        phoneInput.addEventListener('keydown', function (e) {
+            // Allow backspace, delete, tab, escape, enter, and arrow keys
+            if ([46, 8, 9, 27, 13, 37, 38, 39, 40].indexOf(e.keyCode) !== -1) {
+                return;
+            }
+            // Prevent typing if the input already has 10 characters
+            if (this.value.length >= 10) {
+                e.preventDefault();
+            }
+        });
+    });
 </script>
 
 
