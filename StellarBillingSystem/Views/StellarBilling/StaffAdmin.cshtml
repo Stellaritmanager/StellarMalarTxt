@@ -167,7 +167,7 @@
                             </div>
                             <div class="form-floating form-floating-outline mb-4">
 
-                                <input asp-for="Initial" value="@Model.Initial" class="form-control" placeholder="Initial" pattern="^[A-Za-z\s.]+$" title="Initial should contain only letters,spaces and dots" />
+                                <input asp-for="Initial" value="@Model.Initial" class="form-control" placeholder="Initial" oninput="validateInput(this)"/>
                                 <label asp-for="Initial" class="control-label">Initial</label>
                                 <span asp-validation-for="Initial" class="text-danger"></span>
                             </div>
