@@ -17,8 +17,9 @@ using StellarBillingSystem.Business;
 using StellarBillingSystem.Context;
 using StellarBillingSystem.Models;
 using System.Data;
-using System.Linq;
-using System.Security.Cryptography;
+using System.Globalization;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using System.Web;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.AspNetCore.Components.Forms;
@@ -27,7 +28,6 @@ using Newtonsoft.Json;
 using Microsoft.EntityFrameworkCore.Metadata;
 using System.Globalization;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc.Rendering;
 
 
 namespace StellarBillingSystem.Controllers
@@ -273,6 +273,7 @@ namespace StellarBillingSystem.Controllers
 
         public async Task<IActionResult> ProductMaster()
         {
+          
             BusinessClassBilling business = new BusinessClassBilling(_billingsoftware);
 
             var categories = business.GetItemsFromDatabase();
@@ -302,8 +303,22 @@ namespace StellarBillingSystem.Controllers
            // ViewData["categoryid"] = business.GetCatid(model.BranchID);
             ViewData["discountid"] = business.Getdiscountid(model.ObjPro.BranchID);
           
+           
+            ViewData["categoryid"] = business.GetCatid(model.ObjPro.BranchID);
+            ViewData["discountid"] = business.Getdiscountid(model.ObjPro.BranchID);
+            using (var context = new BillingContext())
+            {
+                // Step 1: Perform the query
+                var entities = context.SHProductMaster
+                                      .Where(e => e.BranchID == model.ObjPro.BranchID && e.IsDelete == false)
+                                      .ToList();
 
-            ViewData["ProductData"] =await AdditionalProductMasterFun(model.ObjPro.BranchID);
+                // Step 2: Convert to DataTable
+                var dataTable = BusinessClassBilling.ConvertToDataTableProductMaster(entities);
+                // Store the DataTable in ViewData for access in the view
+
+           
+                ViewData["ProductData"] = dataTable;
 
             return View("ProductMaster", model);
 
@@ -340,7 +355,7 @@ namespace StellarBillingSystem.Controllers
 
             ViewData["categoryid"] = business.GetCatid(model.BranchID);
             ViewData["discountid"] = business.Getdiscountid(model.BranchID);
-
+           
 
 
           
@@ -352,6 +367,7 @@ namespace StellarBillingSystem.Controllers
                 Value = c.CategoryID.ToString(),
                 Text = c.CategoryName
             }).ToList();
+
 
             string? selectedCategoryId = null;
 
@@ -2431,7 +2447,7 @@ namespace StellarBillingSystem.Controllers
                 existingrole.BranchID = model.BranchID;
                 existingrole.RollID = model.RollID;
                 existingrole.ScreenID = model.ScreenID;
-                existingrole.Access = model.Access;
+                existingrole.Access = "true";
                 existingrole.Authorized = model.Authorized;
                 existingrole.lastUpdatedDate = DateTime.Now.ToString();
                 existingrole.lastUpdatedUser = User.Claims.First().Value.ToString();
@@ -2442,7 +2458,7 @@ namespace StellarBillingSystem.Controllers
             }
             else
             {
-
+                model.Access = "true";
                 model.lastUpdatedDate = DateTime.Now.ToString();
                 model.lastUpdatedUser = User.Claims.First().Value.ToString();
                 model.lastUpdatedMachine = Request.HttpContext.Connection.RemoteIpAddress.ToString();
