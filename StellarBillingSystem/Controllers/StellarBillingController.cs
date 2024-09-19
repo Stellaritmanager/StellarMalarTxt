@@ -2924,13 +2924,21 @@ namespace StellarBillingSystem.Controllers
                     return View("CustomerBilling", model);
                 }
 
-                String Query = "SELECT \r\n    SD.BillID,\r\n    CONVERT(VARCHAR(10), SD.BillDate, 101) AS BillDate,\r\n    SD.ProductID,\r\n    SP.ProductName,\r\n    SD.Price,\r\n    SD.Quantity,\r\n CustomerAddress = (select Address  from SHCustomerMaster where MobileNumber = sd.CustomerNumber AND BranchID = sd.BranchID),\r\n   CustomerName = (select CustomerName  from SHCustomerMaster where MobileNumber = sd.CustomerNumber AND BranchID = sd.BranchID),\r\n    SD.CustomerNumber,\r\n    SD.TotalDiscount AS DetailDiscount,\r\n    SD.Totalprice AS DetailTotalprice,\r\n    SB.CGSTPercentage,\r\n    SB.SGSTPercentage,\r\n    SB.TotalDiscount,\r\n    SB.NetPrice AS MasterTotalprice,\r\n    PaymentId= (select paymentid from SHPaymentMaster where BillID = sd.billid AND BillDate = sd.billDate AND BranchID =Sd.BranchID)\r\nFROM \r\n    SHbilldetails SD\r\nINNER JOIN \r\n    SHbillmaster SB ON SD.BillID = SB.BillID\r\nINNER JOIN \r\n    SHProductMaster SP ON SD.ProductID = SP.ProductID\r\nWHERE \r\n    SD.IsDelete = 0 \r\n    AND SD.BillID = '" + BillID + "'   AND SD.BillDate = '" + BillDate + "'     AND SD.CustomerNumber = '" + CustomerNumber + "'      AND SD.BranchID = '" + model.BranchID + "'    AND SP.BranchID = '" + model.BranchID + "'    AND SB.BranchID = '" + model.BranchID + "' ";
+                String Query = "SELECT \r\n    SD.BillID,\r\n    CONVERT(VARCHAR(10), SD.BillDate, 101) AS BillDate,\r\n    SD.ProductID,\r\n    SP.ProductName,\r\n    FORMAT(TRY_CAST(REPLACE(SD.Price, ',', '') AS DECIMAL(18, 2)), 'N2') AS Price,  -- Remove commas before casting\r\n    SD.Quantity,\r\n    (SELECT Address FROM SHCustomerMaster WHERE MobileNumber = SD.CustomerNumber AND BranchID = SD.BranchID) AS CustomerAddress,\r\n    (SELECT CustomerName FROM SHCustomerMaster WHERE MobileNumber = SD.CustomerNumber AND BranchID = SD.BranchID) AS CustomerName,\r\n    SD.CustomerNumber,\r\n    FORMAT(TRY_CAST(SD.TotalDiscount AS DECIMAL(18, 2)), 'N2') AS DetailDiscount, \r\n    FORMAT(TRY_CAST(SD.Totalprice AS DECIMAL(18, 2)), 'N2') AS DetailTotalprice, \r\n     SB.CGSTPercentage,\r\n    SB.SGSTPercentage,\r\n    SB.TotalDiscount,\r\n    FORMAT(TRY_CAST(SB.NetPrice AS DECIMAL(18, 2)), 'N2') AS MasterTotalprice, \r\n    SP.SerialNumber,\r\n    FORMAT(TRY_CAST(SD.NetPrice AS DECIMAL(18, 2)), 'N2') AS NetPrice, \r\n    (SELECT PaymentID FROM SHPaymentMaster WHERE BillID = SD.BillID AND BillDate = SD.BillDate AND BranchID = SD.BranchID) AS PaymentId\r\nFROM \r\n    SHbilldetails SD\r\nINNER JOIN \r\n    SHbillmaster SB ON SD.BillID = SB.BillID\r\nINNER JOIN \r\n    SHProductMaster SP ON SD.ProductID = SP.ProductID\r\nWHERE \r\n    SD.IsDelete = 0\r\n    AND SD.BillID = '" + BillID + "'   AND SD.BillDate = '" + BillDate + "'     AND SD.CustomerNumber = '" + CustomerNumber + "'      AND SD.BranchID = '" + model.BranchID + "'    AND SP.BranchID = '" + model.BranchID + "'    AND SB.BranchID = '" + model.BranchID + "'";
+
+
 
                 var Table = BusinessClassCommon.DataTable(_billingsoftware, Query);
 
-               // PrintDocument(Busbill.PrintBillDetails(Table, model.BranchID));
-                
-                return File(Busbill.PrintBillDetails(Table, model.BranchID), "application/vnd.openxmlformats-officedocument.wordprocessingml.document", "Bill_" + TempData["BillID"] + ".docx");
+
+
+                // Get current date and time
+                var currentDateTime = DateTime.Now.ToString("ddMMyyyy_HHmmss");
+
+                // Create filename with BillID and current datetime
+                var fileName = $"{model.BillID}_{currentDateTime}.docx";
+
+                return File(Busbill.PrintBillDetails(Table, model.BranchID), "application/vnd.openxmlformats-officedocument.wordprocessingml.document", fileName);
                 
 
 

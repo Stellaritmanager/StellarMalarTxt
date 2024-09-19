@@ -473,18 +473,20 @@ namespace StellarBillingSystem.Business
 
                 //Add a table
               
-                int rowcount = 1;
+                int rowcount = 0;
+                int temrowcount = 1;
                 //Row data
                 foreach (DataRow objRow in pbillData.Rows)
                 {
-                    document.ReplaceText("<<sno" + rowcount.ToString() + ">>",rowcount.ToString());
-                    document.ReplaceText("<<description"+rowcount.ToString()+">>", pbillData.Rows[0]["ProductName"].ToString());
-                    document.ReplaceText("<<h" + rowcount.ToString() + ">>", pbillData.Rows[0]["Quantity"].ToString());
-                    document.ReplaceText("<<q" + rowcount.ToString() + ">>", pbillData.Rows[0]["Quantity"].ToString());
-                    document.ReplaceText("<<up" + rowcount.ToString() + ">>", pbillData.Rows[0]["Price"].ToString());
-                    document.ReplaceText("<<amt" + rowcount.ToString() + ">>", pbillData.Rows[0]["Price"].ToString());
+                    document.ReplaceText("<<sno" + temrowcount.ToString() + ">>",temrowcount.ToString());
+                    document.ReplaceText("<<description"+ temrowcount.ToString()+">>", pbillData.Rows[rowcount]["ProductName"].ToString());
+                    document.ReplaceText("<<h" + temrowcount.ToString() + ">>", pbillData.Rows[rowcount]["SerialNumber"].ToString());
+                    document.ReplaceText("<<q" + temrowcount.ToString() + ">>", pbillData.Rows[rowcount]["Quantity"].ToString());
+                    document.ReplaceText("<<up" + temrowcount.ToString() + ">>", pbillData.Rows[rowcount]["Price"].ToString());
+                    document.ReplaceText("<<amt" + temrowcount.ToString() + ">>", pbillData.Rows[rowcount]["NetPrice"].ToString());
 
                     rowcount++;
+                    temrowcount++;
                 }
 
                 
