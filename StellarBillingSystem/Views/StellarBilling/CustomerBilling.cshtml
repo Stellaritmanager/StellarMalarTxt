@@ -433,7 +433,7 @@
 
                     <div class="col mb-3">
                         <label for="searchInput">Product Name</label>
-                        <input type="text" class="form-control" id="ProductName" name="ProductName" placeholder="Product Name" />
+                        <input type="text" class="form-control" id="ProductName" name="ProductName" placeholder="Product Name" maxlength="35" />
 
 
                     </div>
@@ -550,7 +550,6 @@
     </div>
 </div>
 
-
 <script>
     let suppressInputEvent = false;
 
@@ -582,8 +581,11 @@
         const hidden = document.getElementById(hiddenId);
         const dropdown = document.getElementById('productDropdown');
 
+        // Trim whitespace from the selected text
+        const trimmedText = text.trim();
+
         // Set the selected value in the input and hidden input
-        input.value = text;
+        input.value = trimmedText;
         hidden.value = value;
 
         // Hide the dropdown after selection

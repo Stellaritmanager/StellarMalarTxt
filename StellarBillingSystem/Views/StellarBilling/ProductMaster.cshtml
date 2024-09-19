@@ -146,7 +146,7 @@
                         <div class="col-md-12 col-lg-5">
                             <div class="form-floating form-floating-outline mb-4">
 
-                                <input asp-for="ObjPro.ProductName" value="@Model.ObjPro.ProductName" class="form-control" placeholder="Product Name" />
+                                <input asp-for="ObjPro.ProductName" value="@Model.ObjPro.ProductName" class="form-control" placeholder="Product Name" maxlength="35" />
                                 <label asp-for="ObjPro.ProductName" class="control-label">Product Name</label>
 
                                 <span asp-validation-for="ObjPro.ProductName" class="text-danger"></span>
