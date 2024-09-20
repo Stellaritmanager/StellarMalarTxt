@@ -117,6 +117,7 @@ namespace StellarBillingSystem.Controllers
         public async Task<IActionResult> AddCategory(CategoryMasterModel model, string buttonType)
         {
 
+            BusinessClassBilling business = new BusinessClassBilling(_billingsoftware,_configuration);
 
             if (TempData["BranchID"] != null)
             {
@@ -216,7 +217,7 @@ namespace StellarBillingSystem.Controllers
                 // Store the DataTable in ViewData for access in the view
                 ViewData["Categorydata"] = dataTable5;
 
-                model = new CategoryMasterModel();
+               
                 return View("CategoryMaster", model);
             }
             else if (buttonType == "save")
@@ -238,7 +239,7 @@ namespace StellarBillingSystem.Controllers
                     }
                     existingCategory.CategoryID = model.CategoryID;
                     existingCategory.CategoryName = model.CategoryName;
-                    existingCategory.LastUpdatedDate = DateTime.Now;
+                    existingCategory.LastUpdatedDate = DateTime.ParseExact(business.GetFormattedDateTime(), "dd/MM/yyyy HH:mm:ss", null);
                     existingCategory.LastUpdatedUser = User.Claims.First().Value.ToString();
                     existingCategory.LastUpdatedmachine = Request.HttpContext.Connection.RemoteIpAddress.ToString();
 
@@ -246,8 +247,8 @@ namespace StellarBillingSystem.Controllers
                 }
                 else
                 {
-                    model.LastUpdatedDate = DateTime.Now;
-                    model.LastUpdatedUser = User.Claims.First().Value.ToString(); ;
+                    model.LastUpdatedDate = DateTime.ParseExact(business.GetFormattedDateTime(), "dd/MM/yyyy HH:mm:ss", null);
+                    model.LastUpdatedUser = User.Claims.First().Value.ToString(); 
                     model.LastUpdatedmachine = Request.HttpContext.Connection.RemoteIpAddress.ToString();
 
 
@@ -274,7 +275,7 @@ namespace StellarBillingSystem.Controllers
         public async Task<IActionResult> ProductMaster()
         {
 
-            BusinessClassBilling business = new BusinessClassBilling(_billingsoftware);
+            BusinessClassBilling business = new BusinessClassBilling(_billingsoftware, _configuration);
 
             var categories = business.GetItemsFromDatabase();
 
@@ -299,6 +300,7 @@ namespace StellarBillingSystem.Controllers
                 TempData.Keep("BranchID");
             }
 
+            
 
             // ViewData["categoryid"] = business.GetCatid(model.BranchID);
             ViewData["discountid"] = business.Getdiscountid(model.ObjPro.BranchID);
@@ -309,7 +311,7 @@ namespace StellarBillingSystem.Controllers
 
             ViewData["ProductData"] = await AdditionalProductMasterFun(model.ObjPro.BranchID);
 
-                return View("ProductMaster", model);
+            return View("ProductMaster", model);
 
             
         }
@@ -333,18 +335,18 @@ namespace StellarBillingSystem.Controllers
 
         [HttpPost]
 
-        public async Task<IActionResult> AddProduct(ProductMatserModel model, string buttonType)
+        public async Task<IActionResult> AddProduct(ProductDropDownModel model, string buttonType)
         {
             if (TempData["BranchID"] != null)
             {
-                model.BranchID = TempData["BranchID"].ToString();
+                model.ObjPro.BranchID = TempData["BranchID"].ToString();
                 TempData.Keep("BranchID");
             }
 
-            BusinessClassBilling business = new BusinessClassBilling(_billingsoftware);
+            BusinessClassBilling business = new BusinessClassBilling(_billingsoftware, _configuration);
 
-            ViewData["categoryid"] = business.GetCatid(model.BranchID);
-            ViewData["discountid"] = business.Getdiscountid(model.BranchID);
+            ViewData["categoryid"] = business.GetCatid(model.ObjPro.BranchID);
+            ViewData["discountid"] = business.Getdiscountid(model.ObjPro.BranchID);
 
 
 
@@ -364,17 +366,17 @@ namespace StellarBillingSystem.Controllers
             if (buttonType == "Get")
             {
                 // Validation: ensure either ProductID or BarcodeID is entered
-                if (string.IsNullOrEmpty(model.ProductID) && string.IsNullOrEmpty(model.BarcodeId))
+                if (string.IsNullOrEmpty(model.ObjPro.ProductID) && string.IsNullOrEmpty(model.ObjPro.BarcodeId))
                 {
                     ViewBag.ValidationMessage = "Please enter either ProductID or BarcodeID.";
 
                     // Fetch and assign product list or additional product data
-                    var dataTable = await AdditionalProductMasterFun(model.BranchID);
+                    var dataTable = await AdditionalProductMasterFun(model.ObjPro.BranchID);
 
                     ViewData["ProductData"] = dataTable;
 
 
-                    var productDropDownModel = business.CreateProductDropDownModel(selectListItems, selectedCategoryId, model);
+                    var productDropDownModel = business.CreateProductDropDownModel(selectListItems, selectedCategoryId, model.ObjPro);
 
                     // Return the view with the updated model
                     return View("ProductMaster", productDropDownModel);
@@ -382,15 +384,15 @@ namespace StellarBillingSystem.Controllers
 
                 // Fetch product details based on BarcodeID or ProductID
                 ProductMatserModel? resultpro = null;
-                if (!string.IsNullOrEmpty(model.BarcodeId))
+                if (!string.IsNullOrEmpty(model.ObjPro.BarcodeId))
                 {
                     resultpro = await _billingsoftware.SHProductMaster
-                        .FirstOrDefaultAsync(x => x.BarcodeId == model.BarcodeId && !x.IsDelete && x.BranchID == model.BranchID);
+                        .FirstOrDefaultAsync(x => x.BarcodeId == model.ObjPro.BarcodeId && !x.IsDelete && x.BranchID == model.ObjPro.BranchID);
                 }
                 else
                 {
                     resultpro = await _billingsoftware.SHProductMaster
-                        .FirstOrDefaultAsync(x => x.ProductID == model.ProductID && !x.IsDelete && x.BranchID == model.BranchID);
+                        .FirstOrDefaultAsync(x => x.ProductID == model.ObjPro.ProductID && !x.IsDelete && x.BranchID == model.ObjPro.BranchID);
                 }
 
                 if (resultpro != null)
@@ -407,8 +409,8 @@ namespace StellarBillingSystem.Controllers
                         from godown in _billingsoftware.SHGodown
                         join product in _billingsoftware.SHProductMaster
                         on godown.ProductID equals product.ProductID
-                        where (product.BarcodeId == model.BarcodeId || product.ProductID == model.ProductID) &&
-                              godown.BranchID == model.BranchID &&
+                        where (product.BarcodeId == model.ObjPro.BarcodeId || product.ProductID == model.ObjPro.ProductID) &&
+                              godown.BranchID == model.ObjPro.BranchID &&
                               !product.IsDelete && !godown.IsDelete
                         select godown.NumberofStocks
                     ).FirstOrDefaultAsync();
@@ -417,13 +419,13 @@ namespace StellarBillingSystem.Controllers
                     ViewBag.GodownNoofitems = noofstock;
                     ViewBag.RackNoofitems = noofitemrack;
 
-                    var productDropDownModel = business.CreateProductDropDownModel(selectListItems, selectedCategoryId, model);
+                    var productDropDownModel = business.CreateProductDropDownModel(selectListItems, selectedCategoryId, model.ObjPro);
 
 
 
                     // Update the product drop-down model with the fetched data
                     productDropDownModel.ObjPro = resultpro;
-                    var dataTable = await AdditionalProductMasterFun(model.BranchID);
+                    var dataTable = await AdditionalProductMasterFun(model.ObjPro.BranchID);
                     ViewData["ProductData"] = dataTable;
 
 
@@ -433,10 +435,10 @@ namespace StellarBillingSystem.Controllers
                 {
                     // No product found, return an empty product with a message
                     ViewBag.NoProductMessage = "No value for this product ID";
-                    var productDropDownModel = business.CreateProductDropDownModel(selectListItems, selectedCategoryId, model);
+                    var productDropDownModel = business.CreateProductDropDownModel(selectListItems, selectedCategoryId, model.ObjPro);
 
 
-                    var dataTable = await AdditionalProductMasterFun(model.BranchID);
+                    var dataTable = await AdditionalProductMasterFun(model.ObjPro.BranchID);
                     ViewData["ProductData"] = dataTable;
 
 
@@ -448,10 +450,10 @@ namespace StellarBillingSystem.Controllers
 
             else if (buttonType == "Delete")
             {
-                if (string.IsNullOrEmpty(model.ProductID) && string.IsNullOrEmpty(model.BarcodeId))
+                if (string.IsNullOrEmpty(model.ObjPro.ProductID) && string.IsNullOrEmpty(model.ObjPro.BarcodeId))
                 {
                     ViewBag.ValidationMessage = "Please enter either ProductID or BarcodeID.";
-                    var dataTable1 = await AdditionalProductMasterFun(model.BranchID);
+                    var dataTable1 = await AdditionalProductMasterFun(model.ObjPro.BranchID);
 
                     // Store the DataTable in ViewData for access in the view
                     ViewData["ProductData"] = dataTable1;
@@ -459,7 +461,7 @@ namespace StellarBillingSystem.Controllers
                     return View("ProductMaster", model);
                 }
 
-                var productToDelete = await _billingsoftware.SHProductMaster.FirstOrDefaultAsync(x => (x.ProductID == model.ProductID || x.BarcodeId == model.BarcodeId) && !x.IsDelete && x.BranchID == model.BranchID);
+                var productToDelete = await _billingsoftware.SHProductMaster.FirstOrDefaultAsync(x => (x.ProductID == model.ObjPro.ProductID || x.BarcodeId == model.ObjPro.BarcodeId) && !x.IsDelete && x.BranchID == model.ObjPro.BranchID);
                 if (productToDelete != null)
                 {
                     productToDelete.IsDelete = true;
@@ -474,27 +476,27 @@ namespace StellarBillingSystem.Controllers
 
                 }
 
-                var dataTable = await AdditionalProductMasterFun(model.BranchID);
+                var dataTable = await AdditionalProductMasterFun(model.ObjPro.BranchID);
 
                 // Store the DataTable in ViewData for access in the view
                 ViewData["ProductData"] = dataTable;
 
-                model = new ProductMatserModel();
+                model = new ProductDropDownModel();
                 return View("ProductMaster", model);
             }
             else if (buttonType == "DeleteRetrieve")
             {
-                if (string.IsNullOrEmpty(model.ProductID) && string.IsNullOrEmpty(model.BarcodeId))
+                if (string.IsNullOrEmpty(model.ObjPro.ProductID) && string.IsNullOrEmpty(model.ObjPro.BarcodeId))
                 {
                     ViewBag.ValidationMessage = "Please enter either ProductID or BarcodeID.";
-                    var dataTable1 = await AdditionalProductMasterFun(model.BranchID);
+                    var dataTable1 = await AdditionalProductMasterFun(model.ObjPro.BranchID);
 
                     // Store the DataTable in ViewData for access in the view
                     ViewData["ProductData"] = dataTable1;
                     return View("ProductMaster", model);
                 }
 
-                var productToRetrieve = await _billingsoftware.SHProductMaster.FirstOrDefaultAsync(x => (x.ProductID == model.ProductID || x.BarcodeId == model.BarcodeId) && x.IsDelete == true && x.BranchID == model.BranchID);
+                var productToRetrieve = await _billingsoftware.SHProductMaster.FirstOrDefaultAsync(x => (x.ProductID == model.ObjPro.ProductID || x.BarcodeId == model.ObjPro.BarcodeId) && x.IsDelete == true && x.BranchID == model.ObjPro.BranchID);
                 if (productToRetrieve != null)
                 {
                     if (productToRetrieve.IsDelete == true)
@@ -504,19 +506,19 @@ namespace StellarBillingSystem.Controllers
 
                         await _billingsoftware.SaveChangesAsync();
 
-                        model.ProductID = productToRetrieve.ProductID;
-                        model.CategoryID = productToRetrieve.CategoryID;
-                        model.ProductName = productToRetrieve.ProductName;
-                        model.Brandname = productToRetrieve.Brandname;
-                        model.Price = productToRetrieve.Price;
-                        model.DiscountCategory = productToRetrieve.DiscountCategory;
-                        model.TotalAmount = productToRetrieve.TotalAmount;
-                        model.ImeiNumber = productToRetrieve.ImeiNumber;
-                        model.SerialNumber = productToRetrieve.SerialNumber;
-                        model.BarcodeId = productToRetrieve.BarcodeId;
-                        model.SGST = productToRetrieve.SGST;
-                        model.CGST = productToRetrieve.CGST;
-                        model.OtherTax = productToRetrieve.OtherTax;
+                        model.ObjPro.ProductID = productToRetrieve.ProductID;
+                        model.ObjPro.CategoryID = productToRetrieve.CategoryID;
+                        model.ObjPro.ProductName = productToRetrieve.ProductName;
+                        model.ObjPro.Brandname = productToRetrieve.Brandname;
+                        model.ObjPro.Price = productToRetrieve.Price;
+                        model.ObjPro.DiscountCategory = productToRetrieve.DiscountCategory;
+                        model.ObjPro.TotalAmount = productToRetrieve.TotalAmount;
+                        model.ObjPro.ImeiNumber = productToRetrieve.ImeiNumber;
+                        model.ObjPro.SerialNumber = productToRetrieve.SerialNumber;
+                        model.ObjPro.BarcodeId = productToRetrieve.BarcodeId;
+                        model.ObjPro.SGST = productToRetrieve.SGST;
+                        model.ObjPro.CGST = productToRetrieve.CGST;
+                        model.ObjPro.OtherTax = productToRetrieve.OtherTax;
 
                         ViewBag.Message = "Product retrieved successfully";
                     }
@@ -530,7 +532,7 @@ namespace StellarBillingSystem.Controllers
                 {
                     ViewBag.ErrorMessage = "Product not found";
                 }
-                var dataTable = await AdditionalProductMasterFun(model.BranchID);
+                var dataTable = await AdditionalProductMasterFun(model.ObjPro.BranchID);
 
                 // Store the DataTable in ViewData for access in the view
                 ViewData["ProductData"] = dataTable;
@@ -548,12 +550,12 @@ namespace StellarBillingSystem.Controllers
                 //    return View("ProductMaster", model);
                 //}
 
-                HttpContext.Session.SetString("BranchID", model.BranchID);
+                HttpContext.Session.SetString("BranchID", model.ObjPro.BranchID);
 
-                if (string.IsNullOrEmpty(model.BarcodeId))
+                if (string.IsNullOrEmpty(model.ObjPro.BarcodeId))
                 {
                     ViewBag.ValidationMessage = "Please enter  BarcodeID.";
-                    var dataTable = await AdditionalProductMasterFun(model.BranchID);
+                    var dataTable = await AdditionalProductMasterFun(model.ObjPro.BranchID);
 
                     // Store the DataTable in ViewData for access in the view
                     ViewData["ProductData"] = dataTable;
@@ -562,10 +564,10 @@ namespace StellarBillingSystem.Controllers
 
 
                 decimal price;
-                if (!decimal.TryParse(model.Price, out price))
+                if (!decimal.TryParse(model.ObjPro.Price, out price))
                 {
                     ViewBag.PriceErrorMessage = "Please enter a valid price.";
-                    var dataTable = await AdditionalProductMasterFun(model.BranchID);
+                    var dataTable = await AdditionalProductMasterFun(model.ObjPro.BranchID);
 
                     // Store the DataTable in ViewData for access in the view
                     ViewData["ProductData"] = dataTable;
@@ -576,7 +578,7 @@ namespace StellarBillingSystem.Controllers
 
                 decimal totalAmount;
 
-                if (!string.IsNullOrEmpty(model.DiscountCategory) && decimal.TryParse(model.DiscountCategory, out discount))
+                if (!string.IsNullOrEmpty(model.ObjPro.DiscountCategory) && decimal.TryParse(model.ObjPro.DiscountCategory, out discount))
                 {
                     // Perform calculation if a valid discount is provided
                     totalAmount = price - (price * discount / 100);
@@ -587,17 +589,17 @@ namespace StellarBillingSystem.Controllers
                     totalAmount = price;
                 }
 
-                model.TotalAmount = totalAmount.ToString();
+                model.ObjPro.TotalAmount = totalAmount.ToString();
 
 
 
-                var existingProduct = await _billingsoftware.SHProductMaster.FirstOrDefaultAsync(x => x.ProductID == model.ProductID && x.BranchID == model.BranchID);
+                var existingProduct = await _billingsoftware.SHProductMaster.FirstOrDefaultAsync(x => x.ProductID == model.ObjPro.ProductID && x.BranchID == model.ObjPro.BranchID);
                 if (existingProduct != null)
                 {
                     if (existingProduct.IsDelete)
                     {
                         ViewBag.ErrorMessage = "Cannot update. Product is marked as deleted.";
-                        var dataTable = await AdditionalProductMasterFun(model.BranchID);
+                        var dataTable = await AdditionalProductMasterFun(model.ObjPro.BranchID);
 
                         // Store the DataTable in ViewData for access in the view
                         ViewData["ProductData"] = dataTable;
@@ -605,22 +607,22 @@ namespace StellarBillingSystem.Controllers
                     }
 
 
-                    existingProduct.ProductID = model.ProductID;
-                    existingProduct.CategoryID = model.CategoryID;
-                    existingProduct.ProductName = model.ProductName;
-                    existingProduct.BarcodeId = model.BarcodeId;
-                    existingProduct.Brandname = model.Brandname;
-                    existingProduct.Price = model.Price;
-                    existingProduct.ImeiNumber = model.ImeiNumber;
-                    existingProduct.SerialNumber = model.SerialNumber;
-                    existingProduct.DiscountCategory = model.DiscountCategory;
-                    existingProduct.SGST = model.SGST;
-                    existingProduct.CGST = model.CGST;
-                    existingProduct.OtherTax = model.OtherTax;
-                    existingProduct.Price = model.Price;
-                    existingProduct.DiscountCategory = model.DiscountCategory;
-                    existingProduct.TotalAmount = model.TotalAmount;
-                    existingProduct.BranchID = model.BranchID;
+                    existingProduct.ProductID = model.ObjPro.ProductID;
+                    existingProduct.CategoryID = model.ObjPro.CategoryID;
+                    existingProduct.ProductName = model.ObjPro.ProductName;
+                    existingProduct.BarcodeId = model.ObjPro.BarcodeId;
+                    existingProduct.Brandname = model.ObjPro.Brandname;
+                    existingProduct.Price = model.ObjPro.Price;
+                    existingProduct.ImeiNumber = model.ObjPro.ImeiNumber;
+                    existingProduct.SerialNumber = model.ObjPro.SerialNumber;
+                    existingProduct.DiscountCategory = model.ObjPro.DiscountCategory;
+                    existingProduct.SGST = model.ObjPro.SGST;
+                    existingProduct.CGST = model.ObjPro.CGST;
+                    existingProduct.OtherTax = model.ObjPro.OtherTax;
+                    existingProduct.Price = model.ObjPro.Price;
+                    existingProduct.DiscountCategory = model.ObjPro.DiscountCategory;
+                    existingProduct.TotalAmount = model.ObjPro.TotalAmount;
+                    existingProduct.BranchID = model.ObjPro.BranchID;
 
 
                     // existingProduct.TotalAmount = model.TotalAmount - (model.Price * model.Discount / 100 = model.TotalAmount);
@@ -635,11 +637,11 @@ namespace StellarBillingSystem.Controllers
 
                     // Convert strings to decimals, calculate TotalAmount, and convert back to string
 
-                    model.LastUpdatedDate = DateTime.Now;
-                    model.LastUpdatedUser = User.Claims.First().Value.ToString();
-                    model.LastUpdatedmachine = Request.HttpContext.Connection.RemoteIpAddress.ToString();
+                    model.ObjPro.LastUpdatedDate = DateTime.Now;
+                    model.ObjPro.LastUpdatedUser = User.Claims.First().Value.ToString();
+                    model.ObjPro.LastUpdatedmachine = Request.HttpContext.Connection.RemoteIpAddress.ToString();
 
-                    _billingsoftware.SHProductMaster.Add(model);
+                    _billingsoftware.SHProductMaster.Add(model.ObjPro);
                 }
 
                 await _billingsoftware.SaveChangesAsync();
@@ -649,13 +651,13 @@ namespace StellarBillingSystem.Controllers
 
 
 
-            var dataTable2 = await AdditionalProductMasterFun(model.BranchID);
+            var dataTable2 = await AdditionalProductMasterFun(model.ObjPro.BranchID);
 
             // Store the DataTable in ViewData for access in the view
             ViewData["ProductData"] = dataTable2;
 
 
-            var productDropDownModel1 = business.CreateProductDropDownModel(selectListItems, selectedCategoryId, model);
+            var productDropDownModel1 = business.CreateProductDropDownModel(selectListItems, selectedCategoryId, model.ObjPro);
             return View("ProductMaster", productDropDownModel1);
         }
 
@@ -695,7 +697,7 @@ namespace StellarBillingSystem.Controllers
             }
 
 
-            BusinessClassBilling business = new BusinessClassBilling(_billingsoftware);
+            BusinessClassBilling business = new BusinessClassBilling(_billingsoftware, _configuration);
             ViewData["godownproductid"] = business.GetProductid(model.BranchID);
 
 
@@ -719,7 +721,7 @@ namespace StellarBillingSystem.Controllers
                 TempData.Keep("BranchID");
             }
 
-            BusinessClassBilling business = new BusinessClassBilling(_billingsoftware);
+            BusinessClassBilling business = new BusinessClassBilling(_billingsoftware, _configuration);
             ViewData["godownproductid"] = business.GetProductid(model.BranchID);
 
 
@@ -810,7 +812,7 @@ namespace StellarBillingSystem.Controllers
                     existinggoddown.SupplierInformation = model.SupplierInformation;
                     existinggoddown.IsDelete = model.IsDelete;
                     existinggoddown.BranchID = model.BranchID;
-                    existinggoddown.LastUpdatedDate = DateTime.Now;
+                    existinggoddown.LastUpdatedDate = DateTime.ParseExact(business.GetFormattedDateTime(), "dd/MM/yyyy HH:mm:ss", null);
                     existinggoddown.LastUpdatedUser = User.Claims.First().Value.ToString();
                     existinggoddown.LastUpdatedmachine = Request.HttpContext.Connection.RemoteIpAddress.ToString();
                     _billingsoftware.Entry(existinggoddown).State = EntityState.Modified;
@@ -820,7 +822,7 @@ namespace StellarBillingSystem.Controllers
                 else
                 {
 
-                    model.LastUpdatedDate = DateTime.Now;
+                    model.LastUpdatedDate = DateTime.ParseExact(business.GetFormattedDateTime(), "dd/MM/yyyy HH:mm:ss", null);
                     model.LastUpdatedUser = User.Claims.First().Value.ToString();
                     model.LastUpdatedmachine = Request.HttpContext.Connection.RemoteIpAddress.ToString();
                     _billingsoftware.SHGodown.Add(model);
@@ -1102,7 +1104,7 @@ namespace StellarBillingSystem.Controllers
 
 
 
-            BusinessClassBilling business = new BusinessClassBilling(_billingsoftware);
+            BusinessClassBilling business = new BusinessClassBilling(_billingsoftware, _configuration);
             ViewData["discountcategoryid"] = business.GetcategoryID(model.BranchID);
 
             if (buttonType == "Get")
@@ -1414,6 +1416,7 @@ namespace StellarBillingSystem.Controllers
 
         public async Task<IActionResult> AddPoints(PointsMasterModel model)
         {
+            BusinessClassBilling business = new BusinessClassBilling(_billingsoftware, _configuration);
 
             if (TempData["BranchID"] != null)
             {
@@ -1431,7 +1434,7 @@ namespace StellarBillingSystem.Controllers
                 existingpoints.NetPrice = model.NetPrice;
                 existingpoints.NetPoints = model.NetPoints;
                 existingpoints.BranchID = model.BranchID;
-                existingpoints.LastUpdatedDate = DateTime.Now.ToString();
+                existingpoints.LastUpdatedDate = business.GetFormattedDateTime();
                 existingpoints.LastUpdatedUser = User.Claims.First().Value.ToString();
                 existingpoints.LastUpdatedmachine = Request.HttpContext.Connection.RemoteIpAddress.ToString();
 
@@ -1441,7 +1444,7 @@ namespace StellarBillingSystem.Controllers
             else
             {
                 model.PointsID = pointsID;
-                model.LastUpdatedDate = DateTime.Now.ToString();
+                model.LastUpdatedDate = business.GetFormattedDateTime();
                 model.LastUpdatedUser = User.Claims.First().Value.ToString();
                 model.LastUpdatedmachine = Request.HttpContext.Connection.RemoteIpAddress.ToString();
 
@@ -1518,7 +1521,7 @@ namespace StellarBillingSystem.Controllers
             }
 
 
-            BusinessClassBilling business = new BusinessClassBilling(_billingsoftware);
+            BusinessClassBilling business = new BusinessClassBilling(_billingsoftware, _configuration);
             ViewData["godownproductid"] = business.GetProductid(model.BranchID);
 
             if (buttonType == "Get")
@@ -1763,7 +1766,7 @@ namespace StellarBillingSystem.Controllers
                 TempData.Keep("BranchID");
             }
 
-            BusinessClassBilling business = new BusinessClassBilling(_billingsoftware);
+            BusinessClassBilling business = new BusinessClassBilling(_billingsoftware, _configuration);
             ViewData["godownproductid"] = business.GetProductid(model.BranchID);
 
             var RackEdit = await _billingsoftware.SHRackPartionProduct.FindAsync(partitionID, productID, model.BranchID);
@@ -1812,7 +1815,7 @@ namespace StellarBillingSystem.Controllers
             }
 
 
-            BusinessClassBilling business = new BusinessClassBilling(_billingsoftware);
+            BusinessClassBilling business = new BusinessClassBilling(_billingsoftware, _configuration);
             ViewData["godownproductid"] = business.GetProductid(model.BranchID);
 
 
@@ -1906,7 +1909,7 @@ namespace StellarBillingSystem.Controllers
                 TempData.Keep("BranchID");
             }
 
-            BusinessClassBilling Busbill = new BusinessClassBilling(_billingsoftware);
+            BusinessClassBilling Busbill = new BusinessClassBilling(_billingsoftware, _configuration);
             ViewData["resoruseid"] = Busbill.GetResourceid(model.BranchID);
             ViewData["branchid"] = Busbill.Getbranch();
 
@@ -1923,7 +1926,7 @@ namespace StellarBillingSystem.Controllers
         public async Task<IActionResult> AddStaff(StaffAdminModel model, string buttontype, IFormFile imageFile)
         {
 
-            BusinessClassBilling Busbill = new BusinessClassBilling(_billingsoftware);
+            BusinessClassBilling Busbill = new BusinessClassBilling(_billingsoftware,_configuration);
             ViewData["resoruseid"] = Busbill.GetResourceid(model.BranchID);
             ViewData["branchid"] = Busbill.Getbranch();
 
@@ -2173,7 +2176,7 @@ namespace StellarBillingSystem.Controllers
                     existingStaffAdmin.IdProofId = model.IdProofId;
                     existingStaffAdmin.IdProofName = model.IdProofName;
                     existingStaffAdmin.IdProofFile = model.IdProofFile;
-                    existingStaffAdmin.LastupdatedDate = DateTime.Now;
+                    existingStaffAdmin.LastupdatedDate = DateTime.ParseExact(Busbill.GetFormattedDateTime(), "dd/MM/yyyy HH:mm:ss", null);
                     existingStaffAdmin.LastupdatedUser = User.Claims.First().Value.ToString();
                     existingStaffAdmin.LastUpdatedMachine = Request.HttpContext.Connection.RemoteIpAddress.ToString();
                     existingStaffAdmin.Gender = model.Gender;
@@ -2184,7 +2187,7 @@ namespace StellarBillingSystem.Controllers
                 else
                 {
 
-                    model.LastupdatedDate = DateTime.Now;
+                    model.LastupdatedDate = DateTime.ParseExact(Busbill.GetFormattedDateTime(), "dd/MM/yyyy HH:mm:ss", null);
                     model.LastupdatedUser = User.Claims.First().Value.ToString();
                     model.LastUpdatedMachine = Request.HttpContext.Connection.RemoteIpAddress.ToString();
                     _billingsoftware.SHStaffAdmin.Add(model);
@@ -2352,7 +2355,7 @@ namespace StellarBillingSystem.Controllers
                 TempData.Keep("BranchID");
             }
 
-            BusinessClassBilling businessbill = new BusinessClassBilling(_billingsoftware);
+            BusinessClassBilling businessbill = new BusinessClassBilling(_billingsoftware, _configuration);
             ViewData["screenid"] = businessbill.GetScreenid(model.BranchID);
             ViewData["rollid"] = businessbill.RollAccessType(model.BranchID);
             ViewData["staffid"] = businessbill.GetStaffID(model.BranchID);
@@ -2481,7 +2484,7 @@ namespace StellarBillingSystem.Controllers
                 TempData.Keep("BranchID");
             }
 
-            BusinessClassBilling Busbill = new BusinessClassBilling(_billingsoftware);
+            BusinessClassBilling Busbill = new BusinessClassBilling(_billingsoftware, _configuration);
             ViewData["rollid"] = Busbill.RollAccessType(model.BranchID);
             ViewData["staffid"] = Busbill.GetStaffID(model.BranchID);
 
@@ -2766,7 +2769,7 @@ namespace StellarBillingSystem.Controllers
             }
 
 
-            BusinessClassBilling businessbill = new BusinessClassBilling(_billingsoftware);
+            BusinessClassBilling businessbill = new BusinessClassBilling(_billingsoftware, _configuration);
             ViewData["screenname"] = businessbill.Screenname();
 
             if (buttontype == "Get")
@@ -2907,7 +2910,7 @@ namespace StellarBillingSystem.Controllers
 
         
 
-                BusinessClassBilling Busbill = new BusinessClassBilling(_billingsoftware);
+                BusinessClassBilling Busbill = new BusinessClassBilling(_billingsoftware, _configuration);
             ViewData["productid"] = Busbill.Getproduct(model.BranchID);
 
 
@@ -2924,13 +2927,21 @@ namespace StellarBillingSystem.Controllers
                     return View("CustomerBilling", model);
                 }
 
-                String Query = "SELECT \r\n    SD.BillID,\r\n    CONVERT(VARCHAR(10), SD.BillDate, 101) AS BillDate,\r\n    SD.ProductID,\r\n    SP.ProductName,\r\n    SD.Price,\r\n    SD.Quantity,\r\n CustomerAddress = (select Address  from SHCustomerMaster where MobileNumber = sd.CustomerNumber AND BranchID = sd.BranchID),\r\n   CustomerName = (select CustomerName  from SHCustomerMaster where MobileNumber = sd.CustomerNumber AND BranchID = sd.BranchID),\r\n    SD.CustomerNumber,\r\n    SD.TotalDiscount AS DetailDiscount,\r\n    SD.Totalprice AS DetailTotalprice,\r\n    SB.CGSTPercentage,\r\n    SB.SGSTPercentage,\r\n    SB.TotalDiscount,\r\n    SB.NetPrice AS MasterTotalprice,\r\n    PaymentId= (select paymentid from SHPaymentMaster where BillID = sd.billid AND BillDate = sd.billDate AND BranchID =Sd.BranchID)\r\nFROM \r\n    SHbilldetails SD\r\nINNER JOIN \r\n    SHbillmaster SB ON SD.BillID = SB.BillID\r\nINNER JOIN \r\n    SHProductMaster SP ON SD.ProductID = SP.ProductID\r\nWHERE \r\n    SD.IsDelete = 0 \r\n    AND SD.BillID = '" + BillID + "'   AND SD.BillDate = '" + BillDate + "'     AND SD.CustomerNumber = '" + CustomerNumber + "'      AND SD.BranchID = '" + model.BranchID + "'    AND SP.BranchID = '" + model.BranchID + "'    AND SB.BranchID = '" + model.BranchID + "' ";
+                String Query = "SELECT \r\n    SD.BillID,\r\n    CONVERT(VARCHAR(10), SD.BillDate, 101) AS BillDate,\r\n    SD.ProductID,\r\n    SP.ProductName,\r\n    FORMAT(TRY_CAST(REPLACE(SD.Price, ',', '') AS DECIMAL(18, 2)), 'N2') AS Price,  -- Remove commas before casting\r\n    SD.Quantity,\r\n    (SELECT Address FROM SHCustomerMaster WHERE MobileNumber = SD.CustomerNumber AND BranchID = SD.BranchID) AS CustomerAddress,\r\n    (SELECT CustomerName FROM SHCustomerMaster WHERE MobileNumber = SD.CustomerNumber AND BranchID = SD.BranchID) AS CustomerName,\r\n    SD.CustomerNumber,\r\n    FORMAT(TRY_CAST(SD.TotalDiscount AS DECIMAL(18, 2)), 'N2') AS DetailDiscount, \r\n    FORMAT(TRY_CAST(SD.Totalprice AS DECIMAL(18, 2)), 'N2') AS DetailTotalprice, \r\n     SB.CGSTPercentage,\r\n    SB.SGSTPercentage,\r\n    SB.TotalDiscount,\r\n    FORMAT(TRY_CAST(SB.NetPrice AS DECIMAL(18, 2)), 'N2') AS MasterTotalprice, \r\n    SP.SerialNumber,\r\n    FORMAT(TRY_CAST(SD.NetPrice AS DECIMAL(18, 2)), 'N2') AS NetPrice, \r\n    (SELECT PaymentID FROM SHPaymentMaster WHERE BillID = SD.BillID AND BillDate = SD.BillDate AND BranchID = SD.BranchID) AS PaymentId\r\nFROM \r\n    SHbilldetails SD\r\nINNER JOIN \r\n    SHbillmaster SB ON SD.BillID = SB.BillID\r\nINNER JOIN \r\n    SHProductMaster SP ON SD.ProductID = SP.ProductID\r\nWHERE \r\n    SD.IsDelete = 0\r\n    AND SD.BillID = '" + BillID + "'   AND SD.BillDate = '" + BillDate + "'     AND SD.CustomerNumber = '" + CustomerNumber + "'      AND SD.BranchID = '" + model.BranchID + "'    AND SP.BranchID = '" + model.BranchID + "'    AND SB.BranchID = '" + model.BranchID + "'";
+
+
 
                 var Table = BusinessClassCommon.DataTable(_billingsoftware, Query);
 
-               // PrintDocument(Busbill.PrintBillDetails(Table, model.BranchID));
-                
-                return File(Busbill.PrintBillDetails(Table, model.BranchID), "application/vnd.openxmlformats-officedocument.wordprocessingml.document", "Bill_" + TempData["BillID"] + ".docx");
+
+
+                // Get current date and time
+                var currentDateTime = DateTime.Now.ToString("ddMMyyyy_HHmmss");
+
+                // Create filename with BillID and current datetime
+                var fileName = $"{model.BillID}_{currentDateTime}.docx";
+
+                return File(Busbill.PrintBillDetails(Table, model.BranchID), "application/vnd.openxmlformats-officedocument.wordprocessingml.document", fileName);
                 
 
 
@@ -3318,7 +3329,7 @@ namespace StellarBillingSystem.Controllers
                 }
 
 
-                BusinessClassBilling busbill = new BusinessClassBilling(_billingsoftware);
+                BusinessClassBilling busbill = new BusinessClassBilling(_billingsoftware, _configuration);
 
                 // This query is used to check Bill has Product in BillDetails
                 var checkproduct = await _billingsoftware.SHbilldetails.FirstOrDefaultAsync(x=>x.BillID == masterModel.BillID && x.BillDate == masterModel.BillDate && x.CustomerNumber == masterModel.CustomerNumber && x.BranchID == masterModel.BranchID);
@@ -3557,7 +3568,7 @@ namespace StellarBillingSystem.Controllers
         public IActionResult DeleteProduct(string productId, string billID, string billDate, string customerNumber, BillProductlistModel model)
         {
 
-            BusinessClassBilling Busbill = new BusinessClassBilling(_billingsoftware);
+            BusinessClassBilling Busbill = new BusinessClassBilling(_billingsoftware, _configuration);
             ViewData["productid"] = Busbill.Getproduct(model.BranchID);
 
 
@@ -3733,7 +3744,7 @@ namespace StellarBillingSystem.Controllers
                 TempData.Keep("BranchID");
             }
 
-            BusinessClassBilling Busbill = new BusinessClassBilling(_billingsoftware);
+            BusinessClassBilling Busbill = new BusinessClassBilling(_billingsoftware, _configuration);
             ViewData["rollid"] = Busbill.RollAccessType(model.BranchID);
             ViewData["staffid"] = Busbill.GetStaffID(model.BranchID);
 
@@ -3750,7 +3761,7 @@ namespace StellarBillingSystem.Controllers
                 TempData.Keep("BranchID");
             }
 
-            BusinessClassBilling businessbill = new BusinessClassBilling(_billingsoftware);
+            BusinessClassBilling businessbill = new BusinessClassBilling(_billingsoftware, _configuration);
             ViewData["screenid"] = businessbill.GetScreenid(model.BranchID);
             ViewData["rollid"] = businessbill.RollAccessType(model.BranchID);
             ViewData["staffid"] = businessbill.GetStaffID(model.BranchID);
@@ -3762,7 +3773,7 @@ namespace StellarBillingSystem.Controllers
 
         public IActionResult ScreenMaster()
         {
-            BusinessClassBilling businessbill = new BusinessClassBilling(_billingsoftware);
+            BusinessClassBilling businessbill = new BusinessClassBilling(_billingsoftware, _configuration);
             ViewData["screenname"] = businessbill.Screenname();
 
 
@@ -3790,7 +3801,7 @@ namespace StellarBillingSystem.Controllers
                 TempData.Keep("BranchID");
             }
 
-            BusinessClassBilling business = new BusinessClassBilling(_billingsoftware);
+            BusinessClassBilling business = new BusinessClassBilling(_billingsoftware, _configuration);
             ViewData["discountcategoryid"] = business.GetcategoryID(model.BranchID);
 
             return View(model);
@@ -3835,7 +3846,7 @@ namespace StellarBillingSystem.Controllers
                 TempData.Keep("BranchID");
             }
 
-            BusinessClassBilling business = new BusinessClassBilling(_billingsoftware);
+            BusinessClassBilling business = new BusinessClassBilling(_billingsoftware, _configuration);
             ViewData["godownproductid"] = business.GetProductid(model.BranchID);
 
             model.Viewrackpartition = new List<RackPatrionProductModel>();
@@ -3860,7 +3871,7 @@ namespace StellarBillingSystem.Controllers
                 TempData.Keep("BranchID");
             }
 
-            BusinessClassBilling Busbill = new BusinessClassBilling(_billingsoftware);
+            BusinessClassBilling Busbill = new BusinessClassBilling(_billingsoftware, _configuration);
             ViewData["productid"] = Busbill.Getproduct(model.BranchID);
 
             // Retrieve selected product
@@ -4470,7 +4481,7 @@ namespace StellarBillingSystem.Controllers
  */
                
 
-                BusinessClassBilling obj = new BusinessClassBilling(_billingsoftware);
+                BusinessClassBilling obj = new BusinessClassBilling(_billingsoftware, _configuration);
                 PaymentDetailsModel objNewPayment = new PaymentDetailsModel
                 {
                     PaymentDiscription = obj.GeneratePaymentDescriptionreport(paymentid),
@@ -4663,7 +4674,7 @@ namespace StellarBillingSystem.Controllers
                 TempData.Keep("BranchID");
             }
 
-            BusinessClassBilling business = new BusinessClassBilling(_billingsoftware);
+            BusinessClassBilling business = new BusinessClassBilling(_billingsoftware, _configuration);
             ViewData["categoryid"] = business.GetCatid(model.BranchID);
             ViewData["discountid"] = business.Getdiscountid(model.BranchID);
             ViewData["productid"] = business.Getproduct(model.BranchID);
@@ -4882,7 +4893,7 @@ namespace StellarBillingSystem.Controllers
                 TempData.Keep("BranchID");
             }
 
-            BusinessClassBilling Busbill = new BusinessClassBilling(_billingsoftware);
+            BusinessClassBilling Busbill = new BusinessClassBilling(_billingsoftware, _configuration);
            
             ViewData["productid"] = Busbill.Getproduct(model.BranchID);
 

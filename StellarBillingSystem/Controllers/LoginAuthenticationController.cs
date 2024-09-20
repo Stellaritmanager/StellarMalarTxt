@@ -15,10 +15,12 @@ namespace StellarBillingSystem.Controllers
     public class LoginAuthenticationController : Controller
     {
         private BillingContext _billingContext;
+        private readonly IConfiguration _configuration;
 
-        public LoginAuthenticationController(BillingContext billingContext)
+        public LoginAuthenticationController(BillingContext billingContext, IConfiguration configuration)
         {
             _billingContext = billingContext;
+            _configuration = configuration;
         }
 
 
@@ -40,7 +42,7 @@ namespace StellarBillingSystem.Controllers
             Response.Headers["Pragma"] = "no-cache";
             Response.Headers["Expires"] = "0";
 
-            BusinessClassBilling Busbill = new BusinessClassBilling(_billingContext);
+            BusinessClassBilling Busbill = new BusinessClassBilling(_billingContext, _configuration);
           
             ViewData["branchid"] = Busbill.Getbranch();
             return View();
@@ -92,7 +94,7 @@ namespace StellarBillingSystem.Controllers
                     await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme,
                     new ClaimsPrincipal(claimsIdentity), properties);
 
-                    BusinessClassBilling Busreg = new BusinessClassBilling(_billingContext);
+                    BusinessClassBilling Busreg = new BusinessClassBilling(_billingContext, _configuration);
 
 
 
@@ -146,7 +148,7 @@ namespace StellarBillingSystem.Controllers
         [HttpGet]
         public IActionResult admin()
         {
-            BusinessClassBilling Busreg = new BusinessClassBilling(_billingContext);
+            BusinessClassBilling Busreg = new BusinessClassBilling(_billingContext, _configuration);
             ViewData["branchid"] = Busreg.Getbranch();
 
             var userName = TempData["UserName"]?.ToString();
@@ -168,7 +170,7 @@ namespace StellarBillingSystem.Controllers
                 return RedirectToAction("Login", "LoginAuthentication");
             }
 
-            BusinessClassBilling Busreg = new BusinessClassBilling(_billingContext);
+            BusinessClassBilling Busreg = new BusinessClassBilling(_billingContext, _configuration);
 
           
             ViewData["branchid"] = Busreg.Getbranch();

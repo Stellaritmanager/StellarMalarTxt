@@ -85,7 +85,7 @@
                         <div class="col-md-12 col-lg-4">
 
                             <div class="form-floating form-floating-outline mb-4">
-                                <input type="ProductID" class="form-control" placeholder="Product ID" name="ProductID" value="@Model.ObjPro.ProductID" />
+                                <input type="ProductID" asp-for="@Model.ObjPro.ProductID" class="form-control" placeholder="Product ID" name="ObjPro.ProductID" value="@Model.ObjPro.ProductID" />
                                 <label asp-for="ObjPro.ProductID" class="control-label">Product ID</label>
 
                             </div>
@@ -96,7 +96,7 @@
                         <div class="col-md-12 col-lg-3">
 
                             <div class="form-floating form-floating-outline mb-4">
-                                <input asp-for="ObjPro.BarcodeId" class="form-control" placeholder="Barcode ID" value="@Model.ObjPro.BarcodeId" />
+                                <input asp-for="ObjPro.BarcodeId" class="form-control" placeholder="ObjPro.Barcode ID" value="@Model.ObjPro.BarcodeId" />
                                 <label asp-for="ObjPro.BarcodeId" class="control-label">Barcode ID</label>
 
                             </div>
@@ -136,7 +136,7 @@
 
 
                            <div class="form-floating form-floating-outline mb-4">
-                                @Html.DropDownListFor(model => model.SelectedItemId, Model.Items, "Select an item", new { @class = "form-control" })
+                                @Html.DropDownListFor(model => Model.SelectedItemId, new SelectList(Model.Items, "Value","Text"), "Select an item", new { @class = "form-control" })
                                 <label asp-for="SelectedItemId" class="control-label">Category Name</label>
                                 <span asp-validation-for="SelectedItemId" class="text-danger"></span>
                             </div>
@@ -146,7 +146,7 @@
                         <div class="col-md-12 col-lg-5">
                             <div class="form-floating form-floating-outline mb-4">
 
-                                <input asp-for="ObjPro.ProductName" value="@Model.ObjPro.ProductName" class="form-control" placeholder="Product Name" />
+                                <input asp-for="ObjPro.ProductName" value="@Model.ObjPro.ProductName" class="form-control" placeholder="Product Name" maxlength="35" />
                                 <label asp-for="ObjPro.ProductName" class="control-label">Product Name</label>
 
                                 <span asp-validation-for="ObjPro.ProductName" class="text-danger"></span>
@@ -452,13 +452,13 @@
         }
     });
 
-    // Prevent form submission if the amount is invalid
-    document.getElementById('moneyForm').addEventListener('submit', function (e) {
-        const indianMoneyFormat = /^\d{1,3}(,\d{2})*(\.\d{0,2})?$/;
+    // // Prevent form submission if the amount is invalid
+    // document.getElementById('moneyForm').addEventListener('submit', function (e) {
+    //     const indianMoneyFormat = /^\d{1,3}(,\d{2})*(\.\d{0,2})?$/;
 
-        if (!indianMoneyFormat.test(moneyInput.value)) {
-            moneyError.style.display = 'inline'; // Show error message
-            e.preventDefault(); // Prevent form submission
-        }
-    });
+    //     if (!indianMoneyFormat.test(moneyInput.value)) {
+    //         moneyError.style.display = 'inline'; // Show error message
+    //         e.preventDefault(); // Prevent form submission
+    //     }
+    // });
 </script>

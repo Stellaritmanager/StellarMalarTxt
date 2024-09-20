@@ -17,10 +17,12 @@ namespace StellarBillingSystem.Business
     {
 
         private readonly BillingContext _billingContext;
+        private readonly IConfiguration _configuration;
 
-        public BusinessClassBilling(BillingContext billingContext)
+        public BusinessClassBilling(BillingContext billingContext, IConfiguration configuration)
         {
             _billingContext = billingContext;
+            _configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
         }
 
         /*
@@ -43,9 +45,34 @@ namespace StellarBillingSystem.Business
         */
 
 
+        public DateTime GetCurrentDateTime()
+        {
+            string useIST = _configuration.GetValue<string>("DateTimeSettings:UseIST");
+
+            DateTime currentDateTime = DateTime.Now;
+            if (useIST.ToLower() == "yes")
+            {
+                // Return the current time
+                return currentDateTime;
+            }
+            else
+            {
+                // Add 5 hours and 30 minutes to the current time
+                return currentDateTime.AddHours(5).AddMinutes(30);
+            }
+        }
+
+        // Format the date as ddMMyyyy hhmmss
+        public string GetFormattedDateTime()
+        {
+            DateTime currentDateTime = GetCurrentDateTime();
+            return currentDateTime.ToString("dd/MM/yyyy HH:mm:ss");
+        }
+    
 
 
-        public static DataTable ConvertToDataTableProductMaster(IEnumerable<ProductMatserModel> entities)
+
+    public static DataTable ConvertToDataTableProductMaster(IEnumerable<ProductMatserModel> entities)
         {
             var dataTable = new DataTable();
 
@@ -473,18 +500,20 @@ namespace StellarBillingSystem.Business
 
                 //Add a table
               
-                int rowcount = 1;
+                int rowcount = 0;
+                int temrowcount = 1;
                 //Row data
                 foreach (DataRow objRow in pbillData.Rows)
                 {
-                    document.ReplaceText("<<sno" + rowcount.ToString() + ">>",rowcount.ToString());
-                    document.ReplaceText("<<description"+rowcount.ToString()+">>", pbillData.Rows[0]["ProductName"].ToString());
-                    document.ReplaceText("<<h" + rowcount.ToString() + ">>", pbillData.Rows[0]["Quantity"].ToString());
-                    document.ReplaceText("<<q" + rowcount.ToString() + ">>", pbillData.Rows[0]["Quantity"].ToString());
-                    document.ReplaceText("<<up" + rowcount.ToString() + ">>", pbillData.Rows[0]["Price"].ToString());
-                    document.ReplaceText("<<amt" + rowcount.ToString() + ">>", pbillData.Rows[0]["Price"].ToString());
+                    document.ReplaceText("<<sno" + temrowcount.ToString() + ">>",temrowcount.ToString());
+                    document.ReplaceText("<<description"+ temrowcount.ToString()+">>", pbillData.Rows[rowcount]["ProductName"].ToString());
+                    document.ReplaceText("<<h" + temrowcount.ToString() + ">>", pbillData.Rows[rowcount]["SerialNumber"].ToString());
+                    document.ReplaceText("<<q" + temrowcount.ToString() + ">>", pbillData.Rows[rowcount]["Quantity"].ToString());
+                    document.ReplaceText("<<up" + temrowcount.ToString() + ">>", pbillData.Rows[rowcount]["Price"].ToString());
+                    document.ReplaceText("<<amt" + temrowcount.ToString() + ">>", pbillData.Rows[rowcount]["NetPrice"].ToString());
 
                     rowcount++;
+                    temrowcount++;
                 }
 
                 
