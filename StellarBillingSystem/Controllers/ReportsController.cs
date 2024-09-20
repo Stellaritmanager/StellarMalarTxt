@@ -12,17 +12,18 @@ namespace StellarBillingSystem.Controllers
     {
 
         private BillingContext _billingContext;
+        private readonly IConfiguration _configuration;
 
-        public ReportsController(BillingContext billingContext)
+        public ReportsController(BillingContext billingContext, IConfiguration configuration)
         {
             _billingContext = billingContext;
-
+            _configuration = configuration;
         }
 
         [HttpPost]
         public IActionResult GetReports(String inputValue,string fromDate,string toDate,string GroupBy)
         {
-            BusinessClassBilling business = new BusinessClassBilling(_billingContext);
+            BusinessClassBilling business = new BusinessClassBilling(_billingContext, _configuration);
             ViewData["reportid"] = business.GetReportId();
 
             string branchId = string.Empty; ;
@@ -62,7 +63,7 @@ namespace StellarBillingSystem.Controllers
 
         public IActionResult Reports()
         {
-            BusinessClassBilling business = new BusinessClassBilling(_billingContext);
+            BusinessClassBilling business = new BusinessClassBilling(_billingContext, _configuration);
             ViewData["reportid"] = business.GetReportId();
 
 

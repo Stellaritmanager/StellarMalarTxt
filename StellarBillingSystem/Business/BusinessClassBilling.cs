@@ -17,10 +17,12 @@ namespace StellarBillingSystem.Business
     {
 
         private readonly BillingContext _billingContext;
+        private readonly IConfiguration _configuration;
 
-        public BusinessClassBilling(BillingContext billingContext)
+        public BusinessClassBilling(BillingContext billingContext, IConfiguration configuration)
         {
             _billingContext = billingContext;
+            _configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
         }
 
         /*
@@ -43,9 +45,34 @@ namespace StellarBillingSystem.Business
         */
 
 
+        public DateTime GetCurrentDateTime()
+        {
+            string useIST = _configuration.GetValue<string>("DateTimeSettings:UseIST");
+
+            DateTime currentDateTime = DateTime.Now;
+            if (useIST.ToLower() == "yes")
+            {
+                // Return the current time
+                return currentDateTime;
+            }
+            else
+            {
+                // Add 5 hours and 30 minutes to the current time
+                return currentDateTime.AddHours(5).AddMinutes(30);
+            }
+        }
+
+        // Format the date as ddMMyyyy hhmmss
+        public string GetFormattedDateTime()
+        {
+            DateTime currentDateTime = GetCurrentDateTime();
+            return currentDateTime.ToString("dd/MM/yyyy HH:mm:ss");
+        }
+    
 
 
-        public static DataTable ConvertToDataTableProductMaster(IEnumerable<ProductMatserModel> entities)
+
+    public static DataTable ConvertToDataTableProductMaster(IEnumerable<ProductMatserModel> entities)
         {
             var dataTable = new DataTable();
 
