@@ -276,14 +276,10 @@ namespace StellarBillingSystem.Controllers
 
             BusinessClassBilling business = new BusinessClassBilling(_billingsoftware);
 
-            var categories = business.GetItemsFromDatabase();
+            var categories = business.GetItemsFromDatabase(TempData["BranchID"].ToString());
 
             // Convert CategoryMasterModel to SelectListItem
-            var selectListItems = categories.Select(c => new SelectListItem
-            {
-                Value = c.CategoryID.ToString(),
-                Text = c.CategoryName
-            }).ToList();
+            var selectListItems = categories;
 
             var model = new ProductDropDownModel
             {
@@ -333,8 +329,7 @@ namespace StellarBillingSystem.Controllers
 
 
         [HttpPost]
-
-        public async Task<IActionResult> AddProduct(ProductDropDownModel model, string buttonType)
+        public async Task<IActionResult> AddProduct(ProductDropDownModel model, string buttonType,string SelectedItem)
         {
             if (TempData["BranchID"] != null)
             {
@@ -348,16 +343,9 @@ namespace StellarBillingSystem.Controllers
             ViewData["discountid"] = business.Getdiscountid(model.ObjPro.BranchID);
 
 
-
-
-
             // Fetch categories and convert them to SelectListItem for dropdown
-            var categories = business.GetItemsFromDatabase();
-            var selectListItems = categories.Select(c => new SelectListItem
-            {
-                Value = c.CategoryID.ToString(),
-                Text = c.CategoryName
-            }).ToList();
+            var categories = business.GetItemsFromDatabase(model.ObjPro.BranchID);
+            var selectListItems = categories;
 
 
             string? selectedCategoryId = null;
@@ -427,6 +415,8 @@ namespace StellarBillingSystem.Controllers
                     var dataTable = await AdditionalProductMasterFun(model.ObjPro.BranchID);
                     ViewData["ProductData"] = dataTable;
 
+                    if (resultpro.CategoryID == null || resultpro.CategoryID == string.Empty)
+                        productDropDownModel.SelectedItemId = string.Empty;
 
                     return View("ProductMaster", productDropDownModel);
                 }
@@ -607,7 +597,7 @@ namespace StellarBillingSystem.Controllers
 
 
                     existingProduct.ProductID = model.ObjPro.ProductID;
-                    existingProduct.CategoryID = model.ObjPro.CategoryID;
+                    existingProduct.CategoryID = SelectedItem;
                     existingProduct.ProductName = model.ObjPro.ProductName;
                     existingProduct.BarcodeId = model.ObjPro.BarcodeId;
                     existingProduct.Brandname = model.ObjPro.Brandname;
@@ -635,7 +625,7 @@ namespace StellarBillingSystem.Controllers
                 {
 
                     // Convert strings to decimals, calculate TotalAmount, and convert back to string
-
+                    model.ObjPro.CategoryID = SelectedItem;
                     model.ObjPro.LastUpdatedDate = DateTime.Now;
                     model.ObjPro.LastUpdatedUser = User.Claims.First().Value.ToString();
                     model.ObjPro.LastUpdatedmachine = Request.HttpContext.Connection.RemoteIpAddress.ToString();
@@ -644,6 +634,8 @@ namespace StellarBillingSystem.Controllers
                 }
 
                 await _billingsoftware.SaveChangesAsync();
+
+                selectedCategoryId = SelectedItem;
 
                 ViewBag.Message = "Saved Successfully";
             }
@@ -654,7 +646,7 @@ namespace StellarBillingSystem.Controllers
 
             // Store the DataTable in ViewData for access in the view
             ViewData["ProductData"] = dataTable2;
-
+           
 
             var productDropDownModel1 = business.CreateProductDropDownModel(selectListItems, selectedCategoryId, model.ObjPro);
             return View("ProductMaster", productDropDownModel1);
@@ -4678,13 +4670,7 @@ namespace StellarBillingSystem.Controllers
             ViewData["productid"] = business.Getproduct(model.BranchID);
 
             HttpContext.Session.SetString("BranchID", model.BranchID);
-
-
-
-           
-
-
-
+            
             var existingProduct = await _billingsoftware.SHProductMaster.FirstOrDefaultAsync(x=>x.ProductID == model.ProductID && x.BranchID==model.BranchID);
             if (existingProduct != null)
             {

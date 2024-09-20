@@ -151,17 +151,17 @@ namespace StellarBillingSystem.Business
         }
 
 
-        public IEnumerable<CategoryMasterModel> GetItemsFromDatabase()
+        public List<CategoryMasterModel> GetItemsFromDatabase(string branchid)
         {
             // Example data fetching from database
-            return _billingContext.SHCategoryMaster.Select(x => new CategoryMasterModel
+            return _billingContext.SHCategoryMaster.Where(x=>x.BranchID == branchid).Select(x => new CategoryMasterModel
             {
                 CategoryID = x.CategoryID,
                 CategoryName = x.CategoryName 
             }).ToList();
         }
 
-        public ProductDropDownModel CreateProductDropDownModel(IEnumerable<SelectListItem> selectListItems, string selectedCategoryId, ProductMatserModel productModel)
+        public ProductDropDownModel CreateProductDropDownModel(List<CategoryMasterModel> selectListItems, string selectedCategoryId, ProductMatserModel productModel)
         {
             return new ProductDropDownModel
             {

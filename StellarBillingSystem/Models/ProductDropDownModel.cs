@@ -9,13 +9,13 @@ namespace StellarBillingSystem.Models
         public ProductDropDownModel() { }
 
         private String selectedItemId;
-        private IEnumerable<SelectListItem> items;
+        private List<CategoryMasterModel> items;
         private ProductMatserModel objPro;
 
       
        
         public ProductMatserModel ObjPro { get => objPro; set => objPro = value; }
         public string? SelectedItemId { get => selectedItemId; set => selectedItemId = value; }
-        public IEnumerable<SelectListItem> Items { get => items; set => items = value; }
+        public List<CategoryMasterModel> Items { get => items; set => items = value; }
     }
 }

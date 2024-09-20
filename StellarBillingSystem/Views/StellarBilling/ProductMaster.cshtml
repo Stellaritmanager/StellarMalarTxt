@@ -117,18 +117,6 @@
                     
 
                     </div>
-
-
-
-
-
-
-
-
-
-
-
-
                     <div class="row">
                         <div class="col-md-12 col-lg-0">
                         </div>
@@ -136,7 +124,30 @@
 
 
                            <div class="form-floating form-floating-outline mb-4">
-                                @Html.DropDownListFor(model => Model.SelectedItemId, new SelectList(Model.Items, "Value","Text"), "Select an item", new { @class = "form-control" })
+                                @* @Html.DropDownListFor(model => Model.SelectedItemId, new SelectList(Model.Items, "Value","Text"), "Select an item", new { @class = "form-control" }) *@
+                                <select class="form-control" id="SelectedItem" name="SelectedItem" fdprocessedid="stubwn">
+                                   @if(Model.SelectedItemId ==null || Model.SelectedItemId ==String.Empty)
+                                    {
+                                        <option value="" selected="selected">Select an item</option>
+                                    }
+                                    else
+                                    {
+                                        <option value="">Select an item</option>
+                                    }
+                                   @foreach (var item in Model.Items)                                    
+                                   {
+                                        @if(item.CategoryID == Model.SelectedItemId)
+                                        {
+                                            <option value=@item.CategoryID selected="selected">@item.CategoryName</option>
+                                        }
+                                        else
+                                        {
+                                            <option value=@item.CategoryID>
+                                                @item.CategoryName
+                                            </option >
+                                        }                                        
+                                    }
+                                </select>
                                 <label asp-for="SelectedItemId" class="control-label">Category Name</label>
                                 <span asp-validation-for="SelectedItemId" class="text-danger"></span>
                             </div>
