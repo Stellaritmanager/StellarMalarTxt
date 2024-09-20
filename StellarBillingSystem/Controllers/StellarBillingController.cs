@@ -617,7 +617,7 @@ namespace StellarBillingSystem.Controllers
 
 
                     // existingProduct.TotalAmount = model.TotalAmount - (model.Price * model.Discount / 100 = model.TotalAmount);
-                    existingProduct.LastUpdatedDate = DateTime.Now;
+                    existingProduct.LastUpdatedDate = DateTime.ParseExact(business.GetFormattedDateTime(), "dd/MM/yyyy HH:mm:ss", null);
                     existingProduct.LastUpdatedUser = User.Claims.First().Value.ToString();
                     existingProduct.LastUpdatedmachine = Request.HttpContext.Connection.RemoteIpAddress.ToString();
 
@@ -628,7 +628,7 @@ namespace StellarBillingSystem.Controllers
 
                     // Convert strings to decimals, calculate TotalAmount, and convert back to string
                     model.ObjPro.CategoryID = SelectedItem;
-                    model.ObjPro.LastUpdatedDate = DateTime.Now;
+                    model.ObjPro.LastUpdatedDate = DateTime.ParseExact(business.GetFormattedDateTime(), "dd/MM/yyyy HH:mm:ss", null);
                     model.ObjPro.LastUpdatedUser = User.Claims.First().Value.ToString();
                     model.ObjPro.LastUpdatedmachine = Request.HttpContext.Connection.RemoteIpAddress.ToString();
 
@@ -2349,7 +2349,7 @@ namespace StellarBillingSystem.Controllers
             }
 
             BusinessClassBilling businessbill = new BusinessClassBilling(_billingsoftware, _configuration);
-            ViewData["screenid"] = businessbill.GetScreenid(model.BranchID);
+            ViewData["screenname"] = businessbill.Screenname();
             ViewData["rollid"] = businessbill.RollAccessType(model.BranchID);
             ViewData["staffid"] = businessbill.GetStaffID(model.BranchID);
 
@@ -2931,7 +2931,7 @@ namespace StellarBillingSystem.Controllers
 
 
                 // Get current date and time
-                var currentDateTime = DateTime.Now.ToString("ddMMyyyy_HHmmss");
+                var currentDateTime = Busbill.GetFormattedDateTime();
 
                 // Create filename with BillID and current datetime
                 var fileName = $"{model.BillID}_{currentDateTime}.docx";
@@ -3759,7 +3759,7 @@ namespace StellarBillingSystem.Controllers
             }
 
             BusinessClassBilling businessbill = new BusinessClassBilling(_billingsoftware, _configuration);
-            ViewData["screenid"] = businessbill.GetScreenid(model.BranchID);
+            ViewData["screenname"] = businessbill.Screenname();
             ViewData["rollid"] = businessbill.RollAccessType(model.BranchID);
             ViewData["staffid"] = businessbill.GetStaffID(model.BranchID);
 
