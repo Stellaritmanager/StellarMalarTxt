@@ -203,7 +203,7 @@ namespace StellarBillingSystem.Controllers
                 TempData.Keep("BranchID");
             }
 
-            BusinessClassBilling business = new BusinessClassBilling(_billingContext);
+            BusinessClassBilling business = new BusinessClassBilling(_billingContext,_configuration);
             ViewData["reportid"] = business.GetReportId();
 
             var reportQuery = (from rep in _billingContext.ShGenericReport
