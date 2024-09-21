@@ -136,7 +136,7 @@ namespace StellarBillingSystem.Controllers
                 }
 
             }
-            ViewBag.Message = "Credentials Are Incorrect ";
+            ViewBag.Message = "Credentials are Incorrect ";
 
             return View();
 
