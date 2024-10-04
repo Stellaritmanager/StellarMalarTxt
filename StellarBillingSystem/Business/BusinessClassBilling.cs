@@ -421,13 +421,14 @@ namespace StellarBillingSystem.Business
 
         public List<String> GetRoll(string userid, string BranchID)
         {
-            //Removed Screenmaster references. 
-            var query = from rac in _billingContext.SHRoleaccessModel 
+          
+            var query = from sm in _billingContext.SHScreenMaster
+                        join rac in _billingContext.SHRoleaccessModel on sm.ScreenName equals rac.ScreenID
                         join ram in _billingContext.SHrollaccess on rac.RollID equals ram.RollID
                         join sam in _billingContext.SHStaffAdmin on ram.StaffID equals sam.StaffID
                         join s in _billingContext.SHStaffAdmin on sam.StaffID equals s.StaffID
-                        where rac.Authorized == "1" && sam.UserName == userid && sam.BranchID == BranchID && rac.BranchID == BranchID && ram.BranchID == BranchID 
-                        select rac.ScreenID;
+                        where rac.Authorized == "1" && sam.UserName == userid && sam.BranchID == BranchID && rac.BranchID == BranchID && ram.BranchID == BranchID && sm.BranchID == BranchID
+                        select sm.ScreenName;
 
             var result = query.ToList();
             return result;
@@ -435,13 +436,14 @@ namespace StellarBillingSystem.Business
 
         public List<String> Getadmin(string userid)
         {
-            
-            var query = from rac in _billingContext.SHRoleaccessModel 
+
+            var query = from sm in _billingContext.SHScreenMaster
+                        join rac in _billingContext.SHRoleaccessModel on sm.ScreenName equals rac.ScreenID
                         join ram in _billingContext.SHrollaccess on rac.RollID equals ram.RollID
                         join sam in _billingContext.SHStaffAdmin on ram.StaffID equals sam.StaffID
                         join s in _billingContext.SHStaffAdmin on sam.StaffID equals s.StaffID
                         where rac.Authorized == "1" && sam.UserName == userid
-                        select rac.ScreenID;
+                        select sm.ScreenName;
 
             var result = query.ToList();
             return result;

@@ -114,7 +114,7 @@
             });
                             }
 
-                            @Html.DropDownListFor(model => model.ScreenID, screenList, "Select Screen", new { @class = "form-control" })
+                                @Html.DropDownListFor(model => model.ScreenID, screenList, "Select Screen", new { @class = "form-control", @required = "required" })
                             <label asp-for="ScreenID" class="control-label">Screen Name</label>
                                 <span asp-validation-for="ScreenID" class="text-danger"></span>
                             </div>

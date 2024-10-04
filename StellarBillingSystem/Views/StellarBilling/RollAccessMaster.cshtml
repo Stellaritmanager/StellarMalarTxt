@@ -112,10 +112,14 @@
 
                                 @foreach (var rollOption in (IEnumerable<RollTypeMaster>)ViewData["rollid"])
                                 {
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" id="RollNames_@rollOption.RollID" name="SelectedRollNames" value="@rollOption.RollID">
-                                        <label class="form-check-label" for="RollNames_@rollOption.RollID">@rollOption.RollID- @rollOption.RollName</label>
-                                    </div>
+
+                                            bool isChecked = ViewData["StaffRoles"] != null &&
+                                            ((List<String>)ViewData["StaffRoles"]).Contains(rollOption.RollID);
+
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" id="RollNames_@rollOption.RollID" name="SelectedRollNames" value="@rollOption.RollID" @(isChecked ? "checked" : "")>
+                                                <label class="form-check-label" for="RollNames_@rollOption.RollID">@rollOption.RollID - @rollOption.RollName</label>
+                                            </div>
                                 }
                             </div>
                               

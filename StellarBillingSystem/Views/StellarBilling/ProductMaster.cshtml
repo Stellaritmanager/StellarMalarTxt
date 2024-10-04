@@ -85,7 +85,7 @@
                         <div class="col-md-12 col-lg-4">
 
                             <div class="form-floating form-floating-outline mb-4">
-                                <input type="ProductID" asp-for="@Model.ObjPro.ProductID" class="form-control" placeholder="Product ID" name="ObjPro.ProductID" value="@Model.ObjPro.ProductID" />
+                                <input type="ProductID" class="form-control" placeholder="Product ID" name="ObjPro.ProductID" value="@Model.ObjPro.ProductID" />
                                 <label asp-for="ObjPro.ProductID" class="control-label">Product ID</label>
 
                             </div>
@@ -222,7 +222,7 @@
                                 <button type="submit" asp-action="AddProduct" value="Save" name="buttonType" class="btn btn-primary mx-2">Save</button>
                                 <button type="submit" asp-action="AddProduct" value="Delete" name="buttonType" class="btn btn-primaryred mx-2">Delete</button>
                                 <button type="submit" asp-action="AddProduct" value="DeleteRetrieve" name="buttonType" class="btn btn-primaryellow mx-2">Delete Retrieve</button>
-
+                                <button type="submit" asp-action="AddProduct" value="Clear" name="buttonType" class="btn btn-info">Clear</button>
                             </div>
 
                         </div>
@@ -296,6 +296,12 @@
     {
         <script>
             handleMessages("@ViewBag.ValidationMessage");
+        </script>
+    }
+    @if (ViewBag.ClearMessage != null)
+    {
+        <script>
+            handleMessages("@ViewBag.ClearMessage");
         </script>
     }
 

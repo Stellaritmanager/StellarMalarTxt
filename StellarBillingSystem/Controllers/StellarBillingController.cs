@@ -437,6 +437,23 @@ namespace StellarBillingSystem.Controllers
                 }
             }
 
+            if (buttonType == "Clear")
+            {
+
+                var clr = new ProductDropDownModel
+                {
+                    ObjPro = new ProductMatserModel(), // Initialize if not done already
+                    Items = business.GetItemsFromDatabase(model.ObjPro.BranchID) // Ensure this returns a list
+                };
+
+                ViewBag.ClearMessage = "Fields have been cleared.";
+
+                var dataTable = await AdditionalProductMasterFun(model.ObjPro.BranchID);
+                ViewData["ProductData"] = dataTable;
+
+                return View("ProductMaster", clr);
+            }
+
 
 
             else if (buttonType == "Delete")
@@ -449,7 +466,13 @@ namespace StellarBillingSystem.Controllers
                     // Store the DataTable in ViewData for access in the view
                     ViewData["ProductData"] = dataTable1;
 
-                    return View("ProductMaster", model);
+                    var model2 = new ProductDropDownModel
+                    {
+                        ObjPro = new ProductMatserModel(), // Initialize if not done already
+                        Items = business.GetItemsFromDatabase(model.ObjPro.BranchID) // Ensure this returns a list
+                    };
+
+                    return View("ProductMaster", model2);
                 }
 
                 var productToDelete = await _billingsoftware.SHProductMaster.FirstOrDefaultAsync(x => (x.ProductID == model.ObjPro.ProductID || x.BarcodeId == model.ObjPro.BarcodeId) && !x.IsDelete && x.BranchID == model.ObjPro.BranchID);
@@ -472,8 +495,12 @@ namespace StellarBillingSystem.Controllers
                 // Store the DataTable in ViewData for access in the view
                 ViewData["ProductData"] = dataTable;
 
-                model = new ProductDropDownModel();
-                return View("ProductMaster", model);
+                var model1 = new ProductDropDownModel
+                {
+                    ObjPro = new ProductMatserModel(), // Initialize if not done already
+                    Items = business.GetItemsFromDatabase(model.ObjPro.BranchID) // Ensure this returns a list
+                };
+                return View("ProductMaster", model1);
             }
             else if (buttonType == "DeleteRetrieve")
             {
@@ -484,7 +511,14 @@ namespace StellarBillingSystem.Controllers
 
                     // Store the DataTable in ViewData for access in the view
                     ViewData["ProductData"] = dataTable1;
-                    return View("ProductMaster", model);
+
+                    var model2 = new ProductDropDownModel
+                    {
+                        ObjPro = new ProductMatserModel(), // Initialize if not done already
+                        Items = business.GetItemsFromDatabase(model.ObjPro.BranchID) // Ensure this returns a list
+                    };
+
+                    return View("ProductMaster", model2);
                 }
 
                 var productToRetrieve = await _billingsoftware.SHProductMaster.FirstOrDefaultAsync(x => (x.ProductID == model.ObjPro.ProductID || x.BarcodeId == model.ObjPro.BarcodeId) && x.IsDelete == true && x.BranchID == model.ObjPro.BranchID);
@@ -527,7 +561,13 @@ namespace StellarBillingSystem.Controllers
 
                 // Store the DataTable in ViewData for access in the view
                 ViewData["ProductData"] = dataTable;
-                return View("ProductMaster", model);
+
+                var model1 = new ProductDropDownModel
+                {
+                    ObjPro = new ProductMatserModel(), // Initialize if not done already
+                    Items = business.GetItemsFromDatabase(model.ObjPro.BranchID) // Ensure this returns a list
+                };
+                return View("ProductMaster", model1);
             }
             else if (buttonType == "Save")
             {
@@ -550,7 +590,15 @@ namespace StellarBillingSystem.Controllers
 
                     // Store the DataTable in ViewData for access in the view
                     ViewData["ProductData"] = dataTable;
-                    return View("ProductMaster", model);
+
+                    var model1 = new ProductDropDownModel
+                    {
+                        ObjPro = new ProductMatserModel(), // Initialize if not done already
+                        Items = business.GetItemsFromDatabase(model.ObjPro.BranchID) // Ensure this returns a list
+                    };
+
+                    return View("ProductMaster", model1);
+
                 }
 
 
@@ -562,7 +610,13 @@ namespace StellarBillingSystem.Controllers
 
                     // Store the DataTable in ViewData for access in the view
                     ViewData["ProductData"] = dataTable;
-                    return View("ProductMaster", model);
+                    var model1 = new ProductDropDownModel
+                    {
+                        ObjPro = new ProductMatserModel(), // Initialize if not done already
+                        Items = business.GetItemsFromDatabase(model.ObjPro.BranchID) // Ensure this returns a list
+                    };
+
+                    return View("ProductMaster", model1);
                 }
 
                 decimal discount;
@@ -594,7 +648,14 @@ namespace StellarBillingSystem.Controllers
 
                         // Store the DataTable in ViewData for access in the view
                         ViewData["ProductData"] = dataTable;
-                        return View("ProductMaster", model);
+
+                        var model1 = new ProductDropDownModel
+                        {
+                            ObjPro = new ProductMatserModel(), // Initialize if not done already
+                            Items = business.GetItemsFromDatabase(model.ObjPro.BranchID) // Ensure this returns a list
+                        };
+
+                        return View("ProductMaster", model1);
                     }
 
 
@@ -990,6 +1051,8 @@ namespace StellarBillingSystem.Controllers
                 ViewBag.ErrorMessage = "Customer Number not found";
                 return View("CustomerMaster", model); // Return an empty model if not found or deleted
             }
+
+            model.Gender = string.IsNullOrEmpty(customer.Gender) ? string.Empty : customer.Gender;
 
             return View("CustomerMaster", customer);
         }
@@ -1937,6 +2000,7 @@ namespace StellarBillingSystem.Controllers
                 var getstaff = await _billingsoftware.SHStaffAdmin.FirstOrDefaultAsync(x => x.StaffID == model.StaffID && x.IsDelete == false && x.BranchID == model.BranchID);
                 if (getstaff != null)
                 {
+                    model.Gender = string.IsNullOrEmpty(getstaff.Gender) ? string.Empty : getstaff.Gender;
 
 
                     var checkid = await _billingsoftware.SHStaffAdmin.FirstOrDefaultAsync(x => x.StaffID == model.StaffID && x.IsDelete == false && x.BranchID == model.BranchID && x.IdProofFile != null);
@@ -2482,19 +2546,20 @@ namespace StellarBillingSystem.Controllers
             ViewData["staffid"] = Busbill.GetStaffID(model.BranchID);
 
 
-
-
-            if (!SelectedRollNames.Any())
-            {
-                ViewBag.ErrorMessage = "Please select roll.";
-                return View("RollAccessMaster", model);
-            }
-
             if (buttontype == "Get")
             {
                 var getroll = await _billingsoftware.SHrollaccess.FirstOrDefaultAsync(x => x.StaffID == model.StaffID && x.IsDelete == false && x.BranchID == model.BranchID);
                 if (getroll != null)
                 {
+                    // Fetch the roles for the given staff ID
+                    var staffRoles = await _billingsoftware.SHrollaccess
+                        .Where(x => x.StaffID == model.StaffID && x.IsDelete == false && x.BranchID == model.BranchID)
+                        .Select(x => x.RollID)
+                        .ToListAsync();
+
+                    // Store the staff roles in ViewData
+                    ViewData["StaffRoles"] = staffRoles;
+
                     return View("RollAccessMaster", getroll);
                 }
                 else
@@ -2506,6 +2571,12 @@ namespace StellarBillingSystem.Controllers
             }
             else if (buttontype == "Delete")
             {
+                if (!SelectedRollNames.Any())
+                {
+                    ViewBag.ErrorMessage = "Please select roll.";
+                    return View("RollAccessMaster", model);
+                }
+
                 foreach (var rollName in SelectedRollNames)
                 {
 
@@ -2575,6 +2646,12 @@ namespace StellarBillingSystem.Controllers
 
             else if (buttontype == "Save")
             {
+                if (!SelectedRollNames.Any())
+                {
+                    ViewBag.ErrorMessage = "Please select roll.";
+                    return View("RollAccessMaster", model);
+                }
+
                 foreach (var rollName in SelectedRollNames)
                 {
 
@@ -4747,6 +4824,7 @@ namespace StellarBillingSystem.Controllers
             var getdata = from bd in _billingsoftware.SHbilldetails
                           join bm in _billingsoftware.SHbillmaster on bd.BillID equals bm.BillID
                           where bd.CustomerNumber == CustomerNumber && bd.BranchID == model.BranchID && bm.BranchID == model.BranchID && bm.CustomerNumber == CustomerNumber
+                          orderby bd.BillID descending
                           select new BillProductlistModel
                           {
                               BillID = bd.BillID,

@@ -153,13 +153,45 @@
         </div>
 
                         <div class="col-md-12 col-lg-3">
-                            <div class="form-floating form-floating-custom mb-4">
-                                <select asp-for="Gender" class="form-control" id="genderSelect">
-                                    <option value="">-- Select Gender --</option>
-                                    <option value="Male">Male</option>
-                                    <option value="Female">Female</option>
-                                    <option value="Other">Other</option>
+                            <div class="form-floating form-floating-outline mb-4">
+                                <select id="genderSelect" name="Gender" class="form-control">
+                                    @if (string.IsNullOrEmpty(Model.Gender))
+                                    {
+                                        <option value="" selected>-- Select Gender --</option>
+                                    }
+                                    else
+                                    {
+                                        <option value="">-- Select Gender --</option>
+                                    }
+
+                                    @if (Model.Gender == "Male")
+                                    {
+                                        <option value="Male" selected>Male</option>
+                                    }
+                                    else
+                                    {
+                                        <option value="Male">Male</option>
+                                    }
+
+                                    @if (Model.Gender == "Female")
+                                    {
+                                        <option value="Female" selected>Female</option>
+                                    }
+                                    else
+                                    {
+                                        <option value="Female">Female</option>
+                                    }
+
+                                    @if (Model.Gender == "Other")
+                                    {
+                                        <option value="Other" selected>Other</option>
+                                    }
+                                    else
+                                    {
+                                        <option value="Other">Other</option>
+                                    }
                                 </select>
+
                                 <label for="genderSelect">Gender</label>
                                 <span asp-validation-for="Gender" class="text-danger"></span>
                             </div>
