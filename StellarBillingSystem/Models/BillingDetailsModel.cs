@@ -43,7 +43,7 @@ namespace StellarBillingSystem.Models
         public string? BillDate { get => billDate; set => billDate = value; }
         public string? CustomerNumber { get => customerNumber; set => customerNumber = value; }
        
-        [MaxLength(10)]
+        [MaxLength(20)]
         public string BranchID { get => branchID; set => branchID = value; }
         public long Id { get => id; set => id = value; }
     }
