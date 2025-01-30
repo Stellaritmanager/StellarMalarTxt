@@ -4073,7 +4073,7 @@ namespace StellarBillingSystem.Controllers
 
 
 
-
+        [HttpGet]
         public IActionResult PaymentActionget(string billID, string branchID, string billdate)
         {
             string formattedBillDate = billdate;

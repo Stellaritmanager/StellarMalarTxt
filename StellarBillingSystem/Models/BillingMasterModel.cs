@@ -36,7 +36,7 @@ namespace StellarBillingSystem.Models
         public string? Lastupdateduser { get => lastupdateduser; set => lastupdateduser = value; }
         public string? Lastupdateddate { get => lastupdateddate; set => lastupdateddate = value; }
         public string? Lastupdatedmachine { get => lastupdatedmachine; set => lastupdatedmachine = value; }
-        [MaxLength(10)]
+        [MaxLength(20)]
         public string BranchID { get => branchID; set => branchID = value; }
         public string? CGSTPercentage { get => cGSTPercentage; set => cGSTPercentage = value; }
         public string? SGSTPercentage { get => sGSTPercentage; set => sGSTPercentage = value; }
