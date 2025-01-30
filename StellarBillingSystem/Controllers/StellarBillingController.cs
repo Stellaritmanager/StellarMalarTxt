@@ -4042,7 +4042,7 @@ namespace StellarBillingSystem.Controllers
             if (paymentDetails != null && paymentDetails.Any())
             {
                 // If payments exist, use the balance from the PaymentMaster
-                obj.Balance = paymentDetails.First().Balance;
+                ViewBag.Balance = paymentDetails.First().Balance;
 
                 obj.Viewpayment = paymentDetails.Select(pd => new PaymentDetailsModel
                 {
@@ -4056,14 +4056,14 @@ namespace StellarBillingSystem.Controllers
             else
             {
                 // If no payment exists, set the balance to the bill's NetPrice
-                obj.Balance = obj.StrBillvalue;
+                ViewBag.Balance = obj.StrBillvalue;
             }
 
             // Store values in TempData to pass between requests
             TempData["BillID"] = obj.BillId;
             TempData["BillDate"] = DateTime.Parse(obj.BillDate).ToString("yyyy-MM-dd");
             TempData["BillValue"] = obj.StrBillvalue;
-            TempData["Balance"] = obj.Balance;
+            TempData["Balance"] = ViewBag.Balance;
             TempData["BranchID"] = BranchID;
 
             return View(obj);
@@ -4074,7 +4074,7 @@ namespace StellarBillingSystem.Controllers
 
 
 
-        public IActionResult PaymentActionget(string billID, string branchID, string billdate)
+        public IActionResult UpdatePaymentDetails(string billID, string branchID, string billdate)
         {
             string formattedBillDate = billdate;
 
@@ -4104,24 +4104,18 @@ namespace StellarBillingSystem.Controllers
                                                   })
                                                   .FirstOrDefault();
 
-            var billDetails = _billingsoftware.SHbillmaster
-                                       .Where(b => b.BillID == billID && b.BranchID == branchID)
-                                       .Select(b => new
-                                       {
-                                           b.BillID,
-                                           b.BillDate,
-                                           b.NetPrice
-                                       })
-                                       .FirstOrDefault();
 
-            // Ensure null values are explicitly handled
-            return Json(new
+            if (paymentDetails != null)
             {
-                billId = billDetails?.BillID ?? "null",
-                billDate = formattedBillDate ?? "null",
-                billValue = billDetails?.NetPrice ?? "null",
-                balance = paymentDetails?.Balance ?? (billDetails?.NetPrice ?? "null")
-            });
+                @ViewBag.Balance = paymentDetails.Balance;
+            }
+            else
+            {
+                @ViewBag.Balance = 0;  // Default to 0 if Balance is null
+            }
+
+
+            return View();
         }
 
 
@@ -4176,6 +4170,8 @@ namespace StellarBillingSystem.Controllers
             {
 
                 ViewBag.Message = "BillID Not Found";
+                var resultdel = UpdatePaymentDetails(billId, branchID, formattedBillDate);
+
                 return View("PaymentBilling", model);
             }
 
@@ -4195,6 +4191,7 @@ namespace StellarBillingSystem.Controllers
                     if (selectedDBpayment.Count == 0)
                     {
                         ViewBag.Message = "Please enter Payment ID";
+                        var resultdelm = UpdatePaymentDetails(billId, branchID, formattedBillDate);
                         return View("PaymentBilling", model);
                     }
 
@@ -4216,6 +4213,8 @@ namespace StellarBillingSystem.Controllers
                 {
                     ViewBag.Message = "Payment Not Found";
                 }
+                var resultdel = UpdatePaymentDetails(billId, branchID, formattedBillDate);
+
 
                 //Code here for refresh model
                 PaymentTableViewModel objnew = new PaymentTableViewModel();
@@ -4263,6 +4262,8 @@ namespace StellarBillingSystem.Controllers
                 if (string.IsNullOrEmpty(selectedSlotId))
                 {
                     ViewBag.Message = "Please select a payment.";
+                    var resultdel = UpdatePaymentDetails(billId, branchID, formattedBillDate);
+
                     return View("PaymentBilling", model);
                 }
 
@@ -4303,6 +4304,7 @@ namespace StellarBillingSystem.Controllers
                 if (exbilltotal != null)
                     model.Balance = exbilltotal.NetPrice;
 
+                var resultdelpay = UpdatePaymentDetails(billId, branchID, formattedBillDate);
                 return View("PaymentBilling", model);
 
 
@@ -4318,6 +4320,8 @@ namespace StellarBillingSystem.Controllers
                 if (string.IsNullOrEmpty(selectedSlotId))
                 {
                     ViewBag.Message = "Please select a payment.";
+                    var resultdel = UpdatePaymentDetails(billId, branchID, formattedBillDate);
+
                     return View("PaymentBilling", model);
                 }
 
@@ -4340,6 +4344,8 @@ namespace StellarBillingSystem.Controllers
                 if (totalpayamount > double.Parse(billAmount))
                 {
                     ViewBag.Message = HttpUtility.JavaScriptStringEncode($"Payment amount '{totalpayamount}' exceeds the total bill amount '{billValue}'");
+                    var resultdel = UpdatePaymentDetails(billId, branchID, formattedBillDate);
+
                     return View("PaymentBilling", model);
                 }
 
@@ -4433,6 +4439,8 @@ namespace StellarBillingSystem.Controllers
 
 
                 ViewBag.Message = "Payment Saved Successfully";
+                var resultsav = UpdatePaymentDetails(billId, branchID, formattedBillDate);
+
 
                 return View("PaymentBilling", model);
 
@@ -4468,6 +4476,7 @@ namespace StellarBillingSystem.Controllers
                 _billingsoftware.SaveChanges();
 
             }
+            var result = UpdatePaymentDetails(billId, branchID, formattedBillDate);
 
             return View("PaymentBilling", model);
         }
