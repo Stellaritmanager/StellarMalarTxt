@@ -82,30 +82,39 @@
 
 
 
-    <div class="row d-flex justify-content-center align-items-center" style="margin-top: 60px;">
-       
-        <div class="col-md-12 col-lg-4">
-    <div class="card">
-        <div class="card-body dividerblack">
-
-            <div class="row gy-4" >
-            <div class="col-md-12 d-flex justify-content-center">
-                            
-                            <button type="submit" class="btn btn-primary" asp-action="PaymentAction" name="buttonType" value="AddPayment">AddPayment</button>
-                            
-
-                                <label class="form-label" for="showToastPlacement">&nbsp;</label>
-                                <button type="button" id="viewBillButton" class="btn btn-primary d-block">ViewBill</button>
-
-                                </div> 
+    <div class="row d-flex justify-content-start align-items-center" style="margin-top: 60px;">
+        <div class="col-md-12 col-lg-8 offset-lg-2">
+            <div class="card">
+                <div class="card-body dividerblack">
+                    <div class="row gy-4 align-items-center">
+                        <!-- Add Payment Button -->
+                        <div class="col-md-4 d-flex justify-content-start">
+                            <button type="submit" class="btn btn-primary" asp-action="PaymentAction" name="buttonType" value="AddPayment">Add Payment</button>
                         </div>
-    
-                   </div>
-                   </div>
-                   </div>
-                   </div>
-                   
-    
+
+                        <!-- Total Input -->
+                        <div class="col-md-3">
+                            <div class="form-floating form-floating-outline mb-4">
+                                <input type="text" class="form-control" placeholder="Total" id="Total" name="Total" readonly value="@TempData["BillValue"]" />
+                                <label for="Total" class="control-label">Total</label>
+                            </div>
+                        </div>
+
+                        <!-- Balance Input -->
+                        <div class="col-md-3">
+                            <div class="form-floating form-floating-outline mb-4">
+                                <input type="text" class="form-control" placeholder="Balance" id="Balance" name="Balance" value="@ViewBag.Balance" readonly />
+                                <label for="Balance" class="control-label">Balance</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
 
     <!-- Toast Container -->
     <div id="toastContainer" class="toast-container position-absolute top-40 end-0 p-3" style="z-index: 2055; display: none;">
@@ -120,7 +129,7 @@
             </div>
         </div>
     </div>
-  
+
 
     <div class="row gy-4" style="margin-top:10px">
         <div class="col-md-12 col-lg-1">
@@ -131,7 +140,7 @@
 
                     @if (Model.Viewpayment != null)
                     {
-                        
+
                         <div class="row gy-4">
                             <div class="col-md-12 col-lg-0.5">
                             </div>
@@ -145,52 +154,52 @@
                                             </center>
                                             <br />
 
-                     
-                        <table class="table table-sm">
-                            <thead>
-                                <tr>
-                                    <th>Select</th>
-                                    <th>Payment Date</th>
-                                    <th>Payment Description</th>
-                                    <th>Payment Mode</th>
-                                    <th>Transaction Number</th>
-                                    <th>Payment Amount</th>
-                                </tr>
-                            </thead>
-                            <tbody>
 
-                                @for (int i = 0; i < Model.Viewpayment.Count; i++)
-                                {
-                                    var detail = Model.Viewpayment[i];
-                                    <tr>
-                                        <td>
+                                            <table class="table table-sm">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Select</th>
+                                                        <th>Payment Date</th>
+                                                        <th>Payment Description</th>
+                                                        <th>Payment Mode</th>
+                                                        <th>Transaction Number</th>
+                                                        <th>Payment Amount</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+
+                                                    @for (int i = 0; i < Model.Viewpayment.Count; i++)
+                                                    {
+                                                        var detail = Model.Viewpayment[i];
+                                                        <tr>
+                                                            <td>
                                                                 <input type="radio" class="form-check-input" name="selectedSlotId" value="@detail.PaymentDiscription" />
-                                            @*  <input type="hidden" name="billDetails[@i].DetailID" value="@detail.DetailID" />
-                                    <input type="hidden" name="billDetails[@i].BillID" value="@ViewBag.BillID" /> *@
-                                        </td>
-                                        <td>
+                                                                @*  <input type="hidden" name="billDetails[@i].DetailID" value="@detail.DetailID" />
+                                                        <input type="hidden" name="billDetails[@i].BillID" value="@ViewBag.BillID" /> *@
+                                                            </td>
+                                                            <td>
                                                                 <input type="date" class="form-control custom-date-picker" name="Viewpayment[@i].PaymentDate" value="@Model.Viewpayment[i].PaymentDate" />
-                                        </td>
-                                        <td>
-                                            <input type="text" class="form-control" name="Viewpayment[@i].PaymentDiscription" value="@Model.Viewpayment[i].PaymentDiscription" readonly />
-                                        </td>
-                                        <td>
-                                            <input type="text" class="form-control" name="Viewpayment[@i].PaymentMode" value="@Model.Viewpayment[i].PaymentMode" />
-                                        </td>
-                                        <td>
-                                            <input type="text" class="form-control" name="Viewpayment[@i].PaymentTransactionNumber" value="@Model.Viewpayment[i].PaymentTransactionNumber" />
-                                        </td>
-                                        <td>
-                                            <input type="text" class="form-control" name="Viewpayment[@i].PaymentAmount" value="@Model.Viewpayment[i].PaymentAmount" />
+                                                            </td>
+                                                            <td>
+                                                                <input type="text" class="form-control" name="Viewpayment[@i].PaymentDiscription" value="@Model.Viewpayment[i].PaymentDiscription" readonly />
+                                                            </td>
+                                                            <td>
+                                                                <input type="text" class="form-control" name="Viewpayment[@i].PaymentMode" value="@Model.Viewpayment[i].PaymentMode" />
+                                                            </td>
+                                                            <td>
+                                                                <input type="text" class="form-control" name="Viewpayment[@i].PaymentTransactionNumber" value="@Model.Viewpayment[i].PaymentTransactionNumber" />
+                                                            </td>
+                                                            <td>
+                                                                <input type="text" class="form-control" name="Viewpayment[@i].PaymentAmount" value="@Model.Viewpayment[i].PaymentAmount" />
 
-                                       
-                                        </td>
 
-                                    </tr>
-                                }
-                            </tbody>
+                                                            </td>
 
-                        </table>
+                                                        </tr>
+                                                    }
+                                                </tbody>
+
+                                            </table>
 
 
                                             <br />
@@ -217,7 +226,7 @@
                 <button type="submit" class="btn btn-primary" asp-action="PaymentAction" name="buttonType" value="Save">SavePayment</button>
                 <button type="submit" class="btn btn-primaryred" asp-action="PaymentAction" name="buttonType" value="DeletePaymentDetail">DeletePaymentDetail</button>
                 <button type="submit" class="btn btn-primaryred" asp-action="PaymentAction" name="buttonType" value="DeletePayment">DeletePayment</button>
-               </div>
+            </div>
         </div>
     </center>
 
@@ -246,70 +255,3 @@
 
 
 </form>
-
-
-
-<script>
-    document.getElementById('viewBillButton').addEventListener('click', function () {
-        // Get values from TempData or any other source
-        var billId = '@TempData["BillID"]';
-        var branchID = '@TempData["BranchID"]';
-        var billDate = '@TempData["BillDate"]';
-
-        // Make AJAX call to get updated data
-        fetch(`/StellarBilling/PaymentActionget?billID=${billId}&branchID=${branchID}&billdate=${billDate}`)
-            .then(response => response.json())
-            .then(data => {
-                // Show toast with updated values, passing null-friendly values
-                showToast(data.billId, data.billDate, data.billValue, data.balance);
-            })
-            .catch(error => console.error('Error fetching bill details:', error));
-    });
-
-    function showToast(billId, billDate, billValue, balance) {
-        // Handle 'null' values gracefully
-        const billIdText = billId !== "null" ? billId : "N/A";
-        const billDateText = billDate !== "null" ? billDate : "N/A";
-        const billValueText = billValue !== "null" ? billValue : "N/A";
-        const balanceText = balance !== "null" ? balance : "N/A";
-
-        // Display the formatted text in the toast
-        document.getElementById("billDetailsLine1").textContent = `Bill ID: ${billIdText} | Bill Date: ${billDateText}`;
-        document.getElementById("billDetailsLine2").textContent = `Bill Value: ${billValueText} | Balance: ${balanceText}`;
-
-        var toastContainer = document.getElementById('toastContainer');
-        toastContainer.style.display = "block"; // Show the toast container
-        var toast = new bootstrap.Toast(document.getElementById('customToast'));
-        toast.show(); // Trigger the Bootstrap toast
-    }
-
-
-</script>
-
-
-
-
-@* 
-<script>
-    // Function to display the toast with the bill details
-    function showToast(billId, billDate, billValue, balance) {
-        document.getElementById("billDetailsLine1").textContent = `Bill ID: ${billId} | Bill Date: ${billDate}`;
-        document.getElementById("billDetailsLine2").textContent = `Bill Value: ${billValue} | Balance: ${balance}`;
-
-        var toastContainer = document.getElementById('toastContainer');
-        toastContainer.style.display = "block"; // Show the toast container
-        var toast = new bootstrap.Toast(document.getElementById('customToast'));
-        toast.show(); // Trigger the Bootstrap toast
-    }
-
-    document.getElementById('viewBillButton').addEventListener('click', function () {
-        // Fetch the bill details from the server or variables (you can adapt it based on your data flow)
-        var billId = '@TempData["BillID"]';
-        var billDate = '@TempData["BillDate"]';
-        var billValue = '@TempData["BillValue"]';
-        var balance = '@TempData["Balance"]';
-
-        // Trigger the toast with bill details when the view button is clicked
-        showToast(billId, billDate, billValue, balance);
-    });
-</script> *@
