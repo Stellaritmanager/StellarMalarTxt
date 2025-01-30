@@ -4071,10 +4071,7 @@ namespace StellarBillingSystem.Controllers
 
         }
 
-
-
-
-        public IActionResult UpdatePaymentDetails(string billID, string branchID, string billdate)
+        public IActionResult UpdatePaymentDetails(string billID, string branchID, string billdate, string billValue)
         {
             string formattedBillDate = billdate;
 
@@ -4111,7 +4108,7 @@ namespace StellarBillingSystem.Controllers
             }
             else
             {
-                @ViewBag.Balance = 0;  // Default to 0 if Balance is null
+                @ViewBag.Balance = billValue;  // Default to 0 if Balance is null
             }
 
 
@@ -4170,7 +4167,7 @@ namespace StellarBillingSystem.Controllers
             {
 
                 ViewBag.Message = "BillID Not Found";
-                var resultdel = UpdatePaymentDetails(billId, branchID, formattedBillDate);
+                var resultdel = UpdatePaymentDetails(billId, branchID, formattedBillDate, billValue);
 
                 return View("PaymentBilling", model);
             }
@@ -4191,7 +4188,7 @@ namespace StellarBillingSystem.Controllers
                     if (selectedDBpayment.Count == 0)
                     {
                         ViewBag.Message = "Please enter Payment ID";
-                        var resultdelm = UpdatePaymentDetails(billId, branchID, formattedBillDate);
+                        var resultdelm = UpdatePaymentDetails(billId, branchID, formattedBillDate, billValue);
                         return View("PaymentBilling", model);
                     }
 
@@ -4213,7 +4210,7 @@ namespace StellarBillingSystem.Controllers
                 {
                     ViewBag.Message = "Payment Not Found";
                 }
-                var resultdel = UpdatePaymentDetails(billId, branchID, formattedBillDate);
+                var resultdel = UpdatePaymentDetails(billId, branchID, formattedBillDate, billValue);
 
 
                 //Code here for refresh model
@@ -4262,7 +4259,7 @@ namespace StellarBillingSystem.Controllers
                 if (string.IsNullOrEmpty(selectedSlotId))
                 {
                     ViewBag.Message = "Please select a payment.";
-                    var resultdel = UpdatePaymentDetails(billId, branchID, formattedBillDate);
+                    var resultdel = UpdatePaymentDetails(billId, branchID, formattedBillDate, billValue);
 
                     return View("PaymentBilling", model);
                 }
@@ -4304,7 +4301,7 @@ namespace StellarBillingSystem.Controllers
                 if (exbilltotal != null)
                     model.Balance = exbilltotal.NetPrice;
 
-                var resultdelpay = UpdatePaymentDetails(billId, branchID, formattedBillDate);
+                var resultdelpay = UpdatePaymentDetails(billId, branchID, formattedBillDate, billValue);
                 return View("PaymentBilling", model);
 
 
@@ -4320,7 +4317,7 @@ namespace StellarBillingSystem.Controllers
                 if (string.IsNullOrEmpty(selectedSlotId))
                 {
                     ViewBag.Message = "Please select a payment.";
-                    var resultdel = UpdatePaymentDetails(billId, branchID, formattedBillDate);
+                    var resultdel = UpdatePaymentDetails(billId, branchID, formattedBillDate, billValue);
 
                     return View("PaymentBilling", model);
                 }
@@ -4344,7 +4341,7 @@ namespace StellarBillingSystem.Controllers
                 if (totalpayamount > double.Parse(billAmount))
                 {
                     ViewBag.Message = HttpUtility.JavaScriptStringEncode($"Payment amount '{totalpayamount}' exceeds the total bill amount '{billValue}'");
-                    var resultdel = UpdatePaymentDetails(billId, branchID, formattedBillDate);
+                    var resultdel = UpdatePaymentDetails(billId, branchID, formattedBillDate, billValue);
 
                     return View("PaymentBilling", model);
                 }
@@ -4439,7 +4436,7 @@ namespace StellarBillingSystem.Controllers
 
 
                 ViewBag.Message = "Payment Saved Successfully";
-                var resultsav = UpdatePaymentDetails(billId, branchID, formattedBillDate);
+                var resultsav = UpdatePaymentDetails(billId, branchID, formattedBillDate, billValue);
 
 
                 return View("PaymentBilling", model);
@@ -4476,7 +4473,7 @@ namespace StellarBillingSystem.Controllers
                 _billingsoftware.SaveChanges();
 
             }
-            var result = UpdatePaymentDetails(billId, branchID, formattedBillDate);
+            var result = UpdatePaymentDetails(billId, branchID, formattedBillDate, billValue);
 
             return View("PaymentBilling", model);
         }
