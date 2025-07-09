@@ -1,0 +1,444 @@
+﻿@model CustomerMasterModel
+
+@{
+    ViewData["Title"] = "CustomerMaster";
+    Layout = "~/Views/Shared/_ContentNavbarLayout.cshtml";
+    var imgs = ViewBag.ExistingImages as List<string>;
+}
+
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<script>
+    function showPopup(message) {
+        var popup = document.getElementById("popupMessage");
+        var popupText = document.getElementById("popupMessageText");
+        var popupOKButton = document.getElementById("popupOKButton");
+
+        popupText.textContent = message; // Set the message text
+        popup.style.display = "block";
+
+        // Close popup when OK button is clicked
+        popupOKButton.addEventListener("click", function () {
+            closePopup();
+        });
+
+        // Close popup when clicking outside of the message box
+        document.addEventListener("click", function (event) {
+            if (!popup.contains(event.target) && !popupOKButton.contains(event.target)) {
+                closePopup();
+            }
+        });
+    }
+
+    function closePopup() {
+        var popup = document.getElementById("popupMessage");
+        popup.style.display = "none"; // Hide the popup
+    }
+
+    function handleMessages(message) {
+        showPopup(message);
+    }
+
+    $(document).ready(function () {
+        var message = "@ViewBag.Message";
+        if (message) {
+            showPopup(message);
+        }
+
+        var errorMessage = "@ViewBag.ErrorMessage";
+        if (errorMessage) {
+            showPopup(errorMessage);
+        }
+
+        var delMessage = "@ViewBag.delMessage";
+        if (delMessage) {
+            showPopup(delMessage);
+        }
+
+        var delRetrieve = "@ViewBag.DelRetrieve";
+        if (delRetrieve) {
+            showPopup(delRetrieve);
+        }
+    });
+
+</script>
+
+<div id="popupMessage" style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); color:black; padding: 30px; border: 1px solid #000000; border-radius: 10px; z-index: 1000; display: none; text-align: center;">
+    <span id="popupMessageText" style="display: block; margin-bottom: 10px;"></span>
+    <button id="popupOKButton" style="padding: 10px 20px; background-color: rgba(255, 255, 255, 0.2); color: black; border: none; border-radius: 5px; cursor: pointer;">OK</button>
+</div>
+
+<style>
+    .popborder {
+        border: 10px solid #fff;
+    }
+</style>
+
+<form asp-controller="CustomerMaster" id="uploadForm" method="post" enctype="multipart/form-data" autocomplete="off">
+
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+    <div class="row">
+        <div class="col-md-12 col-lg-0"></div>
+        <div class="col-md-12 col-lg-12" style="padding: 0;">
+            <div class="card" style="height:40px;">
+                <div class="card-body dividerblack">
+                    <div style="display: flex; align-items: center; height: 100%;">
+                        <div class="container" style="text-align: left; width: 100%;">
+                            <h2 class="centered text-white" style="font-family:'Lucida Bright'; margin: 0;">
+                                Customer Master
+                            </h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <br/>
+    <div class="row" style="height:8%"></div>
+
+    <div class="row" style="margin-top:60px">
+        <div class="col-md-12 col-lg-0"></div>
+        <div class="col-md-12 col-lg-12">
+            <div class="card">
+                <div class="card-body dividerblack">
+                    <div class="row gy-4">
+                        <div class="col-md-12 col-lg-0"></div>
+
+                        <div class="col-md-12 col-lg-3">
+                            <div class="form-floating form-floating-outline mb-4">
+                                <input type="tel" pattern="\d{10}" maxlength="10" asp-for="MobileNumber" value="@Model.MobileNumber" id="MobileNumber" class="form-control" placeholder="Mobile Number" />
+                                <label asp-for="MobileNumber" class="control-label">Mobile Number</label>
+                                <span asp-validation-for="MobileNumber" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="col-md-12 col-lg-3">
+                            <div class="form-floating form-floating-outline mb-4">
+
+                                @*@<input asp-for="FullName" value="@Model.FullName" class="form-control" placeholder="Full Name"
+                                       oninput="validateInput(this)" />
+                                <label asp-for="FullName" class="control-label">Full Name</label>
+                                <span asp-validation-for="FullName" class="text-danger"></span>*@
+
+
+
+                                <input asp-for="CustomerName" class="form-control" placeholder="Customer Name" value="@Model.CustomerName" pattern="^[A-Za-z\s]+$" title="Customer Name should contain only letters and spaces" oninput="validateInput(this)" />
+                                <label asp-for="CustomerName" class="control-label">Customer Name</label>
+                                <span asp-validation-for="CustomerName" class="text-danger"></span>
+                            </div>
+
+                            <div class="form-floating form-floating-outline mb-4">
+
+                              
+                                <input asp-for="Fathername" class="form-control" placeholder="Father Name" value="@Model.Fathername" pattern="^[A-Za-z\s]+$" title="Customer Name should contain only letters and spaces" oninput="validateInput(this)" />
+                                <label asp-for="Fathername" class="control-label">Father Name</label>
+                                <span asp-validation-for="Fathername" class="text-danger"></span>
+                            </div>
+
+                        </div>
+
+
+
+
+                        <button type="submit" style="width:95px; height:50px;" value="Create" asp-action="GetCustomer" class="btn btn-primary ms-2">Get</button>
+                        
+
+                    </div>
+                   
+              <br/>
+
+               
+    <div class="row">
+                        <div class="col-md-12 col-lg-0"></div>
+        <div class="col-md-12 col-lg-3">
+
+                            <div class="form-floating form-floating-outline mb-4 custom-date-picker">
+                                <input asp-for="DateofBirth" type="date" value="@Model.DateofBirth" class="form-control" placeholder="DateofBirth" max="@DateTime.Now.ToString("yyyy-MM-dd")" />
+                                <label asp-for="DateofBirth" class="control-label">Date of Birth</label>
+                                <span asp-validation-for="DateofBirth" class="text-danger"></span>
+                            </div>
+         
+        </div>
+
+                        <div class="col-md-12 col-lg-3">
+                            <div class="form-floating form-floating-outline mb-4">
+                                <select id="genderSelect" name="Gender" class="form-control">
+                                    @if (string.IsNullOrEmpty(Model.Gender))
+                                    {
+                                        <option value="" selected>-- Select Gender --</option>
+                                    }
+                                    else
+                                    {
+                                        <option value="">-- Select Gender --</option>
+                                    }
+
+                                    @if (Model.Gender == "Male")
+                                    {
+                                        <option value="Male" selected>Male</option>
+                                    }
+                                    else
+                                    {
+                                        <option value="Male">Male</option>
+                                    }
+
+                                    @if (Model.Gender == "Female")
+                                    {
+                                        <option value="Female" selected>Female</option>
+                                    }
+                                    else
+                                    {
+                                        <option value="Female">Female</option>
+                                    }
+
+                                    @if (Model.Gender == "Other")
+                                    {
+                                        <option value="Other" selected>Other</option>
+                                    }
+                                    else
+                                    {
+                                        <option value="Other">Other</option>
+                                    }
+                                </select>
+
+                                <label for="genderSelect">Gender</label>
+                                <span asp-validation-for="Gender" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="col-md-12 col-lg-3">
+                            <div class="form-floating form-floating-outline mb-4">
+
+                                <input asp-for="Address" class="form-control" placeholder="Address" value="@Model.Address" />
+                                <label asp-for="Address" class="control-label">Address</label>
+
+                                <span asp-validation-for="Address" class="text-danger"></span>
+                            </div>
+
+
+                        </div>
+
+                        <div class="col-md-12 col-lg-3">
+
+                            <div class="form-floating form-floating-outline mb-4">
+
+                                <input asp-for="Country" class="form-control" placeholder="Country" value="@Model.Country" pattern="^[A-Za-z\s]+$" title="Country Name should contain only letters and spaces" />
+                                <label asp-for="Country" class="control-label"></label>
+
+                                <span asp-validation-for="Country" class="text-danger"></span>
+                            </div>
+
+                             <div class="form-floating form-floating-outline mb-4">
+
+                                <input asp-for="State" class="form-control" placeholder="State" value="@Model.State" pattern="^[A-Za-z\s]+$" title="State Name should contain only letters and spaces" />
+                                <label asp-for="State" class="control-label"></label>
+
+                                <span asp-validation-for="State" class="text-danger"></span>
+                            </div>
+
+                            <div class="form-floating form-floating-outline mb-4">
+
+                                <input asp-for="City" class="form-control" placeholder="City" value="@Model.City" pattern="^[A-Za-z\s]+$" title="City Name should contain only letters and spaces" />
+                                <label asp-for="City" class="control-label"></label>
+
+                                <span asp-validation-for="City" class="text-danger"></span>
+                            </div>
+
+                            <div class="form-floating form-floating-outline mb-4">
+
+                                <input asp-for="Pincode" class="form-control" placeholder="Pincode" value="@Model.Pincode" pattern="^\d{6}$" title="Pincode Number should be in correct format" />
+                                <label asp-for="Pincode" class="control-label"></label>
+
+                                <span asp-validation-for="Pincode" class="text-danger"></span>
+                            </div>
+
+                            
+                            <input type="file" id="fileInput" name="Images" multiple />
+                            <input type="hidden" name="KeptImages" id="KeptImages" />
+                            <div id="selectedFilesPreview" style="margin-top: 10px; display: flex; flex-wrap: wrap;"></div>
+
+                            @if (imgs != null && imgs.Any())
+                            {
+                                foreach (var img in imgs)
+                                {
+                                    <input type="hidden" name="existingImage" value="@img" />
+                                }
+                            }
+
+                        </div>
+
+                     
+
+                        <div class="row mt-3">
+                            <div class="col-md-12 d-flex justify-content-center">
+
+                                
+                                <button type="submit"  value="Create" asp-action="AddCustomer" class="btn btn-primary mx-2">Save</button>
+                                <button type="submit"  value="Create" asp-action="DeleteCustomer" class="btn btn-primaryred mx-2">Delete</button>
+                               @*  <button type="submit"  value="Create" asp-action="GetDeleteRetrieve" class="btn btn-primaryellow mx-2">DeleteRetrieve</button> *@
+
+
+                            </div>
+                            </div>
+                            </div>
+       
+    </div>
+                </div>
+            </div>
+        </div>
+        
+    </div>
+    <div class="row" style="margin-top:30px">
+       
+        <div class="form-group">
+            <br />
+            <center>
+                   
+            </center>
+        </div>
+      
+    </div>
+
+</form>
+@* <script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const fileInput = document.getElementById('fileInput');
+        const preview = document.getElementById('selectedFilesPreview');
+        const uploadForm = document.getElementById('uploadForm');
+        let filesList = [];
+
+        fileInput.addEventListener('change', () => {
+            for (const file of fileInput.files) {
+                const fileId = `${Date.now()}_${file.name}`;
+                filesList.push({ id: fileId, file });
+
+                const box = document.createElement('div');
+                box.dataset.id = fileId;
+                box.style.cssText = 'position:relative;margin:10px';
+
+                const img = new Image();
+                img.src = URL.createObjectURL(file);
+                img.style.cssText = 'width:100px;height:100px;object-fit:cover;border:1px solid #ccc';
+
+                const x = document.createElement('span');
+                x.textContent = '❌';
+                x.style.cssText = 'position:absolute;top:0;right:0;cursor:pointer;' +
+                    'background:white;border:1px solid red;border-radius:50%;' +
+                    'padding:2px 5px;color:red;font-weight:bold';
+                x.onclick = () => {
+                    filesList = filesList.filter(f => f.id !== fileId);
+                    box.remove();
+                };
+
+                box.append(img, x);
+                preview.appendChild(box);
+            }
+
+            fileInput.value = ''; // Allow reselection of the same file
+        });
+
+        uploadForm.addEventListener('submit', e => {
+            const kept = [...preview.querySelectorAll('[data-id]')].map(d => d.dataset.id);
+            document.getElementById('KeptImages').value = JSON.stringify(kept);
+
+            const dataTransfer = new DataTransfer();
+            filesList.forEach(f => { if (!f.existing) dataTransfer.items.add(f.file); });
+            fileInput.files = dataTransfer.files;
+        });
+    });
+</script> *@
+
+
+@* ---------- Existing images preview (run once when the page loads) ---------- *@
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+
+        /* ---------- 0. handles ---------- */
+        const fileInput = document.getElementById('fileInput');
+        const preview = document.getElementById('selectedFilesPreview');
+        const uploadForm = document.getElementById('uploadForm');
+
+        /* ---------- 1. shared state ---------- */
+        const filesList = [];   // [{id, file}|{id, existing:true}]
+
+        /* ---------- 2. load images already in DB ---------- */
+        document.querySelectorAll('input[name="existingImage"]').forEach(input => {
+            const path = input.value;                 // "CustomerImages/.../pic.jpg"
+            const fileId = `existing_${path}`;
+
+            filesList.push({ id: fileId, existing: true });
+
+            const box = document.createElement('div');
+            box.dataset.id = fileId;
+            box.style.cssText = 'position:relative;margin:10px';
+
+            const img = new Image();
+            img.src = '/' + path.replace(/\\/g, '/'); // root‑relative URL
+            img.style.cssText =
+                'width:100px;height:100px;object-fit:cover;border:1px solid #ccc';
+
+            const x = document.createElement('span');
+            x.textContent = '❌';
+            x.style.cssText =
+                'position:absolute;top:0;right:0;cursor:pointer;' +
+                'background:white;border:1px solid red;border-radius:50%;' +
+                'padding:2px 5px;color:red;font-weight:bold';
+            x.onclick = () => {
+                const idx = filesList.findIndex(f => f.id === fileId);
+                if (idx > -1) filesList.splice(idx, 1);
+                box.remove();
+            };
+
+            box.append(img, x);
+            preview.appendChild(box);
+        });
+
+        /* ---------- 3. preview newly‑selected files ---------- */
+        fileInput.addEventListener('change', () => {
+            for (const file of fileInput.files) {
+                const fileId = `${Date.now()}_${file.name}`;
+                filesList.push({ id: fileId, file });
+
+                const box = document.createElement('div');
+                box.dataset.id = fileId;
+                box.style.cssText = 'position:relative;margin:10px';
+
+                const img = new Image();
+                img.src = URL.createObjectURL(file);
+                img.style.cssText =
+                    'width:100px;height:100px;object-fit:cover;border:1px solid #ccc';
+
+                const x = document.createElement('span');
+                x.textContent = '❌';
+                x.style.cssText =
+                    'position:absolute;top:0;right:0;cursor:pointer;' +
+                    'background:white;border:1px solid red;border-radius:50%;' +
+                    'padding:2px 5px;color:red;font-weight:bold';
+                x.onclick = () => {
+                    const idx = filesList.findIndex(f => f.id === fileId);
+                    if (idx > -1) filesList.splice(idx, 1);
+                    box.remove();
+                };
+
+                box.append(img, x);
+                preview.appendChild(box);
+            }
+            fileInput.value = '';           // allow picking same file again
+        });
+
+        /* ---------- 4. build payload on submit ---------- */
+        uploadForm.addEventListener('submit', () => {
+            // list of ids that remain in the preview
+            const kept = [...preview.querySelectorAll('[data-id]')].map(b => b.dataset.id);
+            document.getElementById('KeptImages').value = JSON.stringify(kept);
+
+            // only *new* files should go to server
+            const dt = new DataTransfer();
+            filesList.forEach(f => {
+                if (!f.existing) dt.items.add(f.file);
+            });
+            fileInput.files = dt.files;
+        });
+    });
+</script>

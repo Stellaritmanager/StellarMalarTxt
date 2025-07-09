@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.CodeAnalysis;
 using StellarBillingSystem.Models;
+using StellarBillingSystem_skj.Models;
 namespace StellarBillingSystem.Context
 {
     public class BillingContext : DbContext
@@ -24,7 +25,7 @@ namespace StellarBillingSystem.Context
 
         public DbSet<BilingSysytemModel> SHCustomerBilling { get; set; }
 
-        public DbSet<CustomerMasterModel> SHCustomerMaster { get; set; }
+      
 
         public DbSet<DiscountCategoryMasterModel> SHDiscountCategory { get; set; }
 
@@ -82,6 +83,14 @@ namespace StellarBillingSystem.Context
 
         public DbSet<BillingPointsModel> SHBillingPoints { get; set; }
 
+
+
+        //Table creation for skj
+
+        public DbSet<CustomerMasterModel> SHCustomerMaster { get; set; }
+
+        public DbSet<CustomerImageModel> ShcustomerImageMaster { get; set; }
+
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             if (!optionsBuilder.IsConfigured)
@@ -126,8 +135,6 @@ namespace StellarBillingSystem.Context
             modelBuilder.Entity<ProductMatserModel>().Property(i => i.Id).UseIdentityColumn(101,1);
             modelBuilder.Entity<ProductMatserModel>().HasKey(i => new { i.Id,i.BranchID });
 
-            modelBuilder.Entity<CustomerMasterModel>().HasKey(i => new { i.MobileNumber, i.BranchID });
-
             modelBuilder.Entity<DiscountCategoryMasterModel>().HasKey(i => new { i.CategoryID,i.BranchID });
 
             modelBuilder.Entity<GSTMasterModel>().HasKey(i => new { i.TaxID, i.BranchID });
@@ -160,6 +167,31 @@ namespace StellarBillingSystem.Context
 
             modelBuilder.Entity<ReedemHistoryModel>().HasKey(i => new { i.CustomerNumber, i.DateOfReedem,i.BranchID });
 
+
+
+
+
+
+
+
+
+
+            //Model for SKJ
+
+            modelBuilder.Entity<CustomerMasterModel>()
+                    .HasKey(c => new { c.MobileNumber, c.CustomerName, c.BranchID });
+
+            modelBuilder.Entity<CustomerImageModel>()
+                .HasKey(i => i.ImageID); // Identity PK
+
+            modelBuilder.Entity<CustomerImageModel>()
+                .HasIndex(i => new { i.MobileNumber, i.CustomerName, i.BranchID }); // For FK index
+
+            modelBuilder.Entity<CustomerImageModel>()
+                .HasOne<CustomerMasterModel>()
+                .WithMany() // no navigation
+                .HasForeignKey(i => new { i.MobileNumber, i.CustomerName, i.BranchID })
+                .OnDelete(DeleteBehavior.Cascade);
 
         }
 
@@ -200,6 +232,8 @@ namespace StellarBillingSystem.Context
                     billEntry.Entity.CategoryID = $"Cat_{lastNumber}";
                 }
             }
+
+           
 
             //Product Master
             var ProdMas = ChangeTracker
