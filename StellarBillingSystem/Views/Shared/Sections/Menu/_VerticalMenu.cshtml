@@ -180,8 +180,8 @@
 
 
 
-                        <li class='menu-item@(currentPage == "/StockManagement/StaffAdmin" ? " active" : "")'>
-                            <a asp-controller="StellarBilling" asp-action="StaffAdmin" class="menu-link">
+                        <li class='menu-item@(currentPage == "/StaffAdmin/StaffAdmin" ? " active" : "")'>
+                            <a asp-controller="StaffAdmin" asp-action="StaffAdmin" class="menu-link">
 
                                 <div>Staff Admin</div>
                             </a>
@@ -206,7 +206,7 @@
                     }
                 }
  *@
-                @if (rollAccessList != null)
+                @* @if (rollAccessList != null)
                 {
                     @if (rollAccessList.Contains("RollAccessMaster"))
                     {
@@ -219,7 +219,7 @@
                         </li>
 
                     }
-                }
+                } *@
 
                 @if (rollAccessList != null)
                 {

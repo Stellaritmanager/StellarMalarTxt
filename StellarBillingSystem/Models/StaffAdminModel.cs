@@ -31,6 +31,7 @@
         private bool isDelete;
         private string branchID;
         private byte[] idProofFile;
+        private string rolltype;
 
 
 
@@ -62,5 +63,6 @@
         public string BranchID { get => branchID; set => branchID = value; }
         public byte[]? IdProofFile { get => idProofFile; set => idProofFile = value; }
         public DateTime LastupdatedDate { get => lastupdatedDate; set => lastupdatedDate = value; }
+        public string RolltypeID { get => rolltype; set => rolltype = value; }
     }
 }

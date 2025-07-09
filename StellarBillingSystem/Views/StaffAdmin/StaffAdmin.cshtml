@@ -53,7 +53,7 @@
 
 
 
-<form asp-action="AddStaff" enctype="multipart/form-data" id="StaffAdmin" asp-controller="StellarBilling" autocomplete="off">
+<form asp-action="AddStaff" enctype="multipart/form-data" id="StaffAdmin" asp-controller="StaffAdmin" autocomplete="off">
     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
     <div class="row">
         <div class="col-md-12 col-lg-0">
@@ -115,20 +115,20 @@
                     <div class="row">
                         <div class="col-md-12 col-lg-4">
 
-                           @*  <div class="form-floating form-floating-outline mb-4">
+                             <div class="form-floating form-floating-outline mb-4">
                                 @{
-                                    var screenList = ((IEnumerable<ResourceTypeMasterModel>)ViewData["resoruseid"])
+                                    var screenList = ((IEnumerable<RollTypeMaster>)ViewData["rollid"])
                                     .Select(m => new SelectListItem
             {
-                Value = m.ResourceTypeID.ToString(), // Assuming ScreenId is of type int
-                Text = $"{m.ResourceTypeName}"
+                Value = m.RollID.ToString(), // Assuming ScreenId is of type int
+                Text = $"{m.RollName}"
             });
                                 }
 
-                                @Html.DropDownListFor(model => model.ResourceTypeID, screenList, "Select Resource", new { @class = "form-control" })
-                                <label asp-for="ResourceTypeID" class="control-label">Resource Type</label>
-                                <span asp-validation-for="ResourceTypeID" class="text-danger"></span>
-                            </div> *@
+                                @Html.DropDownListFor(model => model.RolltypeID, screenList, "Select Roll", new { @class = "form-control" })
+                                <label asp-for="RolltypeID" class="control-label">Roll Type</label>
+                                <span asp-validation-for="RolltypeID" class="text-danger"></span>
+                            </div> 
 
                             <div class="form-floating form-floating-outline mb-4">
                                 @{
@@ -389,7 +389,7 @@
                                     <tr>
                                         <td>@row["StaffID"]</td>
                                         <td>@row["FullName"]</td>
-                                        <td>@row["ResourceTypeID"]</td>
+                                        <td>@row["RolltypeID"]</td>
                                         <td>@row["PhoneNumber"]</td>
                                         <td>@row["EmailId"]</td>
                                     </tr>
