@@ -1,0 +1,256 @@
+USE [StellarSKJ]
+GO
+/****** Object:  StoredProcedure [dbo].[SH_GetBillDetailsAndMaster]    Script Date: 7/9/2025 6:13:21 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE PROCEDURE [dbo].[SH_GetBillDetailsAndMaster]
+    @BillID VARCHAR(50)
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    SELECT 
+        bd.CustomerNumber,
+        bd.ProductName,
+        bd.Quantity,
+        bd.NetPrice AS DetailNetPrice,
+        bm.NetPrice AS MasterNetPrice
+    FROM SHbilldetails bd
+    INNER JOIN SHbillmaster bm ON bd.BillID = bm.BillID
+    WHERE LOWER(bd.BillID) = LOWER(@BillID);
+END;
+
+GO
+/****** Object:  StoredProcedure [dbo].[Sp_GenerateChartDataBilling]    Script Date: 7/9/2025 6:13:21 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+-- =============================================
+-- Author:	Stellar Technologies
+-- =============================================
+Create PROCEDURE [dbo].[Sp_GenerateChartDataBilling]
+	-- Add the parameters for the stored procedure here
+	@Type varchar(10),
+	@Value Varchar(10)
+AS
+BEGIN
+	-- SET NOCOUNT ON added to prevent extra result sets from
+	-- interfering with SELECT statements.
+	SET NOCOUNT ON;
+
+	if(@Type='Monthly') 
+	begin
+    -- Monthly wise chart Data
+		select Months.Months,isnull(Collections,0.0) as Collections from (select FORMAT(convert(date,BillDate),'MMMM') as Months, Sum(convert(money,netprice)) as Collections from SHbillmaster
+		where year(Convert(date,billdate))=@Value
+		group by FORMAT(convert(date,BillDate),'MMMM'),DATEPART(MONTH,convert(date,BillDate))
+		) as MonthData right join 
+			(select 'January' as Months, 1 as sno
+			union all
+			select 'Febuary' as Months, 2 as sno
+			union all
+			select 'March' as Months, 3 as sno
+			union all
+			select 'April' as Months, 4 as sno
+			union all
+			select 'May' as Months, 5 as sno
+			union all
+			select 'June' as Months, 6 as sno
+			union all
+			select 'July' as Months, 7 as sno
+			union all
+			select 'August' as Months, 8 as sno
+			union all
+			select 'September' as Months, 9 as sno
+			union all
+			select 'October' as Months, 10 as sno
+			union all
+			select 'November' as Months, 11 as sno
+			union all
+			select 'December' as Months, 12 as sno
+			) as Months
+			on Months.Months = MonthData.Months
+			order by sno
+		end
+
+
+
+END
+GO
+/****** Object:  UserDefinedFunction [dbo].[CompareDailySales]    Script Date: 7/9/2025 6:13:21 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE FUNCTION [dbo].[CompareDailySales] (@BranchID NVARCHAR(50))
+RETURNS NVARCHAR(100)
+AS
+BEGIN
+    DECLARE @Count1 INT;
+    DECLARE @Count2 INT;
+    DECLARE @Avg DECIMAL(18, 2);
+    DECLARE @Var DECIMAL(18, 2);
+    DECLARE @Result NVARCHAR(100);
+
+    -- Get the count of bills for the current day
+     SELECT @Count2 = ISNULL(COUNT(*), 0)
+    FROM SHbillmaster
+    WHERE CONVERT(DATE, BillDate) = CONVERT(DATE, GETDATE())  AND BranchID = @BranchID;
+
+    -- Get the count of bills for the previous day
+    SELECT @Count1 = ISNULL(COUNT(*), 0)
+    FROM SHbillmaster
+    WHERE CONVERT(DATE, BillDate) = CONVERT(DATE, DATEADD(DAY, -1, GETDATE()))  AND BranchID = @BranchID;
+
+    -- Calculate the average
+    SET @Avg = (@Count1 + @Count2) / 2.0;
+
+	 IF @Avg = 0
+    BEGIN
+        SET @Result = 'No sales data available';
+    END
+    ELSE
+    BEGIN
+
+    -- Determine the percentage change
+    IF @Count2 > @Count1
+    BEGIN
+        SET @Var = (@Count2 - @Count1) / @Avg * 100;
+        SET @Result = 'You have increased sales by ' + CAST(@Var AS NVARCHAR(10)) + '%';
+    END
+    ELSE
+    BEGIN
+        SET @Var = (@Count1 - @Count2) / @Avg * 100;
+        SET @Result = 'You have decreased sales by ' + CAST(@Var AS NVARCHAR(10)) + '%';
+    END
+	END
+
+    RETURN @Result;
+END
+GO
+/****** Object:  UserDefinedFunction [dbo].[GenerateBillID]    Script Date: 7/9/2025 6:13:21 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE FUNCTION [dbo].[GenerateBillID](
+    @BillId as Varchar(100)
+)
+RETURNS VARCHAR(50)
+AS
+BEGIN
+
+Declare @BillAmount NVARCHAR(50)
+Declare @Balance NVARCHAR(50)
+Declare @PayAmount NVARCHAR(50)
+
+select @BillAmount = Totalprice from SHbillmaster where BillID = @BillId
+
+
+select @payAmount = PaymentAmount from SHPaymentDetails where PaymentId in (select PaymentId from SHPaymentMaster where BillId = @BillId)
+
+ 
+
+ Select @Balance = (CONVERT(float,@BillAmount))-(CONVERT(float,isnull(@PayAmount,0)))
+
+
+    RETURN @Balance
+
+END
+GO
+/****** Object:  UserDefinedFunction [dbo].[GetDailyPayments]    Script Date: 7/9/2025 6:13:21 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+-- Function to get daily payments
+CREATE FUNCTION [dbo].[GetDailyPayments] (@BranchID NVARCHAR(50))
+RETURNS MONEY
+AS
+BEGIN
+    DECLARE @DailyPayments MONEY;
+    SELECT @DailyPayments = COALESCE(SUM(CONVERT(MONEY, paymentAmount)), 0)
+    FROM SHPaymentDetails 
+    WHERE CONVERT(DATE, PaymentDate) = CONVERT(DATE, GETDATE())  AND BranchID = @BranchID;
+    RETURN @DailyPayments;
+END
+GO
+/****** Object:  UserDefinedFunction [dbo].[GetDailySales]    Script Date: 7/9/2025 6:13:21 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+-- Function to get daily sales
+CREATE FUNCTION [dbo].[GetDailySales](@BranchID NVARCHAR(50))
+RETURNS MONEY
+AS
+BEGIN
+    DECLARE @DailySales MONEY;
+    SELECT @DailySales = COALESCE(SUM(CONVERT(MONEY, NetPrice)), 0)
+    FROM SHbillmaster 
+    WHERE CONVERT(DATETIME, BillDate) = CONVERT(DATE, GETDATE())  AND BranchID = @BranchID;
+    RETURN @DailySales;
+END
+
+
+////Branch Master////
+
+INSERT [dbo].[SHBranchMaster] ([BracnchID], [BranchName], [PhoneNumber1], [PhoneNumber2], [Address1], [Address2], [Country], [State], [City], [ZipCode], [IsFranchise], [IsDelete], [email], [lastUpdatedUser], [lastUpdatedMachine], [LastUpdatedDate], [BranchInitial], [BillTemplate]) VALUES (N'Lee_Mobile', N'Lee Mobiles', N'9994578802', N'9626589922', N'4765/5, Ayyanarpuram 1st Street, Alangudi', N'', N'India', N'TN', N'Pudukottai', N'622001', N'0', 0, N'info@leestoreindia', NULL, NULL, N'Oct  8 2024 11:35AM', N'LEE', N'BillTemplate Branch1')
+INSERT [dbo].[SHBranchMaster] ([BracnchID], [BranchName], [PhoneNumber1], [PhoneNumber2], [Address1], [Address2], [Country], [State], [City], [ZipCode], [IsFranchise], [IsDelete], [email], [lastUpdatedUser], [lastUpdatedMachine], [LastUpdatedDate], [BranchInitial], [BillTemplate]) VALUES (N'Lee_TV', N'LeeStore TV', N'9994578802', N'9626589922', N'4765/5, Ayyanarpuram 1st Street, Alangudi', N'', N'India', N'TN', N'Pudukottai', N'622001', N'0', 0, N'info@leestoreindia', NULL, NULL, N'Oct  8 2024 11:35AM', N'LEE', N'BillTemplate Branch1')
+INSERT [dbo].[SHBranchMaster] ([BracnchID], [BranchName], [PhoneNumber1], [PhoneNumber2], [Address1], [Address2], [Country], [State], [City], [ZipCode], [IsFranchise], [IsDelete], [email], [lastUpdatedUser], [lastUpdatedMachine], [LastUpdatedDate], [BranchInitial], [BillTemplate]) VALUES (N'StellarTextile', N'StellarTextile', N'8967569067', N'7778934237', N'4765/5, Ayyanarpuram 1st Street, Machuvadi', NULL, N'India', N'TN', N'Pudukottai', N'622001', N'0', 0, N'stellartex@gamil.com', NULL, NULL, N'2025-05-13 11:35:00.000', N'Textile', NULL)
+
+////Staff Admin////
+
+INSERT [dbo].[SHStaffAdmin] ([StaffID], [BranchID], [ResourceTypeID], [FirstName], [LastName], [FullName], [Initial], [Prefix], [Gender], [DateofBirth], [Age], [Address1], [City], [State], [Pin], [PhoneNumber], [EmailId], [Nationality], [UserName], [Password], [IdProofId], [IdProofName], [LastupdatedUser], [LastUpdatedMachine], [IsDelete], [IdProofFile], [LastupdatedDate], [RolltypeID]) VALUES (N'Stellar_Manager', N'Lee_Mobile', NULL, NULL, NULL, N'MK', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, N'Mk', N'123', NULL, NULL, N'AdminLee', N'::1', 0, NULL, CAST(N'2025-07-09 22:11:58.0000000' AS DateTime2), N'Roll_Stellar_1')
+INSERT [dbo].[SHStaffAdmin] ([StaffID], [BranchID], [ResourceTypeID], [FirstName], [LastName], [FullName], [Initial], [Prefix], [Gender], [DateofBirth], [Age], [Address1], [City], [State], [Pin], [PhoneNumber], [EmailId], [Nationality], [UserName], [Password], [IdProofId], [IdProofName], [LastupdatedUser], [LastUpdatedMachine], [IsDelete], [IdProofFile], [LastupdatedDate], [RolltypeID]) VALUES (N'Stellar_Trainee', N'Lee_Mobile', NULL, NULL, NULL, N'Traine', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, N'Traine', N'123', NULL, NULL, N'mk', N'::1', 0, NULL, CAST(N'2025-07-09 23:31:32.0000000' AS DateTime2), N'Roll_Stellar_2')
+
+
+
+/////RollType///
+
+
+INSERT [dbo].[SHrollType] ([RollID], [BranchID], [RollName], [LastupdatedUser], [LastupdatedDate], [LastupdatedMachine], [IsDelete]) VALUES (N'Roll_Stellar_1', N'Lee_Mobile', N'Manager', N'AdminLee', N'09/07/2025 22:09:57', N'::1', 0)
+INSERT [dbo].[SHrollType] ([RollID], [BranchID], [RollName], [LastupdatedUser], [LastupdatedDate], [LastupdatedMachine], [IsDelete]) VALUES (N'Roll_Stellar_2', N'Lee_Mobile', N'Traine', N'mk', N'09/07/2025 23:30:49', N'::1', 0)
+
+
+///ScreenName///
+
+INSERT [dbo].[SHScreenName] ([Id], [ScreenName]) VALUES (N'1', N'CategoryMaster')
+INSERT [dbo].[SHScreenName] ([Id], [ScreenName]) VALUES (N'10', N'StaffAdmin')
+INSERT [dbo].[SHScreenName] ([Id], [ScreenName]) VALUES (N'11', N'ResourceTypeMaster')
+INSERT [dbo].[SHScreenName] ([Id], [ScreenName]) VALUES (N'12', N'RollAccessMaster')
+INSERT [dbo].[SHScreenName] ([Id], [ScreenName]) VALUES (N'13', N'RoleAccess')
+INSERT [dbo].[SHScreenName] ([Id], [ScreenName]) VALUES (N'14', N'RollTypeMaster')
+INSERT [dbo].[SHScreenName] ([Id], [ScreenName]) VALUES (N'15', N'ScreenMaster')
+INSERT [dbo].[SHScreenName] ([Id], [ScreenName]) VALUES (N'16', N'GodownModel')
+INSERT [dbo].[SHScreenName] ([Id], [ScreenName]) VALUES (N'18', N'CustomerBilling')
+INSERT [dbo].[SHScreenName] ([Id], [ScreenName]) VALUES (N'2', N'ProductMaster')
+INSERT [dbo].[SHScreenName] ([Id], [ScreenName]) VALUES (N'20', N'Reports')
+INSERT [dbo].[SHScreenName] ([Id], [ScreenName]) VALUES (N'3', N'CustomerMaster')
+INSERT [dbo].[SHScreenName] ([Id], [ScreenName]) VALUES (N'4', N'DiscountCategoryMaster')
+INSERT [dbo].[SHScreenName] ([Id], [ScreenName]) VALUES (N'5', N'GSTMasterModel')
+INSERT [dbo].[SHScreenName] ([Id], [ScreenName]) VALUES (N'6', N'NetDiscountMaster')
+INSERT [dbo].[SHScreenName] ([Id], [ScreenName]) VALUES (N'7', N'PointsMaster')
+INSERT [dbo].[SHScreenName] ([Id], [ScreenName]) VALUES (N'8', N'RackMaster')
+INSERT [dbo].[SHScreenName] ([Id], [ScreenName]) VALUES (N'9', N'RackPatrionProduct')
+
+
+//RollAccess////
+
+INSERT [dbo].[SHRoleaccessModel] ([RollID], [ScreenID], [Access], [Authorized], [lastUpdatedDate], [lastUpdatedUser], [lastUpdatedMachine], [Isdelete], [BranchID]) VALUES (N'Roll_Stellar_1', N'CategoryMaster', N'true', N'1', N'08-10-2024 12:00:53', N'Mk', N'::1', 0, N'Lee_Mobile')
+INSERT [dbo].[SHRoleaccessModel] ([RollID], [ScreenID], [Access], [Authorized], [lastUpdatedDate], [lastUpdatedUser], [lastUpdatedMachine], [Isdelete], [BranchID]) VALUES (N'Roll_Stellar_1', N'CustomerMaster', N'true', N'1', N'08-10-2024 12:10:47', N'Mk', N'::1', 0, N'Lee_Mobile')
+INSERT [dbo].[SHRoleaccessModel] ([RollID], [ScreenID], [Access], [Authorized], [lastUpdatedDate], [lastUpdatedUser], [lastUpdatedMachine], [Isdelete], [BranchID]) VALUES (N'Roll_Stellar_1', N'GodownModel', N'true', N'1', N'08-10-2024 12:10:33', N'Mk', N'::1', 0, N'Lee_Mobile')
+INSERT [dbo].[SHRoleaccessModel] ([RollID], [ScreenID], [Access], [Authorized], [lastUpdatedDate], [lastUpdatedUser], [lastUpdatedMachine], [Isdelete], [BranchID]) VALUES (N'Roll_Stellar_1', N'PointsMaster', N'true', N'1', N'08-10-2024 12:10:53', N'Mk', N'::1', 0, N'Lee_Mobile')
+INSERT [dbo].[SHRoleaccessModel] ([RollID], [ScreenID], [Access], [Authorized], [lastUpdatedDate], [lastUpdatedUser], [lastUpdatedMachine], [Isdelete], [BranchID]) VALUES (N'Roll_Stellar_1', N'ProductMaster', N'true', N'1', N'08-10-2024 12:10:41', N'Mk', N'::1', 0, N'Lee_Mobile')
+INSERT [dbo].[SHRoleaccessModel] ([RollID], [ScreenID], [Access], [Authorized], [lastUpdatedDate], [lastUpdatedUser], [lastUpdatedMachine], [Isdelete], [BranchID]) VALUES (N'Roll_Stellar_1', N'Reports', N'true', N'1', N'08-10-2024 12:10:44', N'Mk', N'::1', 0, N'Lee_Mobile')
+INSERT [dbo].[SHRoleaccessModel] ([RollID], [ScreenID], [Access], [Authorized], [lastUpdatedDate], [lastUpdatedUser], [lastUpdatedMachine], [Isdelete], [BranchID]) VALUES (N'Roll_Stellar_1', N'RoleAccess', N'true', N'1', N'08-10-2024 12:10:24', N'Mk', N'::1', 0, N'Lee_Mobile')
+INSERT [dbo].[SHRoleaccessModel] ([RollID], [ScreenID], [Access], [Authorized], [lastUpdatedDate], [lastUpdatedUser], [lastUpdatedMachine], [Isdelete], [BranchID]) VALUES (N'Roll_Stellar_1', N'RollAccessMaster', N'true', N'1', N'08-10-2024 12:10:20', N'Mk', N'::1', 0, N'Lee_Mobile')
+INSERT [dbo].[SHRoleaccessModel] ([RollID], [ScreenID], [Access], [Authorized], [lastUpdatedDate], [lastUpdatedUser], [lastUpdatedMachine], [Isdelete], [BranchID]) VALUES (N'Roll_Stellar_1', N'RollTypeMaster', N'true', N'1', N'08-10-2024 12:10:28', N'Mk', N'::1', 0, N'Lee_Mobile')
+INSERT [dbo].[SHRoleaccessModel] ([RollID], [ScreenID], [Access], [Authorized], [lastUpdatedDate], [lastUpdatedUser], [lastUpdatedMachine], [Isdelete], [BranchID]) VALUES (N'Roll_Stellar_1', N'StaffAdmin', N'true', N'1', N'08-10-2024 12:10:12', N'Mk', N'::1', 0, N'Lee_Mobile')
