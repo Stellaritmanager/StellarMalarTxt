@@ -108,7 +108,7 @@
 
                         <div class="col-md-12 col-lg-3">
                             <div class="form-floating form-floating-outline mb-4">
-                                <input type="tel" pattern="\d{10}" maxlength="10" asp-for="MobileNumber" value="@Model.MobileNumber" id="MobileNumber" class="form-control" placeholder="Mobile Number" />
+                                <input type="tel" maxlength="10" asp-for="MobileNumber" value="@Model.MobileNumber" id="MobileNumber" class="form-control" placeholder="Mobile Number" required pattern="\d{10}" title="Mobile Number should must contain 10 Digit" />
                                 <label asp-for="MobileNumber" class="control-label">Mobile Number</label>
                                 <span asp-validation-for="MobileNumber" class="text-danger"></span>
                             </div>
@@ -117,14 +117,11 @@
                         <div class="col-md-12 col-lg-3">
                             <div class="form-floating form-floating-outline mb-4">
 
-                                @*@<input asp-for="FullName" value="@Model.FullName" class="form-control" placeholder="Full Name"
-                                       oninput="validateInput(this)" />
-                                <label asp-for="FullName" class="control-label">Full Name</label>
-                                <span asp-validation-for="FullName" class="text-danger"></span>*@
+                                
 
 
 
-                                <input asp-for="CustomerName" class="form-control" placeholder="Customer Name" value="@Model.CustomerName" pattern="^[A-Za-z\s]+$" title="Customer Name should contain only letters and spaces" oninput="validateInput(this)" />
+                                <input asp-for="CustomerName" class="form-control" placeholder="Customer Name" value="@Model.CustomerName" pattern="^[A-Za-z\s]+$" title="Customer Name should contain only letters and spaces" />
                                 <label asp-for="CustomerName" class="control-label">Customer Name</label>
                                 <span asp-validation-for="CustomerName" class="text-danger"></span>
                             </div>
@@ -132,7 +129,7 @@
                             <div class="form-floating form-floating-outline mb-4">
 
                               
-                                <input asp-for="Fathername" class="form-control" placeholder="Father Name" value="@Model.Fathername" pattern="^[A-Za-z\s]+$" title="Customer Name should contain only letters and spaces" oninput="validateInput(this)" />
+                                <input asp-for="Fathername" class="form-control" placeholder="Father Name" value="@Model.Fathername" pattern="^[A-Za-z\s]+$" title="Customer Name should contain only letters and spaces" />
                                 <label asp-for="Fathername" class="control-label">Father Name</label>
                                 <span asp-validation-for="Fathername" class="text-danger"></span>
                             </div>
@@ -274,7 +271,7 @@
                             <div class="col-md-12 d-flex justify-content-center">
 
                                 
-                                <button type="submit"  value="Create" asp-action="AddCustomer" class="btn btn-primary mx-2">Save</button>
+                                <button type="submit"  id="save" value="save" asp-action="AddCustomer" class="btn btn-primary mx-2">Save</button>
                                 <button type="submit"  value="Create" asp-action="DeleteCustomer" class="btn btn-primaryred mx-2">Delete</button>
                                @*  <button type="submit"  value="Create" asp-action="GetDeleteRetrieve" class="btn btn-primaryellow mx-2">DeleteRetrieve</button> *@
 
@@ -301,6 +298,63 @@
     </div>
 
 </form>
+
+
+<script>
+     document.addEventListener('DOMContentLoaded', () => {
+
+         const requiredFields = [
+             { id: 'CustomerName', label: 'Customer Name' },
+             { id: 'Address', label: 'Address' },
+             { id: 'State', label: 'State' },
+             { id: 'City', label: 'City' },
+             { id: 'Pincode', label: 'Pincode' }
+         ];
+
+         const form = document.getElementById('uploadForm');
+
+         form.addEventListener('submit', function (e) {
+             // Get which button triggered the submit
+             const clickedButton = e.submitter;
+
+             // Only run validation if the clicked button is "Save"
+             if (clickedButton && clickedButton.textContent.trim().toLowerCase() === 'save') {
+
+                 // Remove old validation borders
+                 requiredFields.forEach(f =>
+                     document.getElementById(f.id).classList.remove('is-invalid')
+                 );
+
+                 // Find which fields are empty
+                 const missing = requiredFields.filter(f =>
+                     !document.getElementById(f.id).value.trim()
+                 );
+
+                 if (missing.length > 0) {
+                     e.preventDefault(); // Stop submit
+
+                     // Add red border
+                     missing.forEach(f =>
+                         document.getElementById(f.id).classList.add('is-invalid')
+                     );
+
+                     // Show popup message
+                     const msg = missing
+                         .map(f => `"${f.label}" cannot be empty`)
+                         .join('\n');
+
+                     showPopup(msg);
+                     document.getElementById(missing[0].id).focus();
+                 }
+             }
+         });
+     });
+</script>
+
+
+
+
+
 @* <script>
     document.addEventListener('DOMContentLoaded', function () {
         const fileInput = document.getElementById('fileInput');
@@ -354,54 +408,57 @@
 <script>
     document.addEventListener('DOMContentLoaded', () => {
 
-        /* ---------- 0. handles ---------- */
+        /* ---------- handles ---------- */
         const fileInput = document.getElementById('fileInput');
         const preview = document.getElementById('selectedFilesPreview');
         const uploadForm = document.getElementById('uploadForm');
+        const keptField = document.getElementById('KeptImages');
 
-        /* ---------- 1. shared state ---------- */
-        const filesList = [];   // [{id, file}|{id, existing:true}]
+        /* ---------- shared state ---------- */
+        const filesList = [];        // [{ id, path?, file?, existing? }]
 
-        /* ---------- 2. load images already in DB ---------- */
-        document.querySelectorAll('input[name="existingImage"]').forEach(input => {
-            const path = input.value;                 // "CustomerImages/.../pic.jpg"
-            const fileId = `existing_${path}`;
+        /* ---------- 1. load images already in DB ---------- */
+        document.querySelectorAll('input[name="existingImage"]')
+            .forEach(input => {
+                const path = input.value;              // e.g. CustomerImages/.../pic.jpg
+                const id = crypto.randomUUID();      // unique internal id
 
-            filesList.push({ id: fileId, existing: true });
-
-            const box = document.createElement('div');
-            box.dataset.id = fileId;
-            box.style.cssText = 'position:relative;margin:10px';
-
-            const img = new Image();
-            img.src = '/' + path.replace(/\\/g, '/'); // root‑relative URL
-            img.style.cssText =
-                'width:100px;height:100px;object-fit:cover;border:1px solid #ccc';
-
-            const x = document.createElement('span');
-            x.textContent = '❌';
-            x.style.cssText =
-                'position:absolute;top:0;right:0;cursor:pointer;' +
-                'background:white;border:1px solid red;border-radius:50%;' +
-                'padding:2px 5px;color:red;font-weight:bold';
-            x.onclick = () => {
-                const idx = filesList.findIndex(f => f.id === fileId);
-                if (idx > -1) filesList.splice(idx, 1);
-                box.remove();
-            };
-
-            box.append(img, x);
-            preview.appendChild(box);
-        });
-
-        /* ---------- 3. preview newly‑selected files ---------- */
-        fileInput.addEventListener('change', () => {
-            for (const file of fileInput.files) {
-                const fileId = `${Date.now()}_${file.name}`;
-                filesList.push({ id: fileId, file });
+                filesList.push({ id, path, existing: true });
 
                 const box = document.createElement('div');
-                box.dataset.id = fileId;
+                box.dataset.id = id;                 // internal id
+                box.dataset.path = path;               // real DB path
+                box.style.cssText = 'position:relative;margin:10px';
+
+                const img = new Image();
+                img.src = '/' + path.replace(/\\/g, '/');
+                img.style.cssText =
+                    'width:100px;height:100px;object-fit:cover;border:1px solid #ccc';
+
+                const x = document.createElement('span');
+                x.textContent = '❌';
+                x.style.cssText =
+                    'position:absolute;top:0;right:0;cursor:pointer;' +
+                    'background:white;border:1px solid red;border-radius:50%;' +
+                    'padding:2px 5px;color:red;font-weight:bold';
+                x.onclick = () => {
+                    const idx = filesList.findIndex(f => f.id === id);
+                    if (idx > -1) filesList.splice(idx, 1);
+                    box.remove();
+                };
+
+                box.append(img, x);
+                preview.appendChild(box);
+            });
+
+        /* ---------- 2. preview newly‑selected files ---------- */
+        fileInput.addEventListener('change', () => {
+            for (const file of fileInput.files) {
+                const id = `${Date.now()}_${file.name}`;
+                filesList.push({ id, file });          // new file, no path
+
+                const box = document.createElement('div');
+                box.dataset.id = id;
                 box.style.cssText = 'position:relative;margin:10px';
 
                 const img = new Image();
@@ -416,7 +473,7 @@
                     'background:white;border:1px solid red;border-radius:50%;' +
                     'padding:2px 5px;color:red;font-weight:bold';
                 x.onclick = () => {
-                    const idx = filesList.findIndex(f => f.id === fileId);
+                    const idx = filesList.findIndex(f => f.id === id);
                     if (idx > -1) filesList.splice(idx, 1);
                     box.remove();
                 };
@@ -424,21 +481,22 @@
                 box.append(img, x);
                 preview.appendChild(box);
             }
-            fileInput.value = '';           // allow picking same file again
+            fileInput.value = '';                       // allow same file again
         });
 
-        /* ---------- 4. build payload on submit ---------- */
+        /* ---------- 3. build payload on form submit ---------- */
         uploadForm.addEventListener('submit', () => {
-            // list of ids that remain in the preview
-            const kept = [...preview.querySelectorAll('[data-id]')].map(b => b.dataset.id);
-            document.getElementById('KeptImages').value = JSON.stringify(kept);
 
-            // only *new* files should go to server
+            /* 3a. KeptImages = real paths that remain visible */
+            const keptPaths = [...preview.querySelectorAll('[data-path]')]
+                .map(b => b.dataset.path);
+            keptField.value = JSON.stringify(keptPaths);
+
+            /* 3b. Images = only brand‑new files */
             const dt = new DataTransfer();
-            filesList.forEach(f => {
-                if (!f.existing) dt.items.add(f.file);
-            });
-            fileInput.files = dt.files;
+            filesList.forEach(f => { if (f.file) dt.items.add(f.file); });
+            fileInput.files = dt.files;                 // Images.Count == new files
         });
     });
 </script>
+
