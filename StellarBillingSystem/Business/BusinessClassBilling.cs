@@ -115,7 +115,7 @@ namespace StellarBillingSystem.Business
             // Add columns
             dataTable.Columns.Add("StaffID", typeof(string));
             dataTable.Columns.Add("FullName", typeof(string));
-            dataTable.Columns.Add("ResourceTypeID", typeof(string));
+            dataTable.Columns.Add("RolltypeID", typeof(string));
             dataTable.Columns.Add("PhoneNumber", typeof(string));
             dataTable.Columns.Add("EmailId", typeof(string));
 
@@ -123,7 +123,7 @@ namespace StellarBillingSystem.Business
             // Add rows
             foreach (var entity in entities)
             {
-                dataTable.Rows.Add(entity.StaffID, entity.FullName, entity.ResourceTypeID, entity.PhoneNumber, entity.EmailId);
+                dataTable.Rows.Add(entity.StaffID, entity.FullName, entity.RolltypeID, entity.PhoneNumber, entity.EmailId);
             }
 
             return dataTable;

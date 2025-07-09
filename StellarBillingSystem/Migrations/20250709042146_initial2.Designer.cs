@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using StellarBillingSystem.Context;
 
@@ -11,9 +12,11 @@ using StellarBillingSystem.Context;
 namespace StellarBillingSystem_skj.Migrations
 {
     [DbContext(typeof(BillingContext))]
-    partial class BillingContextModelSnapshot : ModelSnapshot
+    [Migration("20250709042146_initial2")]
+    partial class initial2
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -251,7 +254,7 @@ namespace StellarBillingSystem_skj.Migrations
 
                     b.HasKey("MobileNumber", "CustomerName", "BranchID");
 
-                    b.ToTable("SHCustomerMaster");
+                    b.ToTable("CustomerMasterModel");
                 });
 
             modelBuilder.Entity("DiscountCategoryMasterModel", b =>
@@ -1232,10 +1235,6 @@ namespace StellarBillingSystem_skj.Migrations
                     b.Property<string>("ResourceTypeID")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("RolltypeID")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("State")
                         .HasColumnType("nvarchar(max)");
 
@@ -1326,7 +1325,7 @@ namespace StellarBillingSystem_skj.Migrations
 
                     b.HasIndex("MobileNumber", "CustomerName", "BranchID");
 
-                    b.ToTable("ShcustomerImageMaster");
+                    b.ToTable("CustomerImageModel");
                 });
 
             modelBuilder.Entity("VoucherCustomerDetailModel", b =>

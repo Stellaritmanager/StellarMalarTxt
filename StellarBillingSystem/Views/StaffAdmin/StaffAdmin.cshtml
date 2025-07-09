@@ -1,0 +1,642 @@
+﻿@model StellarBillingSystem.Models.StaffAdminModel
+@using System.Data
+@using NonFactors.Mvc.Grid
+
+@{
+    ViewData["Title"] = "StaffAdmin";
+    Layout = "~/Views/Shared/_ContentNavbarLayout.cshtml";
+}
+<script>
+    function showPopup(message) {
+        var popup = document.getElementById("popupMessage");
+        var popupText = document.getElementById("popupMessageText");
+        var popupOKButton = document.getElementById("popupOKButton");
+
+        popupText.textContent = message; // Set the message text
+        popup.style.display = "block";
+
+        // Close popup when OK button is clicked
+        popupOKButton.addEventListener("click", function () {
+            closePopup();
+        });
+
+        // Close popup when clicking outside of the message box
+        document.addEventListener("click", function (event) {
+            if (!popup.contains(event.target) && !popupOKButton.contains(event.target)) {
+                closePopup();
+            }
+        });
+    }
+
+    function closePopup() {
+        var popup = document.getElementById("popupMessage");
+        popup.style.display = "none"; // Hide the popup
+    }
+
+    function handleMessages(message) {
+        showPopup(message);
+    }
+
+</script>
+
+<div id="popupMessage" style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); color:black; padding: 30px; border: 1px solid #000000; border-radius: 10px; z-index: 1000; display: none; text-align: center;">
+    <span id="popupMessageText" style="display: block; margin-bottom: 10px;"></span>
+    <button id="popupOKButton" style="padding: 10px 20px; background-color: rgba(255, 255, 255, 0.2); color: black; border: none; border-radius: 5px; cursor: pointer;">OK</button>
+</div>
+
+<style>
+    .popborder {
+        border: 10px solid #fff;
+    }
+</style>
+
+
+
+
+<form asp-action="AddStaff" enctype="multipart/form-data" id="StaffAdmin" asp-controller="StaffAdmin" autocomplete="off">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <div class="row">
+        <div class="col-md-12 col-lg-0">
+        </div>
+        <div class="col-md-12 col-lg-12" style="padding: 0;">
+            <div class="card" style="height:40px;">
+                <div class="card-body dividerblack">
+                    <div style="display: flex; align-items: center; height: 100%;">
+                        <div class="container" style="text-align: left; width: 100%;">
+                            <h2 class="centered text-white" style="font-family:'Lucida Bright'; margin: 0;">
+                                Staff Admin
+                            </h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+  
+    <br />
+
+    <div class="row" style="height:8%">
+    </div>
+  
+
+    <div class="row" style="margin-top:60px">
+        <div class="col-md-12 col-lg-0">
+        </div>
+
+
+
+        <div class="col-md-12 col-lg-12">
+            <div class="card">
+                <div class="card-body dividerblack " >
+
+                    <div class="row">
+
+                        <div class="col-md-12 col-lg-3">
+
+                         
+                            <div class="form-floating form-floating-outline mb-4">
+                                <input asp-for="StaffID" value="@Model.StaffID" class="form-control" placeholder="Staff ID" required />
+                                <label asp-for="StaffID" class="control-label">Staff ID</label>
+                                <span asp-validation-for="StaffID" class="text-danger"></span>
+                            </div>
+
+
+
+
+
+                        </div>
+
+                        <button type="submit" style="width:95px; height:50px;" value="Get" name="buttonType" class="btn btn-primary ms-2">Get</button>
+                        
+                    </div>
+
+<br />
+                    <div class="row">
+                        <div class="col-md-12 col-lg-4">
+
+                             <div class="form-floating form-floating-outline mb-4">
+                                @{
+                                    var screenList = ((IEnumerable<RollTypeMaster>)ViewData["rollid"])
+                                    .Select(m => new SelectListItem
+            {
+                Value = m.RollID.ToString(), // Assuming ScreenId is of type int
+                Text = $"{m.RollName}"
+            });
+                                }
+
+                                @Html.DropDownListFor(model => model.RolltypeID, screenList, "Select Roll", new { @class = "form-control" })
+                                <label asp-for="RolltypeID" class="control-label">Roll Type</label>
+                                <span asp-validation-for="RolltypeID" class="text-danger"></span>
+                            </div> 
+
+                            <div class="form-floating form-floating-outline mb-4">
+                                @{
+                                    var branchlist = ((IEnumerable<BranchMasterModel>)ViewData["branchid"])
+                                    .Select(m => new SelectListItem
+            {
+                Value = m.BracnchID.ToString(), // Assuming ScreenId is of type int
+                Text = $"{m.BranchName}"
+            });
+                                }
+
+                                @Html.DropDownListFor(model => model.BranchID, branchlist, "Select Branch", new { @class = "form-control" })
+                                <label asp-for="BranchID" class="control-label">Branch Name</label>
+                               
+                            </div>
+
+                        @*     <div class="form-floating form-floating-outline mb-4">
+                                <input asp-for="FirstName" value="@Model.FirstName" class="form-control" placeholder="First Name" pattern="^[A-Za-z\s]+$" title="First Name should contain only letters and spaces" />
+                                <label asp-for="FirstName" class="control-label">First Name</label>
+                                <span asp-validation-for="FirstName" class="text-danger"></span>
+                            </div>
+
+
+                            <div class="form-floating form-floating-outline mb-4">
+
+                                <input asp-for="LastName" value="@Model.LastName" class="form-control" placeholder="Last Name" pattern="^[A-Za-z\s]+$" title="Last Name should contain only letters and spaces" />
+                                <label asp-for="LastName" class="control-label">Last Name</label>
+                                <span asp-validation-for="LastName" class="text-danger"></span>
+                            </div>
+ *@
+                            <div class="form-floating form-floating-outline mb-4">
+                                <input asp-for="FullName" value="@Model.FullName" class="form-control" placeholder="Full Name"
+                                       oninput="validateInput(this)" />
+                                <label asp-for="FullName" class="control-label">Full Name</label>
+                                <span asp-validation-for="FullName" class="text-danger"></span>
+                            </div>
+                            <div class="form-floating form-floating-outline mb-4">
+
+                                <input asp-for="Initial" value="@Model.Initial" class="form-control" placeholder="Initial" oninput="validateInput(this)"/>
+                                <label asp-for="Initial" class="control-label">Initial</label>
+                                <span asp-validation-for="Initial" class="text-danger"></span>
+                            </div>
+                        
+                            @*    <div class="form-floating form-floating-outline mb-4">
+
+                                <input asp-for="Prefix" value="@Model.Prefix" class="form-control" placeholder="Prefix" pattern="^[A-Za-z\s]+$" title="Prefix should contain only letters and spaces" />
+                                <label asp-for="Prefix" class="control-label">Prefix</label>
+                                <span asp-validation-for="Prefix" class="text-danger"></span>
+                            </div> *@
+
+                            <div class="form-floating form-floating-outline mb-4">
+                                <input type="tel" pattern="\d{10}" maxlength="10" asp-for="PhoneNumber" value="@Model.PhoneNumber" id="PhoneNumber" class="form-control" placeholder="Phone Number" />
+                                <label asp-for="PhoneNumber" class="control-label">Phone Number</label>
+                                <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+                            </div>
+
+
+                            <div class="form-floating form-floating-outline mb-4 custom-date-picker">
+                                <input asp-for="DateofBirth" type="date" value="@Model.DateofBirth" class="form-control" placeholder="DateofBirth" max="@DateTime.Now.ToString("yyyy-MM-dd")" />
+                                <label asp-for="DateofBirth" class="control-label">Date of Birth</label>
+                                <span asp-validation-for="DateofBirth" class="text-danger"></span>
+                            </div>
+
+                        </div>
+
+                        <div class="col-md-12 col-lg-4">
+
+                          
+
+                          @*   <div class="form-floating form-floating-outline mb-4">
+
+                                <input asp-for="Age" value="@Model.Age" type="number" class="form-control" placeholder="Age" />
+                                <label asp-for="Age" class="control-label">Age</label>
+                                <span asp-validation-for="Age" class="text-danger"></span>
+                            </div> *@
+
+                            <div class="form-floating form-floating-outline mb-4">
+                                <select id="genderSelect" name="Gender" class="form-control">
+                                    @if (string.IsNullOrEmpty(Model.Gender))
+                                    {
+                                        <option value="" selected>-- Select Gender --</option>
+                                    }
+                                    else
+                                    {
+                                        <option value="">-- Select Gender --</option>
+                                    }
+
+                                    @if (Model.Gender == "Male")
+                                    {
+                                        <option value="Male" selected>Male</option>
+                                    }
+                                    else
+                                    {
+                                        <option value="Male">Male</option>
+                                    }
+
+                                    @if (Model.Gender == "Female")
+                                    {
+                                        <option value="Female" selected>Female</option>
+                                    }
+                                    else
+                                    {
+                                        <option value="Female">Female</option>
+                                    }
+
+                                    @if (Model.Gender == "Other")
+                                    {
+                                        <option value="Other" selected>Other</option>
+                                    }
+                                    else
+                                    {
+                                        <option value="Other">Other</option>
+                                    }
+                                </select>
+
+                                <label for="genderSelect">Gender</label>
+                                <span asp-validation-for="Gender" class="text-danger"></span>
+                            </div>
+
+                            <div class="form-floating form-floating-outline mb-4">
+                                <input asp-for="Address1" value="@Model.Address1" class="form-control" placeholder="Address Line 1" />
+                                <label asp-for="Address1" class="control-label">Address Line 1</label>
+                                <span asp-validation-for="Address1" class="text-danger"></span>
+                            </div>
+                          
+
+                            <div class="form-floating form-floating-outline mb-4">
+                                <input asp-for="City" value="@Model.City" class="form-control" placeholder="City" />
+                                <label asp-for="City" class="control-label">City</label>
+                                <span asp-validation-for="City" class="text-danger"></span>
+                            </div>
+
+                            <div class="form-floating form-floating-outline mb-4">
+                                <input asp-for="State" value="@Model.State" class="form-control" placeholder="State" />
+                                <label asp-for="State" class="control-label">State</label>
+                                <span asp-validation-for="State" class="text-danger"></span>
+                            </div>
+                            <div class="form-floating form-floating-outline mb-4">
+                                <input id="Pin" name="Pin" value="@Model.Pin" class="form-control" placeholder="Pincode" pattern="^\d{6}$" title="Pincode Number should be in correct format" />
+                                <label for="Pin" class="control-label">Pincode</label>
+                                <span class="text-danger"></span>
+                            </div>
+                        </div> 
+
+                        <div class="col-md-12 col-lg-4">
+                            <div class="form-floating form-floating-outline mb-4">
+                                <input asp-for="EmailId" id="EmailId" type="email" value="@Model.EmailId" type="email" class="form-control" placeholder="Email" />
+                                <label asp-for="EmailId" class="control-label">Email</label>
+                                <span asp-validation-for="EmailId" id="emailError" class="text-danger">Invalid email format</span>
+                            </div>
+                           
+                          @*   <div class="form-floating form-floating-outline mb-4">
+                                <input asp-for="Nationality" value="@Model.Nationality" class="form-control" placeholder="Nationality" />
+                                <label asp-for="Nationality" class="control-label">Nationality</label>
+                                <span asp-validation-for="Nationality" class="text-danger"></span>
+                            </div> *@
+
+                            <div class="form-floating form-floating-outline mb-4">
+                                <input asp-for="UserName" value="@Model.UserName" class="form-control" placeholder="User Name" />
+                                <label asp-for="UserName" class="control-label">User Name</label>
+                                <span asp-validation-for="UserName" class="text-danger"></span>
+                            </div>
+                            <div class="form-floating form-floating-outline mb-4">
+                                <input asp-for="Password" value="@Model.Password" class="form-control" placeholder="Password" />
+                                <label asp-for="Password" class="control-label">Password</label>
+                                <span asp-validation-for="Password" class="text-danger"></span>
+                            </div>
+
+                            <div class="form-floating form-floating-outline mb-4">
+                                <input asp-for="IdProofId" value="@Model.IdProofId" class="form-control" placeholder="IdProof ID" />
+                                <label asp-for="IdProofId" class="control-label">IdProof ID</label>
+                                <span asp-validation-for="IdProofId" class="text-danger"></span>
+                            </div>
+                            <div class="form-floating form-floating-outline mb-4">
+                                <input asp-for="IdProofName" value="@Model.IdProofName" class="form-control" placeholder="IdProof Name" pattern="^[A-Za-z\s.]+$" title="Staff Name should contain only letters,spaces and dots" />
+                                <label asp-for="IdProofName" class="control-label">IdProof Name</label>
+                                <span asp-validation-for="IdProofName" class="text-danger"></span>
+                            </div>
+
+                            @{
+                                var imageUrl = ViewBag.ImageUrl as string;
+                                var hasIdProofFile = Model.IdProofFile != null && Model.IdProofFile.Length > 0; // Check if the file exists
+                            }
+
+                            <div>
+                            
+                                @if (!string.IsNullOrEmpty(imageUrl))
+                                {
+                                    <!-- Link to download the image -->
+                                    <a href="@imageUrl" style="color: black; download="id-proof.jpg">Download ID Proof</a>
+                                }
+                                else
+                                {
+                                    <p>No image available</p>
+                                }
+                            </div>
+                            <div>
+                                <input type="file" class="btn btn-primary" name="imageFile" accept="image/png, image/jpeg" style="width: 290px; height: 40px; padding: 5px;" />
+                                @if (hasIdProofFile)
+                                {
+                                    <span style="margin-left: 10px;">Current ID Proof File: id-proof.jpg</span> <!-- Use a static name or dynamically fetched if available -->
+                                }
+                            </div>
+
+
+
+
+                        </div>
+
+
+                        <div class="col-md-12 d-flex justify-content-center">
+
+
+                            <center>
+                                <button type="submit" value="Save" name="buttonType" class="btn btn-primary mx-2">Save</button>
+
+                                <button type="submit" value="Delete" name="buttonType" class="btn btn-primaryred mx-2">Delete</button>
+                                <button type="submit" value="DeleteRetrieve" name="buttonType" class="btn btn-primaryellow mx-2">Delete Retrieve</button>
+                            </center>
+
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-12 col-lg-2">
+            </div>
+        </div>
+      
+        </div>
+
+
+    @{
+        var dataTable = ViewData["StaffData"] as DataTable;
+    }
+
+    <div class="row" style="margin-top:30px">
+        <div class="col-md-12 col-lg-0"></div>
+        <div class="col-md-12 col-lg-12">
+            <div class="card">
+                <div class="card-body dividerblack">
+                    <h3 class="centered text-white" style="font-family: 'Lucida Bright'; margin-bottom: 20px; text-align: center;">Staff Details</h3>
+                    <table class="table table-bordered" style="border: 1px solid black;">
+                        <thead style="background-color: black; color: white;">
+                            <tr>
+                                <th>Staff ID</th>
+                                <th>Staff Name</th>
+                                <th>Roll Name</th>
+                                <th>Phone Number</th>
+                                <th>Email</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (dataTable != null)
+                            {
+                                foreach (DataRow row in dataTable.Rows)
+                                {
+                                    <tr>
+                                        <td>@row["StaffID"]</td>
+                                        <td>@row["FullName"]</td>
+                                        <td>@row["RolltypeID"]</td>
+                                        <td>@row["PhoneNumber"]</td>
+                                        <td>@row["EmailId"]</td>
+                                    </tr>
+                                }
+                            }
+                        </tbody>
+                    </table>
+
+                   <div id="pagination-controls" style="text-align: center; margin-top: 10px;">
+                        <button id="prev-btn" style="background-color: black; color: white; border: none; padding: 0px 6px; cursor: pointer; font-size: 16px; border-radius: 5px; margin: 0 5px;">Previous</button>
+                        <div id="page-numbers" style="display: inline-block; vertical-align: middle;"></div>
+                        <button id="next-btn" style="background-color: black; color: white; border: none; padding: 0px 6px; cursor: pointer; font-size: 16px; border-radius: 5px; margin: 0 5px;">Next</button>
+                    </div>
+
+                    <script>
+                        document.addEventListener('DOMContentLoaded', function () {
+                            const rowsPerPage = 5; // Number of rows per page
+                            const table = document.querySelector('.table tbody'); // Select the table body
+                            const rows = Array.from(table.querySelectorAll('tr')); // Get all rows
+                            const totalRows = rows.length; // Total number of rows
+                            const totalPages = Math.ceil(totalRows / rowsPerPage); // Calculate total pages
+
+                            let currentPage = 1; // Current page number
+
+                            // Function to display rows for a given page
+                            function showPage(page) {
+                                rows.forEach((row, index) => {
+                                    row.style.display = (Math.floor(index / rowsPerPage) + 1 === page) ? '' : 'none'; // Show or hide row
+                                });
+
+                                updatePageNumbers(); // Update the page number buttons
+                                document.getElementById('prev-btn').disabled = (page === 1); // Disable 'prev' button if on first page
+                                document.getElementById('next-btn').disabled = (page === totalPages); // Disable 'next' button if on last page
+                            }
+
+                            // Function to create and update page number buttons
+                            function updatePageNumbers() {
+                                const pageNumbersContainer = document.getElementById('page-numbers');
+                                pageNumbersContainer.innerHTML = ''; // Clear previous buttons
+
+                                // Create page number buttons
+                                for (let i = 1; i <= totalPages; i++) {
+                                    const pageButton = document.createElement('button');
+                                    pageButton.textContent = i;
+                                    pageButton.style.backgroundColor = (i === currentPage) ? 'black' : 'white'; // Highlight current page
+                                    pageButton.style.color = (i === currentPage) ? 'white' : 'black';
+                                    pageButton.style.border = 'none';
+                                    pageButton.style.padding = '5px 10px';
+                                    pageButton.style.cursor = 'pointer';
+                                    pageButton.style.fontSize = '16px';
+                                    pageButton.style.borderRadius = '5px';
+                                    pageButton.style.margin = '0 3px';
+
+                                    // Add click event listener to update current page
+                                    pageButton.addEventListener('click', () => {
+                                        currentPage = i;
+                                        showPage(currentPage);
+                                    });
+
+                                    pageNumbersContainer.appendChild(pageButton); // Add button to container
+                                }
+                            }
+
+                            // Event listener for 'prev' button
+                            document.getElementById('prev-btn').addEventListener('click', () => {
+                                if (currentPage > 1) {
+                                    currentPage--;
+                                    showPage(currentPage);
+                                }
+                            });
+
+                            // Event listener for 'next' button
+                            document.getElementById('next-btn').addEventListener('click', () => {
+                                if (currentPage < totalPages) {
+                                    currentPage++;
+                                    showPage(currentPage);
+                                }
+                            });
+
+                            showPage(currentPage); // Initial page display
+                        });
+                        const emailInput = document.getElementById('EmailId');
+                        const emailError = document.getElementById('emailError');
+
+                        window.addEventListener('DOMContentLoaded', function () {
+                            emailError.style.display = 'none';
+                        });
+
+                        // Validate email format when typing
+                        emailInput.addEventListener('input', function () {
+                            // Check if the email is valid using the built-in checkValidity function
+                            if (!emailInput.checkValidity()) {
+                                emailError.style.display = 'inline'; // Show error message
+                            } else {
+                                emailError.style.display = 'none'; // Hide error message
+                            }
+                        });
+
+                        // Prevent form submission if the email is invalid
+                        document.getElementById('StaffAdmin').addEventListener('submit', function (e) {
+                            if (!emailInput.checkValidity()) {
+                                emailError.style.display = 'inline'; // Show error message
+                                e.preventDefault(); // Prevent form submission
+                            }
+                        });
+
+
+                    </script>
+
+
+
+
+
+
+
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+
+
+
+    @if (ViewBag.Message != null)
+        {
+            <script>
+                handleMessages("@ViewBag.Message");
+            </script>
+        }
+
+        @if (ViewBag.getMessage != null)
+        {
+            <script>
+                handleMessages("@ViewBag.getMessage");
+            </script>
+        }
+
+        @if (ViewBag.delMessage != null)
+        {
+            <script>
+                handleMessages("@ViewBag.delMessage");
+            </script>
+        }
+
+        @if (ViewBag.delnoMessage != null)
+        {
+            <script>
+                handleMessages("@ViewBag.delnoMessage");
+            </script>
+        }
+
+        @if (ViewBag.retMessage != null)
+        {
+            <script>
+                handleMessages("@ViewBag.retMessage");
+            </script>
+
+        }
+
+        @if (ViewBag.noretMessage != null)
+        {
+            <script>
+                handleMessages("@ViewBag.noretMessage");
+            </script>
+        }
+
+        @if (ViewBag.validateMessage != null)
+        {
+            <script>
+                handleMessages("@ViewBag.validateMessage");
+            </script>
+        }
+
+        @if (ViewBag.ErrorMessage != null)
+        {
+            <script>
+                handleMessages("@ViewBag.ErrorMessage");
+            </script>
+        }
+
+        @if (ViewBag.ExistMessage != null)
+        {
+            <script>
+                handleMessages("@ViewBag.ExistMessage");
+            </script>
+        }
+
+</form>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const phoneInput = document.getElementById('PhoneNumber');
+
+        phoneInput.addEventListener('input', function (e) {
+            // Remove non-numeric characters
+            this.value = this.value.replace(/\D/g, '');
+        });
+
+        phoneInput.addEventListener('keydown', function (e) {
+            // Allow backspace, delete, tab, escape, enter, and arrow keys
+            if ([46, 8, 9, 27, 13, 37, 38, 39, 40].indexOf(e.keyCode) !== -1) {
+                return;
+            }
+            // Prevent typing if the input already has 10 characters
+            if (this.value.length >= 10) {
+                e.preventDefault();
+            }
+        });
+    });
+</script>
+
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const pincodeInput = document.getElementById('Pin');
+
+        pincodeInput.addEventListener('input', function (e) {
+            // Remove non-numeric characters
+            this.value = this.value.replace(/\D/g, '');
+        });
+
+        pincodeInput.addEventListener('keydown', function (e) {
+            // Allow backspace, delete, tab, escape, enter, and arrow keys
+            if ([46, 8, 9, 27, 13, 37, 38, 39, 40].indexOf(e.keyCode) !== -1) {
+                return;
+            }
+            // Prevent typing if the input already has 6 characters
+            if (this.value.length >= 6) {
+                e.preventDefault();
+            }
+        });
+    });
+</script>
+
+<script>
+    function validateInput(input) {
+        // Store the cursor position
+        const cursorPos = input.selectionStart;
+
+        // Replace invalid characters
+        input.value = input.value.replace(/[^A-Za-z\s]/g, '');
+
+        // Restore cursor position
+        input.setSelectionRange(cursorPos, cursorPos);
+    }
+</script>
