@@ -12,7 +12,8 @@ public class CategoryMasterModel
         private String strLastUpdatedUser;
         private String strLastUpdatedmachine;
         private string branchID;
-        private long id;
+       private string marketRate;
+       private long id;
 
         public string CategoryID { get => strCategoryID; set => strCategoryID = value; }
         public string? CategoryName { get => strCategoryName; set => strCategoryName = value; }
@@ -23,6 +24,7 @@ public class CategoryMasterModel
        public string BranchID { get => branchID; set => branchID = value; }
         public DateTime LastUpdatedDate { get => strLastUpdatedDate; set => strLastUpdatedDate = value; }
         public long Id { get => id; set => id = value; }
+        public string MarketRate { get => marketRate; set => marketRate = value; }
 }
 
 

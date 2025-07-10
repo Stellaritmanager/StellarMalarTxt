@@ -21,7 +21,7 @@ namespace StellarBillingSystem.Context
         public DbSet<LogsModel> SBLogs { get; set; }
         public DbSet<ProductMatserModel> SHProductMaster { get; set; }
 
-        public DbSet<CategoryMasterModel> SHCategoryMaster { get; set; }
+       
 
         public DbSet<BilingSysytemModel> SHCustomerBilling { get; set; }
 
@@ -91,6 +91,10 @@ namespace StellarBillingSystem.Context
 
         public DbSet<CustomerImageModel> ShcustomerImageMaster { get; set; }
 
+        public DbSet<CategoryMasterModel> SHCategoryMaster { get; set; }
+
+
+
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             if (!optionsBuilder.IsConfigured)
@@ -128,9 +132,7 @@ namespace StellarBillingSystem.Context
 
             modelBuilder.Entity<LogsModel>().HasKey(i => new { i.LogID, i.BranchID });
             
-            modelBuilder.Entity<CategoryMasterModel>().Property(i => i.Id).UseIdentityColumn(101, 1);
-
-            modelBuilder.Entity<CategoryMasterModel>().HasKey(i => new { i.Id, i.BranchID });
+           
 
             modelBuilder.Entity<ProductMatserModel>().Property(i => i.Id).UseIdentityColumn(101,1);
             modelBuilder.Entity<ProductMatserModel>().HasKey(i => new { i.Id,i.BranchID });
@@ -193,6 +195,11 @@ namespace StellarBillingSystem.Context
                 .HasForeignKey(i => new { i.MobileNumber, i.CustomerName, i.BranchID })
                 .OnDelete(DeleteBehavior.Cascade);
 
+
+            modelBuilder.Entity<CategoryMasterModel>().Property(i => i.Id).UseIdentityColumn(101, 1);
+
+            modelBuilder.Entity<CategoryMasterModel>().HasKey(i => new { i.Id, i.BranchID,i.CategoryName });
+
         }
 
         // Override SaveChangesAsync to auto-generate the Ids for various screens with the prefix
@@ -218,7 +225,7 @@ namespace StellarBillingSystem.Context
                 if (lastCat != null)
                 {
                     // Extract the numeric part of the last BillNumber and increment it
-                    string lastBillNumber = lastCat.CategoryID.Replace("Cat_", "");
+                    string lastBillNumber = lastCat.CategoryID.Replace("Gold_", "");
                     if (int.TryParse(lastBillNumber, out int number))
                     {
                         lastNumber = number;
@@ -229,7 +236,7 @@ namespace StellarBillingSystem.Context
                 foreach (var billEntry in catMas)
                 {
                     lastNumber++;
-                    billEntry.Entity.CategoryID = $"Cat_{lastNumber}";
+                    billEntry.Entity.CategoryID = $"Gold_{lastNumber}";
                 }
             }
 
