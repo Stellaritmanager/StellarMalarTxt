@@ -253,7 +253,9 @@
                             
                             <input type="file" id="fileInput" name="Images" multiple />
                             <input type="hidden" name="KeptImages" id="KeptImages" />
-                            <div id="selectedFilesPreview" style="margin-top: 10px; display: flex; flex-wrap: wrap;"></div>
+                            <button type="button" id="viewImagesBtn" class="btn btn-info" style="margin-top:10px; display:none;">
+                                View Images
+                            </button>
 
                             @if (imgs != null && imgs.Any())
                             {
@@ -298,6 +300,26 @@
     </div>
 
 </form>
+
+<!-- Image Modal -->
+<div class="modal fade" id="imageModal" tabindex="-1" aria-labelledby="imageModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content" style="background-color: #fff; border-radius: 10px;">
+            <div class="modal-header">
+                <h5 class="modal-title" id="imageModalLabel">Image Preview</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center">
+                <img id="modalImage" src="" alt="Preview" style="max-width: 100%; max-height: 500px;" />
+                <div class="mt-3">
+                    <button class="btn btn-secondary" onclick="prevImage()">⟨</button>
+                    <button class="btn btn-secondary" onclick="nextImage()">⟩</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 
 
 <script>
@@ -352,151 +374,81 @@
 </script>
 
 
-
-
-
-@* <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const fileInput = document.getElementById('fileInput');
-        const preview = document.getElementById('selectedFilesPreview');
-        const uploadForm = document.getElementById('uploadForm');
-        let filesList = [];
-
-        fileInput.addEventListener('change', () => {
-            for (const file of fileInput.files) {
-                const fileId = `${Date.now()}_${file.name}`;
-                filesList.push({ id: fileId, file });
-
-                const box = document.createElement('div');
-                box.dataset.id = fileId;
-                box.style.cssText = 'position:relative;margin:10px';
-
-                const img = new Image();
-                img.src = URL.createObjectURL(file);
-                img.style.cssText = 'width:100px;height:100px;object-fit:cover;border:1px solid #ccc';
-
-                const x = document.createElement('span');
-                x.textContent = '❌';
-                x.style.cssText = 'position:absolute;top:0;right:0;cursor:pointer;' +
-                    'background:white;border:1px solid red;border-radius:50%;' +
-                    'padding:2px 5px;color:red;font-weight:bold';
-                x.onclick = () => {
-                    filesList = filesList.filter(f => f.id !== fileId);
-                    box.remove();
-                };
-
-                box.append(img, x);
-                preview.appendChild(box);
-            }
-
-            fileInput.value = ''; // Allow reselection of the same file
-        });
-
-        uploadForm.addEventListener('submit', e => {
-            const kept = [...preview.querySelectorAll('[data-id]')].map(d => d.dataset.id);
-            document.getElementById('KeptImages').value = JSON.stringify(kept);
-
-            const dataTransfer = new DataTransfer();
-            filesList.forEach(f => { if (!f.existing) dataTransfer.items.add(f.file); });
-            fileInput.files = dataTransfer.files;
-        });
-    });
-</script> *@
-
-
 @* ---------- Existing images preview (run once when the page loads) ---------- *@
 <script>
     document.addEventListener('DOMContentLoaded', () => {
-
-        /* ---------- handles ---------- */
         const fileInput = document.getElementById('fileInput');
-        const preview = document.getElementById('selectedFilesPreview');
         const uploadForm = document.getElementById('uploadForm');
         const keptField = document.getElementById('KeptImages');
+        const viewImagesBtn = document.getElementById('viewImagesBtn');
 
-        /* ---------- shared state ---------- */
         const filesList = [];        // [{ id, path?, file?, existing? }]
+        const previewImages = [];    // All image URLs
+        let currentIndex = 0;
 
-        /* ---------- 1. load images already in DB ---------- */
-        document.querySelectorAll('input[name="existingImage"]')
-            .forEach(input => {
-                const path = input.value;              // e.g. CustomerImages/.../pic.jpg
-                const id = crypto.randomUUID();      // unique internal id
+        // Load existing images from DB
+        document.querySelectorAll('input[name="existingImage"]').forEach(input => {
+            const path = input.value;
+            const id = crypto.randomUUID();
+            const imgSrc = '/' + path.replace(/\\/g, '/');
 
-                filesList.push({ id, path, existing: true });
+            filesList.push({ id, path, existing: true });
+            previewImages.push(imgSrc);
+        });
 
-                const box = document.createElement('div');
-                box.dataset.id = id;                 // internal id
-                box.dataset.path = path;               // real DB path
-                box.style.cssText = 'position:relative;margin:10px';
-
-                const img = new Image();
-                img.src = '/' + path.replace(/\\/g, '/');
-                img.style.cssText =
-                    'width:100px;height:100px;object-fit:cover;border:1px solid #ccc';
-
-                const x = document.createElement('span');
-                x.textContent = '❌';
-                x.style.cssText =
-                    'position:absolute;top:0;right:0;cursor:pointer;' +
-                    'background:white;border:1px solid red;border-radius:50%;' +
-                    'padding:2px 5px;color:red;font-weight:bold';
-                x.onclick = () => {
-                    const idx = filesList.findIndex(f => f.id === id);
-                    if (idx > -1) filesList.splice(idx, 1);
-                    box.remove();
-                };
-
-                box.append(img, x);
-                preview.appendChild(box);
-            });
-
-        /* ---------- 2. preview newly‑selected files ---------- */
+        // Load new selected images
         fileInput.addEventListener('change', () => {
             for (const file of fileInput.files) {
                 const id = `${Date.now()}_${file.name}`;
-                filesList.push({ id, file });          // new file, no path
+                const imgURL = URL.createObjectURL(file);
 
-                const box = document.createElement('div');
-                box.dataset.id = id;
-                box.style.cssText = 'position:relative;margin:10px';
-
-                const img = new Image();
-                img.src = URL.createObjectURL(file);
-                img.style.cssText =
-                    'width:100px;height:100px;object-fit:cover;border:1px solid #ccc';
-
-                const x = document.createElement('span');
-                x.textContent = '❌';
-                x.style.cssText =
-                    'position:absolute;top:0;right:0;cursor:pointer;' +
-                    'background:white;border:1px solid red;border-radius:50%;' +
-                    'padding:2px 5px;color:red;font-weight:bold';
-                x.onclick = () => {
-                    const idx = filesList.findIndex(f => f.id === id);
-                    if (idx > -1) filesList.splice(idx, 1);
-                    box.remove();
-                };
-
-                box.append(img, x);
-                preview.appendChild(box);
+                filesList.push({ id, file });
+                previewImages.push(imgURL);
             }
-            fileInput.value = '';                       // allow same file again
+
+            fileInput.value = '';
+            updateViewButtonVisibility();
         });
 
-        /* ---------- 3. build payload on form submit ---------- */
-        uploadForm.addEventListener('submit', () => {
+        // Show modal when button clicked
+        viewImagesBtn.addEventListener('click', () => {
+            if (previewImages.length > 0) {
+                currentIndex = 0;
+                document.getElementById('modalImage').src = previewImages[0];
+                const modal = new bootstrap.Modal(document.getElementById('imageModal'));
+                modal.show();
+            }
+        });
 
-            /* 3a. KeptImages = real paths that remain visible */
-            const keptPaths = [...preview.querySelectorAll('[data-path]')]
-                .map(b => b.dataset.path);
+        // Form submit: send new files and kept image paths
+        uploadForm.addEventListener('submit', () => {
+            const keptPaths = filesList.filter(f => f.existing).map(f => f.path);
             keptField.value = JSON.stringify(keptPaths);
 
-            /* 3b. Images = only brand‑new files */
             const dt = new DataTransfer();
             filesList.forEach(f => { if (f.file) dt.items.add(f.file); });
-            fileInput.files = dt.files;                 // Images.Count == new files
+            fileInput.files = dt.files;
         });
+
+        // Modal navigation
+        window.prevImage = function () {
+            if (currentIndex > 0) {
+                currentIndex--;
+                document.getElementById('modalImage').src = previewImages[currentIndex];
+            }
+        };
+
+        window.nextImage = function () {
+            if (currentIndex < previewImages.length - 1) {
+                currentIndex++;
+                document.getElementById('modalImage').src = previewImages[currentIndex];
+            }
+        };
+
+        function updateViewButtonVisibility() {
+            viewImagesBtn.style.display = previewImages.length > 0 ? 'inline-block' : 'none';
+        }
+
+        updateViewButtonVisibility(); // On first load (if existing images)
     });
 </script>
-

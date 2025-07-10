@@ -12,8 +12,8 @@ using StellarBillingSystem.Context;
 namespace StellarBillingSystem_skj.Migrations
 {
     [DbContext(typeof(BillingContext))]
-    [Migration("20250709042516_initial3")]
-    partial class initial3
+    [Migration("20250710042805_initial1")]
+    partial class initial1
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -1233,6 +1233,10 @@ namespace StellarBillingSystem_skj.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ResourceTypeID")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("RolltypeID")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("State")
