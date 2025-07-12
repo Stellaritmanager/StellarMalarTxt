@@ -16,6 +16,9 @@
 <body class="container py-4">
     <h2>Create Bill Entry</h2>
 
+    <input type="hidden" id="BranchID" value="@ViewBag.BranchID" />
+
+
     <!-- Customer + Date -->
     <div class="row mb-3">
 
@@ -48,7 +51,6 @@
             </ul>
             <input type="hidden" name="ProductID" id="productID" value="ProductID" />
 
-            <button class="btn btn-primary menu-icon tf-icons bx bx-cart-add" type="button" id="button-addon2" data-bs-toggle="modal" data-bs-target="#modalCenter"></button>
 
         </div>
 
@@ -152,54 +154,74 @@
         let articles = [];
         let billDetails = [];
 
+        function fillMarketRate(select) {
+            const selectedOption = select.options[select.selectedIndex];
+            const rate = selectedOption.getAttribute('data-rate');
+            document.getElementById('MarketRate').value = rate;
+        }
+
         function addArticle() {
-            const name = $('#ArticleName').val();
-            const weight = parseFloat($('#WeightOfArticle').val());
-            const netWeight = parseFloat($('#NetWeight').val());
-            const goldType = $('#GoldType').val();
-            const appraisePerGram = parseFloat($('#AppraiseValuePerGram').val());
+            try {
+                const name = $('#ArticleName').val();
+                const weight = parseFloat($('#WeightOfArticle').val());
+                const netWeight = parseFloat($('#NetWeight').val());
+                const goldType = $('#GoldType').val();
+                const appraisePerGram = parseFloat($('#AppraiseValuePerGram').val());
+                const marketRate = parseFloat($('#MarketRate').val()) || 5800;
+                const BranchID = $('#BranchID').val();
 
-            if (!name || isNaN(weight) || isNaN(netWeight) || !goldType || isNaN(appraisePerGram)) {
-                alert("Please fill all fields correctly.");
-                return;
+                if (!name || isNaN(weight) || isNaN(netWeight) || !goldType || isNaN(appraisePerGram)) {
+                    console.warn("Invalid input detected in addArticle");
+                    alert("Please fill all fields correctly.");
+                    return;
+                }
+
+                const reducedWeight = calculateReducedWeight(weight, netWeight);
+                const appraiseNetValue = calculateAppraiseNetValue(netWeight, appraisePerGram);
+                const billID = $('#BillID').val(); // Get BillID
+
+                const article = {
+                    ArticleName: name,
+                    WeightOfArticle: weight,
+                    GoldType: goldType,
+                    Netweight: netWeight,
+                    Appraisevaluepergram: appraisePerGram,
+                    BranchID: BranchID,
+                    LastUpdatedUser: 'admin',
+                    LastUpdatedDate: new Date().toISOString(),
+                    LastUpdatedmachine: 'machine'
+                };
+
+                const detail = {
+                    BillID: billID,
+                    Grossweight: weight,
+                    Netweight: netWeight,
+                    Reducedweight: reducedWeight,
+                    Netmarketprice: marketRate,
+                    Apprisevaluepergram: appraisePerGram,
+                    Apprisenetvalue: appraiseNetValue,
+                    BranchID: BranchID,
+                    IsDelete: false
+                };
+
+                articles.push(article);
+                billDetails.push(detail);
+
+                console.log("Added article:", article);
+                console.log("Added bill detail:", detail);
+
+                updateTable();
+
+                const modal = bootstrap.Modal.getInstance(document.getElementById('articleModal'));
+                modal.hide();
+                $('.modal-backdrop').remove();
+                $('body').removeClass('modal-open').css('padding-right', '');
+
+                $('#ArticleName, #WeightOfArticle, #GoldType, #MarketRate, #NetWeight, #AppraiseValuePerGram').val('');
+            } catch (e) {
+                console.error("Exception in addArticle:", e);
+                alert("Something went wrong while adding article: " + e.message);
             }
-
-            const articleId = 'TEMP_' + new Date().getTime();
-
-            const reducedWeight = calculateReducedWeight(weight, netWeight);
-            const netMarketPrice = calculateNetMarketPrice(netWeight);
-            const appraiseNetValue = calculateAppraiseNetValue(netWeight, appraisePerGram);
-
-            const article = {
-                ArticleID: articleId,
-                ArticleName: name,
-                WeightOfArticle: weight.toString(),
-                GoldType: goldType,
-                Netweight: netWeight,
-                Appraisevaluepergram: appraisePerGram,
-                BranchID: 'BR001',
-                LastUpdatedUser: 'admin',
-                LastUpdatedDate: new Date().toISOString(),
-                LastUpdatedmachine: 'machine'
-            };
-
-            const detail = {
-                ArticleID: articleId,
-                Grossweight: weight,
-                Netweight: netWeight,
-                Reducedweight: reducedWeight,
-                Netmarketprice: netMarketPrice,
-                Apprisevaluepergram: appraisePerGram,
-                Apprisenetvalue: appraiseNetValue,
-                BranchID: 'BR001',
-                IsDelete: false
-            };
-
-            articles.push(article);
-            billDetails.push(detail);
-            updateTable();
-            $('#articleModal').modal('hide');
-            $('#articleModal input').val('');
         }
 
         function updateTable() {
@@ -209,89 +231,112 @@
             let totalValue = 0;
 
             billDetails.forEach((detail, index) => {
-                const article = articles.find(a => a.ArticleID === detail.ArticleID);
+                const article = articles[index]; // index-based match
                 overallWeight += detail.Netweight;
                 totalValue += detail.Apprisenetvalue;
 
                 tbody.append(`
-                            <tr>
-                                <td>${article.ArticleName}</td>
-                                <td>${detail.Grossweight}</td>
-                                <td>${article.GoldType}</td>
-                                <td>${detail.Netweight}</td>
-                                <td>${detail.Apprisevaluepergram}</td>
-                                <td>${detail.Reducedweight}</td>
-                                <td>${detail.Netmarketprice}</td>
-                                <td>${detail.Apprisenetvalue}</td>
-                                <td><button class="btn btn-danger btn-sm" onclick="removeArticle(${index})">Remove</button></td>
-                            </tr>`);
+                        <tr>
+                            <td>${article.ArticleName}</td>
+                            <td>${detail.Grossweight}</td>
+                            <td>${article.GoldType}</td>
+                            <td>${detail.Netweight}</td>
+                            <td>${detail.Apprisevaluepergram}</td>
+                            <td>${detail.Reducedweight}</td>
+                            <td>${detail.Netmarketprice}</td>
+                            <td>${detail.Apprisenetvalue}</td>
+                            <td><button class="btn btn-danger btn-sm" onclick="removeArticle(${index})">Remove</button></td>
+                        </tr>
+                    `);
             });
 
+            console.log("Updated table with:", billDetails);
             $('#OverallWeight').val(overallWeight.toFixed(2));
             $('#TotalValue').val(totalValue.toFixed(2));
         }
 
         function removeArticle(index) {
-            const removed = billDetails.splice(index, 1)[0];
-            articles = articles.filter(a => a.ArticleID !== removed.ArticleID);
+            billDetails.splice(index, 1);
+            articles.splice(index, 1);
             updateTable();
         }
 
         function saveBill() {
+            const branchID = $('#BranchID').val();
+
             const vm = {
                 BillMaster: {
-                    BillID: "",
-                    CustomerID: $('#CustomerID').val(),
+                    BillID: $('#BillID').val(),
+                    CustomerID: $('#productID').val(),
                     BillDate: $('#BillDate').val(),
-                    BranchID: "BR001",
-                    Grossweight: 0,
-                    Netweight: parseFloat($('#OverallWeight').val()) || 0,
-                    Reducedweight: 0,
-                    Netmarketprice: 0,
-                    Apprisevaluepergram: 0,
-                    Apprisenetvalue: parseFloat($('#TotalValue').val()) || 0,
+                    BranchID: branchID,
+                    OverallWeight: parseFloat($('#OverallWeight').val()) || 0,
+                    TotalValue: parseFloat($('#TotalValue').val()) || 0,
                     LoanValue: parseFloat($('#LoanValue').val()) || 0,
                     InitialInterest: parseFloat($('#InitialInterest').val()) || 0,
-                    TotalValue: parseFloat($('#TotalValue').val()) || 0,
                     TotalRepayValue: parseFloat($('#TotalRepayValue').val()) || 0,
                     PostTenureInterest: $('#PostTenureInterest').val(),
                     Tenure: $('#Tenure').val(),
                     NoOfItem: billDetails.length.toString(),
                     IsActive: true,
-                    IsDelete: false
+                    IsDelete: false,
+                    Lastupdateduser: 'admin',
+                    Lastupdateddate: new Date().toISOString(),
+                    Lastupdatedmachine: 'machine'
                 },
                 BillDetails: billDetails,
                 Articles: articles
             };
+
+            console.log("🟡 Preparing to send to server:");
+            console.log("➡️ BillMaster:", vm.BillMaster);
+            console.log("➡️ BillDetails:", vm.BillDetails);
+            console.log("➡️ Articles:", vm.Articles);
 
             $.ajax({
                 type: "POST",
                 url: "/Billing/SaveBill",
                 contentType: "application/json",
                 data: JSON.stringify(vm),
-                success: function () {
+                success: function (result) {
+                    console.log("✅ Save successful:", result);
                     alert("Bill saved!");
                     window.location.reload();
                 },
-                error: function () {
-                    alert("Save failed.");
+                error: function (xhr, status, error) {
+                    console.error("❌ Save failed:");
+                    console.error("Status:", status);
+                    console.error("Error:", error);
+                    console.error("Response:", xhr.responseText);
+                    alert("Save failed: " + xhr.responseText);
                 }
             });
         }
 
-        // 🔹 JS Calculation Functions (Implement your logic)
         function calculateReducedWeight(gross, net) {
-            return gross - net; // Example logic
-        }
-
-        function calculateNetMarketPrice(net) {
-            return net * 5800; // Example logic (5800 per gram)
+            return parseFloat((gross - net).toFixed(2));
         }
 
         function calculateAppraiseNetValue(net, rate) {
-            return net * rate; // Example logic
+            return parseFloat((net * rate).toFixed(2));
         }
+
+        $(document).ready(function () {
+            $('#LoanValue, #InitialInterest').on('input', function () {
+                const loan = parseFloat($('#LoanValue').val()) || 0;
+                const interestPercent = parseFloat($('#InitialInterest').val()) || 0;
+
+                const interestAmount = (interestPercent / 100) * loan;
+                const totalRepay = loan + interestAmount;
+
+                $('#TotalRepayValue').val(totalRepay.toFixed(2));
+            });
+        });
     </script>
+
+
+
+
 </body>
 </html>
 

@@ -10,7 +10,7 @@ namespace StellarBillingSystem_skj.Models
         [MaxLength(100)]
         public string? ArticleName { get; set; }
 
-        public string WeightOfArticle { get; set; }
+        public double WeightOfArticle { get; set; }
 
         public string GoldType { get; set; }
         [MaxLength(50)]

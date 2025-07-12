@@ -101,6 +101,8 @@ namespace StellarBillingSystem.Context
 
         public DbSet<BillImageModelSKJ> Shbillimagemodelskj {  get; set; }
 
+        public DbSet<BillIDCombinationModel> Shbillcombinationskj { get; set; }
+
 
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -220,7 +222,11 @@ namespace StellarBillingSystem.Context
             modelBuilder.Entity<BillDetailsModelSKJ>()
                    .HasKey(c => new { c.ArticleID,c.BranchID,c.BillID });
 
-
+            modelBuilder.Entity<BillDetailsModelSKJ>()
+                    .HasOne<ArticleModel>()                     // Point to principal type
+                    .WithMany()                                 // No navigation on principal either
+                    .HasForeignKey(d => d.ArticleID)            // FK in dependent
+                    .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<BillDetailsModelSKJ>()
                     .HasOne<BillMasterModelSKJ>()

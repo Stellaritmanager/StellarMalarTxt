@@ -7,6 +7,6 @@
 
         public BillMasterModelSKJ BillMaster { get; set; }
         public List<BillDetailsModelSKJ> BillDetails { get; set; }
-        public List<ArticleModel> AvailableProducts { get; set; }
+        public List<ArticleModel> Articles { get; set; }
     }
 }

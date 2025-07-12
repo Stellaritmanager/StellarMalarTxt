@@ -25,6 +25,11 @@ builder.Services.AddDbContext<BillingContext>(options => options.UseSqlServer(bu
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.PropertyNamingPolicy = null;
+    });
 
 
 builder.Services.AddAuthentication(

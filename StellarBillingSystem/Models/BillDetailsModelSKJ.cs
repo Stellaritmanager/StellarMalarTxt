@@ -23,7 +23,7 @@ namespace StellarBillingSystem_skj.Models
         public decimal Netmarketprice { get; set; }
         public decimal Apprisevaluepergram { get; set; }
         public decimal Apprisenetvalue { get; set; }
-        [MaxLength(50)]
-        public string ArticleID { get; set; }
+   
+        public int ArticleID { get; set; }
     }
 }
