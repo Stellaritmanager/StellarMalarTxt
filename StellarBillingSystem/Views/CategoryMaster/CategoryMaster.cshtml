@@ -48,7 +48,7 @@
     }
 </style>
 
-<form asp-controller="StellarBilling" autocomplete="off">
+<form asp-controller="CategoryMaster" autocomplete="off">
     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
 
@@ -81,15 +81,59 @@
                     <div class="row gy-4">
                         <div class="col-md-12 col-lg-2"></div>
                         <div class="col-md-12 col-lg-4">
-                            <div class="form-floating form-floating-outline mb-4">
+                           @*  <div class="form-floating form-floating-outline mb-4">
                                 <input type="CategoryID" class="form-control" placeholder="Category ID" name="CategoryID" value="@Model.CategoryID" />
                                 <label asp-for="CategoryID" class="control-label">Category ID</label>
+                            </div> *@
+
+                             <div class="form-floating form-floating-outline mb-4">
+                                <select id="goldtypeSelect" name="CategoryName" class="form-control">
+                                    @if (string.IsNullOrEmpty(Model.CategoryName))
+                                    {
+                                        <option value="" selected>-- Select GoldType --</option>
+                                    }
+                                    else
+                                    {
+                                        <option value="">-- Select GoldType --</option>
+                                    }
+
+                                    @if (Model.CategoryName == "18k")
+                                    {
+                                        <option value="18k" selected>18k</option>
+                                    }
+                                    else
+                                    {
+                                        <option value="18k">18k</option>
+                                    }
+
+                                    @if (Model.CategoryName == "22k")
+                                    {
+                                        <option value="22k" selected>22k</option>
+                                    }
+                                    else
+                                    {
+                                        <option value="22k">22k</option>
+                                    }
+
+                                    @if (Model.CategoryName == "24k")
+                                    {
+                                        <option value="24k" selected>24k</option>
+                                    }
+                                    else
+                                    {
+                                        <option value="24k">24k</option>
+                                    }
+                                </select>
+
+                                <label for="goldtypeSelect">GoldType</label>
+                                <span asp-validation-for="CategoryName" class="text-danger"></span>
                             </div>
+
                         </div>
                         <div class="col-md-12 col-lg-4">
                             <div class="form-floating form-floating-outline mb-4">
-                                <input type="CategoryName" class="form-control" placeholder="Category Name" name="CategoryName" value="@Model.CategoryName" />
-                                <label asp-for="CategoryName" class="control-label">Category Name</label>
+                                <input type="MarketRate" class="form-control" placeholder="Market Rate" name="MarketRate" value="@Model.MarketRate" />
+                                <label asp-for="MarketRate" class="control-label">Market Rate</label>
                             </div>
                         </div>
                     
@@ -100,7 +144,6 @@
                         <div class="col-md-12 d-flex justify-content-center">
                             <button type="submit" asp-action="AddCategory" value="save" name="buttonType" formmethod="post" class="btn btn-primary mx-2">Save</button>
                             <button type="submit" asp-action="AddCategory" value="Delete" name="buttonType" class="btn btn-primaryred mx-2">Delete</button>
-                            <button type="submit" asp-action="AddCategory" value="DeleteRetrieve" name="buttonType" class="btn btn-primaryellow mx-2">Delete Retrieve</button>
                         </div>
                     </div>
                     <br />
@@ -126,8 +169,8 @@
                     <table class="table table-bordered" style="border: 1px solid black;">
                         <thead style="background-color: black; color: white;">
             <tr>
-                <th>Category ID</th>
-                <th>Category Name</th>
+                <th>Gold Type</th>
+                <th>Today Market Rate</th>
              
             </tr>
         </thead>
@@ -137,8 +180,8 @@
                 foreach (DataRow row in dataTable.Rows)
                 {
                     <tr>
-                        <td>@row["CategoryID"]</td>
                         <td>@row["CategoryName"]</td>
+                        <td>@row["MarketRate"]</td>
              
                     </tr>
                 }

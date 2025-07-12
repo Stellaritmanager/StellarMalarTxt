@@ -624,7 +624,8 @@ namespace StellarBillingSystem_skj.Migrations
                     LastUpdatedMachine = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     IsDelete = table.Column<bool>(type: "bit", nullable: false),
                     IdProofFile = table.Column<byte[]>(type: "varbinary(max)", nullable: true),
-                    LastupdatedDate = table.Column<DateTime>(type: "datetime2", nullable: false)
+                    LastupdatedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    RolltypeID = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -683,7 +684,7 @@ namespace StellarBillingSystem_skj.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "CustomerImageModel",
+                name: "ShcustomerImageMaster",
                 columns: table => new
                 {
                     ImageID = table.Column<int>(type: "int", nullable: false)
@@ -701,9 +702,9 @@ namespace StellarBillingSystem_skj.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_CustomerImageModel", x => x.ImageID);
+                    table.PrimaryKey("PK_ShcustomerImageMaster", x => x.ImageID);
                     table.ForeignKey(
-                        name: "FK_CustomerImageModel_SHCustomerMaster_MobileNumber_CustomerName_BranchID",
+                        name: "FK_ShcustomerImageMaster_SHCustomerMaster_MobileNumber_CustomerName_BranchID",
                         columns: x => new { x.MobileNumber, x.CustomerName, x.BranchID },
                         principalTable: "SHCustomerMaster",
                         principalColumns: new[] { "MobileNumber", "CustomerName", "BranchID" },
@@ -711,17 +712,14 @@ namespace StellarBillingSystem_skj.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_CustomerImageModel_MobileNumber_CustomerName_BranchID",
-                table: "CustomerImageModel",
+                name: "IX_ShcustomerImageMaster_MobileNumber_CustomerName_BranchID",
+                table: "ShcustomerImageMaster",
                 columns: new[] { "MobileNumber", "CustomerName", "BranchID" });
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropTable(
-                name: "CustomerImageModel");
-
             migrationBuilder.DropTable(
                 name: "SBLogs");
 
@@ -742,6 +740,9 @@ namespace StellarBillingSystem_skj.Migrations
 
             migrationBuilder.DropTable(
                 name: "SHCustomerBilling");
+
+            migrationBuilder.DropTable(
+                name: "ShcustomerImageMaster");
 
             migrationBuilder.DropTable(
                 name: "SHDiscountCategory");

@@ -12,8 +12,8 @@ using StellarBillingSystem.Context;
 namespace StellarBillingSystem_skj.Migrations
 {
     [DbContext(typeof(BillingContext))]
-    [Migration("20250709042516_initial3")]
-    partial class initial3
+    [Migration("20250710071101_initial2")]
+    partial class initial2
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -158,11 +158,11 @@ namespace StellarBillingSystem_skj.Migrations
                     b.Property<string>("BranchID")
                         .HasColumnType("nvarchar(450)");
 
+                    b.Property<string>("CategoryName")
+                        .HasColumnType("nvarchar(450)");
+
                     b.Property<string>("CategoryID")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("CategoryName")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("IsDelete")
@@ -177,7 +177,11 @@ namespace StellarBillingSystem_skj.Migrations
                     b.Property<string>("LastUpdatedmachine")
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("Id", "BranchID");
+                    b.Property<string>("MarketRate")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id", "BranchID", "CategoryName");
 
                     b.ToTable("SHCategoryMaster");
                 });
@@ -1233,6 +1237,10 @@ namespace StellarBillingSystem_skj.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ResourceTypeID")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("RolltypeID")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("State")

@@ -155,11 +155,11 @@ namespace StellarBillingSystem_skj.Migrations
                     b.Property<string>("BranchID")
                         .HasColumnType("nvarchar(450)");
 
+                    b.Property<string>("CategoryName")
+                        .HasColumnType("nvarchar(450)");
+
                     b.Property<string>("CategoryID")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("CategoryName")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("IsDelete")
@@ -174,7 +174,11 @@ namespace StellarBillingSystem_skj.Migrations
                     b.Property<string>("LastUpdatedmachine")
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("Id", "BranchID");
+                    b.Property<string>("MarketRate")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id", "BranchID", "CategoryName");
 
                     b.ToTable("SHCategoryMaster");
                 });

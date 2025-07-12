@@ -103,7 +103,7 @@ namespace StellarBillingSystem_skj.Business
         public List<String> Getadmin(string userid)
         {
 
-            var query = from sm in _billingContext.SHScreenMaster
+            var query = from sm in _billingContext.SHScreenName
                         join rac in _billingContext.SHRoleaccessModel on sm.ScreenName equals rac.ScreenID
                         join ram in _billingContext.SHrollType on rac.RollID equals ram.RollID
                         join sam in _billingContext.SHStaffAdmin on ram.RollID equals sam.RolltypeID
