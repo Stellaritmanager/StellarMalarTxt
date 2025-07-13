@@ -93,6 +93,16 @@ namespace StellarBillingSystem.Context
 
         public DbSet<CategoryMasterModel> SHCategoryMaster { get; set; }
 
+        public DbSet<ArticleModel> SHArticleMaster { get; set; }
+
+        public DbSet<BillDetailsModelSKJ> Shbilldetailsskj { get; set; }
+
+        public DbSet<BillMasterModelSKJ> Shbillmasterskj { get; set; }
+
+        public DbSet<BillImageModelSKJ> Shbillimagemodelskj {  get; set; }
+
+        public DbSet<BillIDCombinationModel> Shbillcombinationskj { get; set; }
+
 
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -199,6 +209,37 @@ namespace StellarBillingSystem.Context
             modelBuilder.Entity<CategoryMasterModel>().Property(i => i.Id).UseIdentityColumn(101, 1);
 
             modelBuilder.Entity<CategoryMasterModel>().HasKey(i => new { i.Id, i.BranchID,i.CategoryName });
+
+            modelBuilder.Entity<ArticleModel>()
+                   .HasKey(c => new { c.ArticleID });
+
+
+
+            modelBuilder.Entity<BillMasterModelSKJ>()
+               .HasKey(c => new { c.BillID, c.BranchID });
+
+
+            modelBuilder.Entity<BillDetailsModelSKJ>()
+                   .HasKey(c => new { c.ArticleID,c.BranchID,c.BillID });
+
+            modelBuilder.Entity<BillDetailsModelSKJ>()
+                    .HasOne<ArticleModel>()                     // Point to principal type
+                    .WithMany()                                 // No navigation on principal either
+                    .HasForeignKey(d => d.ArticleID)            // FK in dependent
+                    .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<BillDetailsModelSKJ>()
+                    .HasOne<BillMasterModelSKJ>()
+                    .WithMany() // or .WithMany(m => m.BillDetails)
+                    .HasForeignKey(c => new { c.BillID, c.BranchID })
+                    .OnDelete(DeleteBehavior.Cascade);
+
+
+            modelBuilder.Entity<BillImageModelSKJ>()
+               .HasKey(i => i.ImageID); // Identity PK
+
+            modelBuilder.Entity<BillIDCombinationModel>().HasKey(i => i.BranchID);
+
 
         }
 

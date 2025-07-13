@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using StellarBillingSystem.Context;
 
@@ -11,9 +12,11 @@ using StellarBillingSystem.Context;
 namespace StellarBillingSystem_skj.Migrations
 {
     [DbContext(typeof(BillingContext))]
-    partial class BillingContextModelSnapshot : ModelSnapshot
+    [Migration("20250712053712_initial3")]
+    partial class initial3
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1307,8 +1310,9 @@ namespace StellarBillingSystem_skj.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
-                    b.Property<double>("WeightOfArticle")
-                        .HasColumnType("float");
+                    b.Property<string>("WeightOfArticle")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("ArticleID");
 
@@ -1317,8 +1321,9 @@ namespace StellarBillingSystem_skj.Migrations
 
             modelBuilder.Entity("StellarBillingSystem_skj.Models.BillDetailsModelSKJ", b =>
                 {
-                    b.Property<int>("ArticleID")
-                        .HasColumnType("int");
+                    b.Property<string>("ArticleID")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<string>("BranchID")
                         .HasColumnType("nvarchar(450)");
@@ -1393,7 +1398,7 @@ namespace StellarBillingSystem_skj.Migrations
 
                     b.HasKey("BranchID");
 
-                    b.ToTable("Shbillcombinationskj");
+                    b.ToTable("BillIDCombinationModel");
                 });
 
             modelBuilder.Entity("StellarBillingSystem_skj.Models.BillImageModelSKJ", b =>
@@ -1630,12 +1635,6 @@ namespace StellarBillingSystem_skj.Migrations
 
             modelBuilder.Entity("StellarBillingSystem_skj.Models.BillDetailsModelSKJ", b =>
                 {
-                    b.HasOne("StellarBillingSystem_skj.Models.ArticleModel", null)
-                        .WithMany()
-                        .HasForeignKey("ArticleID")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
                     b.HasOne("StellarBillingSystem_skj.Models.BillMasterModelSKJ", null)
                         .WithMany()
                         .HasForeignKey("BillID", "BranchID")

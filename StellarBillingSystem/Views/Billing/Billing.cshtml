@@ -1,0 +1,458 @@
+﻿
+@{
+    ViewData["Title"] = "Billing";
+    Layout = "~/Views/Shared/_ContentNavbarLayout.cshtml";
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Create Bill</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</head>
+<body class="container py-4">
+    <h2>Create Bill Entry</h2>
+
+    <input type="hidden" id="BranchID" value="@ViewBag.BranchID" />
+
+
+    <!-- Customer + Date -->
+    <div class="row mb-3">
+
+         <div class="col-md-4">
+            <label>Bill ID</label>
+            <input type="text" id="BillID" class="form-control" />
+        </div>
+
+        <div class="input-group">
+            @{
+                var CustomerID = ((IEnumerable<CustomerMasterModel>)ViewData["customerid"])
+                .Select(m => new SelectListItem
+            {
+                Value = m.CustomerID.ToString(), // Assuming ProductID is of type int
+                Text = $"{m.MobileNumber}-{m.CustomerName}"
+            });
+            }
+
+
+            <input type="text" id="productDropdownInput" class="form-control" placeholder="Product Name" onkeyup="filterDropdown(event, 'productDropdownInput', 'productDropdown')" onclick="showDropdown('productDropdown')">
+            <ul id="productDropdown" class="list-group mt-2"
+                style="display: none; position: absolute; top: 100%; left: 0; width: 100%; max-height: 200px; overflow-y: auto; background-color: white; border: 1px solid #ddd; border-radius: .25rem; box-shadow: 0 0 .5rem rgba(0, 0, 0, .1); z-index: 1000; padding: 0; margin: 0; list-style-type: none;">
+                @foreach (var item in CustomerID)
+                {
+                    <li class="list-group-item" data-value="@item.Value" onclick="selectDropdownItem('productDropdownInput', 'productID', '@item.Text', '@item.Value')"
+                        style="padding: .5rem 1rem; cursor: pointer; background-color: white; border: none; list-style-type: none;">
+                        @item.Text
+                    </li>
+                }
+            </ul>
+            <input type="hidden" name="ProductID" id="productID" value="ProductID" />
+
+
+        </div>
+
+
+
+
+    </div>
+        <div class="col-md-4">
+            <label>Bill Date</label>
+            <input type="date" id="BillDate" class="form-control" value="@DateTime.Now.ToString("yyyy-MM-dd")" />
+        </div>
+    </div>
+
+    <!-- Article Details Table -->
+    <h4>Bill Details</h4>
+    <table class="table table-bordered" id="articleTable">
+        <thead class="table-light">
+            <tr>
+                <th>Article Name</th>
+                <th>Weight</th>
+                <th>Gold Type</th>
+                <th>Net Weight</th>
+                <th>Appraise/Gram</th>
+                <th>Reduced Weight</th>
+                <th>Net Market Price</th>
+                <th>Appraise Net Value</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+
+    <button class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#articleModal">Add Article</button>
+
+    <!-- Summary Fields -->
+    <div class="row g-3">
+        <div class="col-md-3">
+            <label>Overall Weight</label>
+            <input type="text" id="OverallWeight" class="form-control" readonly />
+        </div>
+        <div class="col-md-3">
+            <label>Total Value</label>
+            <input type="text" id="TotalValue" class="form-control" readonly />
+        </div>
+        <div class="col-md-3">
+            <label>Loan Value</label>
+            <input type="text" id="LoanValue" class="form-control" />
+        </div>
+        <div class="col-md-3">
+            <label>Initial Interest</label>
+            <input type="text" id="InitialInterest" class="form-control" />
+        </div>
+        <div class="col-md-3">
+            <label>Total Repay Value</label>
+            <input type="text" id="TotalRepayValue" class="form-control" />
+        </div>
+        <div class="col-md-3">
+            <label>Post Tenure Interest</label>
+            <input type="text" id="PostTenureInterest" class="form-control" />
+        </div>
+        <div class="col-md-3">
+            <label>Tenure</label>
+            <input type="text" id="Tenure" class="form-control" />
+        </div>
+    </div>
+
+    <button class="btn btn-success mt-4" onclick="saveBill()">Save Bill</button>
+
+    <!-- Article Modal -->
+    <div class="modal fade" id="articleModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header"><h5 class="modal-title">Add Article</h5></div>
+                <div class="modal-body">
+                    <input type="text" id="ArticleName" class="form-control mb-2" placeholder="Article Name" />
+                    <input type="text" id="WeightOfArticle" class="form-control mb-2" placeholder="Weight" />
+                    <!-- Gold Type Dropdown -->
+                    <select id="GoldType" class="form-control mb-2" name="CategoryID" onchange="fillMarketRate(this)">
+                        <option value="">-- Select Gold Type --</option>
+                        @foreach (var item in ViewBag.GoldTypeList as List<CategoryMasterModel>)
+                        {
+                            <option value="@item.CategoryID" data-rate="@item.MarketRate">@item.CategoryName</option>
+                        }
+                    </select>
+
+                    <input type="hidden" id="MarketRate" name="MarketRate" />
+
+
+                    <input type="text" id="NetWeight" class="form-control mb-2" placeholder="Net Weight" />
+                    <input type="text" id="AppraiseValuePerGram" class="form-control mb-2" placeholder="Appraise Value Per Gram" />
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button class="btn btn-primary" onclick="addArticle()">Add</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let articles = [];
+        let billDetails = [];
+
+        function fillMarketRate(select) {
+            const selectedOption = select.options[select.selectedIndex];
+            const rate = selectedOption.getAttribute('data-rate');
+            document.getElementById('MarketRate').value = rate;
+        }
+
+        function addArticle() {
+            try {
+                const name = $('#ArticleName').val();
+                const weight = parseFloat($('#WeightOfArticle').val());
+                const netWeight = parseFloat($('#NetWeight').val());
+                const goldType = $('#GoldType').val();
+                const appraisePerGram = parseFloat($('#AppraiseValuePerGram').val());
+                const marketRate = parseFloat($('#MarketRate').val()) || 5800;
+                const BranchID = $('#BranchID').val();
+
+                if (!name || isNaN(weight) || isNaN(netWeight) || !goldType || isNaN(appraisePerGram)) {
+                    console.warn("Invalid input detected in addArticle");
+                    alert("Please fill all fields correctly.");
+                    return;
+                }
+
+                const reducedWeight = calculateReducedWeight(weight, netWeight);
+                const appraiseNetValue = calculateAppraiseNetValue(netWeight, appraisePerGram);
+                const billID = $('#BillID').val(); // Get BillID
+
+                const article = {
+                    ArticleName: name,
+                    WeightOfArticle: weight,
+                    GoldType: goldType,
+                    Netweight: netWeight,
+                    Appraisevaluepergram: appraisePerGram,
+                    BranchID: BranchID,
+                    LastUpdatedUser: 'admin',
+                    LastUpdatedDate: new Date().toISOString(),
+                    LastUpdatedmachine: 'machine'
+                };
+
+                const detail = {
+                    BillID: billID,
+                    Grossweight: weight,
+                    Netweight: netWeight,
+                    Reducedweight: reducedWeight,
+                    Netmarketprice: marketRate,
+                    Apprisevaluepergram: appraisePerGram,
+                    Apprisenetvalue: appraiseNetValue,
+                    BranchID: BranchID,
+                    IsDelete: false
+                };
+
+                articles.push(article);
+                billDetails.push(detail);
+
+                console.log("Added article:", article);
+                console.log("Added bill detail:", detail);
+
+                updateTable();
+
+                const modal = bootstrap.Modal.getInstance(document.getElementById('articleModal'));
+                modal.hide();
+                $('.modal-backdrop').remove();
+                $('body').removeClass('modal-open').css('padding-right', '');
+
+                $('#ArticleName, #WeightOfArticle, #GoldType, #MarketRate, #NetWeight, #AppraiseValuePerGram').val('');
+            } catch (e) {
+                console.error("Exception in addArticle:", e);
+                alert("Something went wrong while adding article: " + e.message);
+            }
+        }
+
+        function updateTable() {
+            const tbody = $('#articleTable tbody');
+            tbody.empty();
+            let overallWeight = 0;
+            let totalValue = 0;
+
+            billDetails.forEach((detail, index) => {
+                const article = articles[index]; // index-based match
+                overallWeight += detail.Netweight;
+                totalValue += detail.Apprisenetvalue;
+
+                tbody.append(`
+                        <tr>
+                            <td>${article.ArticleName}</td>
+                            <td>${detail.Grossweight}</td>
+                            <td>${article.GoldType}</td>
+                            <td>${detail.Netweight}</td>
+                            <td>${detail.Apprisevaluepergram}</td>
+                            <td>${detail.Reducedweight}</td>
+                            <td>${detail.Netmarketprice}</td>
+                            <td>${detail.Apprisenetvalue}</td>
+                            <td><button class="btn btn-danger btn-sm" onclick="removeArticle(${index})">Remove</button></td>
+                        </tr>
+                    `);
+            });
+
+            console.log("Updated table with:", billDetails);
+            $('#OverallWeight').val(overallWeight.toFixed(2));
+            $('#TotalValue').val(totalValue.toFixed(2));
+        }
+
+        function removeArticle(index) {
+            billDetails.splice(index, 1);
+            articles.splice(index, 1);
+            updateTable();
+        }
+
+        function saveBill() {
+            const branchID = $('#BranchID').val();
+
+            const vm = {
+                BillMaster: {
+                    BillID: $('#BillID').val(),
+                    CustomerID: $('#productID').val(),
+                    BillDate: $('#BillDate').val(),
+                    BranchID: branchID,
+                    OverallWeight: parseFloat($('#OverallWeight').val()) || 0,
+                    TotalValue: parseFloat($('#TotalValue').val()) || 0,
+                    LoanValue: parseFloat($('#LoanValue').val()) || 0,
+                    InitialInterest: parseFloat($('#InitialInterest').val()) || 0,
+                    TotalRepayValue: parseFloat($('#TotalRepayValue').val()) || 0,
+                    PostTenureInterest: $('#PostTenureInterest').val(),
+                    Tenure: $('#Tenure').val(),
+                    NoOfItem: billDetails.length.toString(),
+                    IsActive: true,
+                    IsDelete: false,
+                    Lastupdateduser: 'admin',
+                    Lastupdateddate: new Date().toISOString(),
+                    Lastupdatedmachine: 'machine'
+                },
+                BillDetails: billDetails,
+                Articles: articles
+            };
+
+            console.log("🟡 Preparing to send to server:");
+            console.log("➡️ BillMaster:", vm.BillMaster);
+            console.log("➡️ BillDetails:", vm.BillDetails);
+            console.log("➡️ Articles:", vm.Articles);
+
+            $.ajax({
+                type: "POST",
+                url: "/Billing/SaveBill",
+                contentType: "application/json",
+                data: JSON.stringify(vm),
+                success: function (result) {
+                    console.log("✅ Save successful:", result);
+                    alert("Bill saved!");
+                    window.location.reload();
+                },
+                error: function (xhr, status, error) {
+                    console.error("❌ Save failed:");
+                    console.error("Status:", status);
+                    console.error("Error:", error);
+                    console.error("Response:", xhr.responseText);
+                    alert("Save failed: " + xhr.responseText);
+                }
+            });
+        }
+
+        function calculateReducedWeight(gross, net) {
+            return parseFloat((gross - net).toFixed(2));
+        }
+
+        function calculateAppraiseNetValue(net, rate) {
+            return parseFloat((net * rate).toFixed(2));
+        }
+
+        $(document).ready(function () {
+            $('#LoanValue, #InitialInterest').on('input', function () {
+                const loan = parseFloat($('#LoanValue').val()) || 0;
+                const interestPercent = parseFloat($('#InitialInterest').val()) || 0;
+
+                const interestAmount = (interestPercent / 100) * loan;
+                const totalRepay = loan + interestAmount;
+
+                $('#TotalRepayValue').val(totalRepay.toFixed(2));
+            });
+        });
+    </script>
+
+
+
+
+</body>
+</html>
+
+
+<script>
+    let suppressInputEvent = false;
+
+    function filterDropdown(event, inputId, dropdownId) {
+        if (suppressInputEvent) return; // Prevent filtering if input event is suppressed
+
+        const input = document.getElementById(inputId);
+        const dropdown = document.getElementById(dropdownId);
+        const filter = input.value.toLowerCase();
+        const items = dropdown.querySelectorAll('li');
+
+        items.forEach(item => {
+            const text = item.textContent.toLowerCase();
+            item.style.display = text.includes(filter) ? '' : 'none';
+        });
+
+        if (filter) {
+            dropdown.style.display = 'block'; // Show dropdown when filtering
+        }
+    }
+
+    function showDropdown(dropdownId) {
+        const dropdown = document.getElementById(dropdownId);
+        dropdown.style.display = 'block';
+    }
+
+    function selectDropdownItem(inputId, hiddenId, text, value) {
+        const input = document.getElementById(inputId);
+        const hidden = document.getElementById(hiddenId);
+        const dropdown = document.getElementById('productDropdown');
+
+        // Trim whitespace from the selected text
+        const trimmedText = text.trim();
+
+        // Set the selected value in the input and hidden input
+        input.value = trimmedText;
+        hidden.value = value;
+
+        // Hide the dropdown after selection
+        dropdown.style.display = 'none';
+
+        // Set the flag to suppress the input event momentarily
+        suppressInputEvent = true;
+
+        // Remove suppression after a short delay to allow normal input behavior again
+        setTimeout(() => {
+            suppressInputEvent = false;
+        }, 200);
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const input = document.getElementById('productDropdownInput');
+        const dropdown = document.getElementById('productDropdown');
+
+        let highlightedIndex = -1;
+
+        function getVisibleItems() {
+            return Array.from(dropdown.querySelectorAll('li')).filter(item => item.style.display !== 'none');
+        }
+
+        input.addEventListener('input', (event) => {
+            filterDropdown(event, 'productDropdownInput', 'productDropdown');
+            highlightedIndex = -1; // Reset highlight when input changes
+        });
+
+        input.addEventListener('keydown', (event) => {
+            const visibleItems = getVisibleItems();
+
+            switch (event.key) {
+                case 'ArrowDown':
+                    if (highlightedIndex < visibleItems.length - 1) {
+                        highlightedIndex++;
+                        updateHighlight(visibleItems);
+                        event.preventDefault(); // Prevent default behavior
+                    }
+                    break;
+                case 'ArrowUp':
+                    if (highlightedIndex > 0) {
+                        highlightedIndex--;
+                        updateHighlight(visibleItems);
+                        event.preventDefault(); // Prevent default behavior
+                    }
+                    break;
+                case 'Enter':
+                    if (highlightedIndex >= 0) {
+                        const item = visibleItems[highlightedIndex];
+                        selectDropdownItem('productDropdownInput', 'productID', item.textContent, item.getAttribute('data-value'));
+                        highlightedIndex = -1;
+                        event.preventDefault(); // Prevent default behavior
+                    }
+                    break;
+                case 'Escape':
+                    dropdown.style.display = 'none'; // Close dropdown on escape
+                    highlightedIndex = -1;
+                    break;
+            }
+        });
+
+        function updateHighlight(visibleItems) {
+            visibleItems.forEach((item, index) => {
+                item.style.backgroundColor = (index === highlightedIndex) ? '#000000' : 'white';
+                item.style.color = (index === highlightedIndex) ? 'white' : 'black'; // Ensure text color contrasts with background
+            });
+            visibleItems[highlightedIndex]?.scrollIntoView({ block: 'nearest' });
+        }
+
+        // Click event to close dropdown when clicking outside
+        document.addEventListener('click', (event) => {
+            const target = event.target;
+            if (!dropdown.contains(target) && target !== input) {
+                dropdown.style.display = 'none';
+            }
+        });
+    });
+</script>

@@ -345,6 +345,13 @@
                     }
                 }
 
+                <li class='menu-item@(currentPage == "/Billing/Billing" ? " active" : "")'>
+                    <a asp-controller="Billing" asp-action="Billing" class="menu-link">
+
+                        <div> Billing</div>
+                    </a>
+                </li>
+
                 @if (rollAccessList != null)
                 {
                     @if (rollAccessList.Contains("PaymentBilling"))
