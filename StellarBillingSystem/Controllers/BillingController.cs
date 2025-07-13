@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using StellarBillingSystem.Context;
 using StellarBillingSystem.Models;
@@ -51,81 +52,151 @@ namespace StellarBillingSystem_skj.Controllers
         }
 
         [HttpPost]
-        public IActionResult SaveBill([FromBody] BillViewModel vm)
+        public async Task<IActionResult> SaveBillWithFiles()
         {
+            var form = Request.Form;
+            var vmJson = form["vm"];
+            BillViewModel vm = JsonConvert.DeserializeObject<BillViewModel>(vmJson);
+
             if (vm == null)
-            {
-                var raw = new StreamReader(Request.Body).ReadToEndAsync().Result;
-                Console.WriteLine("🔍 RAW JSON RECEIVED:\n" + raw);
-                return BadRequest("❌ ViewModel is NULL!");
-            }
+                return BadRequest("Invalid ViewModel");
 
             try
             {
                 var billMaster = vm.BillMaster;
+
+                // 🔁 Ensure upload folder exists
+                string uploadPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "BillImage", billMaster.BillID);
+                if (!Directory.Exists(uploadPath))
+                    Directory.CreateDirectory(uploadPath);
+
+                // 🔁 Save uploaded files and update their image paths
+                foreach (var file in form.Files)
+                {
+                    string filePath = Path.Combine(uploadPath, file.FileName);
+                    using (var stream = new FileStream(filePath, FileMode.Create))
+                    {
+                        await file.CopyToAsync(stream);
+                    }
+
+                    // 🌐 Update the image path in BillImages (relative path)
+                    var matchingImage = vm.BillImages.FirstOrDefault(img => img.ImageName == file.FileName);
+                    if (matchingImage != null)
+                    {
+                        matchingImage.ImagePath = $"BillImage/{billMaster.BillID}/{file.FileName}";
+                    }
+                }
+
+                // 💾 Save BillMaster
                 _billingsoftware.Shbillmasterskj.Add(billMaster);
 
-                Console.WriteLine("🟢 BillMaster Added:");
-                Console.WriteLine(JsonConvert.SerializeObject(billMaster, Formatting.Indented));
-
-                // Step 1: Save Articles and track their IDs
+                // 💾 Save Articles
                 var savedArticles = new List<ArticleModel>();
                 foreach (var article in vm.Articles)
                 {
                     _billingsoftware.SHArticleMaster.Add(article);
                     savedArticles.Add(article);
                 }
+                _billingsoftware.SaveChanges(); // Save BillMaster + Articles
 
-                Console.WriteLine("🟢 Articles to Save:");
-                Console.WriteLine(JsonConvert.SerializeObject(savedArticles, Formatting.Indented));
-
-                // Step 2: Save Articles and BillMaster
-                var firstSave = _billingsoftware.SaveChanges();
-                Console.WriteLine($"✅ SaveChanges #1 (BillMaster + Articles) = {firstSave}");
-
-                foreach (var a in savedArticles)
-                {
-                    Console.WriteLine($"🔎 Saved Article ID: {a.ArticleID}");
-                }
-
-                // Step 3: Link Articles to BillDetails
+                // 💾 Save BillDetails
                 for (int i = 0; i < vm.BillDetails.Count; i++)
                 {
                     var detail = vm.BillDetails[i];
                     var article = savedArticles[i];
 
                     detail.BillID = billMaster.BillID;
-                    detail.BranchID = billMaster.BranchID;
                     detail.ArticleID = article.ArticleID;
+                    detail.BranchID = billMaster.BranchID;
 
                     _billingsoftware.Shbilldetailsskj.Add(detail);
                 }
+                _billingsoftware.SaveChanges();
 
-                Console.WriteLine("🟢 BillDetails to Save:");
-                Console.WriteLine(JsonConvert.SerializeObject(vm.BillDetails, Formatting.Indented));
-
-                // Step 4: Save Details
-                var finalSave = _billingsoftware.SaveChanges();
-                Console.WriteLine($"✅ SaveChanges #2 (BillDetails) = {finalSave}");
-
-                // 🔍 Entity Tracker State Debug
-                Console.WriteLine("🧾 EF Change Tracker:");
-                foreach (var entry in _billingsoftware.ChangeTracker.Entries())
+                // 💾 Save BillImages with ArticleID (use first article if needed)
+                // 💾 Save BillImages with ArticleID (assign one-by-one)
+                if (vm.BillImages != null && vm.BillImages.Any())
                 {
-                    Console.WriteLine($"▶️ Entity: {entry.Entity.GetType().Name}, State: {entry.State}");
+                    for (int i = 0; i < vm.BillImages.Count; i++)
+                    {
+                        if (i < savedArticles.Count)
+                        {
+                            vm.BillImages[i].ArticleID = savedArticles[i].ArticleID;
+                        }
+
+                        _billingsoftware.Shbillimagemodelskj.Add(vm.BillImages[i]);
+                    }
+                    _billingsoftware.SaveChanges();
                 }
 
-                return Json(new { success = true, message = "✅ Bill saved successfully!" });
+
+                return Json(new { success = true, message = "✅ Bill and images saved successfully!" });
             }
             catch (Exception ex)
             {
-                Console.WriteLine("❌ Exception Thrown: " + ex.Message);
+                Console.WriteLine("❌ Exception: " + ex.Message);
                 if (ex.InnerException != null)
-                    Console.WriteLine("🔍 Inner Exception: " + ex.InnerException.Message);
+                    Console.WriteLine("🔍 Inner: " + ex.InnerException.Message);
 
                 return Json(new { success = false, message = "❌ Error: " + ex.Message });
             }
         }
+
+
+
+
+        [HttpGet]
+        public IActionResult GetBill(string billId)
+        {
+            try
+            {
+                var billMaster = _billingsoftware.Shbillmasterskj
+                    .FirstOrDefault(b => b.BillID == billId && b.IsDelete == false);
+
+                if (billMaster == null)
+                    return NotFound("Bill not found");
+
+                var billDetails = _billingsoftware.Shbilldetailsskj
+                    .Where(d => d.BillID == billId && d.IsDelete == false)
+                    .ToList();
+
+                var articleIdList = billDetails
+                    .Select(d => d.ArticleID)
+                    .Distinct()
+                    .ToList();
+
+                // ✅ Safe in-memory filter
+                var allArticles = _billingsoftware.SHArticleMaster
+                    .AsNoTracking()
+                    .ToList();
+
+                var articles = allArticles
+                    .Where(a => articleIdList.Contains(a.ArticleID))
+                    .ToList();
+
+                var images = _billingsoftware.Shbillimagemodelskj
+    .Where(img => img.BillID == billId)
+    .Select(img => new {
+        img.ImagePath,
+        img.ImageName
+    }).ToList();
+
+
+                return Json(new
+                {
+                    BillMaster = billMaster,
+                    BillDetails = billDetails,
+                    Articles = articles,
+                    Images = images
+                });
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("❌ Exception:", ex.Message);
+                return StatusCode(500, "Error retrieving bill");
+            }
+        }
+
 
 
 
