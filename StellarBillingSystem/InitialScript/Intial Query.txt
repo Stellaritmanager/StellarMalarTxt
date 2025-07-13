@@ -1,4 +1,3 @@
-USE [StellarSKJ]
 GO
 /****** Object:  StoredProcedure [dbo].[SH_GetBillDetailsAndMaster]    Script Date: 7/9/2025 6:13:21 PM ******/
 SET ANSI_NULLS ON
@@ -198,29 +197,30 @@ BEGIN
     WHERE CONVERT(DATETIME, BillDate) = CONVERT(DATE, GETDATE())  AND BranchID = @BranchID;
     RETURN @DailySales;
 END
+GO
 
 
-////Branch Master////
+--Branch Master
 
 INSERT [dbo].[SHBranchMaster] ([BracnchID], [BranchName], [PhoneNumber1], [PhoneNumber2], [Address1], [Address2], [Country], [State], [City], [ZipCode], [IsFranchise], [IsDelete], [email], [lastUpdatedUser], [lastUpdatedMachine], [LastUpdatedDate], [BranchInitial], [BillTemplate]) VALUES (N'Lee_Mobile', N'Lee Mobiles', N'9994578802', N'9626589922', N'4765/5, Ayyanarpuram 1st Street, Alangudi', N'', N'India', N'TN', N'Pudukottai', N'622001', N'0', 0, N'info@leestoreindia', NULL, NULL, N'Oct  8 2024 11:35AM', N'LEE', N'BillTemplate Branch1')
 INSERT [dbo].[SHBranchMaster] ([BracnchID], [BranchName], [PhoneNumber1], [PhoneNumber2], [Address1], [Address2], [Country], [State], [City], [ZipCode], [IsFranchise], [IsDelete], [email], [lastUpdatedUser], [lastUpdatedMachine], [LastUpdatedDate], [BranchInitial], [BillTemplate]) VALUES (N'Lee_TV', N'LeeStore TV', N'9994578802', N'9626589922', N'4765/5, Ayyanarpuram 1st Street, Alangudi', N'', N'India', N'TN', N'Pudukottai', N'622001', N'0', 0, N'info@leestoreindia', NULL, NULL, N'Oct  8 2024 11:35AM', N'LEE', N'BillTemplate Branch1')
 INSERT [dbo].[SHBranchMaster] ([BracnchID], [BranchName], [PhoneNumber1], [PhoneNumber2], [Address1], [Address2], [Country], [State], [City], [ZipCode], [IsFranchise], [IsDelete], [email], [lastUpdatedUser], [lastUpdatedMachine], [LastUpdatedDate], [BranchInitial], [BillTemplate]) VALUES (N'StellarTextile', N'StellarTextile', N'8967569067', N'7778934237', N'4765/5, Ayyanarpuram 1st Street, Machuvadi', NULL, N'India', N'TN', N'Pudukottai', N'622001', N'0', 0, N'stellartex@gamil.com', NULL, NULL, N'2025-05-13 11:35:00.000', N'Textile', NULL)
 
-////Staff Admin////
+--Staff Admin
 
 INSERT [dbo].[SHStaffAdmin] ([StaffID], [BranchID], [ResourceTypeID], [FirstName], [LastName], [FullName], [Initial], [Prefix], [Gender], [DateofBirth], [Age], [Address1], [City], [State], [Pin], [PhoneNumber], [EmailId], [Nationality], [UserName], [Password], [IdProofId], [IdProofName], [LastupdatedUser], [LastUpdatedMachine], [IsDelete], [IdProofFile], [LastupdatedDate], [RolltypeID]) VALUES (N'Stellar_Manager', N'Lee_Mobile', NULL, NULL, NULL, N'MK', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, N'Mk', N'123', NULL, NULL, N'AdminLee', N'::1', 0, NULL, CAST(N'2025-07-09 22:11:58.0000000' AS DateTime2), N'Roll_Stellar_1')
 INSERT [dbo].[SHStaffAdmin] ([StaffID], [BranchID], [ResourceTypeID], [FirstName], [LastName], [FullName], [Initial], [Prefix], [Gender], [DateofBirth], [Age], [Address1], [City], [State], [Pin], [PhoneNumber], [EmailId], [Nationality], [UserName], [Password], [IdProofId], [IdProofName], [LastupdatedUser], [LastUpdatedMachine], [IsDelete], [IdProofFile], [LastupdatedDate], [RolltypeID]) VALUES (N'Stellar_Trainee', N'Lee_Mobile', NULL, NULL, NULL, N'Traine', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, N'Traine', N'123', NULL, NULL, N'mk', N'::1', 0, NULL, CAST(N'2025-07-09 23:31:32.0000000' AS DateTime2), N'Roll_Stellar_2')
 
 
 
-/////RollType///
+--RollType
 
 
 INSERT [dbo].[SHrollType] ([RollID], [BranchID], [RollName], [LastupdatedUser], [LastupdatedDate], [LastupdatedMachine], [IsDelete]) VALUES (N'Roll_Stellar_1', N'Lee_Mobile', N'Manager', N'AdminLee', N'09/07/2025 22:09:57', N'::1', 0)
 INSERT [dbo].[SHrollType] ([RollID], [BranchID], [RollName], [LastupdatedUser], [LastupdatedDate], [LastupdatedMachine], [IsDelete]) VALUES (N'Roll_Stellar_2', N'Lee_Mobile', N'Traine', N'mk', N'09/07/2025 23:30:49', N'::1', 0)
 
 
-///ScreenName///
+--ScreenName
 
 INSERT [dbo].[SHScreenName] ([Id], [ScreenName]) VALUES (N'1', N'CategoryMaster')
 INSERT [dbo].[SHScreenName] ([Id], [ScreenName]) VALUES (N'10', N'StaffAdmin')
@@ -242,7 +242,7 @@ INSERT [dbo].[SHScreenName] ([Id], [ScreenName]) VALUES (N'8', N'RackMaster')
 INSERT [dbo].[SHScreenName] ([Id], [ScreenName]) VALUES (N'9', N'RackPatrionProduct')
 
 
-//RollAccess////
+--RollAccess
 
 INSERT [dbo].[SHRoleaccessModel] ([RollID], [ScreenID], [Access], [Authorized], [lastUpdatedDate], [lastUpdatedUser], [lastUpdatedMachine], [Isdelete], [BranchID]) VALUES (N'Roll_Stellar_1', N'CategoryMaster', N'true', N'1', N'08-10-2024 12:00:53', N'Mk', N'::1', 0, N'Lee_Mobile')
 INSERT [dbo].[SHRoleaccessModel] ([RollID], [ScreenID], [Access], [Authorized], [lastUpdatedDate], [lastUpdatedUser], [lastUpdatedMachine], [Isdelete], [BranchID]) VALUES (N'Roll_Stellar_1', N'CustomerMaster', N'true', N'1', N'08-10-2024 12:10:47', N'Mk', N'::1', 0, N'Lee_Mobile')
