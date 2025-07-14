@@ -321,13 +321,13 @@
 
                 imageModels.push({
                     BillID: billID,
-                    ArticleID: articleID,
                     ImageName: f.file ? f.file.name : f.path.split('/').pop(),
                     ImagePath: f.file ? `BillImage/${billID}/${f.file.name}` : f.path,
                     Lastupdateduser: 'admin',
                     Lastupdateddate: new Date().toISOString(),
                     Lastupdatedmachine: 'machine'
                 });
+
 
                 if (f.file) {
                     formData.append(fileId, f.file); // send the file
@@ -404,10 +404,13 @@
                     if (res.Images && res.Images.length > 0) {
                         res.Images.forEach((img, index) => {
                             const id = `existing_${index}`;
-                            const path = '/' + img.ImagePath.replace(/\\/g, '/');
 
-                            filesList.push({ id, path, existing: true });
-                            previewImages.push(path);
+                            // ✅ Clean up any extra slashes
+                            const cleanPath = img.ImagePath.replace(/^\/+/, '').replace(/\\/g, '/');
+                            const finalPath = '/' + cleanPath; // Ensure only one leading slash
+
+                            filesList.push({ id, path: finalPath, existing: true });
+                            previewImages.push(finalPath);
                         });
                     }
 

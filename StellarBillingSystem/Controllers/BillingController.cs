@@ -65,12 +65,15 @@ namespace StellarBillingSystem_skj.Controllers
             {
                 var billMaster = vm.BillMaster;
 
-                // 🔁 Ensure upload folder exists
+                var existingBill = _billingsoftware.Shbillmasterskj
+                    .FirstOrDefault(b => b.BillID == billMaster.BillID);
+
+                // ✅ Ensure upload folder exists
                 string uploadPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "BillImage", billMaster.BillID);
                 if (!Directory.Exists(uploadPath))
                     Directory.CreateDirectory(uploadPath);
 
-                // 🔁 Save uploaded files and update their image paths
+                // ✅ Save uploaded files and update their image paths
                 foreach (var file in form.Files)
                 {
                     string filePath = Path.Combine(uploadPath, file.FileName);
@@ -79,56 +82,64 @@ namespace StellarBillingSystem_skj.Controllers
                         await file.CopyToAsync(stream);
                     }
 
-                    // 🌐 Update the image path in BillImages (relative path)
                     var matchingImage = vm.BillImages.FirstOrDefault(img => img.ImageName == file.FileName);
                     if (matchingImage != null)
                     {
-                        matchingImage.ImagePath = $"BillImage/{billMaster.BillID}/{file.FileName}";
+                        matchingImage.ImagePath = "/" + Path.Combine("BillImage", billMaster.BillID, file.FileName).Replace("\\", "/");
+
                     }
                 }
 
-                // 💾 Save BillMaster
-                _billingsoftware.Shbillmasterskj.Add(billMaster);
+                // ✅ Insert or update BillMaster
+                if (existingBill != null)
+                {
+                    _billingsoftware.Entry(existingBill).CurrentValues.SetValues(billMaster);
+                }
+                else
+                {
+                    _billingsoftware.Shbillmasterskj.Add(billMaster);
+                }
 
-                // 💾 Save Articles
-                var savedArticles = new List<ArticleModel>();
+                // ✅ Only insert new articles (do not delete existing ones)
                 foreach (var article in vm.Articles)
                 {
-                    _billingsoftware.SHArticleMaster.Add(article);
-                    savedArticles.Add(article);
+                    if (article.ArticleID == 0)
+                    {
+                        _billingsoftware.SHArticleMaster.Add(article);
+                    }
                 }
-                _billingsoftware.SaveChanges(); // Save BillMaster + Articles
 
-                // 💾 Save BillDetails
+                _billingsoftware.SaveChanges(); // Save BillMaster and new Articles
+
+                // ✅ Replace old BillDetails
+                var oldDetails = _billingsoftware.Shbilldetailsskj
+                    .Where(d => d.BillID == billMaster.BillID).ToList();
+                _billingsoftware.Shbilldetailsskj.RemoveRange(oldDetails);
+
                 for (int i = 0; i < vm.BillDetails.Count; i++)
                 {
                     var detail = vm.BillDetails[i];
-                    var article = savedArticles[i];
+                    var article = vm.Articles[i]; // newly added or existing
 
                     detail.BillID = billMaster.BillID;
-                    detail.ArticleID = article.ArticleID;
+                    detail.ArticleID = article.ArticleID; // use auto-generated ID
                     detail.BranchID = billMaster.BranchID;
 
                     _billingsoftware.Shbilldetailsskj.Add(detail);
                 }
-                _billingsoftware.SaveChanges();
 
-                // 💾 Save BillImages with ArticleID (use first article if needed)
-                // 💾 Save BillImages with ArticleID (assign one-by-one)
-                if (vm.BillImages != null && vm.BillImages.Any())
+                // ✅ Replace old BillImages
+                var oldImages = _billingsoftware.Shbillimagemodelskj
+                    .Where(i => i.BillID == billMaster.BillID).ToList();
+                _billingsoftware.Shbillimagemodelskj.RemoveRange(oldImages);
+
+                foreach (var image in vm.BillImages)
                 {
-                    for (int i = 0; i < vm.BillImages.Count; i++)
-                    {
-                        if (i < savedArticles.Count)
-                        {
-                            vm.BillImages[i].ArticleID = savedArticles[i].ArticleID;
-                        }
-
-                        _billingsoftware.Shbillimagemodelskj.Add(vm.BillImages[i]);
-                    }
-                    _billingsoftware.SaveChanges();
+                    image.BillID = billMaster.BillID;
+                    _billingsoftware.Shbillimagemodelskj.Add(image);
                 }
 
+                _billingsoftware.SaveChanges();
 
                 return Json(new { success = true, message = "✅ Bill and images saved successfully!" });
             }
@@ -141,6 +152,8 @@ namespace StellarBillingSystem_skj.Controllers
                 return Json(new { success = false, message = "❌ Error: " + ex.Message });
             }
         }
+
+
 
 
 
