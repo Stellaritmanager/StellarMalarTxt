@@ -3023,7 +3023,7 @@ namespace StellarBillingSystem.Controllers
             if (buttonType == "Payment")
             {
 
-                var checkbillexist = await _billingsoftware.SHbillmaster.FirstOrDefaultAsync(x => x.BillID == model.BillID && x.BillDate == model.BillDate && x.CustomerNumber == model.CustomerNumber && x.IsDelete == false);
+                var checkbillexist = await _billingsoftware.SHbillmaster.FirstOrDefaultAsync(x => x.BillID == model.BillID  && x.IsDelete == false);
 
                 if (checkbillexist == null)
                 {

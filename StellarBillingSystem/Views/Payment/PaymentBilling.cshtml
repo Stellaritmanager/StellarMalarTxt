@@ -53,14 +53,12 @@
 
 
 
-<form asp-controller="StellarBilling">
+<form asp-controller="Payment" asp-action="PaymentAction" method="post">
     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
-    <input type="hidden" id="billId" name="BillID" value="@TempData["BillID"]" />
-    <input type="hidden" id="billDate" name="BillDate" value="@TempData["BillDate"]" />
-    <input type="hidden" id="billValue" name="BillValue" value="@TempData["BillValue"]" />
-    <input type="hidden" id="branchID" name="BranchID" value="@TempData["BranchID"]" />
-
+  
+    <input type="hidden" id="billValue" name="billValue" value="@TempData["BillValue"]" />
+    
     <div class="row">
         <div class="col-md-12 col-lg-0"></div>
         <div class="col-md-12 col-lg-12" style="padding: 0;">
@@ -87,9 +85,19 @@
             <div class="card">
                 <div class="card-body dividerblack">
                     <div class="row gy-4 align-items-center">
+
+                        <div>
+                            <input type="text" class="form-control" placeholder="BillID" id="billId" name="billId" />
+                            <label for="billId" class="control-label">billId</label>
+                        </div>
+
+                        <div class="col-md-4 d-flex justify-content-start">
+                            <button type="submit" class="btn btn-primary" name="buttonType" value="GetBill">GetBill</button>
+                        </div>
+
                         <!-- Add Payment Button -->
                         <div class="col-md-4 d-flex justify-content-start">
-                            <button type="submit" class="btn btn-primary" asp-action="PaymentAction" name="buttonType" value="AddPayment">Add Payment</button>
+                            <button type="submit" class="btn btn-primary" name="buttonType" value="AddPayment">AddPayment</button>
                         </div>
 
                         <!-- Total Input -->
@@ -223,9 +231,9 @@
     <center>
         <div class="row mt-4">
             <div class="col-md-12">
-                <button type="submit" class="btn btn-primary" asp-action="PaymentAction" name="buttonType" value="Save">SavePayment</button>
-                <button type="submit" class="btn btn-primaryred" asp-action="PaymentAction" name="buttonType" value="DeletePaymentDetail">DeletePaymentDetail</button>
-                <button type="submit" class="btn btn-primaryred" asp-action="PaymentAction" name="buttonType" value="DeletePayment">DeletePayment</button>
+                <button type="submit" class="btn btn-primary"  name="buttonType" value="Save">SavePayment</button>
+                <button type="submit" class="btn btn-primaryred"  name="buttonType" value="DeletePaymentDetail">DeletePaymentDetail</button>
+                <button type="submit" class="btn btn-primaryred" name="buttonType" value="DeletePayment">DeletePayment</button>
             </div>
         </div>
     </center>

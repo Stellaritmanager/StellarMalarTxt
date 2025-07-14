@@ -1,11 +1,15 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.CodeAnalysis.Operations;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
+using StellarBillingSystem.Business;
 using StellarBillingSystem.Context;
 using StellarBillingSystem.Models;
 using StellarBillingSystem_skj.Business;
 using StellarBillingSystem_skj.Models;
+using System.Globalization;
+using System.Web;
 
 namespace StellarBillingSystem_skj.Controllers
 {
@@ -67,6 +71,7 @@ namespace StellarBillingSystem_skj.Controllers
 
                 var existingBill = _billingsoftware.Shbillmasterskj
                     .FirstOrDefault(b => b.BillID == billMaster.BillID);
+
 
                 // ✅ Ensure upload folder exists
                 string uploadPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "BillImage", billMaster.BillID);
@@ -142,6 +147,8 @@ namespace StellarBillingSystem_skj.Controllers
                 _billingsoftware.SaveChanges();
 
                 return Json(new { success = true, message = "✅ Bill and images saved successfully!" });
+
+
             }
             catch (Exception ex)
             {
@@ -152,11 +159,6 @@ namespace StellarBillingSystem_skj.Controllers
                 return Json(new { success = false, message = "❌ Error: " + ex.Message });
             }
         }
-
-
-
-
-
 
         [HttpGet]
         public IActionResult GetBill(string billId)
@@ -189,7 +191,8 @@ namespace StellarBillingSystem_skj.Controllers
 
                 var images = _billingsoftware.Shbillimagemodelskj
     .Where(img => img.BillID == billId)
-    .Select(img => new {
+    .Select(img => new
+    {
         img.ImagePath,
         img.ImageName
     }).ToList();
@@ -211,10 +214,5 @@ namespace StellarBillingSystem_skj.Controllers
         }
 
 
-
-
     }
-
-
 }
-
