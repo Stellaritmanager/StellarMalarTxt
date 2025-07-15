@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.CodeAnalysis.Operations;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Newtonsoft.Json;
 using StellarBillingSystem.Business;
 using StellarBillingSystem.Context;
@@ -75,6 +76,7 @@ namespace StellarBillingSystem_skj.Controllers
             else
             {
                 @ViewBag.Balance = billValue;  // Default to 0 if Balance is null
+              //  ViewBag.Message = "NotFound";
             }
 
 
@@ -125,7 +127,7 @@ namespace StellarBillingSystem_skj.Controllers
 
             if (billId == null && formattedBillDate == null)
             {
-
+                TempData.Remove("BillValue"); // Optional: clear if not valid anymore
                 ViewBag.Message = "BillID Not Found";
                 var resultdel = UpdatePaymentDetails(billId, branchID, formattedBillDate, billValue);
 
@@ -172,7 +174,7 @@ namespace StellarBillingSystem_skj.Controllers
                 else
                 {
                     ViewBag.Message = "Bill details not found.";
-                    return View(obj); // Early return if no bill found
+                    return View("PaymentBilling", obj); // Early return if no bill found
                 }
 
                 // Check if payment details exist and assign balance accordingly
@@ -207,7 +209,7 @@ namespace StellarBillingSystem_skj.Controllers
 
                 ViewBag.Balance = model.StrBillvalue;
 
-                return View("PaymentBilling",obj);
+                return View("PaymentBilling", obj);
             }
 
             if (buttonType == "DeletePayment")
@@ -370,7 +372,7 @@ namespace StellarBillingSystem_skj.Controllers
                 }
 
                 var billAmount = _billingsoftware.Shbillmasterskj
-                 .Where(x => x.BillID == billId  && x.BranchID == model.BranchID)
+                 .Where(x => x.BillID == billId && x.BranchID == model.BranchID)
                  .Select(x => x.TotalRepayValue)
                  .FirstOrDefault();
 
@@ -455,7 +457,7 @@ namespace StellarBillingSystem_skj.Controllers
 
 
 
-                model.StrBillvalue = BusinessBillingSKJ.getbalance(_billingsoftware, paymentid, billId, model.BranchID,  totalpayamount.ToString());
+                model.StrBillvalue = BusinessBillingSKJ.getbalance(_billingsoftware, paymentid, billId, model.BranchID, totalpayamount.ToString());
 
                 var exbalance = _billingsoftware.SHPaymentMaster.FirstOrDefault(x => x.BillId == billId && x.BranchID == model.BranchID && x.PaymentId == paymentid && x.BillDate == formattedBillDate);
 
@@ -467,9 +469,9 @@ namespace StellarBillingSystem_skj.Controllers
                     _billingsoftware.SaveChanges();
                 }
 
-                var exbilltotal = await _billingsoftware.SHbillmaster.FirstOrDefaultAsync(x => x.BillID == billId && x.BillDate == formattedBillDate && x.BranchID == model.BranchID);
+                var exbilltotal = await _billingsoftware.Shbillmasterskj.FirstOrDefaultAsync(x => x.BillID == billId && x.BranchID == model.BranchID);
                 if (exbilltotal != null)
-                    model.Balance = exbilltotal.NetPrice;
+                    model.Balance = exbilltotal.TotalRepayValue.ToString();
 
 
                 ViewBag.Message = "Payment Saved Successfully";
@@ -481,43 +483,54 @@ namespace StellarBillingSystem_skj.Controllers
             }
             if (buttonType == "AddPayment")
             {
+                // Try to get existing bill first
+                var exbill = await _billingsoftware.Shbillmasterskj
+                    .FirstOrDefaultAsync(x => x.BillID == billId && x.BranchID == model.BranchID && x.IsDelete == false);
 
-
-                BusinessBillingSKJ obj = new BusinessBillingSKJ(_billingsoftware, _configuration);
-                PaymentDetailsModel objNewPayment = new PaymentDetailsModel
+                if (exbill != null)
                 {
-                    PaymentDiscription = obj.GeneratePaymentDescriptionreport(paymentid),
-                    PaymentId = paymentid,
-                    BranchID = model.BranchID, // Use the branch ID passed in the method
+                    BusinessBillingSKJ obj = new BusinessBillingSKJ(_billingsoftware, _configuration);
+                  
+                    PaymentDetailsModel objNewPayment = new PaymentDetailsModel
+                    {
+                        PaymentDiscription = obj.GeneratePaymentDescriptionreport(paymentid),
+                        PaymentId = paymentid,
+                        BranchID = model.BranchID
+                    };
 
-                };
+                    if (model.Viewpayment == null)
+                        model.Viewpayment = new List<PaymentDetailsModel>();
 
-                if (model.Viewpayment == null)
-                    model.Viewpayment = new List<PaymentDetailsModel>();
+                    model.Viewpayment.Add(objNewPayment);
 
-                model.Viewpayment.Add(objNewPayment);
+                    model.Balance = exbill.TotalRepayValue.ToString();
 
+                    var exbalance = _billingsoftware.SHPaymentMaster
+                        .FirstOrDefault(x => x.BillId == billId && x.BranchID == model.BranchID && x.PaymentId == paymentid && x.BillDate == formattedBillDate);
 
-                var exbill = await _billingsoftware.Shbillmasterskj.FirstOrDefaultAsync(x => x.BillID == billId  && x.BranchID == model.BranchID && x.IsDelete == false);
-                model.Balance = exbill.TotalRepayValue.ToString();
+                    if (exbalance != null)
+                    {
+                        model.StrBillvalue = exbalance.Balance;
+                    }
 
-                var exbalance = _billingsoftware.SHPaymentMaster.FirstOrDefault(x => x.BillId == billId && x.BranchID == model.BranchID && x.PaymentId == paymentid && x.BillDate == formattedBillDate);
+                    _billingsoftware.SaveChanges();
 
-                if (exbalance != null)
-                {
-                    model.StrBillvalue = exbalance.Balance;
+                    var result = UpdatePaymentDetails(billId, model.BranchID, formattedBillDate, billValue);
                 }
-                _billingsoftware.SaveChanges();
-
+                else
+                {
+                    // Bill not found: don't add to Viewpayment, just show a message
+                    TempData.Remove("BillValue");
+                    ViewBag.Message = "BillID Not Found";
+                }
             }
-            var result = UpdatePaymentDetails(billId, model.BranchID, formattedBillDate, billValue);
 
             return View("PaymentBilling", model);
         }
 
 
 
-public IActionResult Index()
+            public IActionResult Index()
         {
             return View();
         }
