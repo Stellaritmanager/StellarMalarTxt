@@ -49,19 +49,66 @@
 
 <form method="post" asp-action="GetArticles">
 
-    <div class="form-floating form-floating-outline mb-4">
-        <input type="text" class="form-control" placeholder="BillID" name="BillID" value="@Model.BillID" />
-        <label asp-for="BillID" class="control-label">BillID</label>
+
+    <div class="row" style="margin-top:10px">
+        <div class="col-md-12 col-lg-0"></div>
+        <div class="col-12 col-sm-12 col-md-12 col-lg-12">
+            <div class="card">
+                <div class="card-body dividerblack">
+                    <div class="row gy-4">
+                        <div class="col-sm-12 col-md-12 col-lg-12">
+                            <h2 class="centered text-white" style="font-family:'Lucida Bright';text-align: center; margin: 0;">
+                                Repledge Details
+                            </h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
-    <div class="form-floating form-floating-outline mb-4">
-        <input type="text" class="form-control" placeholder="RepledgeID" name="RepledgeID" value="@Model.RepledgeID" />
-        <label asp-for="RepledgeID" class="control-label">RepledgeID</label>
+
+    <br />
+
+    <div class="row" style="height:8%"></div>
+
+    <div class="row" style="margin-top:30px">
+        <div class="col-md-12 col-lg-0"></div>
+        <div class="col-12 col-sm-12 col-md-12 col-lg-12">
+            <div class="card">
+                <div class="card-body dividerblack">
+                    <div class="row gy-4">
+                        <div class="col-sm-1 col-md-1 col-lg-1"></div>
+                        <div class="col-sm-4 col-md-4 col-lg-4">
+                            <div class="form-floating form-floating-outline mb-4">
+                                <input type="text" class="form-control" placeholder="BillID" name="BillID" value="@Model.BillID" />
+                                <label asp-for="BillID" class="control-label">BillID</label>
+                                <span asp-validation-for="BillID" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="col-sm-4 col-md-4 col-lg-4">
+                            <div class="form-floating form-floating-outline mb-4">
+                                <input type="text" class="form-control" placeholder="RepledgeID" name="RepledgeID" value="@Model.RepledgeID" />
+                                <label asp-for="RepledgeID" class="control-label">RepledgeID</label>
+                                <span asp-validation-for="RepledgeID" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="col-sm-1 col-md-1 col-lg-1">
+                            <button type="submit" style="width:95px; height:50px;" class="btn btn-primary mx-2" name="buttonType" value="Delete">Delete</button>
+                        </div>
+                        <div class="col-sm-1 col-md-1 col-lg-1">
+                            <button type="submit" style="width:95px; height:50px;" class="btn btn-primary mx-2">Get</button>
+                        </div>
+                    </div>
+
+                    <br />
+                </div>
+            </div>
+        </div>
     </div>
 
-    <button type="submit" class="btn btn-primary mx-2" name="buttonType" value="Delete">Delete</button>
 
-    <button type="submit" class="btn btn-primary mx-2">Get</button>
+
 </form>
 
 @if (Model.AvailableArticles?.Count > 0)
@@ -69,87 +116,119 @@
     <form method="post" asp-action="SaveRepledge">
         <input type="hidden" name="BillID" value="@Model.BillID" />
         <input type="hidden" name="RepledgeID" value="@Model.RepledgeID" />
+        <div class="row" style="margin-top:30px">
+            <div class="col-md-12 col-lg-0"></div>
+            <div class="col-12 col-sm-12 col-md-12 col-lg-12">
+                <div class="card">
+                    <div class="card-body dividerblack">
+                        <div class="row gy-4">
+                            <div class="col-sm-1 col-md-1 col-lg-1"></div>
+                            <div class="col-sm-5 col-md-5 col-lg-5">
+                                <h4>Checked Articles:</h4>
 
-        <div style="display: flex; gap: 50px;">
-            <!-- LEFT: Available Articles -->
-            <div class="col-lg-6">
-                <div class="demo-inline-spacing mt-3">
-                    <div class="list-group">
-                        @for (int i = 0; i < Model.AvailableArticles.Count; i++)
-                        {
-                            var article = Model.AvailableArticles[i];
-                            var isChecked = Model.SelectedArticleIDs != null && Model.SelectedArticleIDs.Contains(article.ArticleID);
+                                <!-- LEFT: Available Articles -->
 
-                            <label class="list-group-item">
-                                <span class="form-check mb-0">
-                                    <input class="form-check-input me-1"
-                                           type="checkbox"
-                                           name="SelectedArticleIDs"
-                                           value="@article.ArticleID"
-                                    @(isChecked ? "checked" : "")
-                                           onchange="updateSelectedArticles(this)"
-                                           data-articlename="@article.ArticleName" />
-                                    @article.ArticleID - @article.ArticleName
-                                </span>
-                            </label>
-                        }
+                                <div class="demo-inline-spacing mt-3">
+                                    <div class="list-group">
+                                        @for (int i = 0; i < Model.AvailableArticles.Count; i++)
+                                        {
+                                            var article = Model.AvailableArticles[i];
+                                            var isChecked = Model.SelectedArticleIDs != null && Model.SelectedArticleIDs.Contains(article.ArticleID);
+
+                                            <label class="list-group-item">
+                                                <span class="form-check mb-0">
+                                                    <input class="form-check-input me-1"
+                                                           type="checkbox"
+                                                           name="SelectedArticleIDs"
+                                                           value="@article.ArticleID"
+                                                    @(isChecked ? "checked" : "")
+                                                           onchange="updateSelectedArticles(this)"
+                                                           data-articlename="@article.ArticleName" />
+                                                    @article.ArticleID - @article.ArticleName
+                                                </span>
+                                            </label>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+
+
+
+                            <div class="col-sm-5 col-md-5 col-lg-5">
+                                <!-- RIGHT: Selected Articles Display -->
+                                <!-- RIGHT: Selected Articles Display -->
+
+                                <h4>Selected Articles:</h4>
+                                <div id="selected-articles-box" style="border:1px solid #ccc; padding:10px; min-height:100px;">
+                                    <em>No articles selected</em>
+                                </div>
+                            </div>
+                            <div class="col-sm-1 col-md-1 col-lg-1"></div>
+                        </div>
                     </div>
                 </div>
             </div>
-
         </div>
 
+      
 
-        <!-- RIGHT: Selected Articles Display -->
-        <!-- RIGHT: Selected Articles Display -->
-        <div>
-            <h4>Selected Articles:</h4>
-            <div id="selected-articles-box" style="border:1px solid #ccc; padding:10px; min-height:100px;">
-                <em>No articles selected</em>
-            </div>
-        </div>
+        <div class="row" style="margin-top:30px">
+            <div class="col-md-12 col-lg-0"></div>
+            <div class="col-12 col-sm-12 col-md-12 col-lg-12">
+                <div class="card">
+                    <div class="card-body dividerblack">
+                        <h3 class="centered text-white" style="font-family: 'Lucida Bright'; margin-bottom: 20px; text-align: center;">Buyer Info</h3>
 
+                        <div class="row gy-4">
+                            <div class="col-sm-1 col-md-1 col-lg-1"></div>
+                            <div class="col-sm-3 col-md-3 col-lg-3">
+                                <div class="form-floating form-floating-outline mb-4">
+                                    <input type="BuyerName" class="form-control" placeholder="BuyerName" name="BuyerName" value="@Model.BuyerName" />
+                                    <label asp-for="BuyerName" class="control-label">BuyerName</label>
+                                </div>
+                            </div>
+                            <div class="col-sm-3 col-md-3 col-lg-3">
+                                <div class="form-floating form-floating-outline mb-4">
+                                    <input type="Address" class="form-control" placeholder="Address" name="Address" value="@Model.Address" />
+                                    <label asp-for="Address" class="control-label">Address</label>
+                                </div>
+                            </div>
+                            <div class="col-sm-3 col-md-3 col-lg-3">
+                                <div class="form-floating form-floating-outline mb-4">
+                                    <input type="PhoneNumber" class="form-control" placeholder="PhoneNumber" name="PhoneNumber" value="@Model.PhoneNumber" />
+                                    <label asp-for="PhoneNumber" class="control-label">PhoneNumber</label>
+                                </div>
+                            </div>
+                            <div class="col-sm-1 col-md-1 col-lg-1"></div>
+                        </div>
+                        <div class="row gy-4">
+                            <div class="col-sm-1 col-md-1 col-lg-1"></div>
+                            <div class="col-sm-3 col-md-3 col-lg-3">
+                                <div class="form-floating form-floating-outline mb-4">
+                                    <input type="number" class="form-control" placeholder="TotalAmount" name="TotalAmount" value="@Model.TotalAmount" />
+                                    <label asp-for="TotalAmount" class="control-label">TotalAmount</label>
+                                </div>
+                            </div>
+                            <div class="col-sm-3 col-md-3 col-lg-3">
+                                <div class="form-floating form-floating-outline mb-4">
+                                    <input type="number" class="form-control" placeholder="Interest" name="Interest" value="@Model.Interest" />
+                                    <label asp-for="Interest" class="control-label">Interest</label>
+                                </div>
+                            </div>
+                            <div class="col-sm-3 col-md-3 col-lg-3">
+                                <div class="form-floating form-floating-outline mb-4">
+                                    <input type="number" class="form-control" placeholder="Tenure" name="Tenure" value="@Model.Tenure" />
+                                    <label asp-for="Tenure" class="control-label">Tenure</label>
+                                </div>
+                            </div>
+                        </div>
 
-        <hr />
-        <h3>Buyer Info</h3>
-
-
-
-        <div class="form-floating form-floating-outline mb-4">
-            <input type="BuyerName" class="form-control" placeholder="BuyerName" name="BuyerName" value="@Model.BuyerName" />
-            <label asp-for="BuyerName" class="control-label">BuyerName</label>
-        </div>
-
-
-        <div class="form-floating form-floating-outline mb-4">
-            <input type="Address" class="form-control" placeholder="Address" name="Address" value="@Model.Address" />
-            <label asp-for="Address" class="control-label">Address</label>
-        </div>
-
-
-        <div class="form-floating form-floating-outline mb-4">
-            <input type="PhoneNumber" class="form-control" placeholder="PhoneNumber" name="PhoneNumber" value="@Model.PhoneNumber" />
-            <label asp-for="PhoneNumber" class="control-label">PhoneNumber</label>
-        </div>
-
-        <div class="form-floating form-floating-outline mb-4">
-            <input type="number" class="form-control" placeholder="TotalAmount" name="TotalAmount" value="@Model.TotalAmount" />
-            <label asp-for="TotalAmount" class="control-label">TotalAmount</label>
-        </div>
-
-        <div class="form-floating form-floating-outline mb-4">
-            <input type="number" class="form-control" placeholder="Interest" name="Interest" value="@Model.Interest" />
-            <label asp-for="Interest" class="control-label">Interest</label>
-        </div>
-
-
-        <div class="form-floating form-floating-outline mb-4">
-            <input type="number" class="form-control" placeholder="Tenure" name="Tenure" value="@Model.Tenure" />
-            <label asp-for="Tenure" class="control-label">Tenure</label>
-        </div>
-
-        <button type="submit" class="btn btn-primary mx-2">Save</button>
-
+                        <div class="row gy-4">
+                            <div class="col-12 text-center">
+                                <button type="submit" class="btn btn-primary">Save</button>
+                            </div>
+                        </div>
+                       
     </form>
 }
 
