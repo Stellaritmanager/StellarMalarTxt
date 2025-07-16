@@ -299,6 +299,13 @@
                     }
                 }
 
+                <li class='menu-item@(currentPage == "/CustomerMaster/RepledgeMaster" ? " active" : "")'>
+                    <a asp-controller="RepledgeMaster" asp-action="RepledgeMaster" class="menu-link">
+
+                        <div>Repledge Master </div>
+                    </a>
+                </li>
+
                 @if (rollAccessList != null)
                 {
                     @if (rollAccessList.Contains("PointsMaster"))

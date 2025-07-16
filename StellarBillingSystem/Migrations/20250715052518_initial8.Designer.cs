@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using StellarBillingSystem.Context;
 
@@ -11,9 +12,11 @@ using StellarBillingSystem.Context;
 namespace StellarBillingSystem_skj.Migrations
 {
     [DbContext(typeof(BillingContext))]
-    partial class BillingContextModelSnapshot : ModelSnapshot
+    [Migration("20250715052518_initial8")]
+    partial class initial8
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1504,7 +1507,7 @@ namespace StellarBillingSystem_skj.Migrations
                     b.ToTable("Shbillmasterskj");
                 });
 
-            modelBuilder.Entity("StellarBillingSystem_skj.Models.BuyerRepledgeModel", b =>
+            modelBuilder.Entity("StellarBillingSystem_skj.Models.BuyerModel", b =>
                 {
                     b.Property<string>("RepledgeID")
                         .HasColumnType("nvarchar(450)");
@@ -1554,7 +1557,7 @@ namespace StellarBillingSystem_skj.Migrations
 
                     b.HasKey("RepledgeID");
 
-                    b.ToTable("Shbuyerrepledge");
+                    b.ToTable("BuyerModel");
                 });
 
             modelBuilder.Entity("StellarBillingSystem_skj.Models.CustomerImageModel", b =>
@@ -1624,6 +1627,7 @@ namespace StellarBillingSystem_skj.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("RepledgeID")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("BranchID")
@@ -1639,11 +1643,8 @@ namespace StellarBillingSystem_skj.Migrations
                     b.Property<string>("LastUpdatedUser")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("RepledgeArticleIDS")
-                        .ValueGeneratedOnAdd()
+                    b.Property<int>("RepledgeArticleID")
                         .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("RepledgeArticleIDS"));
 
                     b.HasKey("BillID", "ArticleID", "RepledgeID");
 
@@ -1653,7 +1654,7 @@ namespace StellarBillingSystem_skj.Migrations
 
                     b.HasIndex("BillID", "BranchID");
 
-                    b.ToTable("Shrepledgeartcile");
+                    b.ToTable("RepledgeArtcileModel");
                 });
 
             modelBuilder.Entity("VoucherCustomerDetailModel", b =>
@@ -1750,7 +1751,7 @@ namespace StellarBillingSystem_skj.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("StellarBillingSystem_skj.Models.BuyerRepledgeModel", null)
+                    b.HasOne("StellarBillingSystem_skj.Models.BuyerModel", null)
                         .WithMany()
                         .HasForeignKey("RepledgeID")
                         .OnDelete(DeleteBehavior.Cascade)

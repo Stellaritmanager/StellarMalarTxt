@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using StellarBillingSystem.Context;
 
@@ -11,9 +12,11 @@ using StellarBillingSystem.Context;
 namespace StellarBillingSystem_skj.Migrations
 {
     [DbContext(typeof(BillingContext))]
-    partial class BillingContextModelSnapshot : ModelSnapshot
+    [Migration("20250715063534_initial10")]
+    partial class initial10
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1639,11 +1642,11 @@ namespace StellarBillingSystem_skj.Migrations
                     b.Property<string>("LastUpdatedUser")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("RepledgeArticleIDS")
+                    b.Property<int>("RepledgeArticleID")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("RepledgeArticleIDS"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("RepledgeArticleID"));
 
                     b.HasKey("BillID", "ArticleID", "RepledgeID");
 
