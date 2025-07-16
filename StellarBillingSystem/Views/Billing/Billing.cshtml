@@ -140,6 +140,8 @@
 
     <button class="btn btn-success mt-4" onclick="saveBill()">Save Bill</button>
 
+    <button class="btn btn-success mt-4" onclick="printBill()">Print Bill</button>
+
 
 
     <!-- Article Modal -->
@@ -450,6 +452,31 @@
                 }
             });
         }
+
+        function printBill() {
+            const billId = $('#BillID').val();
+            const branchId = $('#BranchID').val();
+
+            if (!billId || !branchId) {
+                alert("Please enter Bill ID and Branch ID.");
+                return;
+            }
+
+            // Create and submit a form to trigger the file download
+            const form = $('<form>', {
+                method: 'POST',
+                action: '/Billing/printBill',
+                style: 'display:none;'
+            });
+
+            form.append($('<input>', { name: 'billId', value: billId, type: 'hidden' }));
+            form.append($('<input>', { name: 'branchId', value: branchId, type: 'hidden' }));
+
+            $('body').append(form);
+            form.submit();
+            form.remove();
+        }
+
 
 
         function prevImage() {

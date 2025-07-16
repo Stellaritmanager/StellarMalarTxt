@@ -1,5 +1,10 @@
 ﻿using StellarBillingSystem.Context;
 using StellarBillingSystem.Models;
+using System.Data;
+using Xceed.Words.NET;
+using Spire.Doc;
+using System.IO;
+using Spire.Pdf;
 
 namespace StellarBillingSystem_skj.Business
 {
@@ -101,5 +106,101 @@ namespace StellarBillingSystem_skj.Business
             return $"{paymentId}_{timestamp}";
         }
 
+        //Procedure to print Bill details
+        public byte[] ModifyBillDoc(string pfilepath, DataTable pbillData)
+        {
+            // Path to your existing Word document
+            string filePath = pfilepath;
+
+            // Open the document
+            using (var document = DocX.Load(filePath))
+            {
+                // Replace placeholders with dynamic data
+                document.ReplaceText("<<address>>", pbillData.Rows[0]["shopAddress"].ToString());
+                document.ReplaceText("<<mobilenumber>>", pbillData.Rows[0]["shopnumber"].ToString());
+                document.ReplaceText("<<billno>>", pbillData.Rows[0]["BillID"].ToString());
+                document.ReplaceText("<<billdate>>", pbillData.Rows[0]["BillDate"].ToString());
+                document.ReplaceText("<<totalrepay>>", pbillData.Rows[0]["TotalRepayValue"].ToString());
+                document.ReplaceText("<<customername>>", pbillData.Rows[0]["CustomerName"].ToString());
+                document.ReplaceText("<<customeraddress>>", pbillData.Rows[0]["Address"].ToString());
+                document.ReplaceText("<<customernumber>>", pbillData.Rows[0]["MobileNumber"].ToString());
+
+
+                document.ReplaceText("<<overallwe>>", pbillData.Rows[0]["OverallWeight"].ToString());
+                document.ReplaceText("<<totalrepay>>", pbillData.Rows[0]["TotalRepayValue"].ToString());
+                document.ReplaceText("<<ininterest>>", pbillData.Rows[0]["InitialInterest"].ToString());
+                document.ReplaceText("<<posttenure>>", pbillData.Rows[0]["PostTenureInterest"].ToString());
+
+
+
+                document.ReplaceText("{Placeholder2}", "Dynamic Value 2");
+
+                // Insert a new paragraph
+
+
+                //Add a table
+
+                int rowcount = 0;
+                int temrowcount = 1;
+                //Row data
+                foreach (DataRow objRow in pbillData.Rows)
+                {
+                    document.ReplaceText("<<articlename" + temrowcount.ToString() + ">>", pbillData.Rows[rowcount]["ArticleName"].ToString());
+                    document.ReplaceText("<<qty" + temrowcount.ToString() + ">>", pbillData.Rows[rowcount]["Quantity"].ToString());
+                    document.ReplaceText("<<goldtype" + temrowcount.ToString() + ">>", pbillData.Rows[rowcount]["GoldType"].ToString());
+                    document.ReplaceText("<<grosswe" + temrowcount.ToString() + ">>", pbillData.Rows[rowcount]["Grossweight"].ToString());
+                    document.ReplaceText("<<rwe" + temrowcount.ToString() + ">>", pbillData.Rows[rowcount]["Reducedweight"].ToString());
+                    document.ReplaceText("<<nwe" + temrowcount.ToString() + ">>", pbillData.Rows[rowcount]["Netweight"].ToString());
+
+                    rowcount++;
+                    temrowcount++;
+                }
+
+
+                for (int emptycount = 1; emptycount <= 6; emptycount++)
+                {
+                   
+                    document.ReplaceText("<<articlename" + emptycount.ToString() + ">>", string.Empty);
+                    document.ReplaceText("<<qty" + emptycount.ToString() + ">>", string.Empty);
+                    document.ReplaceText("<<goldtype" + emptycount.ToString() + ">>", string.Empty);
+                    document.ReplaceText("<<grosswe" + emptycount.ToString() + ">>", string.Empty);
+                    document.ReplaceText("<<rwe" + emptycount.ToString() + ">>", string.Empty);
+                    document.ReplaceText("<<nwe" + emptycount.ToString() + ">>", string.Empty);
+
+                }
+
+                using (MemoryStream ms = new MemoryStream())
+                {
+                    document.SaveAs(ms);
+                    return ms.ToArray(); // ✅ Important: return docx bytes
+                }
+
+            }
+            return null;
+        }
+        public byte[] PrintBillDetails(DataTable billDetails, string BranchID)
+        {
+            string templateName = BranchID == "Lee_Mobile"
+                ? "BillSKJTemplate Branch1.docx"
+                : "BillTemplate Branch2.docx";
+
+            string templatePath = Path.Combine(templateName);
+
+            // Step 1: Generate filled .docx content
+            byte[] docxBytes = ModifyBillDoc(templatePath, billDetails);
+
+            // Step 2: Convert the .docx content to PDF using Spire.Doc
+            using (MemoryStream docxStream = new MemoryStream(docxBytes))
+            {
+                Document spireDoc = new Document();
+                spireDoc.LoadFromStream(docxStream, Spire.Doc.FileFormat.Docx);
+
+                using (MemoryStream pdfStream = new MemoryStream())
+                {
+                    spireDoc.SaveToStream(pdfStream, Spire.Doc.FileFormat.PDF);
+                    return pdfStream.ToArray(); // Return as PDF
+                }
+            }
+        }
     }
 }
