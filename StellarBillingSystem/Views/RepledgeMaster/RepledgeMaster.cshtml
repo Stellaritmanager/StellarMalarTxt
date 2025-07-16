@@ -1,0 +1,208 @@
+﻿@model StellarBillingSystem_skj.Models.RepledgeViewModel
+
+@{
+    ViewData["Title"] = "RepledgeMaster";
+}
+
+<script>
+    function showPopup(message) {
+        var popup = document.getElementById("popupMessage");
+        var popupText = document.getElementById("popupMessageText");
+        var popupOKButton = document.getElementById("popupOKButton");
+
+        popupText.textContent = message; // Set the message text
+        popup.style.display = "block";
+
+        // Close popup when OK button is clicked
+        popupOKButton.addEventListener("click", function () {
+            closePopup();
+        });
+
+        // Close popup when clicking outside of the message box
+        document.addEventListener("click", function (event) {
+            if (!popup.contains(event.target) && !popupOKButton.contains(event.target)) {
+                closePopup();
+            }
+        });
+    }
+
+    function closePopup() {
+        var popup = document.getElementById("popupMessage");
+        popup.style.display = "none"; // Hide the popup
+    }
+
+    function handleMessages(message) {
+        showPopup(message);
+    }
+</script>
+
+<div id="popupMessage" style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); color:black; padding: 30px; border: 1px solid #000000; border-radius: 10px; z-index: 1000; display: none; text-align: center;">
+    <span id="popupMessageText" style="display: block; margin-bottom: 10px;"></span>
+    <button id="popupOKButton" style="padding: 10px 20px; background-color: rgba(255, 255, 255, 0.2); color: black; border: none; border-radius: 5px; cursor: pointer;">OK</button>
+</div>
+
+<style>
+    .popborder {
+        border: 10px solid #fff;
+    }
+</style>
+
+<form method="post" asp-action="GetArticles">
+
+    <div class="form-floating form-floating-outline mb-4">
+        <input type="text" class="form-control" placeholder="BillID" name="BillID" value="@Model.BillID" />
+        <label asp-for="BillID" class="control-label">BillID</label>
+    </div>
+
+    <div class="form-floating form-floating-outline mb-4">
+        <input type="text" class="form-control" placeholder="RepledgeID" name="RepledgeID" value="@Model.RepledgeID" />
+        <label asp-for="RepledgeID" class="control-label">RepledgeID</label>
+    </div>
+
+    <button type="submit" class="btn btn-primary mx-2" name="buttonType" value="Delete">Delete</button>
+
+    <button type="submit" class="btn btn-primary mx-2">Get</button>
+</form>
+
+@if (Model.AvailableArticles?.Count > 0)
+{
+    <form method="post" asp-action="SaveRepledge">
+        <input type="hidden" name="BillID" value="@Model.BillID" />
+        <input type="hidden" name="RepledgeID" value="@Model.RepledgeID" />
+
+        <div style="display: flex; gap: 50px;">
+            <!-- LEFT: Available Articles -->
+            <div class="col-lg-6">
+                <div class="demo-inline-spacing mt-3">
+                    <div class="list-group">
+                        @for (int i = 0; i < Model.AvailableArticles.Count; i++)
+                        {
+                            var article = Model.AvailableArticles[i];
+                            var isChecked = Model.SelectedArticleIDs != null && Model.SelectedArticleIDs.Contains(article.ArticleID);
+
+                            <label class="list-group-item">
+                                <span class="form-check mb-0">
+                                    <input class="form-check-input me-1"
+                                           type="checkbox"
+                                           name="SelectedArticleIDs"
+                                           value="@article.ArticleID"
+                                    @(isChecked ? "checked" : "")
+                                           onchange="updateSelectedArticles(this)"
+                                           data-articlename="@article.ArticleName" />
+                                    @article.ArticleID - @article.ArticleName
+                                </span>
+                            </label>
+                        }
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+
+        <!-- RIGHT: Selected Articles Display -->
+        <!-- RIGHT: Selected Articles Display -->
+        <div>
+            <h4>Selected Articles:</h4>
+            <div id="selected-articles-box" style="border:1px solid #ccc; padding:10px; min-height:100px;">
+                <em>No articles selected</em>
+            </div>
+        </div>
+
+
+        <hr />
+        <h3>Buyer Info</h3>
+
+
+
+        <div class="form-floating form-floating-outline mb-4">
+            <input type="BuyerName" class="form-control" placeholder="BuyerName" name="BuyerName" value="@Model.BuyerName" />
+            <label asp-for="BuyerName" class="control-label">BuyerName</label>
+        </div>
+
+
+        <div class="form-floating form-floating-outline mb-4">
+            <input type="Address" class="form-control" placeholder="Address" name="Address" value="@Model.Address" />
+            <label asp-for="Address" class="control-label">Address</label>
+        </div>
+
+
+        <div class="form-floating form-floating-outline mb-4">
+            <input type="PhoneNumber" class="form-control" placeholder="PhoneNumber" name="PhoneNumber" value="@Model.PhoneNumber" />
+            <label asp-for="PhoneNumber" class="control-label">PhoneNumber</label>
+        </div>
+
+        <div class="form-floating form-floating-outline mb-4">
+            <input type="number" class="form-control" placeholder="TotalAmount" name="TotalAmount" value="@Model.TotalAmount" />
+            <label asp-for="TotalAmount" class="control-label">TotalAmount</label>
+        </div>
+
+        <div class="form-floating form-floating-outline mb-4">
+            <input type="number" class="form-control" placeholder="Interest" name="Interest" value="@Model.Interest" />
+            <label asp-for="Interest" class="control-label">Interest</label>
+        </div>
+
+
+        <div class="form-floating form-floating-outline mb-4">
+            <input type="number" class="form-control" placeholder="Tenure" name="Tenure" value="@Model.Tenure" />
+            <label asp-for="Tenure" class="control-label">Tenure</label>
+        </div>
+
+        <button type="submit" class="btn btn-primary mx-2">Save</button>
+
+    </form>
+}
+
+@if (ViewBag.Message != null)
+{
+    <script>
+        handleMessages("@ViewBag.Message");
+    </script>
+    ViewBag.Message = null;
+}
+
+<script>
+    function updateSelectedArticles(checkbox) {
+        const box = document.getElementById("selected-articles-box");
+        const articleId = checkbox.value;
+        const articleName = checkbox.getAttribute("data-articlename");
+
+        const existing = document.getElementById("sel_" + articleId);
+
+        if (checkbox.checked) {
+            if (!existing) {
+                // Remove placeholder if exists
+                const placeholder = box.querySelector("em");
+                if (placeholder) placeholder.remove();
+
+                const div = document.createElement("div");
+                div.id = "sel_" + articleId;
+                div.textContent = `${articleId} - ${articleName}`;
+                box.appendChild(div);
+            }
+        } else {
+            if (existing) {
+                existing.remove();
+            }
+        }
+
+        // If nothing selected, show placeholder
+        if (box.children.length === 0) {
+            box.innerHTML = "<em>No articles selected</em>";
+        }
+    }
+
+    // On page load, initialize selected articles box for pre-checked checkboxes
+    window.onload = function () {
+        const checkedBoxes = document.querySelectorAll("input[name='SelectedArticleIDs']:checked");
+        const box = document.getElementById("selected-articles-box");
+
+        // Clear placeholder if any articles are selected
+        if (checkedBoxes.length > 0) {
+            box.innerHTML = "";
+        }
+
+        checkedBoxes.forEach(cb => updateSelectedArticles(cb));
+    };
+</script>
+

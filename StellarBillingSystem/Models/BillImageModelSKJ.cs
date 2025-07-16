@@ -6,9 +6,7 @@ namespace StellarBillingSystem_skj.Models
     {
         public BillImageModelSKJ() { }
 
-        public string BillID {  get; set; }
-
-        public string ArticleID { get; set; }   
+        public string BillID {  get; set; }  
 
         public int ImageID { get; set; }  
 

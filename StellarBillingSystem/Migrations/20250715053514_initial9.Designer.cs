@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using StellarBillingSystem.Context;
 
@@ -11,9 +12,11 @@ using StellarBillingSystem.Context;
 namespace StellarBillingSystem_skj.Migrations
 {
     [DbContext(typeof(BillingContext))]
-    partial class BillingContextModelSnapshot : ModelSnapshot
+    [Migration("20250715053514_initial9")]
+    partial class initial9
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1356,9 +1359,6 @@ namespace StellarBillingSystem_skj.Migrations
                     b.Property<double>("Netweight")
                         .HasColumnType("float");
 
-                    b.Property<int>("Quantity")
-                        .HasColumnType("int");
-
                     b.Property<double>("Reducedweight")
                         .HasColumnType("float");
 
@@ -1627,14 +1627,12 @@ namespace StellarBillingSystem_skj.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("RepledgeID")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("BranchID")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
-
-                    b.Property<bool>("IsDelete")
-                        .HasColumnType("bit");
 
                     b.Property<string>("LastUpdatedDate")
                         .HasColumnType("nvarchar(max)");
@@ -1645,11 +1643,8 @@ namespace StellarBillingSystem_skj.Migrations
                     b.Property<string>("LastUpdatedUser")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("RepledgeArticleIDS")
-                        .ValueGeneratedOnAdd()
+                    b.Property<int>("RepledgeArticleID")
                         .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("RepledgeArticleIDS"));
 
                     b.HasKey("BillID", "ArticleID", "RepledgeID");
 

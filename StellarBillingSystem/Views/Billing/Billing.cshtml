@@ -2,6 +2,7 @@
 @{
     ViewData["Title"] = "Billing";
     Layout = "~/Views/Shared/_ContentNavbarLayout.cshtml";
+    var imgs = ViewBag.ExistingImages as List<string>;
 }
 
 <!DOCTYPE html>
@@ -26,6 +27,8 @@
             <label>Bill ID</label>
             <input type="text" id="BillID" class="form-control" />
         </div>
+
+        <button class="btn btn-success mt-4" onclick="getBill()">Get Bill</button>
 
         <div class="input-group">
             @{
@@ -77,6 +80,7 @@
                 <th>Reduced Weight</th>
                 <th>Net Market Price</th>
                 <th>Appraise Net Value</th>
+                <th>Quantity</th>
                 <th>Actions</th>
             </tr>
         </thead>
@@ -117,7 +121,26 @@
         </div>
     </div>
 
+    <input type="file" id="fileInput" name="Images" multiple />
+    <input type="hidden" name="KeptImages" id="KeptImages" />
+    <button type="button" id="viewImagesBtn" class="btn btn-info" style="margin-top:10px; display:none;">
+        View Images
+    </button>
+
+    @if (imgs != null && imgs.Any())
+    {
+        foreach (var img in imgs)
+        {
+            <input type="hidden" name="existingImage" value="@img" />
+        }
+    }
+
+    </div>
+
+
     <button class="btn btn-success mt-4" onclick="saveBill()">Save Bill</button>
+
+
 
     <!-- Article Modal -->
     <div class="modal fade" id="articleModal" tabindex="-1">
@@ -141,6 +164,7 @@
 
                     <input type="text" id="NetWeight" class="form-control mb-2" placeholder="Net Weight" />
                     <input type="text" id="AppraiseValuePerGram" class="form-control mb-2" placeholder="Appraise Value Per Gram" />
+                    <input type="text" id="Quantity" class="form-control mb-2" placeholder="Quantity" />
                 </div>
                 <div class="modal-footer">
                     <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
@@ -150,14 +174,44 @@
         </div>
     </div>
 
+    <!-- Image Modal -->
+    <div class="modal fade" id="imageModal" tabindex="-1" aria-labelledby="imageModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content" style="background-color: #fff; border-radius: 10px;">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="imageModalLabel">Image Preview</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body text-center">
+                    <img id="modalImage" src="" alt="Preview" style="max-width: 100%; max-height: 500px;" />
+                    <div class="mt-3">
+                        <button class="btn btn-secondary" onclick="prevImage()">⟨</button>
+                        <button class="btn btn-secondary" onclick="nextImage()">⟩</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script>
         let articles = [];
         let billDetails = [];
+        let filesList = [];        // [{ id, path?, file?, existing? }]
+        let previewImages = [];    // All image URLs
+        let currentIndex = 0;
 
         function fillMarketRate(select) {
             const selectedOption = select.options[select.selectedIndex];
             const rate = selectedOption.getAttribute('data-rate');
             document.getElementById('MarketRate').value = rate;
+        }
+
+        function calculateReducedWeight(gross, net) {
+            return parseFloat((gross - net).toFixed(2));
+        }
+
+        function calculateAppraiseNetValue(net, rate) {
+            return parseFloat((net * rate).toFixed(2));
         }
 
         function addArticle() {
@@ -169,16 +223,16 @@
                 const appraisePerGram = parseFloat($('#AppraiseValuePerGram').val());
                 const marketRate = parseFloat($('#MarketRate').val()) || 5800;
                 const BranchID = $('#BranchID').val();
+                const quantity = parseInt($('#Quantity').val());
 
-                if (!name || isNaN(weight) || isNaN(netWeight) || !goldType || isNaN(appraisePerGram)) {
-                    console.warn("Invalid input detected in addArticle");
+                if (!name || isNaN(weight) || isNaN(netWeight) || !goldType || isNaN(appraisePerGram) || isNaN(quantity)) {
                     alert("Please fill all fields correctly.");
                     return;
                 }
 
                 const reducedWeight = calculateReducedWeight(weight, netWeight);
                 const appraiseNetValue = calculateAppraiseNetValue(netWeight, appraisePerGram);
-                const billID = $('#BillID').val(); // Get BillID
+                const billID = $('#BillID').val();
 
                 const article = {
                     ArticleName: name,
@@ -200,15 +254,13 @@
                     Netmarketprice: marketRate,
                     Apprisevaluepergram: appraisePerGram,
                     Apprisenetvalue: appraiseNetValue,
+                    Quantity: quantity,
                     BranchID: BranchID,
                     IsDelete: false
                 };
 
                 articles.push(article);
                 billDetails.push(detail);
-
-                console.log("Added article:", article);
-                console.log("Added bill detail:", detail);
 
                 updateTable();
 
@@ -219,8 +271,7 @@
 
                 $('#ArticleName, #WeightOfArticle, #GoldType, #MarketRate, #NetWeight, #AppraiseValuePerGram').val('');
             } catch (e) {
-                console.error("Exception in addArticle:", e);
-                alert("Something went wrong while adding article: " + e.message);
+                alert("Error adding article: " + e.message);
             }
         }
 
@@ -231,7 +282,7 @@
             let totalValue = 0;
 
             billDetails.forEach((detail, index) => {
-                const article = articles[index]; // index-based match
+                const article = articles[index];
                 overallWeight += detail.Netweight;
                 totalValue += detail.Apprisenetvalue;
 
@@ -245,12 +296,12 @@
                             <td>${detail.Reducedweight}</td>
                             <td>${detail.Netmarketprice}</td>
                             <td>${detail.Apprisenetvalue}</td>
+                             <td>${detail.Quantity}</td>
                             <td><button class="btn btn-danger btn-sm" onclick="removeArticle(${index})">Remove</button></td>
                         </tr>
                     `);
             });
 
-            console.log("Updated table with:", billDetails);
             $('#OverallWeight').val(overallWeight.toFixed(2));
             $('#TotalValue').val(totalValue.toFixed(2));
         }
@@ -262,11 +313,35 @@
         }
 
         function saveBill() {
+            const formData = new FormData();
+
+            const billID = $('#BillID').val();
             const branchID = $('#BranchID').val();
+
+            const imageModels = [];
+
+            filesList.forEach((f, index) => {
+                const fileId = `image_${index}`;
+                const articleID = f.articleID || 0;
+
+                imageModels.push({
+                    BillID: billID,
+                    ImageName: f.file ? f.file.name : f.path.split('/').pop(),
+                    ImagePath: f.file ? `BillImage/${billID}/${f.file.name}` : f.path,
+                    Lastupdateduser: 'admin',
+                    Lastupdateddate: new Date().toISOString(),
+                    Lastupdatedmachine: 'machine'
+                });
+
+
+                if (f.file) {
+                    formData.append(fileId, f.file); // send the file
+                }
+            });
 
             const vm = {
                 BillMaster: {
-                    BillID: $('#BillID').val(),
+                    BillID: billID,
                     CustomerID: $('#productID').val(),
                     BillDate: $('#BillDate').val(),
                     BranchID: branchID,
@@ -285,60 +360,168 @@
                     Lastupdatedmachine: 'machine'
                 },
                 BillDetails: billDetails,
-                Articles: articles
+                Articles: articles,
+                BillImages: imageModels
             };
 
-            console.log("🟡 Preparing to send to server:");
-            console.log("➡️ BillMaster:", vm.BillMaster);
-            console.log("➡️ BillDetails:", vm.BillDetails);
-            console.log("➡️ Articles:", vm.Articles);
+            formData.append("vm", JSON.stringify(vm));
 
             $.ajax({
                 type: "POST",
-                url: "/Billing/SaveBill",
-                contentType: "application/json",
-                data: JSON.stringify(vm),
-                success: function (result) {
-                    console.log("✅ Save successful:", result);
-                    alert("Bill saved!");
+                url: "/Billing/SaveBillWithFiles",
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function () {
+                    alert("✅ Bill saved with images!");
                     window.location.reload();
                 },
-                error: function (xhr, status, error) {
-                    console.error("❌ Save failed:");
-                    console.error("Status:", status);
-                    console.error("Error:", error);
-                    console.error("Response:", xhr.responseText);
-                    alert("Save failed: " + xhr.responseText);
+                error: function (xhr) {
+                    alert("❌ Save failed: " + xhr.responseText);
                 }
             });
         }
 
-        function calculateReducedWeight(gross, net) {
-            return parseFloat((gross - net).toFixed(2));
+        function getBill() {
+            const billId = $('#BillID').val();
+            if (!billId) {
+                alert("Please enter a Bill ID to fetch.");
+                return;
+            }
+
+            $.ajax({
+                type: 'GET',
+                url: '/Billing/GetBill?billId=' + billId,
+                success: function (res) {
+                    if (!res || !res.BillMaster) {
+                        alert("No bill found with that ID.");
+                        return;
+                    }
+
+                    const bm = res.BillMaster;
+                    const bd = res.BillDetails;
+                    const articlesList = res.Articles;
+
+                    // 🔄 Load existing images
+                    filesList = [];
+                    previewImages = [];
+
+                    if (res.Images && res.Images.length > 0) {
+                        res.Images.forEach((img, index) => {
+                            const id = `existing_${index}`;
+
+                            // ✅ Clean up any extra slashes
+                            const cleanPath = img.ImagePath.replace(/^\/+/, '').replace(/\\/g, '/');
+                            const finalPath = '/' + cleanPath; // Ensure only one leading slash
+
+                            filesList.push({ id, path: finalPath, existing: true });
+                            previewImages.push(finalPath);
+                        });
+                    }
+
+                    updateViewButtonVisibility();
+
+                    $('#productID').val(bm.CustomerID);
+                    const selectedLi = $('#productDropdown li').filter(function () {
+                        return $(this).data('value') == bm.CustomerID;
+                    });
+
+                    if (selectedLi.length > 0) {
+                        $('#productDropdownInput').val(selectedLi.text().trim());
+                    } else {
+                        $('#productDropdownInput').val('');
+                    }
+
+                    $('#BillDate').val(bm.BillDate.split('T')[0]);
+                    $('#OverallWeight').val(bm.OverallWeight);
+                    $('#TotalValue').val(bm.TotalValue);
+                    $('#LoanValue').val(bm.LoanValue);
+                    $('#InitialInterest').val(bm.InitialInterest);
+                    $('#TotalRepayValue').val(bm.TotalRepayValue);
+                    $('#PostTenureInterest').val(bm.PostTenureInterest);
+                    $('#Tenure').val(bm.Tenure);
+
+                    articles = articlesList;
+                    billDetails = bd;
+                    updateTable();
+                },
+                error: function (xhr) {
+                    alert("Error retrieving bill: " + xhr.responseText);
+                }
+            });
         }
 
-        function calculateAppraiseNetValue(net, rate) {
-            return parseFloat((net * rate).toFixed(2));
+
+        function prevImage() {
+            if (currentIndex > 0) {
+                currentIndex--;
+                document.getElementById('modalImage').src = previewImages[currentIndex];
+            }
+        }
+
+        function nextImage() {
+            if (currentIndex < previewImages.length - 1) {
+                currentIndex++;
+                document.getElementById('modalImage').src = previewImages[currentIndex];
+            }
+        }
+
+        function updateViewButtonVisibility() {
+            const viewImagesBtn = document.getElementById('viewImagesBtn');
+            viewImagesBtn.style.display = previewImages.length > 0 ? 'inline-block' : 'none';
         }
 
         $(document).ready(function () {
             $('#LoanValue, #InitialInterest').on('input', function () {
                 const loan = parseFloat($('#LoanValue').val()) || 0;
-                const interestPercent = parseFloat($('#InitialInterest').val()) || 0;
-
-                const interestAmount = (interestPercent / 100) * loan;
-                const totalRepay = loan + interestAmount;
-
-                $('#TotalRepayValue').val(totalRepay.toFixed(2));
+                const interest = parseFloat($('#InitialInterest').val()) || 0;
+                const total = loan + ((interest / 100) * loan);
+                $('#TotalRepayValue').val(total.toFixed(2));
             });
+
+            const fileInput = document.getElementById('fileInput');
+            const keptField = document.getElementById('KeptImages');
+            const viewImagesBtn = document.getElementById('viewImagesBtn');
+
+            document.querySelectorAll('input[name="existingImage"]').forEach(input => {
+                const path = input.value;
+                const id = crypto.randomUUID();
+                const imgSrc = '/' + path.replace(/\\/g, '/');
+
+                filesList.push({ id, path, existing: true });
+                previewImages.push(imgSrc);
+            });
+
+            fileInput.addEventListener('change', () => {
+                for (const file of fileInput.files) {
+                    const id = `${Date.now()}_${file.name}`;
+                    const imgURL = URL.createObjectURL(file);
+                    filesList.push({ id, file });
+                    previewImages.push(imgURL);
+                }
+
+                fileInput.value = '';
+                updateViewButtonVisibility();
+            });
+
+            viewImagesBtn.addEventListener('click', () => {
+                if (previewImages.length > 0) {
+                    currentIndex = 0;
+                    document.getElementById('modalImage').src = previewImages[0];
+                    const modal = new bootstrap.Modal(document.getElementById('imageModal'));
+                    modal.show();
+                }
+            });
+
+            updateViewButtonVisibility();
         });
     </script>
 
-
-
-
 </body>
 </html>
+
+
+
 
 
 <script>
