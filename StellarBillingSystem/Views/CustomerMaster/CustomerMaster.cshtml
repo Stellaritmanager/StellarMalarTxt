@@ -95,71 +95,63 @@
             </div>
         </div>
     </div>
-    <br/>
+    <br />
     <div class="row" style="height:8%"></div>
 
     <div class="row" style="margin-top:60px">
         <div class="col-md-12 col-lg-0"></div>
-        <div class="col-md-12 col-lg-12">
+        <div class="col-12 col-sm-12 col-md-12 col-lg-12">
             <div class="card">
                 <div class="card-body dividerblack">
                     <div class="row gy-4">
-                        <div class="col-md-12 col-lg-0"></div>
-
-                        <div class="col-md-12 col-lg-3">
+                        <div class="col-sm-1 col-md-1 col-lg-1"></div>
+                        <div class="col-sm-4 col-md-4 col-lg-4">
                             <div class="form-floating form-floating-outline mb-4">
                                 <input type="tel" maxlength="10" asp-for="MobileNumber" value="@Model.MobileNumber" id="MobileNumber" class="form-control" placeholder="Mobile Number" required pattern="\d{10}" title="Mobile Number should must contain 10 Digit" />
                                 <label asp-for="MobileNumber" class="control-label">Mobile Number</label>
                                 <span asp-validation-for="MobileNumber" class="text-danger"></span>
                             </div>
                         </div>
-
-                        <div class="col-md-12 col-lg-3">
+                        <div class="col-sm-4 col-md-4 col-lg-4">
                             <div class="form-floating form-floating-outline mb-4">
-
-                                
-
-
-
                                 <input asp-for="CustomerName" class="form-control" placeholder="Customer Name" value="@Model.CustomerName" pattern="^[A-Za-z\s]+$" title="Customer Name should contain only letters and spaces" />
                                 <label asp-for="CustomerName" class="control-label">Customer Name</label>
                                 <span asp-validation-for="CustomerName" class="text-danger"></span>
                             </div>
+                        </div>
+                        <div class="col-sm-1 col-md-1 col-lg-1">
+                            <button type="submit" style="width:95px; height:50px;" value="Create" asp-action="GetCustomer" class="btn btn-primary ms-2">Get</button>
 
+                        </div>
+                    </div>
+
+                    <br />
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row" style="margin-top:60px">
+        <div class="col-md-12 col-lg-0"></div>
+        <div class="col-12 col-sm-12 col-md-12 col-lg-12">
+            <div class="card">
+                <div class="card-body dividerblack">
+                    <div class="row">
+                        <div class="col-sm-4 col-md-4 col-lg-4">
                             <div class="form-floating form-floating-outline mb-4">
-
-                              
                                 <input asp-for="Fathername" class="form-control" placeholder="Father Name" value="@Model.Fathername" pattern="^[A-Za-z\s]+$" title="Customer Name should contain only letters and spaces" />
                                 <label asp-for="Fathername" class="control-label">Father Name</label>
                                 <span asp-validation-for="Fathername" class="text-danger"></span>
                             </div>
-
                         </div>
-
-
-
-
-                        <button type="submit" style="width:95px; height:50px;" value="Create" asp-action="GetCustomer" class="btn btn-primary ms-2">Get</button>
-                        
-
-                    </div>
-                   
-              <br/>
-
-               
-    <div class="row">
-                        <div class="col-md-12 col-lg-0"></div>
-        <div class="col-md-12 col-lg-3">
-
+                        <div class="col-sm-4 col-md-4 col-lg-4">
                             <div class="form-floating form-floating-outline mb-4 custom-date-picker">
                                 <input asp-for="DateofBirth" type="date" value="@Model.DateofBirth" class="form-control" placeholder="DateofBirth" max="@DateTime.Now.ToString("yyyy-MM-dd")" />
                                 <label asp-for="DateofBirth" class="control-label">Date of Birth</label>
                                 <span asp-validation-for="DateofBirth" class="text-danger"></span>
                             </div>
-         
-        </div>
+                        </div>
 
-                        <div class="col-md-12 col-lg-3">
+                        <div class="col-sm-4 col-md-4 col-lg-4">
                             <div class="form-floating form-floating-outline mb-4">
                                 <select id="genderSelect" name="Gender" class="form-control">
                                     @if (string.IsNullOrEmpty(Model.Gender))
@@ -204,7 +196,9 @@
                             </div>
                         </div>
 
-                        <div class="col-md-12 col-lg-3">
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-4 col-md-4 col-lg-4">
                             <div class="form-floating form-floating-outline mb-4">
 
                                 <input asp-for="Address" class="form-control" placeholder="Address" value="@Model.Address" />
@@ -212,45 +206,41 @@
 
                                 <span asp-validation-for="Address" class="text-danger"></span>
                             </div>
-
-
                         </div>
-
-                        <div class="col-md-12 col-lg-3">
-
+                        <div class="col-sm-4 col-md-4 col-lg-4">
                             <div class="form-floating form-floating-outline mb-4">
-
                                 <input asp-for="Country" class="form-control" placeholder="Country" value="@Model.Country" pattern="^[A-Za-z\s]+$" title="Country Name should contain only letters and spaces" />
                                 <label asp-for="Country" class="control-label"></label>
-
                                 <span asp-validation-for="Country" class="text-danger"></span>
                             </div>
-
-                             <div class="form-floating form-floating-outline mb-4">
-
+                        </div>
+                        <div class="col-sm-4 col-md-4 col-lg-4">
+                            <div class="form-floating form-floating-outline mb-4">
                                 <input asp-for="State" class="form-control" placeholder="State" value="@Model.State" pattern="^[A-Za-z\s]+$" title="State Name should contain only letters and spaces" />
                                 <label asp-for="State" class="control-label"></label>
-
                                 <span asp-validation-for="State" class="text-danger"></span>
                             </div>
+                        </div>
 
+                    </div>
+
+                    <div class="row">
+                        <div class="col-sm-4 col-md-4 col-lg-4">
                             <div class="form-floating form-floating-outline mb-4">
-
                                 <input asp-for="City" class="form-control" placeholder="City" value="@Model.City" pattern="^[A-Za-z\s]+$" title="City Name should contain only letters and spaces" />
                                 <label asp-for="City" class="control-label"></label>
-
                                 <span asp-validation-for="City" class="text-danger"></span>
                             </div>
+                        </div>
+                        <div class="col-sm-4 col-md-4 col-lg-4">
 
                             <div class="form-floating form-floating-outline mb-4">
-
                                 <input asp-for="Pincode" class="form-control" placeholder="Pincode" value="@Model.Pincode" pattern="^\d{6}$" title="Pincode Number should be in correct format" />
                                 <label asp-for="Pincode" class="control-label"></label>
-
                                 <span asp-validation-for="Pincode" class="text-danger"></span>
                             </div>
-
-                            
+                        </div>
+                        <div class="col-sm-4 col-md-4 col-lg-4">
                             <input type="file" id="fileInput" name="Images" multiple />
                             <input type="hidden" name="KeptImages" id="KeptImages" />
                             <button type="button" id="viewImagesBtn" class="btn btn-info" style="margin-top:10px; display:none;">
@@ -264,40 +254,26 @@
                                     <input type="hidden" name="existingImage" value="@img" />
                                 }
                             }
-
                         </div>
+                    </div>
+                </div>
 
-                     
-
-                        <div class="row mt-3">
-                            <div class="col-md-12 d-flex justify-content-center">
-
-                                
-                                <button type="submit"  id="save" value="save" asp-action="AddCustomer" class="btn btn-primary mx-2">Save</button>
-                                <button type="submit"  value="Create" asp-action="DeleteCustomer" class="btn btn-primaryred mx-2">Delete</button>
-                               @*  <button type="submit"  value="Create" asp-action="GetDeleteRetrieve" class="btn btn-primaryellow mx-2">DeleteRetrieve</button> *@
+            </div>
+            <div class="row mt-3">
+                <div class="col-md-12 d-flex justify-content-center">
 
 
-                            </div>
-                            </div>
-                            </div>
-       
-    </div>
+                    <button type="submit" id="save" value="save" asp-action="AddCustomer" class="btn btn-primary mx-2">Save</button>
+                    <button type="submit" value="Create" asp-action="DeleteCustomer" class="btn btn-primaryred mx-2">Delete</button>
+                    @*  <button type="submit"  value="Create" asp-action="GetDeleteRetrieve" class="btn btn-primaryellow mx-2">DeleteRetrieve</button> *@
+
+
                 </div>
             </div>
         </div>
-        
+
     </div>
-    <div class="row" style="margin-top:30px">
-       
-        <div class="form-group">
-            <br />
-            <center>
-                   
-            </center>
-        </div>
-      
-    </div>
+
 
 </form>
 
@@ -323,54 +299,54 @@
 
 
 <script>
-     document.addEventListener('DOMContentLoaded', () => {
+    document.addEventListener('DOMContentLoaded', () => {
 
-         const requiredFields = [
-             { id: 'CustomerName', label: 'Customer Name' },
-             { id: 'Address', label: 'Address' },
-             { id: 'State', label: 'State' },
-             { id: 'City', label: 'City' },
-             { id: 'Pincode', label: 'Pincode' }
-         ];
+        const requiredFields = [
+            { id: 'CustomerName', label: 'Customer Name' },
+            { id: 'Address', label: 'Address' },
+            { id: 'State', label: 'State' },
+            { id: 'City', label: 'City' },
+            { id: 'Pincode', label: 'Pincode' }
+        ];
 
-         const form = document.getElementById('uploadForm');
+        const form = document.getElementById('uploadForm');
 
-         form.addEventListener('submit', function (e) {
-             // Get which button triggered the submit
-             const clickedButton = e.submitter;
+        form.addEventListener('submit', function (e) {
+            // Get which button triggered the submit
+            const clickedButton = e.submitter;
 
-             // Only run validation if the clicked button is "Save"
-             if (clickedButton && clickedButton.textContent.trim().toLowerCase() === 'save') {
+            // Only run validation if the clicked button is "Save"
+            if (clickedButton && clickedButton.textContent.trim().toLowerCase() === 'save') {
 
-                 // Remove old validation borders
-                 requiredFields.forEach(f =>
-                     document.getElementById(f.id).classList.remove('is-invalid')
-                 );
+                // Remove old validation borders
+                requiredFields.forEach(f =>
+                    document.getElementById(f.id).classList.remove('is-invalid')
+                );
 
-                 // Find which fields are empty
-                 const missing = requiredFields.filter(f =>
-                     !document.getElementById(f.id).value.trim()
-                 );
+                // Find which fields are empty
+                const missing = requiredFields.filter(f =>
+                    !document.getElementById(f.id).value.trim()
+                );
 
-                 if (missing.length > 0) {
-                     e.preventDefault(); // Stop submit
+                if (missing.length > 0) {
+                    e.preventDefault(); // Stop submit
 
-                     // Add red border
-                     missing.forEach(f =>
-                         document.getElementById(f.id).classList.add('is-invalid')
-                     );
+                    // Add red border
+                    missing.forEach(f =>
+                        document.getElementById(f.id).classList.add('is-invalid')
+                    );
 
-                     // Show popup message
-                     const msg = missing
-                         .map(f => `"${f.label}" cannot be empty`)
-                         .join('\n');
+                    // Show popup message
+                    const msg = missing
+                        .map(f => `"${f.label}" cannot be empty`)
+                        .join('\n');
 
-                     showPopup(msg);
-                     document.getElementById(missing[0].id).focus();
-                 }
-             }
-         });
-     });
+                    showPopup(msg);
+                    document.getElementById(missing[0].id).focus();
+                }
+            }
+        });
+    });
 </script>
 
 
