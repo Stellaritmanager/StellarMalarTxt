@@ -80,6 +80,7 @@
                 <th>Reduced Weight</th>
                 <th>Net Market Price</th>
                 <th>Appraise Net Value</th>
+                <th>Quantity</th>
                 <th>Actions</th>
             </tr>
         </thead>
@@ -163,6 +164,7 @@
 
                     <input type="text" id="NetWeight" class="form-control mb-2" placeholder="Net Weight" />
                     <input type="text" id="AppraiseValuePerGram" class="form-control mb-2" placeholder="Appraise Value Per Gram" />
+                    <input type="text" id="Quantity" class="form-control mb-2" placeholder="Quantity" />
                 </div>
                 <div class="modal-footer">
                     <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
@@ -221,8 +223,9 @@
                 const appraisePerGram = parseFloat($('#AppraiseValuePerGram').val());
                 const marketRate = parseFloat($('#MarketRate').val()) || 5800;
                 const BranchID = $('#BranchID').val();
+                const quantity = parseInt($('#Quantity').val());
 
-                if (!name || isNaN(weight) || isNaN(netWeight) || !goldType || isNaN(appraisePerGram)) {
+                if (!name || isNaN(weight) || isNaN(netWeight) || !goldType || isNaN(appraisePerGram) || isNaN(quantity)) {
                     alert("Please fill all fields correctly.");
                     return;
                 }
@@ -251,6 +254,7 @@
                     Netmarketprice: marketRate,
                     Apprisevaluepergram: appraisePerGram,
                     Apprisenetvalue: appraiseNetValue,
+                    Quantity: quantity,
                     BranchID: BranchID,
                     IsDelete: false
                 };
@@ -292,6 +296,7 @@
                             <td>${detail.Reducedweight}</td>
                             <td>${detail.Netmarketprice}</td>
                             <td>${detail.Apprisenetvalue}</td>
+                             <td>${detail.Quantity}</td>
                             <td><button class="btn btn-danger btn-sm" onclick="removeArticle(${index})">Remove</button></td>
                         </tr>
                     `);

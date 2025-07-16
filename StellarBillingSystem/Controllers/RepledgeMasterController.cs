@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using StellarBillingSystem.Context;
 using StellarBillingSystem_skj.Models;
 using System.Linq;
@@ -26,12 +27,36 @@ public class RepledgeMasterController : Controller
         }
 
     [HttpPost]
-    public IActionResult GetArticles(RepledgeViewModel model)
+    public IActionResult GetArticles(RepledgeViewModel model,string buttonType)
     {
         if (TempData["BranchID"] != null)
         {
             model.BranchID = TempData["BranchID"].ToString();
             TempData.Keep("BranchID");
+        }
+
+        if(buttonType=="Delete")
+        {
+            var checkrepledge = _billingsoftware.Shbuyerrepledge.FirstOrDefault(x=>x.RepledgeID == model.RepledgeID && x.BranchID == model.BranchID);
+
+            {
+                if (checkrepledge != null)
+                {
+                    checkrepledge.IsDelete = true;
+
+                   
+                    var getallarticle = _billingsoftware.Shrepledgeartcile.Where(x=>x.RepledgeID == model.RepledgeID && x.BranchID == model.BranchID).ToList();
+                   
+                    foreach(var result in getallarticle)
+                    {
+                        result.IsDelete = true;
+
+                    }
+
+                    _billingsoftware.SaveChanges();
+                    ViewBag.Message = "Deleted Successfully";
+                }
+            }
         }
 
         // Get all bill articles first

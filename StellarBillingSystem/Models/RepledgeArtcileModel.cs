@@ -14,5 +14,7 @@
         public string? LastUpdatedDate { get; set; }
         public string? LastUpdatedUser { get; set; }
         public string? LastUpdatedMachine { get; set; }
+
+        public bool IsDelete { get; set; }  
     }
 }
