@@ -213,6 +213,47 @@ namespace StellarBillingSystem_skj.Controllers
             }
         }
 
+        [HttpPost]
+
+        public async Task<IActionResult> printBill([FromForm] string billId, [FromForm] string branchId)
+
+        {
+            BusinessBillingSKJ Busbill = new BusinessBillingSKJ(_billingsoftware, _configuration);
+            ViewData["customerid"] = Busbill.getCustomerID(branchId);
+            var goldTypes = Busbill.getGoldtype(branchId);
+
+            ViewBag.GoldTypeList = goldTypes;
+            ViewBag.BranchID = branchId;
+
+            BusinessBillingSKJ busbil = new BusinessBillingSKJ(_billingsoftware,_configuration);
+
+            var checkbillavailable = _billingsoftware.Shbillmasterskj.FirstOrDefault(x => x.BillID == billId && x.BranchID == branchId && x.IsDelete == false);
+
+            if (checkbillavailable == null)
+            {
+                ViewBag.Getnotfound = "BillID Not Found";
+
+                return View("Billing");
+            }
+
+          
+            String Query = "SELECT \r\n    SD.BillID,\r\n    CONVERT(VARCHAR(10), SB.BillDate, 101) AS BillDate,\r\n    SD.ArticleID,\r\n    SP.ArticleName,\r\n    FORMAT(TRY_CAST(REPLACE(SB.TotalRepayValue, ',', '') AS DECIMAL(18, 2)), 'N2') AS TotalRepayValue,  -- ✅ Fixed here\r\n    SD.Quantity,\r\n  (SELECT BM.Address1 \r\n FROM SHBranchMaster BM \r\n WHERE BM.BracnchID = SB.BranchID) AS shopAddress,\r\n\r\n(SELECT CM.CustomerName \r\n FROM SHCustomerMaster CM \r\n WHERE CM.CustomerID = SB.CustomerID AND CM.BranchID = SB.BranchID) AS CustomerName,\r\n  \r\n  cb.PhoneNumber1 as shopnumber,\r\n\r\n    CS.MobileNumber,\r\n\tCS.Address,\r\n\tcm.CategoryName as GoldType,\r\n    FORMAT(TRY_CAST(SD.Grossweight AS DECIMAL(18, 2)), 'N2') AS Grossweight,\r\n    FORMAT(TRY_CAST(SD.Netweight AS DECIMAL(18, 2)), 'N2') AS Netweight,\r\n    FORMAT(TRY_CAST(SD.Reducedweight AS DECIMAL(18, 2)), 'N2') AS Reducedweight,\r\n    SB.OverallWeight,\r\n    SB.InitialInterest,\r\n    SB.PostTenureInterest\r\nFROM \r\n    Shbilldetailsskj SD\r\nINNER JOIN \r\n    Shbillmasterskj SB ON SD.BillID = SB.BillID\r\nINNER JOIN \r\n    SHArticleMaster SP ON SD.ArticleID = SP.ArticleID\r\nINNER JOin\r\n  SHCategoryMaster CM ON Sp.GoldType = CM.CategoryID\r\nINNER JOIN\r\n    SHCustomerMaster CS ON SB.CustomerID = CS.CustomerID\r\nINNER JOIN\r\n    SHBranchMaster CB ON SB.BranchID = CB.BracnchID\r\nWHERE \r\n    SD.IsDelete = 0\r\n    AND SD.BillID = '" + billId + "'            \r\n    AND SD.BranchID = '" + branchId + "'              \r\n    AND SP.BranchID = '" + branchId + "'  \r\n    AND CS.BranchID = '" + branchId + "' \r\n    AND CB.BracnchID = '" + branchId + "' \r\n    AND SB.BranchID = '" + branchId + "' \r\n\tAND CM.BranchID = '" + branchId + "';\r\n";
+
+            var Table = BusinessClassCommon.DataTable(_billingsoftware, Query);
+
+
+
+            // Get current date and time
+            var currentDateTime = busbil.GetFormattedDateTime();
+
+            // Create filename with BillID and current datetime
+            var fileName = $"{billId}_{currentDateTime}.pdf";
+
+            return File(busbil.PrintBillDetails(Table,branchId), "application/vnd.openxmlformats-officedocument.wordprocessingml.document", fileName);
+
+
+        }
+
 
     }
 }
