@@ -103,6 +103,9 @@ namespace StellarBillingSystem.Context
 
         public DbSet<BillIDCombinationModel> Shbillcombinationskj { get; set; }
 
+        public DbSet<BuyerRepledgeModel> Shbuyerrepledge { get; set; }
+
+        public DbSet<RepledgeArtcileModel> Shrepledgeartcile { get; set; }
 
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -240,6 +243,43 @@ namespace StellarBillingSystem.Context
 
             modelBuilder.Entity<BillIDCombinationModel>().HasKey(i => i.BranchID);
 
+            // BuyerModelSKJ
+            modelBuilder.Entity<BuyerRepledgeModel>()
+                .HasKey(x => x.RepledgeID);
+
+            modelBuilder.Entity<BuyerRepledgeModel>()
+                .Property(x => x.BuyerID)
+                .ValueGeneratedOnAdd();
+
+            // ReplArticleModel: Composite Key
+            modelBuilder.Entity<RepledgeArtcileModel>()
+                .HasKey(x => new { x.BillID, x.ArticleID, x.RepledgeID });
+
+            // ReplArticleID: just auto-generated column
+            modelBuilder.Entity<RepledgeArtcileModel>()
+                .Property(x => x.RepledgeArticleIDS)
+                .ValueGeneratedOnAdd();
+
+            // FK to ArticleModel
+            modelBuilder.Entity<RepledgeArtcileModel>()
+                .HasOne<ArticleModel>()
+                .WithMany()
+                .HasForeignKey(x => x.ArticleID)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // FK to BillMasterModelSKJ
+            modelBuilder.Entity<RepledgeArtcileModel>()
+                .HasOne<BillMasterModelSKJ>()
+                .WithMany()
+                .HasForeignKey(x => new { x.BillID, x.BranchID })
+                .OnDelete(DeleteBehavior.Cascade);
+
+            // FK to BuyerModelSKJ
+            modelBuilder.Entity<RepledgeArtcileModel>()
+                .HasOne<BuyerRepledgeModel>()
+                .WithMany()
+                .HasForeignKey(x => x.RepledgeID)
+                .OnDelete(DeleteBehavior.Cascade);
 
         }
 

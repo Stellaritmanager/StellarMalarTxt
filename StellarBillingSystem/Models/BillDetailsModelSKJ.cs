@@ -25,5 +25,7 @@ namespace StellarBillingSystem_skj.Models
         public decimal Apprisenetvalue { get; set; }
    
         public int ArticleID { get; set; }
+
+        public int Quantity { get; set; }
     }
 }

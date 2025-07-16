@@ -1,10 +1,15 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.CodeAnalysis.Operations;
+using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
+using StellarBillingSystem.Business;
 using StellarBillingSystem.Context;
 using StellarBillingSystem.Models;
 using StellarBillingSystem_skj.Business;
 using StellarBillingSystem_skj.Models;
+using System.Globalization;
+using System.Web;
 
 namespace StellarBillingSystem_skj.Controllers
 {
@@ -51,86 +56,204 @@ namespace StellarBillingSystem_skj.Controllers
         }
 
         [HttpPost]
-        public IActionResult SaveBill([FromBody] BillViewModel vm)
+        public async Task<IActionResult> SaveBillWithFiles()
         {
+            var form = Request.Form;
+            var vmJson = form["vm"];
+            BillViewModel vm = JsonConvert.DeserializeObject<BillViewModel>(vmJson);
+
             if (vm == null)
-            {
-                var raw = new StreamReader(Request.Body).ReadToEndAsync().Result;
-                Console.WriteLine("🔍 RAW JSON RECEIVED:\n" + raw);
-                return BadRequest("❌ ViewModel is NULL!");
-            }
+                return BadRequest("Invalid ViewModel");
 
             try
             {
                 var billMaster = vm.BillMaster;
-                _billingsoftware.Shbillmasterskj.Add(billMaster);
 
-                Console.WriteLine("🟢 BillMaster Added:");
-                Console.WriteLine(JsonConvert.SerializeObject(billMaster, Formatting.Indented));
+                var existingBill = _billingsoftware.Shbillmasterskj
+                    .FirstOrDefault(b => b.BillID == billMaster.BillID);
 
-                // Step 1: Save Articles and track their IDs
-                var savedArticles = new List<ArticleModel>();
+
+                // ✅ Ensure upload folder exists
+                string uploadPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "BillImage", billMaster.BillID);
+                if (!Directory.Exists(uploadPath))
+                    Directory.CreateDirectory(uploadPath);
+
+                // ✅ Save uploaded files and update their image paths
+                foreach (var file in form.Files)
+                {
+                    string filePath = Path.Combine(uploadPath, file.FileName);
+                    using (var stream = new FileStream(filePath, FileMode.Create))
+                    {
+                        await file.CopyToAsync(stream);
+                    }
+
+                    var matchingImage = vm.BillImages.FirstOrDefault(img => img.ImageName == file.FileName);
+                    if (matchingImage != null)
+                    {
+                        matchingImage.ImagePath = "/" + Path.Combine("BillImage", billMaster.BillID, file.FileName).Replace("\\", "/");
+
+                    }
+                }
+
+                // ✅ Insert or update BillMaster
+                if (existingBill != null)
+                {
+                    _billingsoftware.Entry(existingBill).CurrentValues.SetValues(billMaster);
+                }
+                else
+                {
+                    _billingsoftware.Shbillmasterskj.Add(billMaster);
+                }
+
+                // ✅ Only insert new articles (do not delete existing ones)
                 foreach (var article in vm.Articles)
                 {
-                    _billingsoftware.SHArticleMaster.Add(article);
-                    savedArticles.Add(article);
+                    if (article.ArticleID == 0)
+                    {
+                        _billingsoftware.SHArticleMaster.Add(article);
+                    }
                 }
 
-                Console.WriteLine("🟢 Articles to Save:");
-                Console.WriteLine(JsonConvert.SerializeObject(savedArticles, Formatting.Indented));
+                _billingsoftware.SaveChanges(); // Save BillMaster and new Articles
 
-                // Step 2: Save Articles and BillMaster
-                var firstSave = _billingsoftware.SaveChanges();
-                Console.WriteLine($"✅ SaveChanges #1 (BillMaster + Articles) = {firstSave}");
+                // ✅ Replace old BillDetails
+                var oldDetails = _billingsoftware.Shbilldetailsskj
+                    .Where(d => d.BillID == billMaster.BillID).ToList();
+                _billingsoftware.Shbilldetailsskj.RemoveRange(oldDetails);
 
-                foreach (var a in savedArticles)
-                {
-                    Console.WriteLine($"🔎 Saved Article ID: {a.ArticleID}");
-                }
-
-                // Step 3: Link Articles to BillDetails
                 for (int i = 0; i < vm.BillDetails.Count; i++)
                 {
                     var detail = vm.BillDetails[i];
-                    var article = savedArticles[i];
+                    var article = vm.Articles[i]; // newly added or existing
 
                     detail.BillID = billMaster.BillID;
+                    detail.ArticleID = article.ArticleID; // use auto-generated ID
                     detail.BranchID = billMaster.BranchID;
-                    detail.ArticleID = article.ArticleID;
 
                     _billingsoftware.Shbilldetailsskj.Add(detail);
                 }
 
-                Console.WriteLine("🟢 BillDetails to Save:");
-                Console.WriteLine(JsonConvert.SerializeObject(vm.BillDetails, Formatting.Indented));
+                // ✅ Replace old BillImages
+                var oldImages = _billingsoftware.Shbillimagemodelskj
+                    .Where(i => i.BillID == billMaster.BillID).ToList();
+                _billingsoftware.Shbillimagemodelskj.RemoveRange(oldImages);
 
-                // Step 4: Save Details
-                var finalSave = _billingsoftware.SaveChanges();
-                Console.WriteLine($"✅ SaveChanges #2 (BillDetails) = {finalSave}");
-
-                // 🔍 Entity Tracker State Debug
-                Console.WriteLine("🧾 EF Change Tracker:");
-                foreach (var entry in _billingsoftware.ChangeTracker.Entries())
+                foreach (var image in vm.BillImages)
                 {
-                    Console.WriteLine($"▶️ Entity: {entry.Entity.GetType().Name}, State: {entry.State}");
+                    image.BillID = billMaster.BillID;
+                    _billingsoftware.Shbillimagemodelskj.Add(image);
                 }
 
-                return Json(new { success = true, message = "✅ Bill saved successfully!" });
+                _billingsoftware.SaveChanges();
+
+                return Json(new { success = true, message = "✅ Bill and images saved successfully!" });
+
+
             }
             catch (Exception ex)
             {
-                Console.WriteLine("❌ Exception Thrown: " + ex.Message);
+                Console.WriteLine("❌ Exception: " + ex.Message);
                 if (ex.InnerException != null)
-                    Console.WriteLine("🔍 Inner Exception: " + ex.InnerException.Message);
+                    Console.WriteLine("🔍 Inner: " + ex.InnerException.Message);
 
                 return Json(new { success = false, message = "❌ Error: " + ex.Message });
             }
         }
 
+        [HttpGet]
+        public IActionResult GetBill(string billId)
+        {
+            try
+            {
+                var billMaster = _billingsoftware.Shbillmasterskj
+                    .FirstOrDefault(b => b.BillID == billId && b.IsDelete == false);
+
+                if (billMaster == null)
+                    return NotFound("Bill not found");
+
+                var billDetails = _billingsoftware.Shbilldetailsskj
+                    .Where(d => d.BillID == billId && d.IsDelete == false)
+                    .ToList();
+
+                var articleIdList = billDetails
+                    .Select(d => d.ArticleID)
+                    .Distinct()
+                    .ToList();
+
+                // ✅ Safe in-memory filter
+                var allArticles = _billingsoftware.SHArticleMaster
+                    .AsNoTracking()
+                    .ToList();
+
+                var articles = allArticles
+                    .Where(a => articleIdList.Contains(a.ArticleID))
+                    .ToList();
+
+                var images = _billingsoftware.Shbillimagemodelskj
+    .Where(img => img.BillID == billId)
+    .Select(img => new
+    {
+        img.ImagePath,
+        img.ImageName
+    }).ToList();
+
+
+                return Json(new
+                {
+                    BillMaster = billMaster,
+                    BillDetails = billDetails,
+                    Articles = articles,
+                    Images = images
+                });
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("❌ Exception:", ex.Message);
+                return StatusCode(500, "Error retrieving bill");
+            }
+        }
+
+        [HttpPost]
+
+        public async Task<IActionResult> printBill([FromForm] string billId, [FromForm] string branchId)
+
+        {
+            BusinessBillingSKJ Busbill = new BusinessBillingSKJ(_billingsoftware, _configuration);
+            ViewData["customerid"] = Busbill.getCustomerID(branchId);
+            var goldTypes = Busbill.getGoldtype(branchId);
+
+            ViewBag.GoldTypeList = goldTypes;
+            ViewBag.BranchID = branchId;
+
+            BusinessBillingSKJ busbil = new BusinessBillingSKJ(_billingsoftware,_configuration);
+
+            var checkbillavailable = _billingsoftware.Shbillmasterskj.FirstOrDefault(x => x.BillID == billId && x.BranchID == branchId && x.IsDelete == false);
+
+            if (checkbillavailable == null)
+            {
+                ViewBag.Getnotfound = "BillID Not Found";
+
+                return View("Billing");
+            }
+
+          
+            String Query = "SELECT \r\n    SD.BillID,\r\n    CONVERT(VARCHAR(10), SB.BillDate, 101) AS BillDate,\r\n    SD.ArticleID,\r\n    SP.ArticleName,\r\n    FORMAT(TRY_CAST(REPLACE(SB.TotalRepayValue, ',', '') AS DECIMAL(18, 2)), 'N2') AS TotalRepayValue,  -- ✅ Fixed here\r\n    SD.Quantity,\r\n  (SELECT BM.Address1 \r\n FROM SHBranchMaster BM \r\n WHERE BM.BracnchID = SB.BranchID) AS shopAddress,\r\n\r\n(SELECT CM.CustomerName \r\n FROM SHCustomerMaster CM \r\n WHERE CM.CustomerID = SB.CustomerID AND CM.BranchID = SB.BranchID) AS CustomerName,\r\n  \r\n  cb.PhoneNumber1 as shopnumber,\r\n\r\n    CS.MobileNumber,\r\n\tCS.Address,\r\n\tcm.CategoryName as GoldType,\r\n    FORMAT(TRY_CAST(SD.Grossweight AS DECIMAL(18, 2)), 'N2') AS Grossweight,\r\n    FORMAT(TRY_CAST(SD.Netweight AS DECIMAL(18, 2)), 'N2') AS Netweight,\r\n    FORMAT(TRY_CAST(SD.Reducedweight AS DECIMAL(18, 2)), 'N2') AS Reducedweight,\r\n    SB.OverallWeight,\r\n    SB.InitialInterest,\r\n    SB.PostTenureInterest\r\nFROM \r\n    Shbilldetailsskj SD\r\nINNER JOIN \r\n    Shbillmasterskj SB ON SD.BillID = SB.BillID\r\nINNER JOIN \r\n    SHArticleMaster SP ON SD.ArticleID = SP.ArticleID\r\nINNER JOin\r\n  SHCategoryMaster CM ON Sp.GoldType = CM.CategoryID\r\nINNER JOIN\r\n    SHCustomerMaster CS ON SB.CustomerID = CS.CustomerID\r\nINNER JOIN\r\n    SHBranchMaster CB ON SB.BranchID = CB.BracnchID\r\nWHERE \r\n    SD.IsDelete = 0\r\n    AND SD.BillID = '" + billId + "'            \r\n    AND SD.BranchID = '" + branchId + "'              \r\n    AND SP.BranchID = '" + branchId + "'  \r\n    AND CS.BranchID = '" + branchId + "' \r\n    AND CB.BracnchID = '" + branchId + "' \r\n    AND SB.BranchID = '" + branchId + "' \r\n\tAND CM.BranchID = '" + branchId + "';\r\n";
+
+            var Table = BusinessClassCommon.DataTable(_billingsoftware, Query);
+
+
+
+            // Get current date and time
+            var currentDateTime = busbil.GetFormattedDateTime();
+
+            // Create filename with BillID and current datetime
+            var fileName = $"{billId}_{currentDateTime}.pdf";
+
+            return File(busbil.PrintBillDetails(Table,branchId), "application/vnd.openxmlformats-officedocument.wordprocessingml.document", fileName);
+
+
+        }
 
 
     }
-
-
 }
-
