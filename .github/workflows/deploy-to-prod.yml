@@ -1,25 +1,31 @@
-name: Push to Production Repo
+name: Deploy to Production Repo
 
 on:
   push:
     branches:
-      - master  # or your release branch
+      - master  # Trigger only when you push to master branch
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout Dev Repo
+      - name: Checkout Dev Repository
         uses: actions/checkout@v3
 
-      - name: Push to Production Repo
+      - name: Set up Git
         run: |
-          git config --global user.name "GitHub Action"
-          git config --global user.email "action@github.com"
+          git config --global user.name "GitHub Actions"
+          git config --global user.email "actions@github.com"
+
+      - name: Clone Production Repository
+        run: |
           git clone https://x-access-token:${{ secrets.PROD_PAT }}@github.com/Iyyapanprod/StellarBillingSKJProd.git prod
+
+      - name: Sync Code to Production Repository
+        run: |
           rsync -av --exclude='.git' ./ prod/
           cd prod
           git add .
-          git commit -m "Sync from development repo"
-          git push -u origin master --force
+          git commit -m "Auto-sync from Dev repo on $(date +'%Y-%m-%d %H:%M:%S')" || echo "No changes to commit"
+          git push origin master
