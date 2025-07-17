@@ -48,10 +48,10 @@
                     <div class="row gy-4">
                         <div class="col-sm-1 col-md-1 col-lg-1"></div>
                         <div class="col-sm-4 col-md-4 col-lg-4">
-                            <div class="form-floating form-floating-outline mb-4">
-                                <label>Bill ID</label>
-                                <input type="text" id="BillID" class="form-control" />
-                            </div>
+
+                            <label>Bill ID</label>
+                            <input type="text" id="BillID" class="form-control" />
+
                         </div>
                         <div class="col-sm-4 col-md-4 col-lg-4">
 
@@ -72,49 +72,45 @@
                     <div class="row">
                         <div class="col-sm-1 col-md-1 col-lg-1"> </div>
                         <div class="col-sm-4 col-md-4 col-lg-4">
-                            <div class="form-floating form-floating-outline mb-4">
 
-                                @{
-                                    var CustomerID = ((IEnumerable<CustomerMasterModel>)ViewData["customerid"])
-                                    .Select(m => new SelectListItem
+                            @{
+                                var CustomerID = ((IEnumerable<CustomerMasterModel>)ViewData["customerid"])
+                                .Select(m => new SelectListItem
             {
                 Value = m.CustomerID.ToString(), // Assuming ProductID is of type int
                 Text = $"{m.MobileNumber}-{m.CustomerName}"
             });
+                            }
+
+                            <label>Customer Number</label>
+                            <input type="text" id="productDropdownInput" class="form-control" placeholder="Customer Number" onkeyup="filterDropdown(event, 'productDropdownInput', 'productDropdown')" onclick="showDropdown('productDropdown')">
+                            <span class="text-danger"></span>
+
+                            <ul id="productDropdown" class="list-group mt-2"
+                                style="display: none; position: absolute; top: 100%; left: 0; width: 100%; max-height: 200px; overflow-y: auto; background-color: white; border: 1px solid #ddd; border-radius: .25rem; box-shadow: 0 0 .5rem rgba(0, 0, 0, .1); z-index: 1000; padding: 0; margin: 0; list-style-type: none;">
+                                @foreach (var item in CustomerID)
+                                {
+                                    <li class="list-group-item" data-value="@item.Value" onclick="selectDropdownItem('productDropdownInput', 'productID', '@item.Text', '@item.Value')"
+                                        style="padding: .5rem 1rem; cursor: pointer; background-color: white; border: none; list-style-type: none;">
+                                        @item.Text
+                                    </li>
                                 }
-
-                                <label>Customer Number</label>
-                                <input type="text" id="productDropdownInput" class="form-control" placeholder="Customer Number" onkeyup="filterDropdown(event, 'productDropdownInput', 'productDropdown')" onclick="showDropdown('productDropdown')">
+                            </ul>
 
 
-                                <ul id="productDropdown" class="list-group mt-2"
-                                    style="display: none; position: absolute; top: 100%; left: 0; width: 100%; max-height: 200px; overflow-y: auto; background-color: white; border: 1px solid #ddd; border-radius: .25rem; box-shadow: 0 0 .5rem rgba(0, 0, 0, .1); z-index: 1000; padding: 0; margin: 0; list-style-type: none;">
-                                    @foreach (var item in CustomerID)
-                                    {
-                                        <li class="list-group-item" data-value="@item.Value" onclick="selectDropdownItem('productDropdownInput', 'productID', '@item.Text', '@item.Value')"
-                                            style="padding: .5rem 1rem; cursor: pointer; background-color: white; border: none; list-style-type: none;">
-                                            @item.Text
-                                        </li>
-                                    }
-                                </ul>
-
-
-                                <input type="hidden" name="ProductID" id="productID" value="ProductID" />
-
-                            </div>
+                            <input type="hidden" name="ProductID" id="productID" value="ProductID" />
 
                         </div>
+
+
 
                         <div class="col-sm-4 col-md-4 col-lg-4">
-
-                            <div class="form-floating form-floating-outline mb-4">
-                                <input type="date" id="BillDate" class="form-control" value="@DateTime.Now.ToString("yyyy-MM-dd")" />
-
-                                <label class="control-label">Bill Date</label>
-                                <span class="text-danger"></span>
-                            </div>
+                            <label class="control-label">Bill Date</label>
+                            <input type="date" id="BillDate" class="form-control" value="@DateTime.Now.ToString("yyyy-MM-dd")" />
+                            <span class="text-danger"></span>
                         </div>
-                        <div class="col-sm-2 col-md-2 col-lg-2">
+
+                        <div class="col-sm-2 col-md-2 col-lg-2" style="margin-top:30px">
                             <button class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#articleModal">Add Article</button>
                         </div>
                         <div class="col-sm-1 col-md-1 col-lg-1"> </div>
@@ -126,35 +122,41 @@
     </div>
 
     <!-- Article Details Table -->
-    <div class="row" style="margin-top:30px">
-        <div class="col-md-12 col-lg-0"></div>
-        <div class="col-12 col-sm-12 col-md-12 col-lg-12">
-            <div class="card">
-                <div class="card-body dividerblack">
-                    <div class="row">
-                        <table class="table table-bordered" id="articleTable">
-                            <thead class="table-light">
-                                <tr>
-                                    <th>Article Name</th>
-                                    <th>Weight</th>
-                                    <th>Gold Type</th>
-                                    <th>Net Weight</th>
-                                    <th>Appraise/Gram</th>
-                                    <th>Reduced Weight</th>
-                                    <th>Net Market Price</th>
-                                    <th>Appraise Net Value</th>
-                                    <th>Quantity</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody></tbody>
-                        </table>
-
+    <div class="container mt-4">
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-body dividerblack">
+                        <!-- Make table scrollable on mobile -->
+                        <div class="table-responsive">
+                            <table class="table table-bordered" id="articleTable">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th class="text-center">Article Name</th>
+                                        <th class="text-center">Weight</th>
+                                        <th class="text-center">Gold Type</th>
+                                        <th class="text-center">Net Weight</th>
+                                        <th class="text-center">Appraise/Gram</th>
+                                        <th class="text-center">Reduced Weight</th>
+                                        <th class="text-center">Net Market Price</th>
+                                        <th class="text-center">Appraise Net Value</th>
+                                        <th class="text-center">Quantity</th>
+                                        <th class="text-center">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- Your dynamic rows will go here -->
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+
+    
+   
     <!-- Summary Fields -->
     <div class="row" style="margin-top:30px">
         <div class="col-md-12 col-lg-0"></div>
@@ -163,6 +165,7 @@
                 <div class="card-body dividerblack">
                     <div class="row">
                         <div class="col-sm-4 col-md-4 col-lg-4">
+
                             <label>Overall Weight</label>
                             <input type="text" id="OverallWeight" class="form-control" readonly />
                         </div>
@@ -194,7 +197,7 @@
                             <label>Tenure</label>
                             <input type="text" id="Tenure" class="form-control" />
                         </div>
-                        <div class="col-sm-4 col-md-4 col-lg-4" style="margin-top:20px">
+                        <div class="col-sm-4 col-md-4 col-lg-4" style="margin-top:35px">
                             <input type="file" id="fileInput" name="Images" multiple />
                             <input type="hidden" name="KeptImages" id="KeptImages" />
                             <button type="button" id="viewImagesBtn" class="btn btn-info" style="margin-top:10px; display:none;">
@@ -230,16 +233,16 @@
             </div>
         </div>
     </div>
-    
 
 
 
 
-   
 
 
-   
-  
+
+
+
+
 
 
     <!-- Article Modal -->
@@ -387,19 +390,19 @@
                 totalValue += detail.Apprisenetvalue;
 
                 tbody.append(`
-                                        <tr>
-                                            <td>${article.ArticleName}</td>
-                                            <td>${detail.Grossweight}</td>
-                                            <td>${article.GoldType}</td>
-                                            <td>${detail.Netweight}</td>
-                                            <td>${detail.Apprisevaluepergram}</td>
-                                            <td>${detail.Reducedweight}</td>
-                                            <td>${detail.Netmarketprice}</td>
-                                            <td>${detail.Apprisenetvalue}</td>
-                                             <td>${detail.Quantity}</td>
-                                            <td><button class="btn btn-danger btn-sm" onclick="removeArticle(${index})">Remove</button></td>
-                                        </tr>
-                                    `);
+                                                <tr>
+                                                    <td>${article.ArticleName}</td>
+                                                    <td>${detail.Grossweight}</td>
+                                                    <td>${article.GoldType}</td>
+                                                    <td>${detail.Netweight}</td>
+                                                    <td>${detail.Apprisevaluepergram}</td>
+                                                    <td>${detail.Reducedweight}</td>
+                                                    <td>${detail.Netmarketprice}</td>
+                                                    <td>${detail.Apprisenetvalue}</td>
+                                                     <td>${detail.Quantity}</td>
+                                                    <td><button class="btn btn-danger btn-sm" onclick="removeArticle(${index})">Remove</button></td>
+                                                </tr>
+                                            `);
             });
 
             $('#OverallWeight').val(overallWeight.toFixed(2));
