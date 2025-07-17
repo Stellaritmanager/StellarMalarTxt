@@ -1,1 +1,1 @@
-﻿Select * from SHBillmaster
+﻿Select * from SHBillmaster where 
