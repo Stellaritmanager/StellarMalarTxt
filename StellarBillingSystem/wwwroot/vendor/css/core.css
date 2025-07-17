@@ -3848,7 +3848,7 @@ textarea.form-control-lg {
     --bs-card-cap-color:;
     --bs-card-height:;
     --bs-card-color:;
-    --bs-card-bg: #000000;
+    --bs-card-bg: #181939;
     --bs-card-img-overlay-padding: 1.5rem;
     --bs-card-group-margin: 0.8125rem;
     position: relative;
@@ -3934,7 +3934,7 @@ textarea.form-control-lg {
 
 .card-header-tabs {
   margin-right: calc(-0.5 * var(--bs-card-cap-padding-x));
-  margin-bottom: calc(-1 * var(--bs-card-cap-padding-y));
+  margin-bottom: calc(-1 * var(--bs-card-cap-paddinga-y));
   margin-left: calc(-0.5 * var(--bs-card-cap-padding-x));
   border-bottom: 0;
 }

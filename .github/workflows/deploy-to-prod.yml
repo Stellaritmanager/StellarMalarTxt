@@ -1,0 +1,31 @@
+name: Deploy to Production Repo
+
+on:
+  push:
+    branches:
+      - master  # Trigger only when you push to master branch
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Dev Repository
+        uses: actions/checkout@v3
+
+      - name: Set up Git
+        run: |
+          git config --global user.name "GitHub Actions"
+          git config --global user.email "actions@github.com"
+
+      - name: Clone Production Repository
+        run: |
+          git clone https://x-access-token:${{ secrets.PROD_PAT }}@github.com/Iyyapanprod/StellarBillingSKJProd.git prod
+
+      - name: Sync Code to Production Repository
+        run: |
+          rsync -av --exclude='.git' --exclude='.github/workflows' ./ prod/
+          cd prod
+          git add .
+          git commit -m "Auto-sync from Dev repo on $(date +'%Y-%m-%d %H:%M:%S')" || echo "No changes to commit"
+          git push origin main --force

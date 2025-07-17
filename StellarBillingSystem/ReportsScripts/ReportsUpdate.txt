@@ -1,0 +1,1 @@
+﻿Select * from SHBillmaster where 1=1 and 1=1
