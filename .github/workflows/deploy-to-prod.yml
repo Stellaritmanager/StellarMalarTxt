@@ -22,4 +22,4 @@ jobs:
           cd prod
           git add .
           git commit -m "Sync from development repo"
-          git push origin main
+          git push -u origin master --force
