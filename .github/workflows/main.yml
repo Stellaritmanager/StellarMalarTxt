@@ -1,0 +1,25 @@
+name: Push to Production Repo
+
+on:
+  push:
+    branches:
+      - main  # or your release branch
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Dev Repo
+        uses: actions/checkout@v3
+
+      - name: Push to Production Repo
+        run: |
+          git config --global user.name "GitHub Action"
+          git config --global user.email "action@github.com"
+          git clone https://x-access-token:${{ secrets.PROD_PAT }}@github.com/Iyyapanprod/StellarBillingSKJProd.git prod
+          rsync -av --exclude='.git' ./ prod/
+          cd prod
+          git add .
+          git commit -m "Sync from development repo"
+          git push origin main
