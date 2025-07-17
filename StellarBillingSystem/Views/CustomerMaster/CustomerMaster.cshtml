@@ -209,13 +209,15 @@
                                 <span asp-validation-for="Address" class="text-danger"></span>
                             </div>
                         </div>
+
                         <div class="col-sm-4 col-md-4 col-lg-4">
                             <div class="form-floating form-floating-outline mb-4">
-                                <input asp-for="Country" class="form-control" placeholder="Country" value="@Model.Country" pattern="^[A-Za-z\s]+$" title="Country Name should contain only letters and spaces" />
-                                <label asp-for="Country" class="control-label"></label>
-                                <span asp-validation-for="Country" class="text-danger"></span>
+                                <input asp-for="City" class="form-control" placeholder="City" value="@Model.City" pattern="^[A-Za-z\s]+$" title="City Name should contain only letters and spaces" />
+                                <label asp-for="City" class="control-label"></label>
+                                <span asp-validation-for="City" class="text-danger"></span>
                             </div>
                         </div>
+                       
                         <div class="col-sm-4 col-md-4 col-lg-4">
                             <div class="form-floating form-floating-outline mb-4">
                                 <input asp-for="State" class="form-control" placeholder="State" value="@Model.State" pattern="^[A-Za-z\s]+$" title="State Name should contain only letters and spaces" />
@@ -229,9 +231,9 @@
                     <div class="row">
                         <div class="col-sm-4 col-md-4 col-lg-4">
                             <div class="form-floating form-floating-outline mb-4">
-                                <input asp-for="City" class="form-control" placeholder="City" value="@Model.City" pattern="^[A-Za-z\s]+$" title="City Name should contain only letters and spaces" />
-                                <label asp-for="City" class="control-label"></label>
-                                <span asp-validation-for="City" class="text-danger"></span>
+                                <input asp-for="Country" class="form-control" placeholder="Country" value="@Model.Country" pattern="^[A-Za-z\s]+$" title="Country Name should contain only letters and spaces" />
+                                <label asp-for="Country" class="control-label"></label>
+                                <span asp-validation-for="Country" class="text-danger"></span>
                             </div>
                         </div>
                         <div class="col-sm-4 col-md-4 col-lg-4">

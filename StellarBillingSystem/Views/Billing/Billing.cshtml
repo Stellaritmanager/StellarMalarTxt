@@ -1,5 +1,4 @@
-﻿
-@{
+﻿@{
     ViewData["Title"] = "Billing";
     Layout = "~/Views/Shared/_ContentNavbarLayout.cshtml";
     var imgs = ViewBag.ExistingImages as List<string>;
@@ -10,138 +9,237 @@
 <head>
     <meta charset="utf-8" />
     <title>Create Bill</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+    @*  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+    *@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    @*   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script> *@
 </head>
 <body class="container py-4">
-    <h2>Create Bill Entry</h2>
+
 
     <input type="hidden" id="BranchID" value="@ViewBag.BranchID" />
 
-
-    <!-- Customer + Date -->
-    <div class="row mb-3">
-
-         <div class="col-md-4">
-            <label>Bill ID</label>
-            <input type="text" id="BillID" class="form-control" />
+    <div class="row" style="margin-top:10px">
+        <div class="col-md-12 col-lg-0"></div>
+        <div class="col-12 col-sm-12 col-md-12 col-lg-12">
+            <div class="card">
+                <div class="card-body dividerblack">
+                    <div class="row gy-4">
+                        <div class="col-sm-12 col-md-12 col-lg-12">
+                            <h2 class="centered text-white" style="font-family:'Lucida Bright';text-align: center; margin: 0;">
+                                Create Bill Entry
+                            </h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
+    </div>
 
-        <button class="btn btn-success mt-4" onclick="getBill()">Get Bill</button>
 
-        <div class="input-group">
-            @{
-                var CustomerID = ((IEnumerable<CustomerMasterModel>)ViewData["customerid"])
-                .Select(m => new SelectListItem
+    <br />
+    <input type="hidden" id="BranchID" value="@ViewBag.BranchID" />
+    <!-- Customer + Date -->
+    <div class="row" style="margin-top:30px">
+        <div class="col-md-12 col-lg-0"></div>
+        <div class="col-12 col-sm-12 col-md-12 col-lg-12">
+            <div class="card">
+                <div class="card-body dividerblack">
+                    <div class="row gy-4">
+                        <div class="col-sm-1 col-md-1 col-lg-1"></div>
+                        <div class="col-sm-4 col-md-4 col-lg-4">
+                            <div class="form-floating form-floating-outline mb-4">
+                                <label>Bill ID</label>
+                                <input type="text" id="BillID" class="form-control" />
+                            </div>
+                        </div>
+                        <div class="col-sm-4 col-md-4 col-lg-4">
+
+                            <button class="btn btn-success mt-4" onclick="getBill()">Get Bill</button>
+
+                        </div>
+                        <div class="col-sm-1 col-md-1 col-lg-1"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row" style="margin-top:30px">
+        <div class="col-md-12 col-lg-0"></div>
+        <div class="col-12 col-sm-12 col-md-12 col-lg-12">
+            <div class="card">
+                <div class="card-body dividerblack">
+                    <div class="row">
+                        <div class="col-sm-1 col-md-1 col-lg-1"> </div>
+                        <div class="col-sm-4 col-md-4 col-lg-4">
+                            <div class="form-floating form-floating-outline mb-4">
+
+                                @{
+                                    var CustomerID = ((IEnumerable<CustomerMasterModel>)ViewData["customerid"])
+                                    .Select(m => new SelectListItem
             {
                 Value = m.CustomerID.ToString(), // Assuming ProductID is of type int
                 Text = $"{m.MobileNumber}-{m.CustomerName}"
             });
-            }
+                                }
+
+                                <label>Customer Number</label>
+                                <input type="text" id="productDropdownInput" class="form-control" placeholder="Customer Number" onkeyup="filterDropdown(event, 'productDropdownInput', 'productDropdown')" onclick="showDropdown('productDropdown')">
 
 
-            <input type="text" id="productDropdownInput" class="form-control" placeholder="Product Name" onkeyup="filterDropdown(event, 'productDropdownInput', 'productDropdown')" onclick="showDropdown('productDropdown')">
-            <ul id="productDropdown" class="list-group mt-2"
-                style="display: none; position: absolute; top: 100%; left: 0; width: 100%; max-height: 200px; overflow-y: auto; background-color: white; border: 1px solid #ddd; border-radius: .25rem; box-shadow: 0 0 .5rem rgba(0, 0, 0, .1); z-index: 1000; padding: 0; margin: 0; list-style-type: none;">
-                @foreach (var item in CustomerID)
-                {
-                    <li class="list-group-item" data-value="@item.Value" onclick="selectDropdownItem('productDropdownInput', 'productID', '@item.Text', '@item.Value')"
-                        style="padding: .5rem 1rem; cursor: pointer; background-color: white; border: none; list-style-type: none;">
-                        @item.Text
-                    </li>
-                }
-            </ul>
-            <input type="hidden" name="ProductID" id="productID" value="ProductID" />
+                                <ul id="productDropdown" class="list-group mt-2"
+                                    style="display: none; position: absolute; top: 100%; left: 0; width: 100%; max-height: 200px; overflow-y: auto; background-color: white; border: 1px solid #ddd; border-radius: .25rem; box-shadow: 0 0 .5rem rgba(0, 0, 0, .1); z-index: 1000; padding: 0; margin: 0; list-style-type: none;">
+                                    @foreach (var item in CustomerID)
+                                    {
+                                        <li class="list-group-item" data-value="@item.Value" onclick="selectDropdownItem('productDropdownInput', 'productID', '@item.Text', '@item.Value')"
+                                            style="padding: .5rem 1rem; cursor: pointer; background-color: white; border: none; list-style-type: none;">
+                                            @item.Text
+                                        </li>
+                                    }
+                                </ul>
 
 
+                                <input type="hidden" name="ProductID" id="productID" value="ProductID" />
+
+                            </div>
+
+                        </div>
+
+                        <div class="col-sm-4 col-md-4 col-lg-4">
+
+                            <div class="form-floating form-floating-outline mb-4">
+                                <input type="date" id="BillDate" class="form-control" value="@DateTime.Now.ToString("yyyy-MM-dd")" />
+
+                                <label class="control-label">Bill Date</label>
+                                <span class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="col-sm-2 col-md-2 col-lg-2">
+                            <button class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#articleModal">Add Article</button>
+                        </div>
+                        <div class="col-sm-1 col-md-1 col-lg-1"> </div>
+                    </div>
+                </div>
+            </div>
         </div>
 
-
-
-
-    </div>
-        <div class="col-md-4">
-            <label>Bill Date</label>
-            <input type="date" id="BillDate" class="form-control" value="@DateTime.Now.ToString("yyyy-MM-dd")" />
-        </div>
     </div>
 
     <!-- Article Details Table -->
-    <h4>Bill Details</h4>
-    <table class="table table-bordered" id="articleTable">
-        <thead class="table-light">
-            <tr>
-                <th>Article Name</th>
-                <th>Weight</th>
-                <th>Gold Type</th>
-                <th>Net Weight</th>
-                <th>Appraise/Gram</th>
-                <th>Reduced Weight</th>
-                <th>Net Market Price</th>
-                <th>Appraise Net Value</th>
-                <th>Quantity</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody></tbody>
-    </table>
+    <div class="row" style="margin-top:30px">
+        <div class="col-md-12 col-lg-0"></div>
+        <div class="col-12 col-sm-12 col-md-12 col-lg-12">
+            <div class="card">
+                <div class="card-body dividerblack">
+                    <div class="row">
+                        <table class="table table-bordered" id="articleTable">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Article Name</th>
+                                    <th>Weight</th>
+                                    <th>Gold Type</th>
+                                    <th>Net Weight</th>
+                                    <th>Appraise/Gram</th>
+                                    <th>Reduced Weight</th>
+                                    <th>Net Market Price</th>
+                                    <th>Appraise Net Value</th>
+                                    <th>Quantity</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
 
-    <button class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#articleModal">Add Article</button>
-
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
     <!-- Summary Fields -->
-    <div class="row g-3">
-        <div class="col-md-3">
-            <label>Overall Weight</label>
-            <input type="text" id="OverallWeight" class="form-control" readonly />
-        </div>
-        <div class="col-md-3">
-            <label>Total Value</label>
-            <input type="text" id="TotalValue" class="form-control" readonly />
-        </div>
-        <div class="col-md-3">
-            <label>Loan Value</label>
-            <input type="text" id="LoanValue" class="form-control" />
-        </div>
-        <div class="col-md-3">
-            <label>Initial Interest</label>
-            <input type="text" id="InitialInterest" class="form-control" />
-        </div>
-        <div class="col-md-3">
-            <label>Total Repay Value</label>
-            <input type="text" id="TotalRepayValue" class="form-control" />
-        </div>
-        <div class="col-md-3">
-            <label>Post Tenure Interest</label>
-            <input type="text" id="PostTenureInterest" class="form-control" />
-        </div>
-        <div class="col-md-3">
-            <label>Tenure</label>
-            <input type="text" id="Tenure" class="form-control" />
+    <div class="row" style="margin-top:30px">
+        <div class="col-md-12 col-lg-0"></div>
+        <div class="col-12 col-sm-12 col-md-12 col-lg-12">
+            <div class="card">
+                <div class="card-body dividerblack">
+                    <div class="row">
+                        <div class="col-sm-4 col-md-4 col-lg-4">
+                            <label>Overall Weight</label>
+                            <input type="text" id="OverallWeight" class="form-control" readonly />
+                        </div>
+                        <div class="col-sm-4 col-md-4 col-lg-4">
+                            <label>Total Value</label>
+                            <input type="text" id="TotalValue" class="form-control" readonly />
+                        </div>
+                        <div class="col-sm-4 col-md-4 col-lg-4">
+                            <label>Loan Value</label>
+                            <input type="text" id="LoanValue" class="form-control" />
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-4 col-md-4 col-lg-4">
+                            <label>Initial Interest</label>
+                            <input type="text" id="InitialInterest" class="form-control" />
+                        </div>
+                        <div class="col-sm-4 col-md-4 col-lg-4">
+                            <label>Total Repay Value</label>
+                            <input type="text" id="TotalRepayValue" class="form-control" />
+                        </div>
+                        <div class="col-sm-4 col-md-4 col-lg-4">
+                            <label>Post Tenure Interest</label>
+                            <input type="text" id="PostTenureInterest" class="form-control" />
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-4 col-md-4 col-lg-4">
+                            <label>Tenure</label>
+                            <input type="text" id="Tenure" class="form-control" />
+                        </div>
+                        <div class="col-sm-4 col-md-4 col-lg-4" style="margin-top:20px">
+                            <input type="file" id="fileInput" name="Images" multiple />
+                            <input type="hidden" name="KeptImages" id="KeptImages" />
+                            <button type="button" id="viewImagesBtn" class="btn btn-info" style="margin-top:10px; display:none;">
+                                View Images
+                            </button>
+
+                            @if (imgs != null && imgs.Any())
+                            {
+                                foreach (var img in imgs)
+                                {
+                                    <input type="hidden" name="existingImage" value="@img" />
+                                }
+                            }
+                        </div>
+                    </div>
+                    <div class="row">
+
+                        <div class="col-sm-5 col-md-5 col-lg-5"></div>
+
+                        <div class="col-sm-2 col-md-2 col-lg-2">
+                            <button class="btn btn-success mt-4" onclick="saveBill()">Save Bill</button>
+
+
+                        </div>
+
+                        <div class="col-sm-3 col-md-3 col-lg-3">
+                            <button class="btn btn-success mt-4" onclick="printBill()">Print Bill</button>
+
+                        </div>
+                        <div class="col-sm-2 col-md-2 col-lg-2"></div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
-
-    <input type="file" id="fileInput" name="Images" multiple />
-    <input type="hidden" name="KeptImages" id="KeptImages" />
-    <button type="button" id="viewImagesBtn" class="btn btn-info" style="margin-top:10px; display:none;">
-        View Images
-    </button>
-
-    @if (imgs != null && imgs.Any())
-    {
-        foreach (var img in imgs)
-        {
-            <input type="hidden" name="existingImage" value="@img" />
-        }
-    }
-
-    </div>
+    
 
 
-    <button class="btn btn-success mt-4" onclick="saveBill()">Save Bill</button>
 
-    <button class="btn btn-success mt-4" onclick="printBill()">Print Bill</button>
 
+   
+
+
+   
+  
 
 
     <!-- Article Modal -->
@@ -289,19 +387,19 @@
                 totalValue += detail.Apprisenetvalue;
 
                 tbody.append(`
-                        <tr>
-                            <td>${article.ArticleName}</td>
-                            <td>${detail.Grossweight}</td>
-                            <td>${article.GoldType}</td>
-                            <td>${detail.Netweight}</td>
-                            <td>${detail.Apprisevaluepergram}</td>
-                            <td>${detail.Reducedweight}</td>
-                            <td>${detail.Netmarketprice}</td>
-                            <td>${detail.Apprisenetvalue}</td>
-                             <td>${detail.Quantity}</td>
-                            <td><button class="btn btn-danger btn-sm" onclick="removeArticle(${index})">Remove</button></td>
-                        </tr>
-                    `);
+                                        <tr>
+                                            <td>${article.ArticleName}</td>
+                                            <td>${detail.Grossweight}</td>
+                                            <td>${article.GoldType}</td>
+                                            <td>${detail.Netweight}</td>
+                                            <td>${detail.Apprisevaluepergram}</td>
+                                            <td>${detail.Reducedweight}</td>
+                                            <td>${detail.Netmarketprice}</td>
+                                            <td>${detail.Apprisenetvalue}</td>
+                                             <td>${detail.Quantity}</td>
+                                            <td><button class="btn btn-danger btn-sm" onclick="removeArticle(${index})">Remove</button></td>
+                                        </tr>
+                                    `);
             });
 
             $('#OverallWeight').val(overallWeight.toFixed(2));
