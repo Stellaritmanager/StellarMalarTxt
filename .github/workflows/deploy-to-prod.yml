@@ -28,4 +28,4 @@ jobs:
           cd prod
           git add .
           git commit -m "Auto-sync from Dev repo on $(date +'%Y-%m-%d %H:%M:%S')" || echo "No changes to commit"
-          git push origin master --force
+          git push origin main --force
