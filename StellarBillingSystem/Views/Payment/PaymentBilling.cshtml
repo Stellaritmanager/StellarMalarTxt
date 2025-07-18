@@ -1,4 +1,9 @@
-﻿@model PaymentTableViewModel
+﻿
+@using System.Data
+@using NonFactors.Mvc.Grid
+@model PaymentTableViewModel
+
+
 
 @{
     ViewData["Title"] = "PaymentBilling";
@@ -113,10 +118,13 @@
                         </div>
 
                         <div class="col-sm-1 col-md-1 col-lg-1">
-                            <button type="submit" class="btn btn-primary" name="buttonType" value="AddPayment">AddPayment</button>
+                            <button type="submit" style="background-color: #4fdd52; color: white; padding: 10px 10px; border: none; border-radius: 4px;" name="buttonType" value="AddPayment">AddPayment</button>
                         </div>
                         <div class="col-sm-1 col-md-1 col-lg-1"></div>
 
+                    </div>
+                        <div class="row gy-4">
+                            <div class="col-sm-1 col-md-1 col-lg-1"></div>
                         <div class="col-sm-4 col-md-4 col-lg-4">
                             <div class="form-floating form-floating-outline mb-4">
                                 <input type="text" class="form-control" placeholder="CloseBy" id="CloseBy" name="CloseBy" />
@@ -129,8 +137,8 @@
                                 <label for="CloseDate" class="control-label">CloseDate</label>
                             </div>
                         </div>
-                       
-                        <div class="col-sm-1 col-md-1 col-lg-1"></div>
+
+                        <div class="col-sm-2 col-md-2 col-lg-2"></div>
                     </div>
                 </div>
             </div>
@@ -248,9 +256,9 @@
     <center>
         <div class="row mt-4">
             <div class="col-md-12">
-                <button type="submit" class="btn btn-primary" name="buttonType" value="Save">SavePayment</button>
-                <button type="submit" class="btn btn-primaryred" name="buttonType" value="DeletePaymentDetail">DeletePaymentDetail</button>
-                <button type="submit" class="btn btn-primaryred" name="buttonType" value="DeletePayment">DeletePayment</button>
+                <button type="submit" class="btn btn-success" name="buttonType" value="Save">SavePayment</button>
+                <button type="submit" class="btn btn-warning" name="buttonType" value="DeletePaymentDetail">DeletePaymentDetail</button>
+                <button type="submit" class="btn btn-danger" name="buttonType" value="DeletePayment">DeletePayment</button>
             </div>
         </div>
     </center>
