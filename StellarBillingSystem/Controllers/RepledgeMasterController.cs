@@ -9,7 +9,7 @@ using StellarBillingSystem_skj.Models;
 using System.Linq;
 
 
-
+[Authorize]
 [Route("[controller]/[action]")]
 public class RepledgeMasterController : Controller
 {

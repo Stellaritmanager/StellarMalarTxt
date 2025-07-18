@@ -7,9 +7,11 @@ using Microsoft.EntityFrameworkCore;
 using StellarBillingSystem.Context;
 using Microsoft.CodeAnalysis.Operations;
 using System.Diagnostics;
+using Microsoft.AspNetCore.Authorization;
 
 namespace StellarBillingSystem_skj.Controllers
 {
+    [Authorize]
     public class CustomerMasterController : Controller
     {
         private readonly IWebHostEnvironment _env;
@@ -167,19 +169,32 @@ namespace StellarBillingSystem_skj.Controllers
             existingCustomer.LastUpdatedmachine = Request.HttpContext.Connection.RemoteIpAddress.ToString();
 
             //  mark related images as deleted
-            var customerImages = await _billingsoftware.ShcustomerImageMaster
-                .Where(x => x.MobileNumber == model.MobileNumber && x.BranchID == model.BranchID && !x.IsDelete)
-                .ToListAsync();
+            var checkimage = _billingsoftware.ShcustomerImageMaster
+                    .Where(x => x.MobileNumber == model.MobileNumber)
+                    .ToList();
 
-            foreach (var img in customerImages)
+            foreach (var image in checkimage)
             {
-                img.IsDelete = true;
-                img.LastUpdatedDate = DateTime.Now;
-                img.LastUpateUser = User.Claims.First().Value.ToString();
-                img.LastUpdatedMachine = Request.HttpContext.Connection.RemoteIpAddress.ToString();
+                var serverPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", image.ImagePath.TrimStart('/'));
+                if (System.IO.File.Exists(serverPath))
+                {
+                    System.IO.File.Delete(serverPath);
+                }
             }
 
-            await _billingsoftware.SaveChangesAsync();
+            _billingsoftware.ShcustomerImageMaster.RemoveRange(checkimage);
+
+            var customerImageRoot = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "CustomerImages");
+            var matchingFolder = Directory.GetDirectories(customerImageRoot)
+                .FirstOrDefault(dir => Path.GetFileName(dir).StartsWith(model.MobileNumber));
+
+            if (!string.IsNullOrEmpty(matchingFolder) && Directory.Exists(matchingFolder))
+            {
+                Directory.Delete(matchingFolder, recursive: true);
+            }
+
+            // ✅ Save all at once to avoid context confusion and SQL syntax issues
+            _billingsoftware.SaveChanges();
 
             ViewBag.Message = "Deleted Successfully";
             model = new CustomerMasterModel();

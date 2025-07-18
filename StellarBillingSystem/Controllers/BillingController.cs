@@ -14,7 +14,7 @@ using System.Web;
 
 namespace StellarBillingSystem_skj.Controllers
 {
-    
+    [Authorize]
     [ApiController]
     [Route("[controller]/[action]")]
     public class BillingController : Controller
