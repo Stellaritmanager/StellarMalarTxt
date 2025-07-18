@@ -136,16 +136,21 @@
                             </div>
                         </div>
                         <div class="col-sm-1 col-md-1 col-lg-1">
-                            <button type="submit" style="width:95px;align-items:center height:50px;" value="Get" asp-action="GetCategory" formmethod="get" name="buttonType" class="btn btn-primary ms-2">Get</button>
+                            <button type="submit" style="width:95px;align-items:center; height:50px;" value="Get" asp-action="GetCategory" formmethod="get" name="buttonType" class="btn-primaryellow">Get</button>
 
                         </div>
-                      
-                        
-                       
-                        <div class="col-md-12 d-flex justify-content-center">
-                            <button type="submit" asp-action="AddCategory" value="save" name="buttonType" formmethod="post" class="btn btn-primary mx-2">Save</button>
-                            <button type="submit" asp-action="AddCategory" value="Delete" name="buttonType" class="btn btn-primaryred mx-2">Delete</button>
+
+                    </div>
+                        <div class="row gy-4">
+                            <div class="col-sm-4 col-md-4 col-lg-4"></div>
+                        <div class="col-sm-1 col-md-1 col-lg-1">
+                            <button type="submit" asp-action="AddCategory" value="save" name="buttonType" formmethod="post" class="btn btn-success">Save</button>
+                           </div>
+                        <div class="col-sm-4 col-md-4 col-lg-4">
+                          <button type="submit" asp-action="AddCategory" value="Delete" name="buttonType" class="btn btn-danger">Delete</button>
                         </div>
+                        <div class="col-sm-3 col-md-3 col-lg-3"></div>
+
                     </div>
                     <br />
                 </div>
@@ -189,9 +194,9 @@
             }
         </tbody>
                     </table><div id="pagination-controls" style="text-align: center; margin-top: 10px;">
-                        <button id="prev-btn" style="background-color: black; color: white; border: none; padding: 0px 6px; cursor: pointer; font-size: 16px; border-radius: 5px; margin: 0 5px;">Previous</button>
-                        <div id="page-numbers" style="display: inline-block; vertical-align: middle;"></div>
-                        <button id="next-btn" style="background-color: black; color: white; border: none; padding: 0px 6px; cursor: pointer; font-size: 16px; border-radius: 5px; margin: 0 5px;">Next</button>
+                        <button id="prev-btn" style="background-color: cadetblue; color: white; border: none; padding: 0px 6px; cursor: pointer; font-size: 16px; border-radius: 5px; margin: 0 5px;">Previous</button>
+                        <div id="page-numbers" style="background-color: cadetblue; color: white; border: none; padding: 0px 6px;display: inline-block; vertical-align: middle;"></div>
+                        <button id="next-btn" style="background-color: cadetblue; color: white; border: none; padding: 0px 6px; cursor: pointer; font-size: 16px; border-radius: 5px; margin: 0 5px;">Next</button>
                     </div>
 
                     <script>
