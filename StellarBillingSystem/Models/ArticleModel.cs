@@ -20,6 +20,8 @@ namespace StellarBillingSystem_skj.Models
         [MaxLength(50)]
         public string? LastUpdatedDate { get; set; }
 
-        public string BranchID { get; set; }    
+        public string BranchID { get; set; }
+
+        public bool IsDelete { get; set; }
     }
 }

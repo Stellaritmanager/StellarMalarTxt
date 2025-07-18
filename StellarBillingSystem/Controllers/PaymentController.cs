@@ -86,7 +86,7 @@ namespace StellarBillingSystem_skj.Controllers
 
 
         [HttpPost]
-        public async Task<IActionResult> PaymentAction(PaymentTableViewModel model, string buttonType, string selectedSlotId, string billId, string branchID, string billDate, string billValue)
+        public async Task<IActionResult> PaymentAction(PaymentTableViewModel model, string buttonType, string selectedSlotId, string billId, string branchID, string billDate, string billValue,string CloseBy,string CloseDate)
         {
 
             BusinessBillingSKJ business = new BusinessBillingSKJ(_billingsoftware, _configuration);
@@ -361,6 +361,29 @@ namespace StellarBillingSystem_skj.Controllers
 
             if (buttonType == "Save")
             {
+
+                if(CloseBy!=null & CloseDate!=null)
+                {
+                    var updpayment = _billingsoftware.Shbillmasterskj.FirstOrDefault(x=>x.BillID == billId && x.BranchID == model.BranchID);
+                    if(updpayment != null)
+                    {
+                        updpayment.closedBy = CloseBy;
+                        updpayment.ClosedDate = CloseDate;
+
+                        _billingsoftware.SaveChanges();
+                        ViewBag.Message = "Payment Completed";
+                    }
+                    else
+                    {
+                        ViewBag.Message = "Bill Not Found";
+                    }
+
+                    PaymentTableViewModel objnew = new PaymentTableViewModel();
+
+                    model = objnew;
+                    return View("PaymentBilling", model);
+                }
+
 
                 // Check if no radio button is selected
                 if (string.IsNullOrEmpty(selectedSlotId))

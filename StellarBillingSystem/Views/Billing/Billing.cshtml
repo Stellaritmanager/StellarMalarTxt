@@ -198,7 +198,7 @@
                             <input type="text" id="Tenure" class="form-control" />
                         </div>
                         <div class="col-sm-4 col-md-4 col-lg-4" style="margin-top:35px">
-                            <input type="file" id="fileInput" name="Images" multiple />
+                            <input type="file" id="fileInput" name="Images" multiple accept="image/*" />
                             <input type="hidden" name="KeptImages" id="KeptImages" />
                             <button type="button" id="viewImagesBtn" class="btn btn-info" style="margin-top:10px; display:none;">
                                 View Images
@@ -224,7 +224,7 @@
                         </div>
 
                         <div class="col-sm-2 col-md-3 col-lg-2">
-                            <button class="btn btn-success mt-4" onclick="deleteBill()">Delete Bill</button>
+                            <button class="btn btn-success mt-4" onclick="deletebill()">Delete Bill</button>
 
 
                         </div>
@@ -634,20 +634,17 @@
             }
 
             $.ajax({
-                url: '/Billing/deleteBill',
+                url: '/Billing/DeleteBill',
                 type: 'POST',
                 data: {
                     billId: billId,
                     branchId: branchId
                 },
                 success: function (response) {
-                    showPopup("Bill deleted successfully.",true);
-                    // Optionally clear fields or refresh page
-                    $('#BillID').val('');
-                    $('#BranchID').val('');
+                    showPopup(response.message, true);
                 },
                 error: function () {
-                    showPopup("Failed to delete the bill.",true);
+                    showPopup("Failed to delete the bill.", true);
                 }
             });
         }
