@@ -196,6 +196,7 @@ namespace StellarBillingSystem_skj.Controllers
                 {
                     // If no payment exists, set the balance to the bill's NetPrice
                     ViewBag.Balance = obj.StrBillvalue;
+                    ViewBag.Total = obj.StrBillvalue;
                 }
 
                 model.StrBillvalue = BusinessBillingSKJ.getbalance(_billingsoftware, paymentid, billId, model.BranchID, model.Viewpayment?.LastOrDefault()?.PaymentAmount);
@@ -208,6 +209,7 @@ namespace StellarBillingSystem_skj.Controllers
                 TempData["BranchID"] = model.BranchID;
 
                 ViewBag.Balance = model.StrBillvalue;
+                 ViewBag.Total = obj.StrBillvalue;
 
                 return View("PaymentBilling", obj);
             }
@@ -298,6 +300,12 @@ namespace StellarBillingSystem_skj.Controllers
                 if (string.IsNullOrEmpty(selectedSlotId))
                 {
                     ViewBag.Message = "Please select a payment.";
+
+                    var getbillvalue = await _billingsoftware.Shbillmasterskj.Where(x => x.BillID == billId && x.BranchID == model.BranchID).FirstOrDefaultAsync();
+                    if (getbillvalue != null)
+                       ViewBag.Total =getbillvalue.TotalRepayValue.ToString();
+                    billValue = ViewBag.Total;
+
                     var resultdel = UpdatePaymentDetails(billId, model.BranchID, formattedBillDate, billValue);
 
                     return View("PaymentBilling", model);
@@ -340,6 +348,8 @@ namespace StellarBillingSystem_skj.Controllers
                 if (exbilltotal != null)
                     model.Balance = exbilltotal.TotalRepayValue.ToString();
 
+                ViewBag.Total = exbilltotal.TotalRepayValue.ToString();
+
                 var resultdelpay = UpdatePaymentDetails(billId, model.BranchID, formattedBillDate, billValue);
                 return View("PaymentBilling", model);
 
@@ -356,6 +366,11 @@ namespace StellarBillingSystem_skj.Controllers
                 if (string.IsNullOrEmpty(selectedSlotId))
                 {
                     ViewBag.Message = "Please select a payment.";
+
+                    var getbillvalue = await _billingsoftware.Shbillmasterskj.Where(x => x.BillID == billId && x.BranchID == model.BranchID).FirstOrDefaultAsync();
+                    if (getbillvalue != null)
+                        ViewBag.Total = getbillvalue.TotalRepayValue.ToString();
+                    billValue = ViewBag.Total;
                     var resultdel = UpdatePaymentDetails(billId, model.BranchID, formattedBillDate, billValue);
 
                     return View("PaymentBilling", model);
@@ -475,6 +490,10 @@ namespace StellarBillingSystem_skj.Controllers
 
 
                 ViewBag.Message = "Payment Saved Successfully";
+
+                ViewBag.Total = exbilltotal.TotalRepayValue.ToString();
+                billValue = ViewBag.Total;
+
                 var resultsav = UpdatePaymentDetails(billId, model.BranchID, formattedBillDate, billValue);
 
 
@@ -514,6 +533,9 @@ namespace StellarBillingSystem_skj.Controllers
                     }
 
                     _billingsoftware.SaveChanges();
+
+                    ViewBag.Total = exbill.TotalRepayValue.ToString();
+                    billValue=ViewBag.Total;
 
                     var result = UpdatePaymentDetails(billId, model.BranchID, formattedBillDate, billValue);
                 }

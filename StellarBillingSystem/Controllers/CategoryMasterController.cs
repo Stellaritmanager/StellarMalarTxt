@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using StellarBillingSystem.Business;
 using StellarBillingSystem.Context;
@@ -7,6 +8,7 @@ using System.Data;
 
 namespace StellarBillingSystem_skj.Controllers
 {
+    [Authorize]
     public class CategoryMasterController : Controller
     {
         private BillingContext _billingsoftware;

@@ -56,7 +56,7 @@
     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
 
-    <input type="hidden" id="billValue" name="billValue" value="@TempData["BillValue"]" />
+   @*  <input type="hidden" id="billValue" name="billValue" value="@TempData["BillValue"]" /> *@
 
     <div class="row" style="margin-top:10px">
         <div class="col-md-12 col-lg-0"></div>
@@ -88,7 +88,7 @@
                         <div class="col-sm-1 col-md-1 col-lg-1"></div>
                         <div class="col-sm-4 col-md-4 col-lg-4">
                             <div class="form-floating form-floating-outline mb-4">
-                                <input type="text" class="form-control" placeholder="BillID" id="billId" name="billId" value="@Model.BillId" />
+                                <input type="text" class="form-control" placeholder="BillID" id="billId" name="billId" value="@Model.BillId" required />
                                 <label for="billId" class="control-label">billId</label>
                             </div>
                         </div>
@@ -101,7 +101,7 @@
                         <div class="col-sm-1 col-md-1 col-lg-1"></div>
                         <div class="col-sm-4 col-md-4 col-lg-4">
                             <div class="form-floating form-floating-outline mb-4">
-                                <input type="text" class="form-control" placeholder="Total" id="Total" name="Total" readonly value="@TempData["BillValue"]" />
+                                <input type="text" class="form-control" placeholder="Total" id="Total" name="Total" readonly value="@ViewBag.Total" />
                                 <label for="Total" class="control-label">Total</label>
                             </div>
                         </div>
