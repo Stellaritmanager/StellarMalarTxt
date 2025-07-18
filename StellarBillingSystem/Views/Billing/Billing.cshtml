@@ -199,7 +199,7 @@
                             <input type="text" id="Tenure" class="form-control" />
                         </div>
                         <div class="col-sm-4 col-md-4 col-lg-4" style="margin-top:35px">
-                            <input type="file" id="fileInput" name="Images" multiple />
+                            <input type="file" id="fileInput" name="Images" multiple accept="image/*" />
                             <input type="hidden" name="KeptImages" id="KeptImages" />
                             <button type="button" id="viewImagesBtn" class="btn btn-info" style="margin-top:10px; display:none;">
                                 View Images
@@ -216,10 +216,18 @@
                     </div>
                     <div class="row">
 
-                        <div class="col-sm-5 col-md-5 col-lg-5"></div>
+                        <div class="col-sm-3 col-md-3 col-lg-3"></div>
 
+                        <div class="col-sm-3 col-md-3 col-lg-3">
+                            <button class="btn btn-success mt-4" onclick="saveBill()">Save Bill</button>
                         <div class="col-sm-2 col-md-2 col-lg-2">
                             <button class="btn btn-success" onclick="saveBill()">Save Bill</button>
+
+
+                        </div>
+
+                        <div class="col-sm-2 col-md-3 col-lg-2">
+                            <button class="btn btn-success mt-4" onclick="deletebill()">Delete Bill</button>
 
 
                         </div>
@@ -297,12 +305,47 @@
         </div>
     </div>
 
+
+    <!-- Overlay -->
+    <div id="popupOverlay" style="display: none; position: fixed; top: 0; left: 0;
+     width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.3);
+     z-index: 999;" onclick="handleOutsideClick(event)">
+
+        <!-- Popup Message Box -->
+        <div id="popupMessage" style="position: fixed; top: 50%; left: 50%;
+         transform: translate(-50%, -50%); background: white;
+         padding: 30px; border: 1px solid black; border-radius: 10px;
+         z-index: 1000;" onclick="event.stopPropagation()">
+
+            <span id="popupMessageText"></span>
+            <div class="mt-3 text-center">
+                <button onclick="closePopup()" class="btn btn-outline-dark">OK</button>
+            </div>
+        </div>
+    </div>
+
     <script>
         let articles = [];
         let billDetails = [];
         let filesList = [];        // [{ id, path?, file?, existing? }]
         let previewImages = [];    // All image URLs
         let currentIndex = 0;
+
+        function showPopup(message, reload = false) {
+            shouldReloadOnClose = reload;
+            document.getElementById("popupMessageText").textContent = message;
+            document.getElementById("popupOverlay").style.display = "block";
+        }
+
+        function closePopup() {
+            document.getElementById("popupOverlay").style.display = "none";
+            if (shouldReloadOnClose) {
+                location.reload();
+            }
+        }
+        function handleOutsideClick(event) {
+            closePopup(); // closes if user clicks on overlay (outside popup)
+        }
 
         function fillMarketRate(select) {
             const selectedOption = select.options[select.selectedIndex];
@@ -330,7 +373,7 @@
                 const quantity = parseInt($('#Quantity').val());
 
                 if (!name || isNaN(weight) || isNaN(netWeight) || !goldType || isNaN(appraisePerGram) || isNaN(quantity)) {
-                    alert("Please fill all fields correctly.");
+                    showPopup("Please fill all fields correctly.",false);
                     return;
                 }
 
@@ -375,7 +418,7 @@
 
                 $('#ArticleName, #WeightOfArticle, #GoldType, #MarketRate, #NetWeight, #AppraiseValuePerGram').val('');
             } catch (e) {
-                alert("Error adding article: " + e.message);
+                showPopup("Error adding article: " + e.message,false);
             }
         }
 
@@ -421,6 +464,12 @@
 
             const billID = $('#BillID').val();
             const branchID = $('#BranchID').val();
+
+          
+            if (!billID) {
+                showPopup("Please enter a Bill ID", false);
+                return;
+            }
 
             const imageModels = [];
 
@@ -477,11 +526,10 @@
                 processData: false,
                 contentType: false,
                 success: function () {
-                    alert("✅ Bill saved with images!");
-                    window.location.reload();
+                    showPopup("Bill saved with images!",true);
                 },
                 error: function (xhr) {
-                    alert("❌ Save failed: " + xhr.responseText);
+                    showPopup("Save failed: " + xhr.responseText,true);
                 }
             });
         }
@@ -489,7 +537,7 @@
         function getBill() {
             const billId = $('#BillID').val();
             if (!billId) {
-                alert("Please enter a Bill ID to fetch.");
+                showPopup("Please enter a Bill ID to fetch.",false);
                 return;
             }
 
@@ -498,7 +546,7 @@
                 url: '/Billing/GetBill?billId=' + billId,
                 success: function (res) {
                     if (!res || !res.BillMaster) {
-                        alert("No bill found with that ID.");
+                        showPopup("No bill found with that ID.",true);
                         return;
                     }
 
@@ -550,7 +598,7 @@
                     updateTable();
                 },
                 error: function (xhr) {
-                    alert("Error retrieving bill: " + xhr.responseText);
+                    showPopup("Error retrieving bill: " + xhr.responseText,true);
                 }
             });
         }
@@ -560,7 +608,7 @@
             const branchId = $('#BranchID').val();
 
             if (!billId || !branchId) {
-                alert("Please enter Bill ID and Branch ID.");
+                showPopup("Please enter Bill ID",false);
                 return;
             }
 
@@ -578,6 +626,32 @@
             form.submit();
             form.remove();
         }
+
+        function deletebill() {
+            const billId = $('#BillID').val();
+            const branchId = $('#BranchID').val();
+
+            if (!billId || !branchId) {
+                showPopup("Please enter Bill ID",false);
+                return;
+            }
+
+            $.ajax({
+                url: '/Billing/DeleteBill',
+                type: 'POST',
+                data: {
+                    billId: billId,
+                    branchId: branchId
+                },
+                success: function (response) {
+                    showPopup(response.message, true);
+                },
+                error: function () {
+                    showPopup("Failed to delete the bill.", true);
+                }
+            });
+        }
+
 
 
 

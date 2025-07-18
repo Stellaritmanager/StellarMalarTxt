@@ -51,7 +51,7 @@
             });
                             }
 
-                            @Html.DropDownListFor(model => model.BranchID, branchlist, "Select Branch", new { @class = "form-control" })
+                            @Html.DropDownListFor(model => model.BranchID, branchlist, "Select Branch", new { @class = "form-control", required = "required" })
                             <label asp-for="BranchID" class="control-label">Branch</label>
                             <span asp-validation-for="BranchID" class="text-danger"></span>
                         </div>

@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.CodeAnalysis.Operations;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using StellarBillingSystem.Business;
@@ -13,6 +14,7 @@ using System.Web;
 
 namespace StellarBillingSystem_skj.Controllers
 {
+    
     [ApiController]
     [Route("[controller]/[action]")]
     public class BillingController : Controller
@@ -212,6 +214,83 @@ namespace StellarBillingSystem_skj.Controllers
                 return StatusCode(500, "Error retrieving bill");
             }
         }
+
+
+        [HttpPost]
+        public IActionResult DeleteBill([FromForm] string billId, [FromForm] string branchId)
+        {
+            try
+            {
+                var getbillmaster = _billingsoftware.Shbillmasterskj
+                    .FirstOrDefault(x => x.BillID == billId && !x.IsDelete && x.BranchID == branchId);
+
+                if (getbillmaster == null)
+                {
+                    return Ok(new { message = "Bill not found or could not be deleted." });
+                }
+
+                var getbilldetails = _billingsoftware.Shbilldetailsskj
+                    .Where(x => x.BillID == billId && !x.IsDelete && x.BranchID == branchId)
+                    .ToList();
+
+                //remove article
+                var articleIds = getbilldetails.Select(x => x.ArticleID).Distinct().ToList();
+
+              
+
+                // 1. Mark master and details as deleted
+                getbillmaster.IsDelete = true;
+
+                foreach (var details in getbilldetails)
+                {
+                    details.IsDelete = true;
+
+                    var articlesToDelete = _billingsoftware.SHArticleMaster
+                               .Where(x => x.ArticleID == details.ArticleID)
+                               .SingleOrDefault();
+
+                    articlesToDelete.IsDelete = true;
+                    
+
+
+                }
+
+
+
+                // 3. Remove images
+                var checkimage = _billingsoftware.Shbillimagemodelskj
+                    .Where(x => x.BillID == billId)
+                    .ToList();
+
+                foreach (var image in checkimage)
+                {
+                    var serverPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", image.ImagePath.TrimStart('/'));
+                    if (System.IO.File.Exists(serverPath))
+                    {
+                        System.IO.File.Delete(serverPath);
+                    }
+                }
+
+                _billingsoftware.Shbillimagemodelskj.RemoveRange(checkimage);
+
+                var billFolderPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "BillImage", billId);
+                        if (Directory.Exists(billFolderPath))
+                        {
+                            Directory.Delete(billFolderPath, recursive: true);
+                        }
+
+                // ✅ Save all at once to avoid context confusion and SQL syntax issues
+                _billingsoftware.SaveChanges();
+
+                return Ok(new { message = "Deleted successfully" });
+            }
+            catch (Exception ex)
+            {
+                return Ok(new { message = "An error occurred while deleting the bill." });
+            }
+        }
+
+
 
         [HttpPost]
 

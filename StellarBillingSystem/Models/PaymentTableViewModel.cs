@@ -14,6 +14,7 @@
         private string branchID;
         private List<PaymentDetailsModel> viewpayment;
         private String strBillvalue;
+
        
 
         public string BillId { get => strBillId; set => strBillId = value; }
@@ -24,5 +25,9 @@
         public string BillDate { get => strBillDate; set => strBillDate = value; }
         public string BranchID { get => branchID; set => branchID = value; }
         public string StrBillvalue { get => strBillvalue; set => strBillvalue = value; }
+
+        public string? ClosedDate { get; set; }
+
+        public string? closedBy { get; set; }
     }
 }
