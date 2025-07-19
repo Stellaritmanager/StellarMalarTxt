@@ -46,7 +46,10 @@ namespace StellarBillingSystem_skj.Controllers
 
 
 
-                var existingCustomer = await _billingsoftware.SHCustomerMaster.FirstOrDefaultAsync(x => (x.MobileNumber == model.MobileNumber) || (x.CustomerName == model.CustomerName) && x.BranchID == model.BranchID);
+                var existingCustomer = await _billingsoftware.SHCustomerMaster.FirstOrDefaultAsync(x => (x.MobileNumber == model.MobileNumber || x.CustomerName == model.CustomerName) &&
+          x.BranchID == model.BranchID &&
+          x.IsDelete == false);
+
                 if (existingCustomer != null)
                 {
                     if (existingCustomer.IsDelete)
