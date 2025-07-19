@@ -693,14 +693,27 @@
             });
 
             fileInput.addEventListener('change', () => {
+                const invalidFiles = [];
                 for (const file of fileInput.files) {
+                    if (!file.type.startsWith('image/')) {
+                        invalidFiles.push(file.name);
+                        continue;
+                    }
+
                     const id = `${Date.now()}_${file.name}`;
                     const imgURL = URL.createObjectURL(file);
+
                     filesList.push({ id, file });
                     previewImages.push(imgURL);
                 }
 
-                fileInput.value = '';
+                fileInput.value = ''; // Clear input for future changes
+
+                if (invalidFiles.length > 0) {
+                    const msg = `Only image files are allowed. These files were rejected:\n\n${invalidFiles.join('\n')}`;
+                    showPopup(msg);
+                }
+
                 updateViewButtonVisibility();
             });
 

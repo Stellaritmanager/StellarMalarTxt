@@ -116,8 +116,7 @@ namespace StellarBillingSystem_skj.Business
             using (var document = DocX.Load(filePath))
             {
                 // Replace placeholders with dynamic data
-                document.ReplaceText("<<address>>", pbillData.Rows[0]["shopAddress"].ToString());
-                document.ReplaceText("<<mobilenumber>>", pbillData.Rows[0]["shopnumber"].ToString());
+               
                 document.ReplaceText("<<billno>>", pbillData.Rows[0]["BillID"].ToString());
                 document.ReplaceText("<<billdate>>", pbillData.Rows[0]["BillDate"].ToString());
                 document.ReplaceText("<<totalrepay>>", pbillData.Rows[0]["TotalRepayValue"].ToString());
@@ -130,6 +129,7 @@ namespace StellarBillingSystem_skj.Business
                 document.ReplaceText("<<totalrepay>>", pbillData.Rows[0]["TotalRepayValue"].ToString());
                 document.ReplaceText("<<ininterest>>", pbillData.Rows[0]["InitialInterest"].ToString());
                 document.ReplaceText("<<posttenure>>", pbillData.Rows[0]["PostTenureInterest"].ToString());
+                document.ReplaceText("<<totalinword>>", pbillData.Rows[0]["TotalvalueinWords"].ToString());
 
 
 

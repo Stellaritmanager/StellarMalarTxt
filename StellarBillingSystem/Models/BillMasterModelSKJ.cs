@@ -43,7 +43,9 @@ namespace StellarBillingSystem_skj.Models
         [MaxLength(50)]
         public string? Lastupdatedmachine { get; set; }
         public string BranchID { get; set; }
-        
-       
+
+        public string? TotalvalueinWords { get; set; }
+
+
     }
 }
