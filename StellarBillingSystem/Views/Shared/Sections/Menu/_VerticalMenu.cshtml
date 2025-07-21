@@ -63,12 +63,12 @@
 
                 @if (rollAccessList != null)
                 {
-                    @if (rollAccessList.Contains("CategoryMaster"))
+                    @if (rollAccessList.Contains("CategoryMasterMT"))
                     {
 
-                        <li class='menu-item@(currentPage == "/CategoryMaster/CategoryMaster" ? " active" : "")'>
-                            <a asp-controller="CategoryMaster" asp-action="CategoryMaster" class="menu-link">
-                                <div>Gold Type Master</div>
+                        <li class='menu-item@(currentPage == "/CategoryMasterMT/CategoryMasterMT" ? " active" : "")'>
+                            <a asp-controller="CategoryMasterMT" asp-action="CategoryMasterMT" class="menu-link">
+                                <div>Category Master</div>
                             </a>
                         </li>
 

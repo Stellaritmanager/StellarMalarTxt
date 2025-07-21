@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.CodeAnalysis;
 using StellarBillingSystem.Models;
 using StellarBillingSystem_skj.Models;
+using StellarBillingSystem_Malar.Models;
 namespace StellarBillingSystem.Context
 {
     public class BillingContext : DbContext
@@ -106,6 +107,13 @@ namespace StellarBillingSystem.Context
         public DbSet<BuyerRepledgeModel> Shbuyerrepledge { get; set; }
 
         public DbSet<RepledgeArtcileModel> Shrepledgeartcile { get; set; }
+
+        //Table Creation for Mala Textile
+
+        public DbSet<CategoryModelMT> MTCategoryMaster {  get; set; }
+        public DbSet<SizeMasterModelMT> MTSizeMaster {  get; set; }
+        public DbSet<BrandMasterModelMT> MTBrandMaster {  get; set; }
+        public DbSet<ProductModelMT> MTProductMaster { get; set; }
 
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -280,6 +288,37 @@ namespace StellarBillingSystem.Context
                 .WithMany()
                 .HasForeignKey(x => x.RepledgeID)
                 .OnDelete(DeleteBehavior.Cascade);
+
+
+            //Model Table for MalaTextile
+
+            modelBuilder.Entity<CategoryModelMT>()
+                 .HasKey(c => new { c.CategoryName, c.BranchID });
+
+            modelBuilder.Entity<SizeMasterModelMT>()
+                 .HasKey(c => new { c.CategoryName,c.SizeName, c.BranchID });
+
+            modelBuilder.Entity<BrandMasterModelMT>().HasKey(c => new { c.BrandName, c.BranchID });
+
+            //Fk Category
+            modelBuilder.Entity<SizeMasterModelMT>()
+                .HasOne<CategoryModelMT>()
+                .WithMany() 
+                .HasForeignKey(i => new { i.CategoryName, i.BranchID })
+                .OnDelete(DeleteBehavior.Cascade);
+
+
+            modelBuilder.Entity<ProductModelMT>()
+                 .HasKey(c => new { c.Barcode, c.BranchID }); 
+
+            modelBuilder.Entity<ProductModelMT>()
+                .HasIndex(c => new { c.CategoryID, c.BrandID, c.ProductName, c.SizeID, c.Barcode, c.BranchID,c.ProductCode })
+                .IsUnique();
+
+            modelBuilder.Entity<ProductInwardModelMT>()
+                 .HasKey(c => new { c.InvoiceNumber, c.ProductCode,c.BranchID });
+
+          
 
         }
 

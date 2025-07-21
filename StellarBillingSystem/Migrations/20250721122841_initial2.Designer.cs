@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using StellarBillingSystem.Context;
 
@@ -11,9 +12,11 @@ using StellarBillingSystem.Context;
 namespace StellarBillingSystem_Malar.Migrations
 {
     [DbContext(typeof(BillingContext))]
-    partial class BillingContextModelSnapshot : ModelSnapshot
+    [Migration("20250721122841_initial2")]
+    partial class initial2
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1317,14 +1320,14 @@ namespace StellarBillingSystem_Malar.Migrations
                     b.Property<string>("BranchID")
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<int>("CategoryID")
+                    b.Property<string>("CategoryID")
+                        .IsRequired()
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("nvarchar(max)");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("CategoryID"));
-
-                    b.Property<bool>("IsDelete")
-                        .HasColumnType("bit");
+                    b.Property<string>("IsDelete")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Lastupdateddate")
                         .HasMaxLength(50)
@@ -1363,9 +1366,6 @@ namespace StellarBillingSystem_Malar.Migrations
 
                     b.Property<string>("InvoiceDate")
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("IsDelete")
-                        .HasColumnType("bit");
 
                     b.Property<string>("Lastupdateddate")
                         .HasMaxLength(50)
