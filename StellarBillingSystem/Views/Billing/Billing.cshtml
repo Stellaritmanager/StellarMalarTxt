@@ -322,7 +322,6 @@
     </div>
 
 
-    <script src="~/js/site-ajax.js"></script>
     <script>
         let articles = [];
         let billDetails = [];
@@ -519,10 +518,10 @@
             };
 
             formData.append("vm", JSON.stringify(vm));
-
+            var saveUrl = '@Url.Action("SaveBillWithFiles", "Billing")';
             $.ajax({
                 type: "POST",
-                url: "/Billing/SaveBillWithFiles",
+                url: saveUrl,
                 data: formData,
                 processData: false,
                 contentType: false,
@@ -541,10 +540,10 @@
                 showPopup("Please enter a Bill ID to fetch.",false);
                 return;
             }
-
+            var getBillUrl = '@Url.Action("GetBill", "Billing")';
             $.ajax({
                 type: 'GET',
-                url: '/Billing/GetBill?billId=' + billId,
+                url: getBillUrl + '?billId=' + billId,
                 success: function (res) {
                     if (!res || !res.BillMaster) {
                         showPopup("No bill found with that ID.",true);
@@ -636,9 +635,9 @@
                 showPopup("Please enter Bill ID",false);
                 return;
             }
-
+            var saveUrl = '@Url.Action("DeleteBill", "Billing")';
             $.ajax({
-                url: '/Billing/DeleteBill',
+                url: saveUrl,
                 type: 'POST',
                 data: {
                     billId: billId,
