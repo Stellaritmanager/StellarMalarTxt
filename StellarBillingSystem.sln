@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.9.34714.143
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StellarBillingSystem_skj", "StellarBillingSystem\StellarBillingSystem_skj.csproj", "{9B8D56F5-4949-41F2-ACBC-6A0F5539983D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StellarBillingSystem_Malar", "StellarBillingSystem\StellarBillingSystem_Malar.csproj", "{9B8D56F5-4949-41F2-ACBC-6A0F5539983D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
