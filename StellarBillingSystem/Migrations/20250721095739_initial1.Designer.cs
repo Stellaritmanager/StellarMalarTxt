@@ -9,11 +9,11 @@ using StellarBillingSystem.Context;
 
 #nullable disable
 
-namespace StellarBillingSystem_skj.Migrations
+namespace StellarBillingSystem_Malar.Migrations
 {
     [DbContext(typeof(BillingContext))]
-    [Migration("20250714063516_initial7")]
-    partial class initial7
+    [Migration("20250721095739_initial1")]
+    partial class initial1
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -1298,6 +1298,9 @@ namespace StellarBillingSystem_skj.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<bool>("IsDelete")
+                        .HasColumnType("bit");
+
                     b.Property<string>("LastUpdatedDate")
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
@@ -1358,6 +1361,9 @@ namespace StellarBillingSystem_skj.Migrations
 
                     b.Property<double>("Netweight")
                         .HasColumnType("float");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("int");
 
                     b.Property<double>("Reducedweight")
                         .HasColumnType("float");
@@ -1499,12 +1505,68 @@ namespace StellarBillingSystem_skj.Migrations
                     b.Property<decimal>("TotalValue")
                         .HasColumnType("decimal(18,2)");
 
+                    b.Property<string>("TotalvalueinWords")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("closedBy")
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("BillID", "BranchID");
 
                     b.ToTable("Shbillmasterskj");
+                });
+
+            modelBuilder.Entity("StellarBillingSystem_skj.Models.BuyerRepledgeModel", b =>
+                {
+                    b.Property<string>("RepledgeID")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("Address")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("BranchID")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("BuyerID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("BuyerID"));
+
+                    b.Property<string>("BuyerName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal>("Interest")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<bool>("IsDelete")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("LastUpdatedDate")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("LastUpdatedMachine")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("LastUpdatedUser")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PhoneNumber")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Tenure")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("TotalAmount")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.HasKey("RepledgeID");
+
+                    b.ToTable("Shbuyerrepledge");
                 });
 
             modelBuilder.Entity("StellarBillingSystem_skj.Models.CustomerImageModel", b =>
@@ -1563,6 +1625,50 @@ namespace StellarBillingSystem_skj.Migrations
                     b.HasIndex("MobileNumber", "CustomerName", "BranchID");
 
                     b.ToTable("ShcustomerImageMaster");
+                });
+
+            modelBuilder.Entity("StellarBillingSystem_skj.Models.RepledgeArtcileModel", b =>
+                {
+                    b.Property<string>("BillID")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int>("ArticleID")
+                        .HasColumnType("int");
+
+                    b.Property<string>("RepledgeID")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("BranchID")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<bool>("IsDelete")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("LastUpdatedDate")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("LastUpdatedMachine")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("LastUpdatedUser")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("RepledgeArticleIDS")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("RepledgeArticleIDS"));
+
+                    b.HasKey("BillID", "ArticleID", "RepledgeID");
+
+                    b.HasIndex("ArticleID");
+
+                    b.HasIndex("RepledgeID");
+
+                    b.HasIndex("BillID", "BranchID");
+
+                    b.ToTable("Shrepledgeartcile");
                 });
 
             modelBuilder.Entity("VoucherCustomerDetailModel", b =>
@@ -1647,6 +1753,27 @@ namespace StellarBillingSystem_skj.Migrations
                     b.HasOne("CustomerMasterModel", null)
                         .WithMany()
                         .HasForeignKey("MobileNumber", "CustomerName", "BranchID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("StellarBillingSystem_skj.Models.RepledgeArtcileModel", b =>
+                {
+                    b.HasOne("StellarBillingSystem_skj.Models.ArticleModel", null)
+                        .WithMany()
+                        .HasForeignKey("ArticleID")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("StellarBillingSystem_skj.Models.BuyerRepledgeModel", null)
+                        .WithMany()
+                        .HasForeignKey("RepledgeID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("StellarBillingSystem_skj.Models.BillMasterModelSKJ", null)
+                        .WithMany()
+                        .HasForeignKey("BillID", "BranchID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });

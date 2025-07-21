@@ -240,6 +240,12 @@ INSERT [dbo].[SHScreenName] ([Id], [ScreenName]) VALUES (N'6', N'NetDiscountMast
 INSERT [dbo].[SHScreenName] ([Id], [ScreenName]) VALUES (N'7', N'PointsMaster')
 INSERT [dbo].[SHScreenName] ([Id], [ScreenName]) VALUES (N'8', N'RackMaster')
 INSERT [dbo].[SHScreenName] ([Id], [ScreenName]) VALUES (N'9', N'RackPatrionProduct')
+INSERT [dbo].[SHScreenName] ([Id], [ScreenName]) VALUES (N'21', N'Billing')
+INSERT [dbo].[SHScreenName] ([Id], [ScreenName]) VALUES (N'22', N'RepledgeMaster')
+INSERT [dbo].[SHScreenName] ([Id], [ScreenName]) VALUES (N'23', N'PaymentBilling')
+
+
+
 
 
 --RollAccess
@@ -254,3 +260,8 @@ INSERT [dbo].[SHRoleaccessModel] ([RollID], [ScreenID], [Access], [Authorized], 
 INSERT [dbo].[SHRoleaccessModel] ([RollID], [ScreenID], [Access], [Authorized], [lastUpdatedDate], [lastUpdatedUser], [lastUpdatedMachine], [Isdelete], [BranchID]) VALUES (N'Roll_Stellar_1', N'RollAccessMaster', N'true', N'1', N'08-10-2024 12:10:20', N'Mk', N'::1', 0, N'Lee_Mobile')
 INSERT [dbo].[SHRoleaccessModel] ([RollID], [ScreenID], [Access], [Authorized], [lastUpdatedDate], [lastUpdatedUser], [lastUpdatedMachine], [Isdelete], [BranchID]) VALUES (N'Roll_Stellar_1', N'RollTypeMaster', N'true', N'1', N'08-10-2024 12:10:28', N'Mk', N'::1', 0, N'Lee_Mobile')
 INSERT [dbo].[SHRoleaccessModel] ([RollID], [ScreenID], [Access], [Authorized], [lastUpdatedDate], [lastUpdatedUser], [lastUpdatedMachine], [Isdelete], [BranchID]) VALUES (N'Roll_Stellar_1', N'StaffAdmin', N'true', N'1', N'08-10-2024 12:10:12', N'Mk', N'::1', 0, N'Lee_Mobile')
+INSERT [dbo].[SHRoleaccessModel] ([RollID], [ScreenID], [BranchID], [Access], [Authorized], [lastUpdatedDate], [lastUpdatedUser], [lastUpdatedMachine], [Isdelete]) VALUES (N'Roll_Stellar_1', N'Billing', N'Lee_Mobile', N'true', N'1', N'21/07/2025 16:16:19', N'mk', N'::1', 0)
+INSERT [dbo].[SHRoleaccessModel] ([RollID], [ScreenID], [BranchID], [Access], [Authorized], [lastUpdatedDate], [lastUpdatedUser], [lastUpdatedMachine], [Isdelete]) VALUES (N'Roll_Stellar_1', N'PaymentBilling', N'Lee_Mobile', N'true', N'1', N'21/07/2025 16:16:09', N'mk', N'::1', 0)
+INSERT [dbo].[SHRoleaccessModel] ([RollID], [ScreenID], [BranchID], [Access], [Authorized], [lastUpdatedDate], [lastUpdatedUser], [lastUpdatedMachine], [Isdelete]) VALUES (N'Roll_Stellar_1', N'RepledgeMaster', N'Lee_Mobile', N'true', N'1', N'21/07/2025 16:16:00', N'mk', N'::1', 0)
+
+

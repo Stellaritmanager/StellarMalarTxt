@@ -8,7 +8,7 @@ using StellarBillingSystem.Context;
 
 #nullable disable
 
-namespace StellarBillingSystem_skj.Migrations
+namespace StellarBillingSystem_Malar.Migrations
 {
     [DbContext(typeof(BillingContext))]
     partial class BillingContextModelSnapshot : ModelSnapshot

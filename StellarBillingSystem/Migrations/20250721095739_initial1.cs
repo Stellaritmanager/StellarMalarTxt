@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace StellarBillingSystem_skj.Migrations
+namespace StellarBillingSystem_Malar.Migrations
 {
     /// <inheritdoc />
     public partial class initial1 : Migration
@@ -32,6 +32,42 @@ namespace StellarBillingSystem_skj.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "SHArticleMaster",
+                columns: table => new
+                {
+                    ArticleID = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    ArticleName = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
+                    WeightOfArticle = table.Column<double>(type: "float", nullable: false),
+                    GoldType = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    LastUpdatedUser = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
+                    LastUpdatedmachine = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
+                    LastUpdatedDate = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
+                    BranchID = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    IsDelete = table.Column<bool>(type: "bit", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_SHArticleMaster", x => x.ArticleID);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Shbillcombinationskj",
+                columns: table => new
+                {
+                    BranchID = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    CombinationValue = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    IncrementValue = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Lastupdateduser = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
+                    Lastupdateddate = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
+                    Lastupdatedmachine = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Shbillcombinationskj", x => x.BranchID);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "SHbilldetails",
                 columns: table => new
                 {
@@ -57,6 +93,24 @@ namespace StellarBillingSystem_skj.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_SHbilldetails", x => new { x.Id, x.ProductID, x.BranchID });
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Shbillimagemodelskj",
+                columns: table => new
+                {
+                    ImageID = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    BillID = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ImagePath = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ImageName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Lastupdateduser = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
+                    Lastupdateddate = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
+                    Lastupdatedmachine = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Shbillimagemodelskj", x => x.ImageID);
                 });
 
             migrationBuilder.CreateTable(
@@ -106,6 +160,36 @@ namespace StellarBillingSystem_skj.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Shbillmasterskj",
+                columns: table => new
+                {
+                    BillID = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    BranchID = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    BillDate = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    CustomerID = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    OverallWeight = table.Column<double>(type: "float", nullable: false),
+                    TotalValue = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    LoanValue = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    InitialInterest = table.Column<double>(type: "float", nullable: false),
+                    TotalRepayValue = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    NoOfItem = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    PostTenureInterest = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Tenure = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ClosedDate = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    closedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false),
+                    IsDelete = table.Column<bool>(type: "bit", nullable: false),
+                    Lastupdateduser = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
+                    Lastupdateddate = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
+                    Lastupdatedmachine = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
+                    TotalvalueinWords = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Shbillmasterskj", x => new { x.BillID, x.BranchID });
+                });
+
+            migrationBuilder.CreateTable(
                 name: "SHBranchMaster",
                 columns: table => new
                 {
@@ -134,22 +218,47 @@ namespace StellarBillingSystem_skj.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Shbuyerrepledge",
+                columns: table => new
+                {
+                    RepledgeID = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    BuyerID = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    BuyerName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Address = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    PhoneNumber = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    TotalAmount = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    Interest = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    Tenure = table.Column<int>(type: "int", nullable: false),
+                    BranchID = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    IsDelete = table.Column<bool>(type: "bit", nullable: false),
+                    LastUpdatedDate = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    LastUpdatedUser = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    LastUpdatedMachine = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Shbuyerrepledge", x => x.RepledgeID);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "SHCategoryMaster",
                 columns: table => new
                 {
+                    CategoryName = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     BranchID = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     Id = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("SqlServer:Identity", "101, 1"),
                     CategoryID = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    CategoryName = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     LastUpdatedUser = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     LastUpdatedmachine = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     IsDelete = table.Column<bool>(type: "bit", nullable: false),
-                    LastUpdatedDate = table.Column<DateTime>(type: "datetime2", nullable: false)
+                    LastUpdatedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    MarketRate = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_SHCategoryMaster", x => new { x.Id, x.BranchID });
+                    table.PrimaryKey("PK_SHCategoryMaster", x => new { x.Id, x.BranchID, x.CategoryName });
                 });
 
             migrationBuilder.CreateTable(
@@ -684,6 +793,80 @@ namespace StellarBillingSystem_skj.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Shbilldetailsskj",
+                columns: table => new
+                {
+                    BillID = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    BranchID = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    ArticleID = table.Column<int>(type: "int", nullable: false),
+                    IsDelete = table.Column<bool>(type: "bit", nullable: false),
+                    Lastupdateduser = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
+                    Lastupdateddate = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
+                    Lastupdatedmachine = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
+                    Grossweight = table.Column<double>(type: "float", nullable: false),
+                    Netweight = table.Column<double>(type: "float", nullable: false),
+                    Reducedweight = table.Column<double>(type: "float", nullable: false),
+                    Netmarketprice = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    Apprisevaluepergram = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    Apprisenetvalue = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    Quantity = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Shbilldetailsskj", x => new { x.ArticleID, x.BranchID, x.BillID });
+                    table.ForeignKey(
+                        name: "FK_Shbilldetailsskj_SHArticleMaster_ArticleID",
+                        column: x => x.ArticleID,
+                        principalTable: "SHArticleMaster",
+                        principalColumn: "ArticleID",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Shbilldetailsskj_Shbillmasterskj_BillID_BranchID",
+                        columns: x => new { x.BillID, x.BranchID },
+                        principalTable: "Shbillmasterskj",
+                        principalColumns: new[] { "BillID", "BranchID" },
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Shrepledgeartcile",
+                columns: table => new
+                {
+                    ArticleID = table.Column<int>(type: "int", nullable: false),
+                    BillID = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    RepledgeID = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    RepledgeArticleIDS = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    BranchID = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    LastUpdatedDate = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    LastUpdatedUser = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    LastUpdatedMachine = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    IsDelete = table.Column<bool>(type: "bit", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Shrepledgeartcile", x => new { x.BillID, x.ArticleID, x.RepledgeID });
+                    table.ForeignKey(
+                        name: "FK_Shrepledgeartcile_SHArticleMaster_ArticleID",
+                        column: x => x.ArticleID,
+                        principalTable: "SHArticleMaster",
+                        principalColumn: "ArticleID",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Shrepledgeartcile_Shbillmasterskj_BillID_BranchID",
+                        columns: x => new { x.BillID, x.BranchID },
+                        principalTable: "Shbillmasterskj",
+                        principalColumns: new[] { "BillID", "BranchID" },
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Shrepledgeartcile_Shbuyerrepledge_RepledgeID",
+                        column: x => x.RepledgeID,
+                        principalTable: "Shbuyerrepledge",
+                        principalColumn: "RepledgeID",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "ShcustomerImageMaster",
                 columns: table => new
                 {
@@ -712,9 +895,29 @@ namespace StellarBillingSystem_skj.Migrations
                 });
 
             migrationBuilder.CreateIndex(
+                name: "IX_Shbilldetailsskj_BillID_BranchID",
+                table: "Shbilldetailsskj",
+                columns: new[] { "BillID", "BranchID" });
+
+            migrationBuilder.CreateIndex(
                 name: "IX_ShcustomerImageMaster_MobileNumber_CustomerName_BranchID",
                 table: "ShcustomerImageMaster",
                 columns: new[] { "MobileNumber", "CustomerName", "BranchID" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Shrepledgeartcile_ArticleID",
+                table: "Shrepledgeartcile",
+                column: "ArticleID");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Shrepledgeartcile_BillID_BranchID",
+                table: "Shrepledgeartcile",
+                columns: new[] { "BillID", "BranchID" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Shrepledgeartcile_RepledgeID",
+                table: "Shrepledgeartcile",
+                column: "RepledgeID");
         }
 
         /// <inheritdoc />
@@ -724,7 +927,16 @@ namespace StellarBillingSystem_skj.Migrations
                 name: "SBLogs");
 
             migrationBuilder.DropTable(
+                name: "Shbillcombinationskj");
+
+            migrationBuilder.DropTable(
                 name: "SHbilldetails");
+
+            migrationBuilder.DropTable(
+                name: "Shbilldetailsskj");
+
+            migrationBuilder.DropTable(
+                name: "Shbillimagemodelskj");
 
             migrationBuilder.DropTable(
                 name: "SHBillingPoints");
@@ -784,6 +996,9 @@ namespace StellarBillingSystem_skj.Migrations
                 name: "SHReedemHistory");
 
             migrationBuilder.DropTable(
+                name: "Shrepledgeartcile");
+
+            migrationBuilder.DropTable(
                 name: "SHReportModel");
 
             migrationBuilder.DropTable(
@@ -821,6 +1036,15 @@ namespace StellarBillingSystem_skj.Migrations
 
             migrationBuilder.DropTable(
                 name: "SHCustomerMaster");
+
+            migrationBuilder.DropTable(
+                name: "SHArticleMaster");
+
+            migrationBuilder.DropTable(
+                name: "Shbillmasterskj");
+
+            migrationBuilder.DropTable(
+                name: "Shbuyerrepledge");
         }
     }
 }
