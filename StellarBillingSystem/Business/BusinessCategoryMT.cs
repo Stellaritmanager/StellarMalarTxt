@@ -29,12 +29,26 @@ namespace StellarBillingSystem_Malar.Business
             return dataTable;
         }
 
-        public List<SizeMasterModelMT> Getsize(string branchid)
+        public static DataTable convertToDataTableBrandMaster(IEnumerable<BrandMasterModelMT> entities)
+        {
+            var dataTable = new DataTable();
+            dataTable.Columns.Add("BrandID", typeof(int));
+            dataTable.Columns.Add("BrandName", typeof(string));
+
+            foreach (var entity in entities)
+            {
+                dataTable.Rows.Add(entity.BrandID, entity.BrandName);
+            }
+
+            return dataTable;
+        }
+
+        public List<SizeMasterModelMT> Getsize()
 
         {
             var size = (
                         from pr in _billingContext.MTSizeMaster
-                        where pr.IsDelete == false && pr.BranchID == branchid
+                        where pr.IsDelete == false
                         select new SizeMasterModelMT
                         {
                             SizeID = pr.SizeID,

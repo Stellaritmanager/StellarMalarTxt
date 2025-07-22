@@ -8,9 +8,9 @@ namespace StellarBillingSystem_Malar.Models
         public ProductModelMT() { }
 
         public string ProductCode { get; set; }
-        public string CategoryID {  get; set; }
-        public string BrandID {  get; set; }    
-        public string SizeID {  get; set; }
+        public int CategoryID {  get; set; }
+        public int BrandID {  get; set; }    
+        public string SizeName {  get; set; }
         public string ProductName {  get; set; }
         public string Barcode { get; set; }
 

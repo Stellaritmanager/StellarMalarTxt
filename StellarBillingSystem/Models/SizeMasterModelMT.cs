@@ -11,9 +11,9 @@ namespace StellarBillingSystem_Malar.Models
         public int SizeID { get; set; }
         public string SizeName { get; set; }
 
-        public string CategoryName {  get; set; }
+        public int CategoryID {  get; set; }
 
-        public string BranchID {  get; set; }
+       
 
         [MaxLength(50)]
         public string? Lastupdateduser { get; set; }

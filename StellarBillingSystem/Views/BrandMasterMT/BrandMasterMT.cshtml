@@ -1,8 +1,8 @@
-﻿@model StellarBillingSystem_Malar.Models.CategoryModelMT
+﻿@model StellarBillingSystem_Malar.Models.BrandMasterModelMT
 @using System.Data
 @using NonFactors.Mvc.Grid
 @{
-    ViewData["Title"] = "CategoryMaster";
+    ViewData["Title"] = "BrandMaster";
 }
 
 <script>
@@ -48,7 +48,7 @@
     }
 </style>
 
-<form asp-controller="CategoryMasterMT" autocomplete="off">
+<form asp-controller="BrandMasterMT" autocomplete="off">
     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
     <div class="row" style="margin-top:10px">
@@ -59,7 +59,7 @@
                     <div class="row gy-4">
                         <div class="col-sm-12 col-md-12 col-lg-12">
                             <h2 class="centered text-white" style="font-family:'Lucida Bright';text-align: center; margin: 0;">
-                                Category Master
+                                Brand Master
                             </h2>
                         </div>
                     </div>
@@ -81,23 +81,23 @@
                         <div class="col-sm-1 col-md-1 col-lg-1"></div>
                         <div class="col-sm-4 col-md-4 col-lg-4">
 
-                              <div class="form-floating form-floating-outline mb-4">
-                                <input type="text" id="CategoryID" class="form-control" placeholder="Category ID" name="CategoryID"
-                                       value="@(Model?.CategoryID != 0 ? Model.CategoryID.ToString() : "")" />
+                            <div class="form-floating form-floating-outline mb-4">
+                                <input type="text" id="BrandID" class="form-control" placeholder="Brand ID" name="BrandID"
+                                       value="@(Model?.BrandID != 0 ? Model.BrandID.ToString() : "")" />
 
-                                <label asp-for="CategoryID" class="control-label">Category ID</label>
-                                <span id="CategoryIDError" class="text-danger"></span>
-                            </div> 
+                                <label asp-for="BrandID" class="control-label">Brand ID</label>
+                                <span id="BrandIDError" class="text-danger"></span>
+                            </div>
                         </div>
                         <div class="col-sm-4 col-md-4 col-lg-4">
                             <div class="form-floating form-floating-outline mb-4">
-                                <input type="CategoryName" id="CategoryName" class="form-control" placeholder="Category Name" name="CategoryName" value="@Model.CategoryName" />
-                                <label asp-for="CategoryName" class="control-label">CategoryName</label>
-                                <span id="CategoryNameError" class="text-danger"></span>
+                                <input type="BrandName" id="BrandName" class="form-control" placeholder="Brand Name" name="BrandName" value="@Model.BrandName" />
+                                <label asp-for="BrandName" class="control-label">Brand Name</label>
+                                <span id="BrandNameError" class="text-danger"></span>
                             </div>
                         </div>
                         <div class="col-sm-1 col-md-1 col-lg-1">
-                            <button type="submit" style="width:95px;align-items:center; height:50px;" value="Get" asp-action="GetCategory" formmethod="get" name="buttonType" class="btn-primaryellow" onclick="return validateGet()">Get</button>
+                            <button type="submit" style="width:95px;align-items:center; height:50px;" value="Get" asp-action="GetBrand" formmethod="get" name="buttonType" class="btn-primaryellow" onclick="return validateGet()">Get</button>
 
                         </div>
 
@@ -105,10 +105,10 @@
                     <div class="row gy-4">
                         <div class="col-sm-4 col-md-4 col-lg-4"></div>
                         <div class="col-sm-1 col-md-1 col-lg-1">
-                            <button type="submit" asp-action="AddCategory" value="save" name="buttonType" formmethod="post" class="btn btn-success" onclick="return validateSave()">Save</button>
+                            <button type="submit" asp-action="AddBrand" value="save" name="buttonType" formmethod="post" class="btn btn-success" onclick="return validateSave()">Save</button>
                         </div>
                         <div class="col-sm-4 col-md-4 col-lg-4">
-                            <button type="submit" asp-action="AddCategory" value="Delete" name="buttonType" class="btn btn-danger" onclick="return validateDelete()">Delete</button>
+                            <button type="submit" asp-action="AddBrand" value="Delete" name="buttonType" class="btn btn-danger" onclick="return validateDelete()">Delete</button>
                         </div>
                         <div class="col-sm-3 col-md-3 col-lg-3"></div>
 
@@ -123,7 +123,7 @@
 
 
     @{
-        var dataTable = ViewData["Categorydata"] as DataTable;
+        var dataTable = ViewData["Branddata"] as DataTable;
     }
 
 
@@ -132,12 +132,12 @@
         <div class="col-md-12 col-lg-12">
             <div class="card">
                 <div class="card-body dividerblack">
-                    <h3 class="centered text-white" style="font-family: 'Lucida Bright'; margin-bottom: 20px; text-align: center;">Categories</h3>
+                    <h3 class="centered text-white" style="font-family: 'Lucida Bright'; margin-bottom: 20px; text-align: center;">Brands</h3>
                     <table class="table table-bordered" style="border: 1px solid black;">
                         <thead style="background-color: black; color: white;">
                             <tr>
-                                <th>Category ID</th>
-                                <th>Category Name</th>
+                                <th>Brand ID</th>
+                                <th>Brand Name</th>
 
                             </tr>
                         </thead>
@@ -147,8 +147,8 @@
                                 foreach (DataRow row in dataTable.Rows)
                                 {
                                     <tr>
-                                        <td>@row["CategoryID"]</td>
-                                        <td>@row["CategoryName"]</td>
+                                        <td>@row["BrandID"]</td>
+                                        <td>@row["BrandName"]</td>
 
                                     </tr>
                                 }
@@ -235,7 +235,7 @@
         </div>
     </div>
 
-    
+
 
     @if (ViewBag.Message != null)
     {
@@ -264,15 +264,15 @@
 
 <script>
     function clearErrors() {
-        document.getElementById("CategoryIDError").innerText = "";
-        document.getElementById("CategoryNameError").innerText = "";
+        document.getElementById("BrandIDError").innerText = "";
+        document.getElementById("BrandNameError").innerText = "";
     }
 
     function validateGet() {
         clearErrors();
-        const categoryID = document.getElementById("CategoryID").value.trim();
+        const categoryID = document.getElementById("BrandID").value.trim();
         if (!categoryID) {
-            document.getElementById("CategoryIDError").innerText = "Category ID is required to fetch data.";
+            document.getElementById("BrandIDError").innerText = "Brand ID is required to fetch data.";
             return false;
         }
         return true;
@@ -280,9 +280,9 @@
 
     function validateSave() {
         clearErrors();
-        const categoryName = document.getElementById("CategoryName").value.trim();
+        const categoryName = document.getElementById("BrandName").value.trim();
         if (!categoryName) {
-            document.getElementById("CategoryNameError").innerText = "Category Name cannot be empty.";
+            document.getElementById("BrandNameError").innerText = "Brand Name cannot be empty.";
             return false;
         }
         return true;
@@ -290,9 +290,9 @@
 
     function validateDelete() {
         clearErrors();
-        const categoryID = document.getElementById("CategoryID").value.trim();
+        const categoryID = document.getElementById("BrandID").value.trim();
         if (!categoryID) {
-            document.getElementById("CategoryIDError").innerText = "Category ID is required to delete.";
+            document.getElementById("BrandIDError").innerText = "Brand ID is required to delete.";
             return false;
         }
         return true;

@@ -7,12 +7,12 @@ namespace StellarBillingSystem_Malar.Models
     {
         public BrandMasterModelMT() { }
 
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+       
         public int BrandID { get; set; }
 
         public string BrandName { get; set; }
 
-        public string BranchID { get; set; }    
+       
 
         public bool IsDelete { get; set; }
 

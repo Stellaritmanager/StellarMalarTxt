@@ -1,8 +1,8 @@
-﻿@model StellarBillingSystem_Malar.Models.CategoryModelMT
+﻿@model StellarBillingSystem_Malar.Models.SizeMasterModelMT
 @using System.Data
 @using NonFactors.Mvc.Grid
 @{
-    ViewData["Title"] = "CategoryMaster";
+    ViewData["Title"] = "SizeMasterMT";
 }
 
 <script>
@@ -48,7 +48,7 @@
     }
 </style>
 
-<form asp-controller="CategoryMasterMT" autocomplete="off">
+<form asp-controller="SizeMasterMT" autocomplete="off">
     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
     <div class="row" style="margin-top:10px">
@@ -59,7 +59,7 @@
                     <div class="row gy-4">
                         <div class="col-sm-12 col-md-12 col-lg-12">
                             <h2 class="centered text-white" style="font-family:'Lucida Bright';text-align: center; margin: 0;">
-                                Category Master
+                                Size Master
                             </h2>
                         </div>
                     </div>
@@ -81,23 +81,47 @@
                         <div class="col-sm-1 col-md-1 col-lg-1"></div>
                         <div class="col-sm-4 col-md-4 col-lg-4">
 
-                              <div class="form-floating form-floating-outline mb-4">
-                                <input type="text" id="CategoryID" class="form-control" placeholder="Category ID" name="CategoryID"
-                                       value="@(Model?.CategoryID != 0 ? Model.CategoryID.ToString() : "")" />
+                            <div class="form-floating form-floating-outline mb-4">
+                                <input type="text" id="SizeID" class="form-control" placeholder="SizeID" name="SizeID"
+                                       value="@(Model?.SizeID != 0 ? Model.SizeID.ToString() : "")" />
 
-                                <label asp-for="CategoryID" class="control-label">Category ID</label>
-                                <span id="CategoryIDError" class="text-danger"></span>
-                            </div> 
+                                <label asp-for="SizeID" class="control-label">Size ID</label>
+                                <span id="SizeIDError" class="text-danger"></span>
+                            </div>
                         </div>
                         <div class="col-sm-4 col-md-4 col-lg-4">
                             <div class="form-floating form-floating-outline mb-4">
-                                <input type="CategoryName" id="CategoryName" class="form-control" placeholder="Category Name" name="CategoryName" value="@Model.CategoryName" />
-                                <label asp-for="CategoryName" class="control-label">CategoryName</label>
-                                <span id="CategoryNameError" class="text-danger"></span>
+                                <input type="SizeName" id="SizeName" class="form-control" placeholder="SizeName" name="SizeName" value="@Model.SizeName" />
+                                <label asp-for="SizeName" class="control-label">Size Name</label>
+                                <span id="SizeNameError" class="text-danger"></span>
                             </div>
                         </div>
+
+                        <div class="form-floating form-floating-outline mb-4">
+
+
+                            @{
+                                var screenList = ((IEnumerable<StellarBillingSystem_Malar.Models.CategoryModelMT>)ViewData["catname"])
+                                .Select(m => new SelectListItem
+            {
+                Value = m.CategoryID.ToString(), // Assuming ScreenId is of type int
+                Text = $"{m.CategoryName}"
+            });
+                            }
+
+                            @Html.DropDownListFor(model => model.CategoryID,
+                                     new SelectList((IEnumerable<StellarBillingSystem_Malar.Models.CategoryModelMT>)ViewData["catname"], "CategoryID", "CategoryName", Model.CategoryID),
+                                     "Select Category",
+                                     new { @class = "form-control", @id = "CategoryName" })
+
+                            <label asp-for="CategoryID" class="control-label">Category Name</label>
+                            <span id="CategoryNameError" class="text-danger"></span>
+                            </div>
+                        </div>
+
+
                         <div class="col-sm-1 col-md-1 col-lg-1">
-                            <button type="submit" style="width:95px;align-items:center; height:50px;" value="Get" asp-action="GetCategory" formmethod="get" name="buttonType" class="btn-primaryellow" onclick="return validateGet()">Get</button>
+                            <button type="submit" style="width:95px;align-items:center; height:50px;" value="Get" asp-action="GetSize" formmethod="get" name="buttonType" class="btn-primaryellow" onclick="return validateGet()">Get</button>
 
                         </div>
 
@@ -105,10 +129,10 @@
                     <div class="row gy-4">
                         <div class="col-sm-4 col-md-4 col-lg-4"></div>
                         <div class="col-sm-1 col-md-1 col-lg-1">
-                            <button type="submit" asp-action="AddCategory" value="save" name="buttonType" formmethod="post" class="btn btn-success" onclick="return validateSave()">Save</button>
+                            <button type="submit" asp-action="AddSize" value="save" name="buttonType" formmethod="post" class="btn btn-success" onclick="return validateSave()">Save</button>
                         </div>
                         <div class="col-sm-4 col-md-4 col-lg-4">
-                            <button type="submit" asp-action="AddCategory" value="Delete" name="buttonType" class="btn btn-danger" onclick="return validateDelete()">Delete</button>
+                        <button type="submit" asp-action="AddSize" value="Delete" name="buttonType" class="btn btn-danger" onclick="return validateDelete()">Delete</button>
                         </div>
                         <div class="col-sm-3 col-md-3 col-lg-3"></div>
 
@@ -123,7 +147,7 @@
 
 
     @{
-        var dataTable = ViewData["Categorydata"] as DataTable;
+        var dataTable = ViewData["Sizedata"] as DataTable;
     }
 
 
@@ -132,12 +156,12 @@
         <div class="col-md-12 col-lg-12">
             <div class="card">
                 <div class="card-body dividerblack">
-                    <h3 class="centered text-white" style="font-family: 'Lucida Bright'; margin-bottom: 20px; text-align: center;">Categories</h3>
+                    <h3 class="centered text-white" style="font-family: 'Lucida Bright'; margin-bottom: 20px; text-align: center;">Sizes</h3>
                     <table class="table table-bordered" style="border: 1px solid black;">
                         <thead style="background-color: black; color: white;">
                             <tr>
-                                <th>Category ID</th>
-                                <th>Category Name</th>
+                                <th>Size ID</th>
+                                <th>Size Name</th>
 
                             </tr>
                         </thead>
@@ -147,8 +171,8 @@
                                 foreach (DataRow row in dataTable.Rows)
                                 {
                                     <tr>
-                                        <td>@row["CategoryID"]</td>
-                                        <td>@row["CategoryName"]</td>
+                                        <td>@row["SizeID"]</td>
+                                        <td>@row["SizeName"]</td>
 
                                     </tr>
                                 }
@@ -235,7 +259,7 @@
         </div>
     </div>
 
-    
+
 
     @if (ViewBag.Message != null)
     {
@@ -264,15 +288,16 @@
 
 <script>
     function clearErrors() {
-        document.getElementById("CategoryIDError").innerText = "";
+        document.getElementById("SizeIDError").innerText = "";
+        document.getElementById("SizeNameError").innerText = "";
         document.getElementById("CategoryNameError").innerText = "";
     }
 
     function validateGet() {
         clearErrors();
-        const categoryID = document.getElementById("CategoryID").value.trim();
-        if (!categoryID) {
-            document.getElementById("CategoryIDError").innerText = "Category ID is required to fetch data.";
+        const sizeID = document.getElementById("SizeID").value.trim();
+        if (!sizeID) {
+            document.getElementById("SizeIDError").innerText = "Size ID is required to fetch data.";
             return false;
         }
         return true;
@@ -280,19 +305,29 @@
 
     function validateSave() {
         clearErrors();
-        const categoryName = document.getElementById("CategoryName").value.trim();
-        if (!categoryName) {
-            document.getElementById("CategoryNameError").innerText = "Category Name cannot be empty.";
-            return false;
+        const sizeName = document.getElementById("SizeName").value.trim();
+        const category = document.getElementById("CategoryName").value;
+
+        let isValid = true;
+
+        if (!sizeName) {
+            document.getElementById("SizeNameError").innerText = "Size Name cannot be empty.";
+            isValid = false;
         }
-        return true;
+
+        if (!category || category === "Select Category") {
+            document.getElementById("CategoryNameError").innerText = "Please select a category.";
+            isValid = false;
+        }
+
+        return isValid;
     }
 
     function validateDelete() {
         clearErrors();
-        const categoryID = document.getElementById("CategoryID").value.trim();
-        if (!categoryID) {
-            document.getElementById("CategoryIDError").innerText = "Category ID is required to delete.";
+        const sizeID = document.getElementById("SizeID").value.trim();
+        if (!sizeID) {
+            document.getElementById("SizeIDError").innerText = "Size ID is required to delete.";
             return false;
         }
         return true;

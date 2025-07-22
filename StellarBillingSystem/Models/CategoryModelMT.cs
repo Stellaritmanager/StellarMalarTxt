@@ -7,7 +7,6 @@ namespace StellarBillingSystem_Malar.Models
     {
         public CategoryModelMT() { }
 
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int CategoryID {  get; set; }
 
         public string CategoryName { get; set; }
@@ -20,9 +19,9 @@ namespace StellarBillingSystem_Malar.Models
         public string? Lastupdateddate { get; set; }
         [MaxLength(50)]
         public string? Lastupdatedmachine { get; set; }
-        public string BranchID { get; set; }
+        
 
-        public string SizeID { get; set; }
+        
 
     
 

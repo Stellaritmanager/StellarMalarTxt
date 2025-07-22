@@ -74,21 +74,33 @@
 
                     }
                 }
-                @if (rollAccessList != null)
-                {
-                    @if (rollAccessList.Contains("ProductMaster"))
-                    {
+
+                <li class='menu-item@(currentPage == "/SizeMasterMT/SizeMasterMT" ? " active" : "")'>
+                    <a asp-controller="SizeMasterMT" asp-action="SizeMasterMT" class="menu-link">
+                                <div>Size Master</div>
+                            </a>
+                        </li>
+
+                <li class='menu-item@(currentPage == "/BrandMasterMT/BrandMasterMT" ? " active" : "")'>
+                    <a asp-controller="BrandMasterMT" asp-action="BrandMasterMT" class="menu-link">
+                        <div>Brand Master</div>
+                    </a>
+                </li>
 
 
-                        <li class='menu-item@(currentPage == "/StockManagement/ProductMaster" ? " active" : "")'>
-                            <a asp-controller="StellarBilling" asp-action="ProductMaster" class="menu-link">
+
+
+
+
+                <li class='menu-item@(currentPage == "/ProductMasterMT/ProductMasterMT" ? " active" : "")'>
+                    <a asp-controller="ProductMasterMT" asp-action="ProductMasterMT" class="menu-link">
 
                                 <div>Product Master</div>
                             </a>
                         </li>
 
-                    }
-                }
+                    
+                
 
 
                @*  @if (rollAccessList != null)
