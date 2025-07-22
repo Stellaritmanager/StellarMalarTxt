@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using StellarBillingSystem.Context;
 
@@ -11,9 +12,11 @@ using StellarBillingSystem.Context;
 namespace StellarBillingSystem_Malar.Migrations
 {
     [DbContext(typeof(BillingContext))]
-    partial class BillingContextModelSnapshot : ModelSnapshot
+    [Migration("20250721122841_initial2")]
+    partial class initial2
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1277,16 +1280,18 @@ namespace StellarBillingSystem_Malar.Migrations
 
             modelBuilder.Entity("StellarBillingSystem_Malar.Models.BrandMasterModelMT", b =>
                 {
+                    b.Property<string>("BrandName")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("BranchID")
+                        .HasColumnType("nvarchar(450)");
+
                     b.Property<int>("BrandID")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("BrandID"));
 
-                    b.Property<string>("BrandName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<bool>("IsDelete")
                         .HasColumnType("bit");
 
@@ -1302,25 +1307,27 @@ namespace StellarBillingSystem_Malar.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
-                    b.HasKey("BrandID");
+                    b.HasKey("BrandName", "BranchID");
 
                     b.ToTable("MTBrandMaster");
                 });
 
             modelBuilder.Entity("StellarBillingSystem_Malar.Models.CategoryModelMT", b =>
                 {
-                    b.Property<int>("CategoryID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("CategoryID"));
-
                     b.Property<string>("CategoryName")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("BranchID")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("CategoryID")
                         .IsRequired()
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<bool>("IsDelete")
-                        .HasColumnType("bit");
+                    b.Property<string>("IsDelete")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Lastupdateddate")
                         .HasMaxLength(50)
@@ -1334,7 +1341,11 @@ namespace StellarBillingSystem_Malar.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
-                    b.HasKey("CategoryID");
+                    b.Property<string>("SizeID")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("CategoryName", "BranchID");
 
                     b.ToTable("MTCategoryMaster");
                 });
@@ -1355,9 +1366,6 @@ namespace StellarBillingSystem_Malar.Migrations
 
                     b.Property<string>("InvoiceDate")
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("IsDelete")
-                        .HasColumnType("bit");
 
                     b.Property<string>("Lastupdateddate")
                         .HasMaxLength(50)
@@ -1396,11 +1404,13 @@ namespace StellarBillingSystem_Malar.Migrations
                     b.Property<string>("BranchID")
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<int>("BrandID")
-                        .HasColumnType("int");
+                    b.Property<string>("BrandID")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
 
-                    b.Property<int>("CategoryID")
-                        .HasColumnType("int");
+                    b.Property<string>("CategoryID")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<bool>("IsDelete")
                         .HasColumnType("bit");
@@ -1431,17 +1441,13 @@ namespace StellarBillingSystem_Malar.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("SizeName")
+                    b.Property<string>("SizeID")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Barcode", "BranchID");
 
-                    b.HasIndex("BrandID");
-
-                    b.HasIndex("CategoryID", "SizeName");
-
-                    b.HasIndex("CategoryID", "BrandID", "ProductName", "SizeName", "Barcode", "BranchID", "ProductCode")
+                    b.HasIndex("CategoryID", "BrandID", "ProductName", "SizeID", "Barcode", "BranchID", "ProductCode")
                         .IsUnique();
 
                     b.ToTable("MTProductMaster");
@@ -1449,10 +1455,13 @@ namespace StellarBillingSystem_Malar.Migrations
 
             modelBuilder.Entity("StellarBillingSystem_Malar.Models.SizeMasterModelMT", b =>
                 {
-                    b.Property<int>("CategoryID")
-                        .HasColumnType("int");
+                    b.Property<string>("CategoryName")
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("SizeName")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("BranchID")
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<bool>("IsDelete")
@@ -1476,7 +1485,9 @@ namespace StellarBillingSystem_Malar.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("SizeID"));
 
-                    b.HasKey("CategoryID", "SizeName");
+                    b.HasKey("CategoryName", "SizeName", "BranchID");
+
+                    b.HasIndex("CategoryName", "BranchID");
 
                     b.ToTable("MTSizeMaster");
                 });
@@ -1936,26 +1947,11 @@ namespace StellarBillingSystem_Malar.Migrations
                     b.ToTable("SHVoucherMaster");
                 });
 
-            modelBuilder.Entity("StellarBillingSystem_Malar.Models.ProductModelMT", b =>
-                {
-                    b.HasOne("StellarBillingSystem_Malar.Models.BrandMasterModelMT", null)
-                        .WithMany()
-                        .HasForeignKey("BrandID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("StellarBillingSystem_Malar.Models.SizeMasterModelMT", null)
-                        .WithMany()
-                        .HasForeignKey("CategoryID", "SizeName")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("StellarBillingSystem_Malar.Models.SizeMasterModelMT", b =>
                 {
                     b.HasOne("StellarBillingSystem_Malar.Models.CategoryModelMT", null)
                         .WithMany()
-                        .HasForeignKey("CategoryID")
+                        .HasForeignKey("CategoryName", "BranchID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });

@@ -63,32 +63,44 @@
 
                 @if (rollAccessList != null)
                 {
-                    @if (rollAccessList.Contains("CategoryMaster"))
+                    @if (rollAccessList.Contains("CategoryMasterMT"))
                     {
 
-                        <li class='menu-item@(currentPage == "/CategoryMaster/CategoryMaster" ? " active" : "")'>
-                            <a asp-controller="CategoryMaster" asp-action="CategoryMaster" class="menu-link">
-                                <div>Gold Type Master</div>
+                        <li class='menu-item@(currentPage == "/CategoryMasterMT/CategoryMasterMT" ? " active" : "")'>
+                            <a asp-controller="CategoryMasterMT" asp-action="CategoryMasterMT" class="menu-link">
+                                <div>Category Master</div>
                             </a>
                         </li>
 
                     }
                 }
-                @if (rollAccessList != null)
-                {
-                    @if (rollAccessList.Contains("ProductMaster"))
-                    {
+
+                <li class='menu-item@(currentPage == "/SizeMasterMT/SizeMasterMT" ? " active" : "")'>
+                    <a asp-controller="SizeMasterMT" asp-action="SizeMasterMT" class="menu-link">
+                                <div>Size Master</div>
+                            </a>
+                        </li>
+
+                <li class='menu-item@(currentPage == "/BrandMasterMT/BrandMasterMT" ? " active" : "")'>
+                    <a asp-controller="BrandMasterMT" asp-action="BrandMasterMT" class="menu-link">
+                        <div>Brand Master</div>
+                    </a>
+                </li>
 
 
-                        <li class='menu-item@(currentPage == "/StockManagement/ProductMaster" ? " active" : "")'>
-                            <a asp-controller="StellarBilling" asp-action="ProductMaster" class="menu-link">
+
+
+
+
+                <li class='menu-item@(currentPage == "/ProductMasterMT/ProductMasterMT" ? " active" : "")'>
+                    <a asp-controller="ProductMasterMT" asp-action="ProductMasterMT" class="menu-link">
 
                                 <div>Product Master</div>
                             </a>
                         </li>
 
-                    }
-                }
+                    
+                
 
 
                @*  @if (rollAccessList != null)
