@@ -1,335 +1,76 @@
-﻿@model StellarBillingSystem_Malar.Models.SizeMasterModelMT
-@using System.Data
-@using NonFactors.Mvc.Grid
+﻿@model StellarBillingSystem_Malar.Models.SizeMasterViewModel
 @{
-    ViewData["Title"] = "SizeMasterMT";
+    ViewData["Title"] = "Size Master MT";
 }
 
-<script>
-    function showPopup(message) {
-        var popup = document.getElementById("popupMessage");
-        var popupText = document.getElementById("popupMessageText");
-        var popupOKButton = document.getElementById("popupOKButton");
+<h2 class="text-center">Size Master</h2>
 
-        popupText.textContent = message; // Set the message text
-        popup.style.display = "block";
+@if (ViewBag.ErrorMessage != null)
+{
+    <div class="alert alert-danger">@ViewBag.ErrorMessage</div>
+}
 
-        // Close popup when OK button is clicked
-        popupOKButton.addEventListener("click", function () {
-            closePopup();
-        });
+@if (ViewBag.Message != null)
+{
+    <div class="alert alert-success">@ViewBag.Message</div>
+}
 
-        // Close popup when clicking outside of the message box
-        document.addEventListener("click", function (event) {
-            if (!popup.contains(event.target) && !popupOKButton.contains(event.target)) {
-                closePopup();
-            }
-        });
-    }
+<form asp-action="AddSize" asp-controller="SizeMasterMT" method="post" autocomplete="off">
 
-    function closePopup() {
-        var popup = document.getElementById("popupMessage");
-        popup.style.display = "none"; // Hide the popup
-    }
-
-    function handleMessages(message) {
-        showPopup(message);
-    }
-</script>
-
-<div id="popupMessage" style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); color:black; padding: 30px; border: 1px solid #000000; border-radius: 10px; z-index: 1000; display: none; text-align: center;">
-    <span id="popupMessageText" style="display: block; margin-bottom: 10px;"></span>
-    <button id="popupOKButton" style="padding: 10px 20px; background-color: rgba(255, 255, 255, 0.2); color: black; border: none; border-radius: 5px; cursor: pointer;">OK</button>
-</div>
-
-<style>
-    .popborder {
-        border: 10px solid #fff;
-    }
-</style>
-
-<form asp-controller="SizeMasterMT" autocomplete="off">
-    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-
-    <div class="row" style="margin-top:10px">
-        <div class="col-md-12 col-lg-0"></div>
-        <div class="col-12 col-sm-12 col-md-12 col-lg-12">
-            <div class="card">
-                <div class="card-body dividerblack">
-                    <div class="row gy-4">
-                        <div class="col-sm-12 col-md-12 col-lg-12">
-                            <h2 class="centered text-white" style="font-family:'Lucida Bright';text-align: center; margin: 0;">
-                                Size Master
-                            </h2>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+    <div class="form-group">
+        <label for="SizeID">Size ID</label>
+        @Html.TextBoxFor(model => model.Model.SizeID, new { @class = "form-control", type = "number", placeholder = "Enter Size ID" })
+        @Html.ValidationMessageFor(model => model.Model.SizeID, "", new { @class = "text-danger" })
     </div>
 
-    <br />
-
-    <div class="row" style="height:8%"></div>
-
-    <div class="row" style="margin-top:30px">
-        <div class="col-md-12 col-lg-0"></div>
-        <div class="col-12 col-sm-12 col-md-12 col-lg-12">
-            <div class="card">
-                <div class="card-body dividerblack">
-                    <div class="row gy-4">
-                        <div class="col-sm-1 col-md-1 col-lg-1"></div>
-                        <div class="col-sm-4 col-md-4 col-lg-4">
-
-                            <div class="form-floating form-floating-outline mb-4">
-                                <input type="text" id="SizeID" class="form-control" placeholder="SizeID" name="SizeID"
-                                       value="@(Model?.SizeID != 0 ? Model.SizeID.ToString() : "")" />
-
-                                <label asp-for="SizeID" class="control-label">Size ID</label>
-                                <span id="SizeIDError" class="text-danger"></span>
-                            </div>
-                        </div>
-                        <div class="col-sm-4 col-md-4 col-lg-4">
-                            <div class="form-floating form-floating-outline mb-4">
-                                <input type="SizeName" id="SizeName" class="form-control" placeholder="SizeName" name="SizeName" value="@Model.SizeName" />
-                                <label asp-for="SizeName" class="control-label">Size Name</label>
-                                <span id="SizeNameError" class="text-danger"></span>
-                            </div>
-                        </div>
-
-                        <div class="form-floating form-floating-outline mb-4">
-
-
-                            @{
-                                var screenList = ((IEnumerable<StellarBillingSystem_Malar.Models.CategoryModelMT>)ViewData["catname"])
-                                .Select(m => new SelectListItem
-            {
-                Value = m.CategoryID.ToString(), // Assuming ScreenId is of type int
-                Text = $"{m.CategoryName}"
-            });
-                            }
-
-                            @Html.DropDownListFor(model => model.CategoryID,
-                                     new SelectList((IEnumerable<StellarBillingSystem_Malar.Models.CategoryModelMT>)ViewData["catname"], "CategoryID", "CategoryName", Model.CategoryID),
-                                     "Select Category",
-                                     new { @class = "form-control", @id = "CategoryName" })
-
-                            <label asp-for="CategoryID" class="control-label">Category Name</label>
-                            <span id="CategoryNameError" class="text-danger"></span>
-                            </div>
-                        </div>
-
-
-                        <div class="col-sm-1 col-md-1 col-lg-1">
-                            <button type="submit" style="width:95px;align-items:center; height:50px;" value="Get" asp-action="GetSize" formmethod="get" name="buttonType" class="btn-primaryellow" onclick="return validateGet()">Get</button>
-
-                        </div>
-
-                    </div>
-                    <div class="row gy-4">
-                        <div class="col-sm-4 col-md-4 col-lg-4"></div>
-                        <div class="col-sm-1 col-md-1 col-lg-1">
-                            <button type="submit" asp-action="AddSize" value="save" name="buttonType" formmethod="post" class="btn btn-success" onclick="return validateSave()">Save</button>
-                        </div>
-                        <div class="col-sm-4 col-md-4 col-lg-4">
-                        <button type="submit" asp-action="AddSize" value="Delete" name="buttonType" class="btn btn-danger" onclick="return validateDelete()">Delete</button>
-                        </div>
-                        <div class="col-sm-3 col-md-3 col-lg-3"></div>
-
-                    </div>
-                    <br />
-                </div>
-            </div>
-        </div>
-        <div class="col-md-12 col-lg-2"></div>
+    <div class="form-group">
+        <label for="SizeName">Size Name</label>
+        @Html.TextBoxFor(model => model.Model.SizeName, new { @class = "form-control" })
+        @Html.ValidationMessageFor(model => model.Model.SizeName, "", new { @class = "text-danger" })
     </div>
 
-
-
-    @{
-        var dataTable = ViewData["Sizedata"] as DataTable;
-    }
-
-
-    <div class="row" style="margin-top:30px">
-        <div class="col-md-12 col-lg-0"></div>
-        <div class="col-md-12 col-lg-12">
-            <div class="card">
-                <div class="card-body dividerblack">
-                    <h3 class="centered text-white" style="font-family: 'Lucida Bright'; margin-bottom: 20px; text-align: center;">Sizes</h3>
-                    <table class="table table-bordered" style="border: 1px solid black;">
-                        <thead style="background-color: black; color: white;">
-                            <tr>
-                                <th>Size ID</th>
-                                <th>Size Name</th>
-
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @if (dataTable != null)
-                            {
-                                foreach (DataRow row in dataTable.Rows)
-                                {
-                                    <tr>
-                                        <td>@row["SizeID"]</td>
-                                        <td>@row["SizeName"]</td>
-
-                                    </tr>
-                                }
-                            }
-                        </tbody>
-                    </table><div id="pagination-controls" style="text-align: center; margin-top: 10px;">
-                        <button id="prev-btn" style="background-color: cadetblue; color: white; border: none; padding: 0px 6px; cursor: pointer; font-size: 16px; border-radius: 5px; margin: 0 5px;">Previous</button>
-                        <div id="page-numbers" style="background-color: cadetblue; color: white; border: none; padding: 0px 6px;display: inline-block; vertical-align: middle;"></div>
-                        <button id="next-btn" style="background-color: cadetblue; color: white; border: none; padding: 0px 6px; cursor: pointer; font-size: 16px; border-radius: 5px; margin: 0 5px;">Next</button>
-                    </div>
-
-                    <script>
-                        document.addEventListener('DOMContentLoaded', function () {
-                            const rowsPerPage = 5; // Number of rows per page
-                            const table = document.querySelector('.table tbody'); // Select the table body
-                            const rows = Array.from(table.querySelectorAll('tr')); // Get all rows
-                            const totalRows = rows.length; // Total number of rows
-                            const totalPages = Math.ceil(totalRows / rowsPerPage); // Calculate total pages
-
-                            let currentPage = 1; // Current page number
-
-                            // Function to display rows for a given page
-                            function showPage(page) {
-                                rows.forEach((row, index) => {
-                                    row.style.display = (Math.floor(index / rowsPerPage) + 1 === page) ? '' : 'none'; // Show or hide row
-                                });
-
-                                updatePageNumbers(); // Update the page number buttons
-                                document.getElementById('prev-btn').disabled = (page === 1); // Disable 'prev' button if on first page
-                                document.getElementById('next-btn').disabled = (page === totalPages); // Disable 'next' button if on last page
-                            }
-
-                            // Function to create and update page number buttons
-                            function updatePageNumbers() {
-                                const pageNumbersContainer = document.getElementById('page-numbers');
-                                pageNumbersContainer.innerHTML = ''; // Clear previous buttons
-
-                                // Create page number buttons
-                                for (let i = 1; i <= totalPages; i++) {
-                                    const pageButton = document.createElement('button');
-                                    pageButton.textContent = i;
-                                    pageButton.style.backgroundColor = (i === currentPage) ? 'black' : 'white'; // Highlight current page
-                                    pageButton.style.color = (i === currentPage) ? 'white' : 'black';
-                                    pageButton.style.border = 'none';
-                                    pageButton.style.padding = '5px 10px';
-                                    pageButton.style.cursor = 'pointer';
-                                    pageButton.style.fontSize = '16px';
-                                    pageButton.style.borderRadius = '5px';
-                                    pageButton.style.margin = '0 3px';
-
-                                    // Add click event listener to update current page
-                                    pageButton.addEventListener('click', () => {
-                                        currentPage = i;
-                                        showPage(currentPage);
-                                    });
-
-                                    pageNumbersContainer.appendChild(pageButton); // Add button to container
-                                }
-                            }
-
-                            // Event listener for 'prev' button
-                            document.getElementById('prev-btn').addEventListener('click', () => {
-                                if (currentPage > 1) {
-                                    currentPage--;
-                                    showPage(currentPage);
-                                }
-                            });
-
-                            // Event listener for 'next' button
-                            document.getElementById('next-btn').addEventListener('click', () => {
-                                if (currentPage < totalPages) {
-                                    currentPage++;
-                                    showPage(currentPage);
-                                }
-                            });
-
-                            showPage(currentPage); // Initial page display
-                        });
-
-                    </script>
-
-                </div>
-            </div>
-        </div>
+    <div class="form-group">
+        <label for="CategoryID">Category</label>
+        @Html.DropDownListFor(model => model.Model.CategoryID, Model.CategoryList, "Select Category", new { @class = "form-control" })
+        @Html.ValidationMessageFor(model => model.Model.CategoryID, "", new { @class = "text-danger" })
     </div>
 
-
-
-    @if (ViewBag.Message != null)
-    {
-        <script>
-            handleMessages("@ViewBag.Message");
-        </script>
-        ViewBag.Message = null;
-    }
-    @if (ViewBag.ErrorMessage != null)
-    {
-        <script>
-            handleMessages("@ViewBag.ErrorMessage");
-        </script>
-        ViewBag.ErrorMessage = null;
-    }
-
-
-    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.24/css/jquery.dataTables.min.css">
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdn.datatables.net/1.10.24/js/jquery.dataTables.min.js"></script>
-
-
-
-
+    <div class="form-group mt-3">
+        <button type="submit" name="buttonType" value="Get" class="btn btn-primary">Get</button>
+        <button type="submit" name="buttonType" value="save" class="btn btn-success">Save</button>
+        <button type="submit" name="buttonType" value="Delete" class="btn btn-danger">Delete</button>
+    </div>
 </form>
 
-<script>
-    function clearErrors() {
-        document.getElementById("SizeIDError").innerText = "";
-        document.getElementById("SizeNameError").innerText = "";
-        document.getElementById("CategoryNameError").innerText = "";
-    }
+<hr />
 
-    function validateGet() {
-        clearErrors();
-        const sizeID = document.getElementById("SizeID").value.trim();
-        if (!sizeID) {
-            document.getElementById("SizeIDError").innerText = "Size ID is required to fetch data.";
-            return false;
-        }
-        return true;
-    }
+<h4>Existing Sizes</h4>
 
-    function validateSave() {
-        clearErrors();
-        const sizeName = document.getElementById("SizeName").value.trim();
-        const category = document.getElementById("CategoryName").value;
-
-        let isValid = true;
-
-        if (!sizeName) {
-            document.getElementById("SizeNameError").innerText = "Size Name cannot be empty.";
-            isValid = false;
-        }
-
-        if (!category || category === "Select Category") {
-            document.getElementById("CategoryNameError").innerText = "Please select a category.";
-            isValid = false;
-        }
-
-        return isValid;
-    }
-
-    function validateDelete() {
-        clearErrors();
-        const sizeID = document.getElementById("SizeID").value.trim();
-        if (!sizeID) {
-            document.getElementById("SizeIDError").innerText = "Size ID is required to delete.";
-            return false;
-        }
-        return true;
-    }
-</script>
+@if (Model.SizeData != null && Model.SizeData.Rows.Count > 0)
+{
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                @foreach (System.Data.DataColumn col in Model.SizeData.Columns)
+                {
+                    <th>@col.ColumnName</th>
+                }
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (System.Data.DataRow row in Model.SizeData.Rows)
+            {
+                <tr>
+                    @foreach (var item in row.ItemArray)
+                    {
+                        <td>@item</td>
+                    }
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <p>No data found.</p>
+}
