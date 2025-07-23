@@ -1,4 +1,5 @@
-﻿using StellarBillingSystem.Context;
+﻿using Microsoft.AspNetCore.Mvc.Rendering;
+using StellarBillingSystem.Context;
 using StellarBillingSystem_Malar.Models;
 using System.Data;
 
@@ -32,55 +33,45 @@ namespace StellarBillingSystem_Malar.Business
             return dataTable;
         }
 
-        public List<CategoryModelMT> Getcat()
-
+        public IEnumerable<SelectListItem> GetCat(int? selectedId)
         {
-            var catname = (
-                        from pr in _billingContext.MTCategoryMaster
-                        where pr.IsDelete == false
-                        select new CategoryModelMT
-                        {
-                            CategoryID = pr.CategoryID,
-
-                            CategoryName = pr.CategoryName
-
-                        }).ToList();
-
-            return catname;
+            return _billingContext.MTCategoryMaster
+                .Where(c => c.IsDelete == false)
+                .Select(c => new SelectListItem
+                {
+                    Value = c.CategoryID.ToString(),
+                    Text = c.CategoryName
+                }).ToList();
         }
 
-        public List<SizeMasterModelMT> Getsize()
 
+        public IEnumerable<SelectListItem> GetSize(string? selectedId)
         {
-            var sizename = (
-                        from pr in _billingContext.MTSizeMaster
-                        where pr.IsDelete == false
-                        select new SizeMasterModelMT
-                        {
-                            SizeID = pr.SizeID,
-
-                            SizeName = pr.SizeName
-
-                        }).ToList();
-
-            return sizename;
+            return _billingContext.MTSizeMaster
+                .Where(c => c.IsDelete == false)
+                .Select(c => new SelectListItem
+                {
+                    Value = c.SizeName,
+                    Text = c.SizeName,
+                    Selected = !string.IsNullOrEmpty(selectedId) && selectedId == c.SizeName
+                }).ToList();
         }
 
-        public List<BrandMasterModelMT> Getbrand()
 
+
+        public IEnumerable<SelectListItem> Getbrand(int? selectedId)
         {
-            var brandname = (
-                        from pr in _billingContext.MTBrandMaster
-                        where pr.IsDelete == false
-                        select new BrandMasterModelMT
-                        {
-                            BrandID = pr.BrandID,
-
-                            BrandName = pr.BrandName
-
-                        }).ToList();
-
-            return brandname;
+            return _billingContext.MTBrandMaster
+                .Where(c => c.IsDelete == false) // Optional: to filter out deleted items
+                .Select(c => new SelectListItem
+                {
+                    Value = c.BrandID.ToString(),
+                    Text = c.BrandName,
+                    Selected = selectedId.HasValue && selectedId.Value == c.BrandID
+                }).ToList();
         }
+
+
+       
     }
 }
