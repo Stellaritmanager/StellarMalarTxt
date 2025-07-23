@@ -1,0 +1,29 @@
+INSERT [dbo].[SHBranchMaster] ([BracnchID], [BranchName], [PhoneNumber1], [PhoneNumber2], [Address1], [Address2], [Country], [State], [City], [ZipCode], [IsFranchise], [IsDelete], [email], [lastUpdatedUser], [lastUpdatedMachine], [LastUpdatedDate], [BranchInitial], [BillTemplate]) VALUES (N'MalarTextile', N'MalarTextile', N'8337377373', N'9303038447', N'New Street,Pudukkottai', NULL, N'India', N'TN', N'Pudukkottai', N'622001', N'0', 0, N'mt@gmail.com', NULL, NULL, NULL, N'Malar', NULL)
+
+
+INSERT [dbo].[SHRoleaccessModel] ([RollID], [ScreenID], [BranchID], [Access], [Authorized], [lastUpdatedDate], [lastUpdatedUser], [lastUpdatedMachine], [Isdelete]) VALUES (N'Roll_Demo1', N'BrandMasterMT', N'MalarTextile', N'true', N'1', N'23/07/2025 22:55:09', N'mk', N'::1', 0)
+INSERT [dbo].[SHRoleaccessModel] ([RollID], [ScreenID], [BranchID], [Access], [Authorized], [lastUpdatedDate], [lastUpdatedUser], [lastUpdatedMachine], [Isdelete]) VALUES (N'Roll_Demo1', N'CategoryMasterMT', N'MalarTextile', N'true', N'1', N'23/07/2025 22:54:40', N'mk', N'::1', 0)
+INSERT [dbo].[SHRoleaccessModel] ([RollID], [ScreenID], [BranchID], [Access], [Authorized], [lastUpdatedDate], [lastUpdatedUser], [lastUpdatedMachine], [Isdelete]) VALUES (N'Roll_Demo1', N'ProductInwardMT', N'MalarTextile', N'true', N'1', N'23/07/2025 22:55:06', N'mk', N'::1', 0)
+INSERT [dbo].[SHRoleaccessModel] ([RollID], [ScreenID], [BranchID], [Access], [Authorized], [lastUpdatedDate], [lastUpdatedUser], [lastUpdatedMachine], [Isdelete]) VALUES (N'Roll_Demo1', N'ProductMasterMT', N'MalarTextile', N'true', N'1', N'23/07/2025 22:54:48', N'mk', N'::1', 0)
+INSERT [dbo].[SHRoleaccessModel] ([RollID], [ScreenID], [BranchID], [Access], [Authorized], [lastUpdatedDate], [lastUpdatedUser], [lastUpdatedMachine], [Isdelete]) VALUES (N'Roll_Demo1', N'Reports', N'MalarTextile', N'true', N'1', N'23/07/2025 22:54:53', N'mk', N'::1', 0)
+INSERT [dbo].[SHRoleaccessModel] ([RollID], [ScreenID], [BranchID], [Access], [Authorized], [lastUpdatedDate], [lastUpdatedUser], [lastUpdatedMachine], [Isdelete]) VALUES (N'Roll_Demo1', N'SizeMasterMT', N'MalarTextile', N'true', N'1', N'23/07/2025 22:54:57', N'mk', N'::1', 0)
+
+INSERT [dbo].[SHrollType] ([RollID], [BranchID], [RollName], [LastupdatedUser], [LastupdatedDate], [LastupdatedMachine], [IsDelete]) VALUES (N'Roll_Demo1', N'MalarTextile', N'DemoMT', N'mk', N'23/07/2025 22:54:02', N'::1', 0)
+
+
+UPDATE [dbo].[SHScreenName]
+SET [ScreenName] = N'CategoryMasterMT'
+WHERE [Id] = 1;
+
+UPDATE [dbo].[SHScreenName]
+SET [ScreenName] = N'ProductMasterMT'
+WHERE [Id] = 2;
+
+
+INSERT [dbo].[SHScreenName] ([Id], [ScreenName]) VALUES (N'24', N'SizeMasterMT')
+INSERT [dbo].[SHScreenName] ([Id], [ScreenName]) VALUES (N'25', N'BrandMasterMT')
+INSERT [dbo].[SHScreenName] ([Id], [ScreenName]) VALUES (N'26', N'ProductInwardMT')
+INSERT [dbo].[SHScreenName] ([Id], [ScreenName]) VALUES (N'27', N'BrandMasterMT')
+
+
+INSERT [dbo].[SHStaffAdmin] ([StaffID], [BranchID], [ResourceTypeID], [FirstName], [LastName], [FullName], [Initial], [Prefix], [Gender], [DateofBirth], [Age], [Address1], [City], [State], [Pin], [PhoneNumber], [EmailId], [Nationality], [UserName], [Password], [IdProofId], [IdProofName], [LastupdatedUser], [LastUpdatedMachine], [IsDelete], [IdProofFile], [LastupdatedDate], [RolltypeID]) VALUES (N'Demo', N'MalarTextile', NULL, NULL, NULL, N'Demo', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, N'Demo', N'123', NULL, NULL, N'mk', N'::1', 0, NULL, CAST(N'2025-07-23 22:54:24.0000000' AS DateTime2), N'Roll_Demo1')
