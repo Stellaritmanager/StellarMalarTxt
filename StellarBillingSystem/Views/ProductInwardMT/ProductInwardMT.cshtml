@@ -1,0 +1,381 @@
+﻿@model StellarBillingSystem_Malar.Models.ProductInwardViewMTModel
+@using System.Data
+@using NonFactors.Mvc.Grid
+
+@{
+    ViewData["Title"] = "ProductInwardMasterMT";
+}
+
+<script>
+    function showPopup(message) {
+        var popup = document.getElementById("popupMessage");
+        var popupText = document.getElementById("popupMessageText");
+        var popupOKButton = document.getElementById("popupOKButton");
+
+        popupText.textContent = message; // Set the message text
+        popup.style.display = "block";
+
+        // Close popup when OK button is clicked
+        popupOKButton.addEventListener("click", function () {
+            closePopup();
+        });
+
+        // Close popup when clicking outside of the message box
+        document.addEventListener("click", function (event) {
+            if (!popup.contains(event.target) && !popupOKButton.contains(event.target)) {
+                closePopup();
+            }
+        });
+    }
+
+    function closePopup() {
+        var popup = document.getElementById("popupMessage");
+        popup.style.display = "none"; // Hide the popup
+    }
+
+    function handleMessages(message) {
+        showPopup(message);
+    }
+</script>
+
+<div id="popupMessage" style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); color:black; padding: 30px; border: 1px solid #000000; border-radius: 10px; z-index: 1000; display: none; text-align: center;">
+    <span id="popupMessageText" style="display: block; margin-bottom: 10px;"></span>
+    <button id="popupOKButton" style="padding: 10px 20px; background-color: rgba(255, 255, 255, 0.2); color: black; border: none; border-radius: 5px; cursor: pointer;">OK</button>
+</div>
+
+<style>
+    .popborder {
+        border: 10px solid #fff;
+    }
+</style>
+
+<form asp-controller="ProductInwardMT" autocomplete="off">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+    <div class="row" style="margin-top:10px">
+        <div class="col-md-12 col-lg-0"></div>
+        <div class="col-12 col-sm-12 col-md-12 col-lg-12">
+            <div class="card">
+                <div class="card-body dividerblack">
+                    <div class="row gy-4">
+                        <div class="col-sm-12 col-md-12 col-lg-12">
+                            <h2 class="centered text-white" style="font-family:'Lucida Bright';text-align: center; margin: 0;">
+                                Product Inward
+                            </h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <br />
+
+    <div class="row" style="height:8%"></div>
+
+    <div class="row" style="margin-top:30px">
+        <div class="col-md-12 col-lg-0"></div>
+        <div class="col-12 col-sm-12 col-md-12 col-lg-12">
+            <div class="card">
+                <div class="card-body dividerblack">
+                    <div class="row gy-4">
+                        <div class="col-sm-1 col-md-1 col-lg-1"></div>
+                        <div class="col-sm-4 col-md-4 col-lg-4">
+
+                            <div class="form-floating form-floating-outline mb-4">
+                                @Html.TextBoxFor(model => model.ObjMT.InvoiceNumber, new { @class = "form-control", placeholder = "Enter InvoiceNumber", @id = "InvoiceNumber" })
+                                <label for="InvoiceNumber">Invoice Number</label>
+                                <span id="InvoiceNumberError" class="text-danger"></span>
+                            </div>
+
+                        </div>
+                        <div class="col-sm-4 col-md-4 col-lg-4">
+                            <div class="form-floating form-floating-outline mb-4">
+
+
+                                @Html.DropDownListFor(model => model.ObjMT.ProductCode, Model.ProductList, "Select Product", new { @class = "form-control", @id = "ProductCode" })
+                                <label for="ProductCode"></label>
+                                <span id="ProductCodeError" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                    
+                    </div>
+
+
+
+                    <div class="col-sm-1 col-md-1 col-lg-1">
+                        <button type="submit" style="width:95px;align-items:center; height:50px;" value="Get" asp-action="GetProductInward" formmethod="get" name="buttonType" class="btn-primaryellow" onclick="return validateGet()">Get</button>
+
+                    </div>
+
+                    
+                    <div class="form-floating form-floating-outline mb-4">
+
+                        @Html.TextBoxFor(model => model.ObjMT.SupplierName, new { @class = "form-control", placeholder = "Enter SupplierName", @id = "SupplierName" })
+                        <label for="SupplierName">SupplierName</label>
+                        <span id="SupplierNameError" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-floating form-floating-outline mb-4">
+
+                        @Html.TextBoxFor(model => model.ObjMT.InvoiceDate, new { @class = "form-control", placeholder = "Enter InvoiceDate", type = "Date", @id = "InvoiceDate" })
+                        <label for="InvoiceDate">InvoiceDate</label>
+                        <span id="InvoiceDateError" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-floating form-floating-outline mb-4">
+                        @Html.TextBox("ObjMT.NoofItem", Model.ObjMT.NoofItem == 0 ? "" : Model.ObjMT.NoofItem.ToString(),
+                                 new { @class = "form-control", type = "number", placeholder = "Enter NoofItem" })
+                        <label for="NoofItem">NoofItem</label>
+                        <span id="NoofItemError" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-floating form-floating-outline mb-4">
+                        @Html.TextBox("ObjMT.SupplierPrice", Model.ObjMT.SupplierPrice == 0 ? "" : Model.ObjMT.SupplierPrice.ToString(),
+                                 new { @class = "form-control", placeholder = "Enter SupplierPrice", @id = "Price" })
+                        <label for="SupplierPrice">SupplierPrice</label>
+                        <span id="PriceError" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-floating form-floating-outline mb-4">
+                        @Html.TextBox("ObjMT.Tax", Model.ObjMT.Tax == 0 ? "" : Model.ObjMT.Tax.ToString(),
+                                 new { @class = "form-control", type = "number", placeholder = "Enter Tax", @id = "Tax" })
+                        <label for="Tax">Tax</label>
+                        <span id="TaxError" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-floating form-floating-outline mb-4">
+                        @Html.TextBox("ObjMT.Amount", Model.ObjMT.Amount == 0 ? "" : Model.ObjMT.Amount.ToString(),
+                                 new { @class = "form-control", placeholder = "Enter Net Price", @id = "NetPrice" })
+                        <label for="Amount">Net Price</label>
+                        <span id="AmountError" class="text-danger"></span>
+                    </div>
+
+
+                </div>
+                <div class="row gy-4">
+                    <div class="col-sm-4 col-md-4 col-lg-4"></div>
+                    <div class="col-sm-1 col-md-1 col-lg-1">
+                        <button type="submit" asp-action="AddProductInward" value="save" name="buttonType" formmethod="post" class="btn btn-success" onclick="return validateSave()">Save</button>
+                    </div>
+                    <div class="col-sm-4 col-md-4 col-lg-4">
+                        <button type="submit" asp-action="AddProductInward" value="Delete" name="buttonType" class="btn btn-danger" onclick="return validateDelete()">Delete</button>
+                    </div>
+                    <div class="col-sm-3 col-md-3 col-lg-3"></div>
+
+                </div>
+                <br />
+            </div>
+        </div>
+    </div>
+    <div class="col-md-12 col-lg-2"></div>
+    </div>
+
+
+    @if (ViewBag.Message != null)
+    {
+        <script>
+            handleMessages("@ViewBag.Message");
+        </script>
+        ViewBag.Message = null;
+    }
+    @if (ViewBag.ErrorMessage != null)
+    {
+        <script>
+            handleMessages("@ViewBag.ErrorMessage");
+        </script>
+        ViewBag.ErrorMessage = null;
+    }
+
+
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.24/css/jquery.dataTables.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.24/js/jquery.dataTables.min.js"></script>
+
+
+
+
+</form>
+
+<script>
+    function clearErrors() {
+        const errorIds = [
+            "InvoiceNumberError",
+            "InvoiceDateError",
+            "SupplierNameError",
+            "ProductCodeError"
+        ];
+
+        errorIds.forEach(id => {
+            const el = document.getElementById(id);
+            if (el) el.innerText = "";
+        });
+    }
+
+    function validateField(fieldId, errorId, errorMessage, skipValueCheck = null) {
+        const input = document.getElementById(fieldId);
+        const errorSpan = document.getElementById(errorId);
+
+        if (!input || !errorSpan) {
+            console.warn(`Missing element: ${fieldId} or ${errorId}`);
+            return false;
+        }
+
+        const value = input.value.trim();
+        if (!value || (skipValueCheck && value === skipValueCheck)) {
+            errorSpan.innerText = errorMessage;
+            return false;
+        }
+
+        return true;
+    }
+
+    function validateSave() {
+        clearErrors();
+        let isValid = true;
+
+        isValid &= validateField("InvoiceNumber", "InvoiceNumberError", "Invoice Number is required.");
+        isValid &= validateField("InvoiceDate", "InvoiceDateError", "Invoice Date is required.");
+        isValid &= validateField("SupplierName", "SupplierNameError", "Supplier Name is required.");
+        isValid &= validateField("ProductCode", "ProductCodeError", "Product Code is required.");
+
+        return !!isValid;
+    }
+
+    function validateGet() {
+        clearErrors();
+
+        const invoiceNumberValid = validateField("InvoiceNumber", "InvoiceNumberError", "Invoice Number is required.");
+        const productCodeValid = validateField("ProductCode", "ProductCodeError", "Product Code is required.");
+
+        return invoiceNumberValid && productCodeValid;
+    }
+
+    function validateDelete() {
+        clearErrors();
+
+        const invoiceNumber = document.getElementById("InvoiceNumber")?.value.trim();
+        const productCode = document.getElementById("ProductCode")?.value.trim();
+
+        let isValid = true;
+
+        if (!invoiceNumber) {
+            document.getElementById("InvoiceNumberError").innerText = "Invoice Number is required.";
+            isValid = false;
+        }
+
+        if (!productCode) {
+            document.getElementById("ProductCodeError").innerText = "Product Code is required.";
+            isValid = false;
+        }
+
+        return isValid;
+    }
+
+</script>
+
+
+<script>
+    const moneyInput = document.getElementById('Price');
+    const netPriceInput = document.getElementById('NetPrice');
+    const moneyError = document.getElementById('PriceError');
+    const netPriceError = document.getElementById('NetPriceError');
+
+    // Function to format number in Indian format (e.g., 1,23,456.78)
+    function formatToIndianCurrency(value) {
+        // Split integer and decimal
+        let parts = value.split('.');
+        let integerPart = parts[0];
+
+        let lastThree = integerPart.substring(integerPart.length - 3);
+        let otherNumbers = integerPart.substring(0, integerPart.length - 3);
+
+        if (otherNumbers !== '') {
+            lastThree = ',' + lastThree;
+        }
+
+        let formattedInteger = otherNumbers.replace(/\B(?=(\d{2})+(?!\d))/g, ',') + lastThree;
+
+        return parts.length > 1
+            ? formattedInteger + '.' + parts[1].substring(0, 2)
+            : formattedInteger;
+    }
+
+    function validateAndFormatInput(inputEl, errorEl) {
+        let value = inputEl.value.replace(/[^0-9.]/g, '');
+
+        inputEl.value = formatToIndianCurrency(value);
+
+        const indianMoneyFormat = /^\d{1,3}(,\d{2})*(\.\d{0,2})?$/;
+
+        if (!indianMoneyFormat.test(inputEl.value)) {
+            errorEl.style.display = 'inline';
+        } else {
+            errorEl.style.display = 'none';
+        }
+    }
+
+    if (moneyInput) {
+        moneyInput.addEventListener('input', function () {
+            validateAndFormatInput(moneyInput, moneyError);
+        });
+    }
+
+    if (netPriceInput) {
+        netPriceInput.addEventListener('input', function () {
+            validateAndFormatInput(netPriceInput, netPriceError);
+        });
+    }
+</script>
+
+<script>
+    const priceInputcal = document.getElementById('Price');
+    const taxInputcal = document.getElementById('Tax');
+    const netPriceInputcal = document.getElementById('NetPrice');
+
+    // Format number in Indian format
+    function formatToIndianCurrency(value) {
+        let parts = value.toString().split('.');
+        let integerPart = parts[0];
+        let lastThree = integerPart.substring(integerPart.length - 3);
+        let otherNumbers = integerPart.substring(0, integerPart.length - 3);
+
+        if (otherNumbers !== '') {
+            lastThree = ',' + lastThree;
+        }
+
+        let formattedInteger = otherNumbers.replace(/\B(?=(\d{2})+(?!\d))/g, ',') + lastThree;
+        return parts.length > 1
+            ? formattedInteger + '.' + parts[1].substring(0, 2)
+            : formattedInteger;
+    }
+
+    // Remove commas and convert to number
+    function parseIndianCurrency(value) {
+        return parseFloat(value.replace(/,/g, '')) || 0;
+    }
+
+    function calculateNetPrice() {
+        const price = parseIndianCurrency(priceInputcal.value);
+        const tax = parseFloat(taxInputcal.value) || 0;
+
+        const netAmount = price + (price * tax / 100);
+        netPriceInputcal.value = formatToIndianCurrency(netAmount.toFixed(2));
+    }
+
+    // Trigger calculation on blur (when focus leaves the input)
+    if (priceInputcal) {
+        priceInputcal.addEventListener('blur', function () {
+            let raw = this.value.replace(/[^0-9.]/g, '');
+            this.value = formatToIndianCurrency(raw);
+            calculateNetPrice();
+        });
+    }
+
+    if (taxInputcal) {
+        taxInputcal.addEventListener('blur', function () {
+            calculateNetPrice();
+        });
+    }
+</script>
