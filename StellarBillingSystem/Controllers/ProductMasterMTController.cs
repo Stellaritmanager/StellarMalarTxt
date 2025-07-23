@@ -1,6 +1,9 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using DocumentFormat.OpenXml.Vml.Office;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using StellarBillingSystem.Context;
 using StellarBillingSystem_Malar.Business;
 using StellarBillingSystem_Malar.Models;
@@ -26,24 +29,27 @@ namespace StellarBillingSystem_Malar.Controllers
 
         public async Task<IActionResult> ProductMasterMT()
         {
-            ProductModelMT model = new ProductModelMT();
+            var viewModel = new ProductViewModelMT
+            {
+                ObjMT = new ProductModelMT()
+            };
 
             if (TempData["BranchID"] != null)
             {
-                model.BranchID = TempData["BranchID"].ToString();
+                viewModel.ObjMT.BranchID = TempData["BranchID"].ToString();
                 TempData.Keep("BranchID");
             }
 
             BusinessProductMT business = new BusinessProductMT(_billingsoftware, _configuration);
 
+            viewModel.ProductData = await AdditionalProductMasterFun(viewModel.ObjMT.BranchID);
+            viewModel.CatgeoryList = GetCategoryList(null);
+            viewModel.SizeList = GetSizeList(null);
+            viewModel.BranchList = GetbrandList(null);
 
-            ViewData["Productdata"] = await AdditionalProductMasterFun(model.BranchID);
-            ViewData["catname"] = business.Getcat();
-            ViewData["sizename"] = business.Getsize();
-            ViewData["brandname"] = business.Getbrand();
-
-            return View("ProductMasterMT", model);
+            return View("ProductMasterMT", viewModel);
         }
+
 
 
         public async Task<DataTable> AdditionalProductMasterFun(string BranchID)
@@ -67,181 +73,239 @@ namespace StellarBillingSystem_Malar.Controllers
 
 
         [HttpGet]
-        public async Task<IActionResult> GetProduct(ProductModelMT model, string buttonType)
+        public async Task<IActionResult> GetProduct(ProductViewModelMT model, string buttonType)
         {
-
             if (TempData["BranchID"] != null)
             {
-                model.BranchID = TempData["BranchID"].ToString();
+                model.ObjMT.BranchID = TempData["BranchID"].ToString();
                 TempData.Keep("BranchID");
             }
 
+            var input = model.ObjMT;
 
-            BusinessProductMT business = new BusinessProductMT(_billingsoftware, _configuration);
-            ViewData["catname"] = business.Getcat();
-            ViewData["sizename"] = business.Getsize();
-            ViewData["brandname"] = business.Getbrand();
-
-
-
-
-            if (buttonType == "Get")
+            try
             {
-                var getcategory = await _billingsoftware.MTProductMaster.FirstOrDefaultAsync(x => (x.ProductCode == model.ProductCode || x.Barcode == model.Barcode) &&
-          x.BranchID == model.BranchID &&
-          x.IsDelete == false);
 
-                if (getcategory != null)
+
+
+                BusinessProductMT business = new BusinessProductMT(_billingsoftware, _configuration);
+               
+
+                if (buttonType == "Get")
                 {
-                    var dataTable = await AdditionalProductMasterFun(model.BranchID);;
+                    var product = await _billingsoftware.MTProductMaster.FirstOrDefaultAsync(x =>
+                        (x.ProductCode == model.ObjMT.ProductCode || x.Barcode == model.ObjMT.Barcode) &&
+                        x.BranchID == model.ObjMT.BranchID &&
+                        x.IsDelete == false);
 
-                    // Store the DataTable in ViewData for access in the view
-                    ViewData["Productdata"] = dataTable;
-                    return View("ProductMasterMT", getcategory);
-                }
-                else
-                {
-                    ProductModelMT par = new ProductModelMT();
-                    ViewBag.ErrorMessage = "No value for this Product ID";
-                    var dataTable = await AdditionalProductMasterFun(model.BranchID);;
+                    
 
-                    // Store the DataTable in ViewData for access in the view
-                    ViewData["Productdata"] = dataTable;
-                    return View("ProductMasterMT", par);
+                    if (product != null)
+                    {
+                        input = new ProductModelMT
+                        {
+                            ProductCode = product.ProductCode,
+                            Barcode = product.Barcode,
+                            ProductName = product.ProductName,
+                            NoofItem = product.NoofItem,
+                            Price = product.Price,
+                            CategoryID = product.CategoryID,
+                            SizeName = product.SizeName,
+                            BrandID = product.BrandID
+                        };
+                    }
+                    else
+                    {
+                        ViewBag.ErrorMessage = "No value for this Product ID";
+                       // model.ObjMT = new ProductModelMT();
+                    }
+
+                    var resultVM = new ProductViewModelMT
+                    {
+                        ObjMT = input,
+                        CatgeoryList = GetCategoryList(input.CategoryID),
+                        SizeList = GetSizeList(input.SizeName),
+                        BranchList = GetbrandList(input.BrandID),
+                        ProductData = await AdditionalProductMasterFun(model.ObjMT.BranchID)
+                };
+
+                    ModelState.Clear(); // important to reflect new values
+                    return View("ProductMasterMT", resultVM);
                 }
             }
-
+            catch (Exception ex)
+            {
+                ViewBag.Message = ex.Message;
+            }
+        
+            
             return View();
         }
 
-
+        
 
         [HttpPost]
-        public async Task<IActionResult> AddProduct(ProductModelMT model, string buttonType)
+        public async Task<IActionResult> AddProduct(ProductViewModelMT model, string buttonType)
         {
-
             if (TempData["BranchID"] != null)
             {
-                model.BranchID = TempData["BranchID"].ToString();
+                model.ObjMT.BranchID = TempData["BranchID"].ToString();
                 TempData.Keep("BranchID");
             }
 
-
-            BusinessProductMT business = new BusinessProductMT(_billingsoftware, _configuration);
-            ViewData["catname"] = business.Getcat();
-            ViewData["sizename"] = business.Getsize();
-            ViewData["brandname"] = business.Getbrand();
+            model.ProductData = await AdditionalProductMasterFun(model.ObjMT.BranchID);
+            model.CatgeoryList = GetCategoryList(null);
+            model.SizeList = GetSizeList(null);
+            model.BranchList = GetbrandList(null);
 
             SatffAdminBusinessClass staffbus = new SatffAdminBusinessClass(_billingsoftware, _configuration);
 
-          
             if (buttonType == "Delete")
             {
-                var categorytodelete = await _billingsoftware.MTProductMaster.FirstOrDefaultAsync(x => (x.ProductCode == model.ProductCode || x.Barcode == model.Barcode) &&
-          x.BranchID == model.BranchID &&
-          x.IsDelete == false);
+                var toDelete = await _billingsoftware.MTProductMaster.FirstOrDefaultAsync(x =>
+                    (x.ProductCode == model.ObjMT.ProductCode || x.Barcode == model.ObjMT.Barcode) &&
+                    x.BranchID == model.ObjMT.BranchID &&
+                    x.IsDelete == false);
 
-                if (categorytodelete != null)
+                if (toDelete != null)
                 {
-                    categorytodelete.IsDelete = true;
+                    toDelete.IsDelete = true;
                     await _billingsoftware.SaveChangesAsync();
-
                     ViewBag.Message = "Product deleted successfully";
-
-                    var dataTable3 = await AdditionalProductMasterFun(model.BranchID);;
-
-                    // Store the DataTable in ViewData for access in the view
-                    ViewData["Productdata"] = dataTable3;
-
-                    model = new ProductModelMT();
-
-                    return View("ProductMasterMT", model);
                 }
                 else
                 {
                     ViewBag.ErrorMessage = "Product not found";
-                    var dataTable4 = await AdditionalProductMasterFun(model.BranchID);;
-
-                    // Store the DataTable in ViewData for access in the view
-                    ViewData["Productdata"] = dataTable4;
-                    model = new ProductModelMT();
-                    return View("ProductMasterMT", model);
                 }
 
+                model = new ProductViewModelMT
+                {
+                    ObjMT = new ProductModelMT
+                    {
+                        BranchID = model.ObjMT.BranchID // so AdditionalProductMasterFun works for the same branch
+                    },
+                    ProductData = await AdditionalProductMasterFun(model.ObjMT.BranchID),
+                    CatgeoryList = GetCategoryList(null),
+                    SizeList = GetSizeList(null),
+                    BranchList = GetbrandList(null)
+                };
 
+                ModelState.Clear();
+
+                return View("ProductMasterMT", model);
             }
 
-
-            else if (buttonType == "save")
+            if (buttonType == "save")
             {
-                // HttpContext.Session.SetString("BranchID", model.BranchID);
                 try
                 {
+                    var existing = await _billingsoftware.MTProductMaster.FirstOrDefaultAsync(x =>
+                        (x.ProductCode == model.ObjMT.ProductCode || x.Barcode == model.ObjMT.Barcode) &&
+                        x.BranchID == model.ObjMT.BranchID &&
+                        x.IsDelete == false);
 
+                    string currentTime = DateTime.ParseExact(staffbus.GetFormattedDateTime(), "dd/MM/yyyy HH:mm:ss", null).ToString();
 
-
-                    var existingCategory = await _billingsoftware.MTProductMaster.FirstOrDefaultAsync(x => (x.ProductCode == model.ProductCode || x.Barcode == model.Barcode) &&
-          x.BranchID == model.BranchID &&
-          x.IsDelete == false);
-
-                    if (existingCategory != null)
+                    if (existing != null)
                     {
-                        if (existingCategory.IsDelete)
+                        if (existing.IsDelete)
                         {
                             ViewBag.ErrorMessage = "Cannot Save or Update. Size is marked as deleted.";
-                            var dataTable6 = await AdditionalProductMasterFun(model.BranchID);;
-
-                            // Store the DataTable in ViewData for access in the view
-                            ViewData["Productdata"] = dataTable6;
+                            model.ProductData = await AdditionalProductMasterFun(model.ObjMT.BranchID);
                             return View("ProductMasterMT", model);
                         }
 
-                        existingCategory.ProductCode = model.ProductCode;
-                        existingCategory.CategoryID = model.CategoryID;
-                        existingCategory.Barcode = model.Barcode;
-                        existingCategory.SizeName = model.SizeName;
-                        existingCategory.ProductName = model.ProductName;
-                        existingCategory.Price = model.Price;
-                        existingCategory.NoofItem = model.NoofItem;
-                        existingCategory.BranchID = model.BranchID;
-                        existingCategory.BrandID = model.BrandID;
-                        existingCategory.Lastupdateddate = DateTime.ParseExact(staffbus.GetFormattedDateTime(), "dd/MM/yyyy HH:mm:ss", null).ToString();
-                        existingCategory.Lastupdateduser = User.Claims.First().Value.ToString();
-                        existingCategory.Lastupdatedmachine = Request.HttpContext.Connection.RemoteIpAddress.ToString();
+                        // Update existing
+                        existing.ProductCode = model.ObjMT.ProductCode;
+                        existing.CategoryID = model.ObjMT.CategoryID;
+                        existing.Barcode = model.ObjMT.Barcode;
+                        existing.SizeName = model.ObjMT.SizeName;
+                        existing.ProductName = model.ObjMT.ProductName;
+                        existing.Price = model.ObjMT.Price;
+                        existing.NoofItem = model.ObjMT.NoofItem;
+                        existing.BranchID = model.ObjMT.BranchID;
+                        existing.BrandID = model.ObjMT.BrandID;
+                        existing.Lastupdateddate = currentTime;
+                        existing.Lastupdateduser = User.Claims.First().Value;
+                        existing.Lastupdatedmachine = Request.HttpContext.Connection.RemoteIpAddress.ToString();
 
-
-                        _billingsoftware.Entry(existingCategory).State = EntityState.Modified;
+                        _billingsoftware.Entry(existing).State = EntityState.Modified;
                     }
                     else
                     {
-                        model.Lastupdateddate = DateTime.ParseExact(staffbus.GetFormattedDateTime(), "dd/MM/yyyy HH:mm:ss", null).ToString();
-                        model.Lastupdateduser = User.Claims.First().Value.ToString();
-                        model.Lastupdatedmachine = Request.HttpContext.Connection.RemoteIpAddress.ToString();
+                        model.ObjMT.Lastupdateddate = currentTime;
+                        model.ObjMT.Lastupdateduser = User.Claims.First().Value;
+                        model.ObjMT.Lastupdatedmachine = Request.HttpContext.Connection.RemoteIpAddress.ToString();
 
-
-                        _billingsoftware.MTProductMaster.Add(model);
+                        
+                        _billingsoftware.MTProductMaster.Add(model.ObjMT);
                     }
 
-
                     await _billingsoftware.SaveChangesAsync();
-
                     ViewBag.Message = "Saved Successfully";
+                
+
+                
+                model.ProductData = await AdditionalProductMasterFun(model.ObjMT.BranchID);
+                    
+                ModelState.Clear();
+
+                   
                 }
                 catch (Exception ex)
                 {
-                    ViewBag.Message = ex.Message;
+                    ViewBag.ErrorMessage = ex.Message;
                 }
-
-
-                var dataTable = await AdditionalProductMasterFun(model.BranchID);;
-
-                // Store the DataTable in ViewData for access in the view
-                ViewData["Productdata"] = dataTable;
-                model = new ProductModelMT();
-
             }
+            model = new ProductViewModelMT
+            {
+                ObjMT = new ProductModelMT
+                {
+                    BranchID = model.ObjMT.BranchID // so AdditionalProductMasterFun works for the same branch
+                },
+                ProductData = await AdditionalProductMasterFun(model.ObjMT.BranchID),
+                CatgeoryList = GetCategoryList(null),
+                SizeList = GetSizeList(null),
+                BranchList = GetbrandList(null)
+            };
+
+
             return View("ProductMasterMT", model);
+
+           
         }
+
+        private IEnumerable<SelectListItem> GetCategoryList(int? selectedId)
+        {
+            return _billingsoftware.MTCategoryMaster.Select(c => new SelectListItem
+            {
+                Value = c.CategoryID.ToString(),
+                Text = c.CategoryName,
+                Selected = selectedId.HasValue && selectedId.Value == c.CategoryID
+            }).ToList();
+        }
+
+        private IEnumerable<SelectListItem> GetSizeList(string? selectedId)
+        {
+            return _billingsoftware.MTSizeMaster.Select(c => new SelectListItem
+            {
+                Value = c.SizeName.ToString(),
+                Text = c.SizeName,
+                Selected = !string.IsNullOrEmpty(selectedId) && selectedId == c.SizeName
+            }).ToList();
+        }
+
+        private IEnumerable<SelectListItem> GetbrandList(int? selectedId)
+        {
+            return _billingsoftware.MTBrandMaster.Select(c => new SelectListItem
+            {
+                Value = c.BrandID.ToString(),
+                Text = c.BrandName,
+                Selected = selectedId.HasValue && selectedId.Value == c.BrandID
+            }).ToList();
+        }
+
+
     }
 }
 

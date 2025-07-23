@@ -1,8 +1,10 @@
-﻿@model StellarBillingSystem_Malar.Models.ProductModelMT
+﻿@model StellarBillingSystem_Malar.Models.ProductViewModelMT
 @using System.Data
 @using NonFactors.Mvc.Grid
+
 @{
     ViewData["Title"] = "ProductMasterMT";
+    var dataTable = Model.ProductData;
 }
 
 <script>
@@ -82,37 +84,26 @@
                         <div class="col-sm-4 col-md-4 col-lg-4">
 
                             <div class="form-floating form-floating-outline mb-4">
-                                <input type="ProductCode" id="ProductCode" class="form-control" placeholder="ProductCode" name="ProductCode" value="@Model.ProductCode" />
-                                <label asp-for="ProductCode" class="control-label">Product Code</label>
+                                @Html.TextBoxFor(model => model.ObjMT.ProductCode, new { @class = "form-control", placeholder = "Enter Product Code", @id = "ProductCode" })
+                                <label for="ProductCode">Product Code</label>
                                 <span id="ProductCodeError" class="text-danger"></span>
                             </div>
+
                         </div>
                         <div class="col-sm-4 col-md-4 col-lg-4">
                             <div class="form-floating form-floating-outline mb-4">
-                                <input type="Barcode" id="Barcode" class="form-control" placeholder="Barcode" name="Barcode" value="@Model.Barcode" />
-                                <label asp-for="Barcode" class="control-label">Barcode</label>
+                               
+                                @Html.TextBoxFor(model => model.ObjMT.Barcode, new { @class = "form-control", placeholder = "Enter Barcode", @id = "Barcode" })
+                                <label for="Barcode">Barcode</label>
                                 <span id="BarcodeError" class="text-danger"></span>
                             </div>
                         </div>
 
                         <div class="form-floating form-floating-outline mb-4">
 
-
-                            @{
-                                var screenList = ((IEnumerable<StellarBillingSystem_Malar.Models.CategoryModelMT>)ViewData["catname"])
-                                .Select(m => new SelectListItem
-            {
-                Value = m.CategoryID.ToString(), // Assuming ScreenId is of type int
-                Text = $"{m.CategoryName}"
-            });
-                            }
-
-                            @Html.DropDownListFor(model => model.CategoryID,
-                                     new SelectList((IEnumerable<StellarBillingSystem_Malar.Models.CategoryModelMT>)ViewData["catname"], "CategoryID", "CategoryName", Model.CategoryID),
-                                     "Select Category",
-                                     new { @class = "form-control", @id = "CategoryName" })
-
-                            <label asp-for="CategoryID" class="control-label">Category Name</label>
+                           
+                            @Html.DropDownListFor(model => model.ObjMT.CategoryID, Model.CatgeoryList, "Select Category", new { @class = "form-control", @id = "CategoryName" })
+                            <label for="CategoryID"></label>
                             <span id="CategoryNameError" class="text-danger"></span>
                         </div>
                     </div>
@@ -125,66 +116,44 @@
                     </div>
 
                     <div class="form-floating form-floating-outline mb-4">
-
-
-                        @{
-                            var brand = ((IEnumerable<StellarBillingSystem_Malar.Models.BrandMasterModelMT>)ViewData["brandname"])
-                            .Select(m => new SelectListItem
-            {
-                Value = m.BrandID.ToString(), // Assuming ScreenId is of type int
-                Text = $"{m.BrandName}"
-            });
-                        }
-
-                        @Html.DropDownListFor(model => model.BrandID,
-                                 new SelectList((IEnumerable<StellarBillingSystem_Malar.Models.BrandMasterModelMT>)ViewData["brandname"], "BrandID", "BrandName", Model.BrandID),
-                                 "Select Brand",
-                                 new { @class = "form-control", @id = "BrandName" })
-
-                        <label asp-for="BrandID" class="control-label">Brand Name</label>
+                       
+                        @Html.DropDownListFor(model => model.ObjMT.BrandID, Model.BranchList, "Select Brand", new { @class = "form-control", @id = "BrandName" })
+                        <label for="BrandID"></label>
                         <span id="BrandNameError" class="text-danger"></span>
                     </div>
 
                     <div class="form-floating form-floating-outline mb-4">
 
 
-                        @{
-                            var size = ((IEnumerable<StellarBillingSystem_Malar.Models.SizeMasterModelMT>)ViewData["sizename"])
-                            .Select(m => new SelectListItem
-            {
-                Value = m.SizeName.ToString(), // Assuming ScreenId is of type int
-                Text = $"{m.SizeName}"
-            });
-                        }
-
-                        @Html.DropDownListFor(model => model.SizeName,
-                                 new SelectList((IEnumerable<StellarBillingSystem_Malar.Models.SizeMasterModelMT>)ViewData["sizename"], "SizeName", "SizeName", Model.SizeName),
-                                 "Select Size",
-                                 new { @class = "form-control", @id = "SizeName" })
-
-                        <label asp-for="SizeName" class="control-label">Size Name</label>
+                        
+                        @Html.DropDownListFor(model => model.ObjMT.SizeName, Model.SizeList, "Select Size", new { @class = "form-control", @id = "SizeName" })
+                        <label for="SizeName"></label>
                         <span id="SizeNameError" class="text-danger"></span>
+
                     </div>
 
                     <div class="form-floating form-floating-outline mb-4">
-                        <input type="ProductName" id="ProductName" class="form-control" placeholder="ProductName" name="ProductName" value="@Model.ProductName" />
-                        <label asp-for="ProductName" class="control-label">ProductName</label>
+                       
+                        @Html.TextBoxFor(model => model.ObjMT.ProductName, new { @class = "form-control", placeholder = "Enter ProductName" })
+                        <label for="ProductName">ProductName</label>
                         <span id="ProductNameError" class="text-danger"></span>
                     </div>
 
                     <div class="form-floating form-floating-outline mb-4">
-
-                        <input type="Price" id="Price" class="form-control" placeholder="Price" name="Price" value="@(Model?.Price != 0 ? Model.Price.ToString() : "")" />
-                        <label asp-for="Price" class="control-label">Price</label>
+                        @Html.TextBox("ObjMT.Price", Model.ObjMT.Price == 0 ? "" : Model.ObjMT.Price.ToString(),
+                                 new { @class = "form-control", placeholder = "Enter Price", @id = "Price" })
+                        <label for="Price">Price</label>
                         <span id="PriceError" class="text-danger"></span>
                     </div>
 
                     <div class="form-floating form-floating-outline mb-4">
-                        <input type="number" id="NoofItem" class="form-control" placeholder="NoofItem" name="NoofItem" value="@(Model?.NoofItem != 0 ? Model.NoofItem.ToString() : "")" />
-                        <label asp-for="NoofItem" class="control-label">NoofItem</label>
+                        @Html.TextBox("ObjMT.NoofItem", Model.ObjMT.NoofItem == 0 ? "" : Model.ObjMT.NoofItem.ToString(),
+                                 new { @class = "form-control", type = "number", placeholder = "Enter NoofItem" })
+                        <label for="NoofItem">NoofItem</label>
                         <span id="NoofItemError" class="text-danger"></span>
                     </div>
 
+                     
                 </div>
                 <div class="row gy-4">
                     <div class="col-sm-4 col-md-4 col-lg-4"></div>
@@ -205,11 +174,8 @@
     </div>
 
 
-
-    @{
-        var dataTable = ViewData["Productdata"] as DataTable;
-    }
-
+    @if (dataTable != null && dataTable.Rows.Count > 0)
+    {
 
     <div class="row" style="margin-top:30px">
         <div class="col-md-12 col-lg-0"></div>
@@ -229,10 +195,8 @@
 
                             </tr>
                         </thead>
-                        <tbody>
-                            @if (dataTable != null)
-                            {
-                                foreach (DataRow row in dataTable.Rows)
+                            <tbody>
+                                @foreach (DataRow row in dataTable.Rows)
                                 {
                                     <tr>
                                         <td>@row["ProductCode"]</td>
@@ -240,11 +204,10 @@
                                         <td>@row["ProductName"]</td>
                                         <td>@row["Price"]</td>
                                         <td>@row["NoofItem"]</td>
-
                                     </tr>
                                 }
-                            }
-                        </tbody>
+                            </tbody>
+
                     </table><div id="pagination-controls" style="text-align: center; margin-top: 10px;">
                         <button id="prev-btn" style="background-color: cadetblue; color: white; border: none; padding: 0px 6px; cursor: pointer; font-size: 16px; border-radius: 5px; margin: 0 5px;">Previous</button>
                         <div id="page-numbers" style="background-color: cadetblue; color: white; border: none; padding: 0px 6px;display: inline-block; vertical-align: middle;"></div>
@@ -326,7 +289,7 @@
         </div>
     </div>
 
-
+ }
 
     @if (ViewBag.Message != null)
     {
@@ -357,56 +320,32 @@
     function validateSave() {
         clearErrors();
 
-        const productCode = document.getElementById("ProductCode").value.trim();
-        const barcode = document.getElementById("Barcode").value.trim();
-        const category = document.getElementById("CategoryName").value;
-        const brand = document.getElementById("BrandName").value;
-        const size = document.getElementById("SizeName").value;
-        const productName = document.getElementById("ProductName").value.trim();
-        const price = document.getElementById("Price").value.trim();
-        const noOfItem = document.getElementById("NoofItem").value.trim();
-
         let isValid = true;
 
-        if (!productCode) {
-            document.getElementById("ProductCodeError").innerText = "Product Code is required.";
-            isValid = false;
+        function validateField(fieldId, errorId, errorMessage, skipValueCheck = null) {
+            const input = document.getElementById(fieldId);
+            const errorSpan = document.getElementById(errorId);
+
+            if (!input || !errorSpan) {
+                console.warn(`Element missing: ${fieldId} or ${errorId}`);
+                return;
+            }
+
+            const value = input.value.trim();
+            if (!value || (skipValueCheck && value === skipValueCheck)) {
+                errorSpan.innerText = errorMessage;
+                isValid = false;
+            }
         }
 
-        if (!barcode) {
-            document.getElementById("BarcodeError").innerText = "Barcode is required.";
-            isValid = false;
-        }
-
-        if (!category || category === "Select Category") {
-            document.getElementById("CategoryNameError").innerText = "Please select a category.";
-            isValid = false;
-        }
-
-        if (!brand || brand === "Select Brand") {
-            document.getElementById("BrandNameError").innerText = "Please select a brand.";
-            isValid = false;
-        }
-
-        if (!size || size === "Select Size") {
-            document.getElementById("SizeNameError").innerText = "Please select a size.";
-            isValid = false;
-        }
-
-        if (!productName) {
-            document.getElementById("ProductNameError").innerText = "Product Name is required.";
-            isValid = false;
-        }
-
-        if (!price) {
-            document.getElementById("PriceError").innerText = "Price is required.";
-            isValid = false;
-        }
-
-        if (!noOfItem) {
-            document.getElementById("NoofItemError").innerText = "Number of items is required.";
-            isValid = false;
-        }
+        validateField("ProductCode", "ProductCodeError", "Product Code is required.");
+        validateField("Barcode", "BarcodeError", "Barcode is required.");
+        validateField("CategoryName", "CategoryNameError", "Please select a category.", "Select Category");
+        validateField("BrandName", "BrandNameError", "Please select a brand.", "Select Brand");
+        validateField("SizeName", "SizeNameError", "Please select a size.", "Select Size");
+        validateField("ProductName", "ProductNameError", "Product Name is required.");
+        validateField("Price", "PriceError", "Price is required.");
+        validateField("NoofItem", "NoofItemError", "Number of items is required.");
 
         return isValid;
     }
