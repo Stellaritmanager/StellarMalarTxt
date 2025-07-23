@@ -3,7 +3,11 @@
     ViewData["Title"] = "Size Master MT";
 }
 
-<h2 class="text-center">Size Master</h2>
+
+
+
+
+
 
 @if (ViewBag.ErrorMessage != null)
 {
@@ -17,60 +21,135 @@
 
 <form asp-action="AddSize" asp-controller="SizeMasterMT" method="post" autocomplete="off">
 
-    <div class="form-group">
-        <label for="SizeID">Size ID</label>
-        @Html.TextBoxFor(model => model.Model.SizeID, new { @class = "form-control", type = "number", placeholder = "Enter Size ID" })
-        @Html.ValidationMessageFor(model => model.Model.SizeID, "", new { @class = "text-danger" })
+
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+    <div class="row" style="margin-top:10px">
+        <div class="col-md-12 col-lg-0"></div>
+        <div class="col-12 col-sm-12 col-md-12 col-lg-12">
+            <div class="card">
+                <div class="card-body dividerblack">
+                    <div class="row gy-4">
+                        <div class="col-sm-12 col-md-12 col-lg-12">
+                            <h2 class="centered text-white" style="font-family:'Lucida Bright';text-align: center; margin: 0;">
+                                Size Master
+                            </h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
-    <div class="form-group">
-        <label for="SizeName">Size Name</label>
-        @Html.TextBoxFor(model => model.Model.SizeName, new { @class = "form-control" })
-        @Html.ValidationMessageFor(model => model.Model.SizeName, "", new { @class = "text-danger" })
+    <br />
+
+    <div class="row" style="height:8%"></div>
+
+    <div class="row" style="margin-top:5px">
+        <div class="col-md-12 col-lg-0"></div>
+        <div class="col-12 col-sm-12 col-md-12 col-lg-12">
+            <div class="card">
+                <div class="card-body dividerblack">
+                    <div class="row gy-4">
+                        <div class="col-sm-1 col-md-1 col-lg-1"></div>
+                        <div class="col-sm-3 col-md-3 col-lg-3">
+                            <label for="SizeID" class="control-label">SizeID</label>
+                            <div class="form-floating form-floating-outline mb-4">
+                                @Html.TextBoxFor(model => model.Model.SizeID, new { @class = "form-control", type = "number", placeholder = "Enter Size ID" })
+                                @Html.ValidationMessageFor(model => model.Model.SizeID, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                        <div class="col-sm-3 col-md-3 col-lg-3">
+                            <label for="CategoryID">Category</label>
+                            <div class="form-floating form-floating-outline mb-4">
+                                @Html.DropDownListFor(model => model.Model.CategoryID, Model.CategoryList, "Select Category", new { @class = "form-control" })
+                                @Html.ValidationMessageFor(model => model.Model.CategoryID, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                        <div class="col-sm-3 col-md-3 col-lg-3">
+                            <label for="SizeName">Size Name</label>
+                            <div class="form-floating form-floating-outline mb-4">
+                                @Html.TextBoxFor(model => model.Model.SizeName, new { @class = "form-control" })
+                                @Html.ValidationMessageFor(model => model.Model.SizeName, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                      
+                    </div>
+
+                    <div class="row gy-4" style="margin-top:20px">
+
+                        <div class="col-sm-4 col-md-4 col-lg-4"></div>
+                        <div class="col-sm-1 col-md-1 col-lg-1">
+                            <button type="submit" name="buttonType" value="Get" class="btn btn-primary">Get</button>
+
+                        </div>
+                        <div class="col-sm-1 col-md-1 col-lg-1">
+                            <button type="submit" name="buttonType" value="save" class="btn btn-success">Save</button>
+
+                        </div>
+                        <div class="col-sm-1 col-md-1 col-lg-1">
+                            <button type="submit" name="buttonType" value="Delete" class="btn btn-danger">Delete</button>
+
+                        </div>
+                        <div class="col-sm-5 col-md-5 col-lg-5"></div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
     </div>
 
-    <div class="form-group">
-        <label for="CategoryID">Category</label>
-        @Html.DropDownListFor(model => model.Model.CategoryID, Model.CategoryList, "Select Category", new { @class = "form-control" })
-        @Html.ValidationMessageFor(model => model.Model.CategoryID, "", new { @class = "text-danger" })
+
+    <div class="row" style="height:8%"></div>
+
+    <div class="row" style="margin-top:30px">
+        <div class="col-md-12 col-lg-0"></div>
+        <div class="col-12 col-sm-12 col-md-12 col-lg-12">
+            <div class="card">
+                <div class="card-body dividerblack">
+                    <div class="row gy-4">
+                        <div class="col-sm-1 col-md-1 col-lg-1"></div>
+                        <div class="col-sm-10 col-md-10 col-lg-10">
+
+
+                            <h4>Existing Sizes</h4>
+
+                            @if (Model.SizeData != null && Model.SizeData.Rows.Count > 0)
+                            {
+                                <table class="table table-bordered">
+                                    <thead>
+                                        <tr>
+                                            @foreach (System.Data.DataColumn col in Model.SizeData.Columns)
+                                            {
+                                                <th>@col.ColumnName</th>
+                                            }
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (System.Data.DataRow row in Model.SizeData.Rows)
+                                        {
+                                            <tr>
+                                                @foreach (var item in row.ItemArray)
+                                                {
+                                                    <td>@item</td>
+                                                }
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            }
+                            else
+                            {
+                                <p>No data found.</p>
+                            }
+
+                        </div>
+                        <div class="col-sm-1 col-md-1 col-lg-1"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
-    <div class="form-group mt-3">
-        <button type="submit" name="buttonType" value="Get" class="btn btn-primary">Get</button>
-        <button type="submit" name="buttonType" value="save" class="btn btn-success">Save</button>
-        <button type="submit" name="buttonType" value="Delete" class="btn btn-danger">Delete</button>
-    </div>
 </form>
-
-<hr />
-
-<h4>Existing Sizes</h4>
-
-@if (Model.SizeData != null && Model.SizeData.Rows.Count > 0)
-{
-    <table class="table table-bordered">
-        <thead>
-            <tr>
-                @foreach (System.Data.DataColumn col in Model.SizeData.Columns)
-                {
-                    <th>@col.ColumnName</th>
-                }
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (System.Data.DataRow row in Model.SizeData.Rows)
-            {
-                <tr>
-                    @foreach (var item in row.ItemArray)
-                    {
-                        <td>@item</td>
-                    }
-                </tr>
-            }
-        </tbody>
-    </table>
-}
-else
-{
-    <p>No data found.</p>
-}
