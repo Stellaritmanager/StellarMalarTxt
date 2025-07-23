@@ -1,9 +1,7 @@
-﻿using DocumentFormat.OpenXml.Vml.Office;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
 using StellarBillingSystem.Context;
 using StellarBillingSystem_Malar.Business;
 using StellarBillingSystem_Malar.Models;
@@ -57,7 +55,7 @@ namespace StellarBillingSystem_Malar.Controllers
 
             // Step 1: Perform the query
             var entities = _billingsoftware.MTProductMaster
-                                  .Where(e => e.IsDelete == false && e.BranchID == BranchID ).OrderByDescending(e => e.Lastupdateddate)
+                                  .Where(e => e.IsDelete == false && e.BranchID == BranchID).OrderByDescending(e => e.Lastupdateddate)
                                   .ToList();
 
             // Step 2: Convert to DataTable
@@ -89,7 +87,7 @@ namespace StellarBillingSystem_Malar.Controllers
 
 
                 BusinessProductMT business = new BusinessProductMT(_billingsoftware, _configuration);
-               
+
 
                 if (buttonType == "Get")
                 {
@@ -98,7 +96,7 @@ namespace StellarBillingSystem_Malar.Controllers
                         x.BranchID == model.ObjMT.BranchID &&
                         x.IsDelete == false);
 
-                    
+
 
                     if (product != null)
                     {
@@ -117,7 +115,7 @@ namespace StellarBillingSystem_Malar.Controllers
                     else
                     {
                         ViewBag.ErrorMessage = "No value for this Product ID";
-                       // model.ObjMT = new ProductModelMT();
+                        // model.ObjMT = new ProductModelMT();
                     }
 
                     var resultVM = new ProductViewModelMT
@@ -127,7 +125,7 @@ namespace StellarBillingSystem_Malar.Controllers
                         SizeList = GetSizeList(input.SizeName),
                         BranchList = GetbrandList(input.BrandID),
                         ProductData = await AdditionalProductMasterFun(model.ObjMT.BranchID)
-                };
+                    };
 
                     ModelState.Clear(); // important to reflect new values
                     return View("ProductMasterMT", resultVM);
@@ -137,12 +135,12 @@ namespace StellarBillingSystem_Malar.Controllers
             {
                 ViewBag.Message = ex.Message;
             }
-        
-            
+
+
             return View();
         }
 
-        
+
 
         [HttpPost]
         public async Task<IActionResult> AddProduct(ProductViewModelMT model, string buttonType)
@@ -237,20 +235,20 @@ namespace StellarBillingSystem_Malar.Controllers
                         model.ObjMT.Lastupdateduser = User.Claims.First().Value;
                         model.ObjMT.Lastupdatedmachine = Request.HttpContext.Connection.RemoteIpAddress.ToString();
 
-                        
+
                         _billingsoftware.MTProductMaster.Add(model.ObjMT);
                     }
 
                     await _billingsoftware.SaveChangesAsync();
                     ViewBag.Message = "Saved Successfully";
-                
 
-                
-                model.ProductData = await AdditionalProductMasterFun(model.ObjMT.BranchID);
-                    
-                ModelState.Clear();
 
-                   
+
+                    model.ProductData = await AdditionalProductMasterFun(model.ObjMT.BranchID);
+
+                    ModelState.Clear();
+
+
                 }
                 catch (Exception ex)
                 {
@@ -272,12 +270,12 @@ namespace StellarBillingSystem_Malar.Controllers
 
             return View("ProductMasterMT", model);
 
-           
+
         }
 
         private IEnumerable<SelectListItem> GetCategoryList(int? selectedId)
         {
-            return _billingsoftware.MTCategoryMaster.Select(c => new SelectListItem
+            return _billingsoftware.MTCategoryMaster.Where(i=>i.IsDelete==false).Select(c => new SelectListItem
             {
                 Value = c.CategoryID.ToString(),
                 Text = c.CategoryName,

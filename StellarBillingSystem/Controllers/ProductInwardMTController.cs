@@ -77,7 +77,7 @@ namespace StellarBillingSystem_Malar.Controllers
                         input = new ProductInwardModelMT
                         {
                             ProductCode = product.ProductCode,
-                            InvoiceNumber  = product.InvoiceNumber,
+                            InvoiceNumber = product.InvoiceNumber,
                             SupplierName = product.SupplierName,
                             NoofItem = product.NoofItem,
                             InvoiceDate = product.InvoiceDate,
@@ -89,17 +89,17 @@ namespace StellarBillingSystem_Malar.Controllers
                     else
                     {
                         ViewBag.ErrorMessage = "No value for this InvoiceNumber and Product Code";
-                       
+
                     }
 
                     var resultVM = new ProductInwardViewMTModel
                     {
                         ObjMT = input,
                         ProductList = GetProductList(input.ProductCode),
-                       
+
                     };
 
-                    ModelState.Clear(); 
+                    ModelState.Clear();
                     return View("ProductInwardMT", resultVM);
                 }
             }
@@ -124,7 +124,7 @@ namespace StellarBillingSystem_Malar.Controllers
             }
 
             model.ProductList = GetProductList(null);
-           
+
 
             SatffAdminBusinessClass staffbus = new SatffAdminBusinessClass(_billingsoftware, _configuration);
 
@@ -141,12 +141,12 @@ namespace StellarBillingSystem_Malar.Controllers
                     await _billingsoftware.SaveChangesAsync();
                     ViewBag.Message = "Invoice deleted successfully";
 
-                   var removestock = await _billingsoftware.MTProductMaster.FirstOrDefaultAsync(x =>
-                        x.ProductCode == model.ObjMT.ProductCode &&
-                        x.BranchID == model.ObjMT.BranchID &&
-                        x.IsDelete == false);
+                    var removestock = await _billingsoftware.MTProductMaster.FirstOrDefaultAsync(x =>
+                         x.ProductCode == model.ObjMT.ProductCode &&
+                         x.BranchID == model.ObjMT.BranchID &&
+                         x.IsDelete == false);
 
-                    if(removestock != null)
+                    if (removestock != null)
                     {
                         removestock.NoofItem -= toDelete.NoofItem;
                         await _billingsoftware.SaveChangesAsync();
@@ -181,7 +181,7 @@ namespace StellarBillingSystem_Malar.Controllers
                         x.IsDelete == false);
                     string currentTime = DateTime.ParseExact(staffbus.GetFormattedDateTime(), "dd/MM/yyyy HH:mm:ss", null).ToString();
 
-                   
+
 
                     if (existing != null)
                     {
@@ -246,9 +246,9 @@ namespace StellarBillingSystem_Malar.Controllers
                 {
                     BranchID = model.ObjMT.BranchID // so AdditionalProductMasterFun works for the same branch
                 },
-               
+
                 ProductList = GetProductList(null),
-               
+
             };
 
 
@@ -259,7 +259,7 @@ namespace StellarBillingSystem_Malar.Controllers
 
         private IEnumerable<SelectListItem> GetProductList(string? selectedId)
         {
-            return _billingsoftware.MTProductMaster.Select(c => new SelectListItem
+            return _billingsoftware.MTProductMaster.Where(i=>i.IsDelete ==false && i.BranchID== TempData["BranchID"].ToString()).Select(c => new SelectListItem
             {
                 Value = c.ProductCode.ToString(),
                 Text = c.ProductName,
@@ -267,6 +267,6 @@ namespace StellarBillingSystem_Malar.Controllers
             }).ToList();
         }
 
-       
+
     }
 }

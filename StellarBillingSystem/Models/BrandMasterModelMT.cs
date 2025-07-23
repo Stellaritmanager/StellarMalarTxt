@@ -1,5 +1,4 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace StellarBillingSystem_Malar.Models
 {
@@ -7,12 +6,12 @@ namespace StellarBillingSystem_Malar.Models
     {
         public BrandMasterModelMT() { }
 
-       
+
         public int BrandID { get; set; }
 
         public string BrandName { get; set; }
 
-       
+
 
         public bool IsDelete { get; set; }
 

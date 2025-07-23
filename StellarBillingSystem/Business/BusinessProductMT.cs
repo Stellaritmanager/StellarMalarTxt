@@ -27,7 +27,7 @@ namespace StellarBillingSystem_Malar.Business
 
             foreach (var entity in entities)
             {
-                dataTable.Rows.Add(entity.ProductCode, entity.Barcode,entity.ProductName,entity.Price,entity.NoofItem);
+                dataTable.Rows.Add(entity.ProductCode, entity.Barcode, entity.ProductName, entity.Price, entity.NoofItem);
             }
 
             return dataTable;
@@ -72,6 +72,6 @@ namespace StellarBillingSystem_Malar.Business
         }
 
 
-       
+
     }
 }

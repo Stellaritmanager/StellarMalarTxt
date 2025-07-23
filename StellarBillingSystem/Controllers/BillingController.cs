@@ -1,16 +1,11 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.CodeAnalysis.Operations;
-using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using StellarBillingSystem.Business;
 using StellarBillingSystem.Context;
-using StellarBillingSystem.Models;
 using StellarBillingSystem_skj.Business;
 using StellarBillingSystem_skj.Models;
-using System.Globalization;
-using System.Web;
 
 namespace StellarBillingSystem_skj.Controllers
 {
@@ -230,7 +225,7 @@ namespace StellarBillingSystem_skj.Controllers
                 }
 
                 var checkbillrepleldge = _billingsoftware.Shrepledgeartcile.FirstOrDefault(x => x.BillID == billId && x.BranchID == branchId);
-                if(checkbillrepleldge!=null)
+                if (checkbillrepleldge != null)
                 {
                     return Ok(new { message = "Cannot Delete Bill!! Delete Repledge First" });
                 }
@@ -242,7 +237,7 @@ namespace StellarBillingSystem_skj.Controllers
                 //remove article
                 var articleIds = getbilldetails.Select(x => x.ArticleID).Distinct().ToList();
 
-              
+
 
                 // 1. Mark master and details as deleted
                 getbillmaster.IsDelete = true;
@@ -256,7 +251,7 @@ namespace StellarBillingSystem_skj.Controllers
                                .SingleOrDefault();
 
                     articlesToDelete.IsDelete = true;
-                    
+
 
 
                 }
@@ -280,10 +275,10 @@ namespace StellarBillingSystem_skj.Controllers
                 _billingsoftware.Shbillimagemodelskj.RemoveRange(checkimage);
 
                 var billFolderPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "BillImage", billId);
-                        if (Directory.Exists(billFolderPath))
-                        {
-                            Directory.Delete(billFolderPath, recursive: true);
-                        }
+                if (Directory.Exists(billFolderPath))
+                {
+                    Directory.Delete(billFolderPath, recursive: true);
+                }
 
                 // ✅ Save all at once to avoid context confusion and SQL syntax issues
                 _billingsoftware.SaveChanges();
@@ -310,7 +305,7 @@ namespace StellarBillingSystem_skj.Controllers
             ViewBag.GoldTypeList = goldTypes;
             ViewBag.BranchID = branchId;
 
-            BusinessBillingSKJ busbil = new BusinessBillingSKJ(_billingsoftware,_configuration);
+            BusinessBillingSKJ busbil = new BusinessBillingSKJ(_billingsoftware, _configuration);
 
             var checkbillavailable = _billingsoftware.Shbillmasterskj.FirstOrDefault(x => x.BillID == billId && x.BranchID == branchId && x.IsDelete == false);
 
@@ -334,7 +329,7 @@ namespace StellarBillingSystem_skj.Controllers
             // Create filename with BillID and current datetime
             var fileName = $"{billId}_{currentDateTime}.pdf";
 
-            return File(busbil.PrintBillDetails(Table,branchId), "application/vnd.openxmlformats-officedocument.wordprocessingml.document", fileName);
+            return File(busbil.PrintBillDetails(Table, branchId), "application/vnd.openxmlformats-officedocument.wordprocessingml.document", fileName);
 
 
         }

@@ -1,10 +1,9 @@
 ﻿
-using Microsoft.EntityFrameworkCore;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.CodeAnalysis;
+using Microsoft.EntityFrameworkCore;
 using StellarBillingSystem.Models;
-using StellarBillingSystem_skj.Models;
 using StellarBillingSystem_Malar.Models;
+using StellarBillingSystem_skj.Models;
 namespace StellarBillingSystem.Context
 {
     public class BillingContext : DbContext
@@ -22,11 +21,11 @@ namespace StellarBillingSystem.Context
         public DbSet<LogsModel> SBLogs { get; set; }
         public DbSet<ProductMatserModel> SHProductMaster { get; set; }
 
-       
+
 
         public DbSet<BilingSysytemModel> SHCustomerBilling { get; set; }
 
-      
+
 
         public DbSet<DiscountCategoryMasterModel> SHDiscountCategory { get; set; }
 
@@ -56,27 +55,27 @@ namespace StellarBillingSystem.Context
 
         public DbSet<ResourceTypeMasterModel> SHresourceType { get; set; }
 
-        public DbSet<RollAccessMaster> SHrollaccess {  get; set; }
-       
+        public DbSet<RollAccessMaster> SHrollaccess { get; set; }
+
         public DbSet<RoleAccessModel> SHRoleaccessModel { get; set; }
 
-        public DbSet<RollTypeMaster> SHrollType {  get; set; }
+        public DbSet<RollTypeMaster> SHrollType { get; set; }
 
         public DbSet<ScreenMasterModel> SHScreenMaster { get; set; }
 
         public DbSet<ScreenNameMasterModel> SHScreenName { get; set; }
 
-        public DbSet<GenericReportModel>ShGenericReport { get; set; }
+        public DbSet<GenericReportModel> ShGenericReport { get; set; }
 
-        public DbSet<BillingMasterModel>SHbillmaster { get; set; }
+        public DbSet<BillingMasterModel> SHbillmaster { get; set; }
 
-        public DbSet<BillingDetailsModel>SHbilldetails { get; set; }
+        public DbSet<BillingDetailsModel> SHbilldetails { get; set; }
 
         public DbSet<PaymentMasterModel> SHPaymentMaster { get; set; }
 
-        public DbSet<PaymentDetailsModel>SHPaymentDetails { get; set; }
+        public DbSet<PaymentDetailsModel> SHPaymentDetails { get; set; }
 
-        public DbSet<ReedemHistoryModel>SHReedemHistory { get; set; }
+        public DbSet<ReedemHistoryModel> SHReedemHistory { get; set; }
 
         public DbSet<BranchMasterModel> SHBranchMaster { get; set; }
 
@@ -100,7 +99,7 @@ namespace StellarBillingSystem.Context
 
         public DbSet<BillMasterModelSKJ> Shbillmasterskj { get; set; }
 
-        public DbSet<BillImageModelSKJ> Shbillimagemodelskj {  get; set; }
+        public DbSet<BillImageModelSKJ> Shbillimagemodelskj { get; set; }
 
         public DbSet<BillIDCombinationModel> Shbillcombinationskj { get; set; }
 
@@ -110,9 +109,9 @@ namespace StellarBillingSystem.Context
 
         //Table Creation for Mala Textile
 
-        public DbSet<CategoryModelMT> MTCategoryMaster {  get; set; }
-        public DbSet<SizeMasterModelMT> MTSizeMaster {  get; set; }
-        public DbSet<BrandMasterModelMT> MTBrandMaster {  get; set; }
+        public DbSet<CategoryModelMT> MTCategoryMaster { get; set; }
+        public DbSet<SizeMasterModelMT> MTSizeMaster { get; set; }
+        public DbSet<BrandMasterModelMT> MTBrandMaster { get; set; }
         public DbSet<ProductModelMT> MTProductMaster { get; set; }
 
         public DbSet<ProductInwardModelMT> MTProductInward { get; set; }
@@ -128,69 +127,69 @@ namespace StellarBillingSystem.Context
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-           
+
             modelBuilder.Entity<WebErrorsModel>()
         .HasKey(i => new { i.ErrodDesc, i.ErrDateTime, i.ScreenName });
 
-            modelBuilder.Entity<BillingPointsModel>().HasKey(i => new { i.BillID, i.CustomerNumber,i.BranchID });
+            modelBuilder.Entity<BillingPointsModel>().HasKey(i => new { i.BillID, i.CustomerNumber, i.BranchID });
             modelBuilder.Entity<BranchMasterModel>().HasKey(i => new { i.BracnchID, i.BranchName });
 
             modelBuilder.Entity<BillingMasterModel>().Property(i => i.Id).UseIdentityColumn(101, 1);
-            modelBuilder.Entity<BillingMasterModel>().HasKey(i => new { i.Id, i.BillDate,i.BranchID });
+            modelBuilder.Entity<BillingMasterModel>().HasKey(i => new { i.Id, i.BillDate, i.BranchID });
 
             modelBuilder.Entity<BillingDetailsModel>().Property(i => i.Id).UseIdentityColumn(101, 1);
-            modelBuilder.Entity<BillingDetailsModel>().HasKey(i => new { i.Id, i.ProductID,i.BranchID });
+            modelBuilder.Entity<BillingDetailsModel>().HasKey(i => new { i.Id, i.ProductID, i.BranchID });
 
-            modelBuilder.Entity<GenericReportModel>().HasKey(i => new { i.ReportId,i.BranchID});
+            modelBuilder.Entity<GenericReportModel>().HasKey(i => new { i.ReportId, i.BranchID });
 
-            modelBuilder.Entity<StaffAdminModel>().HasKey(i => new { i.StaffID,i.BranchID});
-            modelBuilder.Entity<ResourceTypeMasterModel>().HasKey(i => new { i.ResourceTypeID,i.BranchID });
-            modelBuilder.Entity<RollAccessMaster>().HasKey(i => new { i.StaffID, i.RollID,i.BranchID});
-            modelBuilder.Entity<RoleAccessModel>().HasKey(i => new { i.RollID,i.ScreenID,i.BranchID});
+            modelBuilder.Entity<StaffAdminModel>().HasKey(i => new { i.StaffID, i.BranchID });
+            modelBuilder.Entity<ResourceTypeMasterModel>().HasKey(i => new { i.ResourceTypeID, i.BranchID });
+            modelBuilder.Entity<RollAccessMaster>().HasKey(i => new { i.StaffID, i.RollID, i.BranchID });
+            modelBuilder.Entity<RoleAccessModel>().HasKey(i => new { i.RollID, i.ScreenID, i.BranchID });
             modelBuilder.Entity<RollTypeMaster>().HasKey(i => new { i.RollID, i.BranchID });
-            modelBuilder.Entity<ScreenMasterModel>().HasKey(i => new { i.ScreenId,i.BranchID });
+            modelBuilder.Entity<ScreenMasterModel>().HasKey(i => new { i.ScreenId, i.BranchID });
             modelBuilder.Entity<ScreenNameMasterModel>().HasKey(i => new { i.Id });
-            
+
 
 
             modelBuilder.Entity<LogsModel>().HasKey(i => new { i.LogID, i.BranchID });
-            
-           
 
-            modelBuilder.Entity<ProductMatserModel>().Property(i => i.Id).UseIdentityColumn(101,1);
-            modelBuilder.Entity<ProductMatserModel>().HasKey(i => new { i.Id,i.BranchID });
 
-            modelBuilder.Entity<DiscountCategoryMasterModel>().HasKey(i => new { i.CategoryID,i.BranchID });
+
+            modelBuilder.Entity<ProductMatserModel>().Property(i => i.Id).UseIdentityColumn(101, 1);
+            modelBuilder.Entity<ProductMatserModel>().HasKey(i => new { i.Id, i.BranchID });
+
+            modelBuilder.Entity<DiscountCategoryMasterModel>().HasKey(i => new { i.CategoryID, i.BranchID });
 
             modelBuilder.Entity<GSTMasterModel>().HasKey(i => new { i.TaxID, i.BranchID });
 
             modelBuilder.Entity<VoucherCustomerDetailModel>().HasKey(i => new { i.VoucherID, i.BranchID });
 
-            modelBuilder.Entity<BilingSysytemModel>().HasKey(i => new { i.BillID,i.BranchID });
+            modelBuilder.Entity<BilingSysytemModel>().HasKey(i => new { i.BillID, i.BranchID });
 
-            modelBuilder.Entity<GodownModel>().HasKey(i => new { i.ProductID,i.BranchID});
+            modelBuilder.Entity<GodownModel>().HasKey(i => new { i.ProductID, i.BranchID });
 
             modelBuilder.Entity<NetDiscountMasterModel>().HasKey(i => new { i.NetID, i.BranchID });
 
-            modelBuilder.Entity<VoucherMasterModel>().HasKey(i => new { i.VoucherID,i.BranchID});
+            modelBuilder.Entity<VoucherMasterModel>().HasKey(i => new { i.VoucherID, i.BranchID });
 
-            modelBuilder.Entity<RackPatrionProductModel>().HasKey(i => new { i.PartitionID,i.ProductID,i.BranchID});
+            modelBuilder.Entity<RackPatrionProductModel>().HasKey(i => new { i.PartitionID, i.ProductID, i.BranchID });
 
-            modelBuilder.Entity<RackMasterModel>().HasKey(i => new { i.PartitionID, i.RackID,i.BranchID});
+            modelBuilder.Entity<RackMasterModel>().HasKey(i => new { i.PartitionID, i.RackID, i.BranchID });
 
-            modelBuilder.Entity<PointsReedemDetailsModel>().HasKey(i => new { i.CustomerID,i.BranchID});
+            modelBuilder.Entity<PointsReedemDetailsModel>().HasKey(i => new { i.CustomerID, i.BranchID });
 
             modelBuilder.Entity<PointsMasterModel>().HasKey(i => new { i.PointsID, i.BranchID });
 
-            modelBuilder.Entity<ReportModel>().HasKey(i => new { i.ReportId});
+            modelBuilder.Entity<ReportModel>().HasKey(i => new { i.ReportId });
 
             modelBuilder.Entity<SignUpModel>().HasKey(i => new { i.Username });
 
-            modelBuilder.Entity<PaymentMasterModel>().HasKey(i => new { i.BillId, i.PaymentId,i.BranchID});
+            modelBuilder.Entity<PaymentMasterModel>().HasKey(i => new { i.BillId, i.PaymentId, i.BranchID });
 
-            modelBuilder.Entity<PaymentDetailsModel>().HasKey(i => new { i.PaymentDiscription, i.PaymentId,i.BranchID });
+            modelBuilder.Entity<PaymentDetailsModel>().HasKey(i => new { i.PaymentDiscription, i.PaymentId, i.BranchID });
 
-            modelBuilder.Entity<ReedemHistoryModel>().HasKey(i => new { i.CustomerNumber, i.DateOfReedem,i.BranchID });
+            modelBuilder.Entity<ReedemHistoryModel>().HasKey(i => new { i.CustomerNumber, i.DateOfReedem, i.BranchID });
 
 
 
@@ -221,7 +220,7 @@ namespace StellarBillingSystem.Context
 
             modelBuilder.Entity<CategoryMasterModel>().Property(i => i.Id).UseIdentityColumn(101, 1);
 
-            modelBuilder.Entity<CategoryMasterModel>().HasKey(i => new { i.Id, i.BranchID,i.CategoryName });
+            modelBuilder.Entity<CategoryMasterModel>().HasKey(i => new { i.Id, i.BranchID, i.CategoryName });
 
             modelBuilder.Entity<ArticleModel>()
                    .HasKey(c => new { c.ArticleID });
@@ -233,7 +232,7 @@ namespace StellarBillingSystem.Context
 
 
             modelBuilder.Entity<BillDetailsModelSKJ>()
-                   .HasKey(c => new { c.ArticleID,c.BranchID,c.BillID });
+                   .HasKey(c => new { c.ArticleID, c.BranchID, c.BillID });
 
             modelBuilder.Entity<BillDetailsModelSKJ>()
                     .HasOne<ArticleModel>()                     // Point to principal type
@@ -298,14 +297,14 @@ namespace StellarBillingSystem.Context
                  .HasKey(c => new { c.CategoryID });
 
             modelBuilder.Entity<SizeMasterModelMT>()
-                 .HasKey(c => new { c.CategoryID,c.SizeName });
+                 .HasKey(c => new { c.CategoryID, c.SizeName });
 
             modelBuilder.Entity<BrandMasterModelMT>().HasKey(c => new { c.BrandID });
 
             //Fk Category
             modelBuilder.Entity<SizeMasterModelMT>()
                 .HasOne<CategoryModelMT>()
-                .WithMany() 
+                .WithMany()
                 .HasForeignKey(i => new { i.CategoryID })
                 .OnDelete(DeleteBehavior.Cascade);
 
@@ -316,7 +315,7 @@ namespace StellarBillingSystem.Context
             modelBuilder.Entity<ProductModelMT>()
                .HasOne<SizeMasterModelMT>()
                .WithMany()
-               .HasForeignKey(i => new { i.CategoryID,i.SizeName})
+               .HasForeignKey(i => new { i.CategoryID, i.SizeName })
                .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<ProductModelMT>()
@@ -326,13 +325,13 @@ namespace StellarBillingSystem.Context
                .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<ProductModelMT>()
-                .HasIndex(c => new { c.CategoryID, c.BrandID, c.ProductName, c.SizeName, c.Barcode, c.BranchID,c.ProductCode })
+                .HasIndex(c => new { c.CategoryID, c.BrandID, c.ProductName, c.SizeName, c.Barcode, c.BranchID, c.ProductCode })
                 .IsUnique();
 
             modelBuilder.Entity<ProductInwardModelMT>()
-                 .HasKey(c => new { c.InvoiceNumber, c.ProductCode,c.BranchID });
+                 .HasKey(c => new { c.InvoiceNumber, c.ProductCode, c.BranchID });
 
-          
+
 
         }
 
@@ -353,7 +352,7 @@ namespace StellarBillingSystem.Context
             if (catMas.Any())
             {
                 // Get the latest BillNumber from the database
-                var lastCat = await this.SHCategoryMaster.Where(x=>x.BranchID == branchId) .OrderByDescending(b => b.Id).FirstOrDefaultAsync();
+                var lastCat = await this.SHCategoryMaster.Where(x => x.BranchID == branchId).OrderByDescending(b => b.Id).FirstOrDefaultAsync();
                 int lastNumber = 100; // Starting point, e.g., Bill_100
 
                 if (lastCat != null)
@@ -374,7 +373,7 @@ namespace StellarBillingSystem.Context
                 }
             }
 
-           
+
 
             //Product Master
             var ProdMas = ChangeTracker
@@ -385,7 +384,7 @@ namespace StellarBillingSystem.Context
             if (ProdMas.Any())
             {
                 // Get the latest BillNumber from the database
-                var lastProd = await this.SHProductMaster.Where(x=>x.BranchID==branchId) .OrderByDescending(b => b.Id).FirstOrDefaultAsync();
+                var lastProd = await this.SHProductMaster.Where(x => x.BranchID == branchId).OrderByDescending(b => b.Id).FirstOrDefaultAsync();
                 int lastProdNumber = 100; // Starting point, e.g., Bill_100
 
                 if (lastProd != null)
@@ -414,7 +413,7 @@ namespace StellarBillingSystem.Context
                         .ToList();
 
 
-            if(BillDet.Any() && (BillId == null || BillId == string.Empty))
+            if (BillDet.Any() && (BillId == null || BillId == string.Empty))
             {
                 // Get the latest BillNumber from the database
                 var lastBill = await this.SHbillmaster.Where(x => x.BranchID == branchId).OrderByDescending(b => b.Id).FirstOrDefaultAsync();
@@ -433,7 +432,7 @@ namespace StellarBillingSystem.Context
                 lastBillNumber++;
                 // Assign the new BillNumber for each new bill
                 foreach (var billEntry in BillDet)
-                {                    
+                {
                     billEntry.Entity.BillID = $"Bill_{lastBillNumber}";
                 }
             }
@@ -467,7 +466,7 @@ namespace StellarBillingSystem.Context
                         lastmasBillNumber = number;
                     }
                 }
-               
+
                 // Assign the new BillNumber for each new bill
                 foreach (var billEntry in BillMas)
                 {

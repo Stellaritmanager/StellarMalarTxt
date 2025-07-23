@@ -1,4 +1,5 @@
-﻿using StellarBillingSystem.Context;
+﻿using Microsoft.EntityFrameworkCore;
+using StellarBillingSystem.Context;
 using StellarBillingSystem_Malar.Models;
 using System.Data;
 
@@ -15,15 +16,17 @@ namespace StellarBillingSystem_Malar.Business
             _configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
         }
 
-        public static DataTable convertToDataTableSizeMaster(IEnumerable<SizeMasterModelMT> entities)
+        public static DataTable convertToDataTableSizeMaster(IEnumerable<SizeMasterModelMT> entities,BillingContext dbContext)
         {
             var dataTable = new DataTable();
             dataTable.Columns.Add("SizeID", typeof(int));
+            dataTable.Columns.Add("CategoryName", typeof(string));
             dataTable.Columns.Add("SizeName", typeof(string));
 
             foreach (var entity in entities)
             {
-                dataTable.Rows.Add(entity.SizeID, entity.SizeName);
+                var catName=dbContext.MTCategoryMaster.Where(i=>i.CategoryID==entity.CategoryID).FirstOrDefault();
+                dataTable.Rows.Add(entity.SizeID,catName.CategoryName ,entity.SizeName);
             }
 
             return dataTable;
@@ -34,7 +37,7 @@ namespace StellarBillingSystem_Malar.Business
         {
             var catname = (
                         from pr in _billingContext.MTCategoryMaster
-                        where pr.IsDelete == false 
+                        where pr.IsDelete == false
                         select new CategoryModelMT
                         {
                             CategoryID = pr.CategoryID,

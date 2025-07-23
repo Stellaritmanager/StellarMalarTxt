@@ -1,5 +1,4 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace StellarBillingSystem_Malar.Models
 {
@@ -8,16 +7,16 @@ namespace StellarBillingSystem_Malar.Models
         public ProductModelMT() { }
 
         public string ProductCode { get; set; }
-        public int CategoryID {  get; set; }
-        public int BrandID {  get; set; }    
-        public string SizeName {  get; set; }
-        public string ProductName {  get; set; }
+        public int CategoryID { get; set; }
+        public int BrandID { get; set; }
+        public string SizeName { get; set; }
+        public string ProductName { get; set; }
         public string Barcode { get; set; }
 
         public long NoofItem { get; set; }
 
         public decimal Price { get; set; }
-        public string BranchID {  get; set; }
+        public string BranchID { get; set; }
         public bool IsDelete { get; set; }
 
         [MaxLength(50)]

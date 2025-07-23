@@ -1,33 +1,28 @@
-﻿using DocumentFormat.OpenXml.Drawing.Charts;
-using DocumentFormat.OpenXml.Office2016.Drawing.ChartDrawing;
-using Humanizer.Localisation;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using StellarBillingSystem.Context;
 using StellarBillingSystem_skj.Models;
-using System.Linq;
 
 
 [Authorize]
 [Route("[controller]/[action]")]
 public class RepledgeMasterController : Controller
 {
-        private BillingContext _billingsoftware;
-        private readonly IConfiguration _configuration;
+    private BillingContext _billingsoftware;
+    private readonly IConfiguration _configuration;
 
 
-        public RepledgeMasterController(BillingContext billingsoftware, IConfiguration configuration)
-        {
-            _billingsoftware = billingsoftware;
-            _configuration = configuration;
-        }
+    public RepledgeMasterController(BillingContext billingsoftware, IConfiguration configuration)
+    {
+        _billingsoftware = billingsoftware;
+        _configuration = configuration;
+    }
 
-        public IActionResult RepledgeMaster()
-        { 
-           RepledgeViewModel obj = new RepledgeViewModel();
-            return View(obj);
-        }
+    public IActionResult RepledgeMaster()
+    {
+        RepledgeViewModel obj = new RepledgeViewModel();
+        return View(obj);
+    }
 
 
 
@@ -138,78 +133,78 @@ public class RepledgeMasterController : Controller
 
 
 
-        /* [HttpPost]
-         public IActionResult GetArticles(RepledgeViewModel model,string buttonType)
+    /* [HttpPost]
+     public IActionResult GetArticles(RepledgeViewModel model,string buttonType)
+     {
+         if (TempData["BranchID"] != null)
          {
-             if (TempData["BranchID"] != null)
-             {
-                 model.BranchID = TempData["BranchID"].ToString();
-                 TempData.Keep("BranchID");
-             }
+             model.BranchID = TempData["BranchID"].ToString();
+             TempData.Keep("BranchID");
+         }
 
-             if(buttonType=="Delete")
-             {
-                 var checkrepledge = _billingsoftware.Shbuyerrepledge.FirstOrDefault(x=>x.RepledgeID == model.RepledgeID && x.BranchID == model.BranchID);
+         if(buttonType=="Delete")
+         {
+             var checkrepledge = _billingsoftware.Shbuyerrepledge.FirstOrDefault(x=>x.RepledgeID == model.RepledgeID && x.BranchID == model.BranchID);
 
+             {
+                 if (checkrepledge != null)
                  {
-                     if (checkrepledge != null)
+                     checkrepledge.IsDelete = true;
+
+
+                     var getallarticle = _billingsoftware.Shrepledgeartcile.Where(x=>x.RepledgeID == model.RepledgeID && x.BranchID == model.BranchID).ToList();
+
+                     foreach(var result in getallarticle)
                      {
-                         checkrepledge.IsDelete = true;
+                         result.IsDelete = true;
 
-
-                         var getallarticle = _billingsoftware.Shrepledgeartcile.Where(x=>x.RepledgeID == model.RepledgeID && x.BranchID == model.BranchID).ToList();
-
-                         foreach(var result in getallarticle)
-                         {
-                             result.IsDelete = true;
-
-                         }
-
-                         _billingsoftware.SaveChanges();
-                         ViewBag.Message = "Deleted Successfully";
                      }
+
+                     _billingsoftware.SaveChanges();
+                     ViewBag.Message = "Deleted Successfully";
                  }
              }
+         }
 
-             // Get all bill articles first
-             var allBillArticles = (from d in _billingsoftware.Shbilldetailsskj
-                                    join a in _billingsoftware.SHArticleMaster on d.ArticleID equals a.ArticleID
-                                    where d.BillID == model.BillID && d.BranchID == model.BranchID
-                                    select new ArticleSelection
-                                    {
-                                        ArticleID = a.ArticleID,
-                                        ArticleName = a.ArticleName
-                                    }).ToList();
+         // Get all bill articles first
+         var allBillArticles = (from d in _billingsoftware.Shbilldetailsskj
+                                join a in _billingsoftware.SHArticleMaster on d.ArticleID equals a.ArticleID
+                                where d.BillID == model.BillID && d.BranchID == model.BranchID
+                                select new ArticleSelection
+                                {
+                                    ArticleID = a.ArticleID,
+                                    ArticleName = a.ArticleName
+                                }).ToList();
 
-             // Check if repledge already exists
-             var existingBuyer = _billingsoftware.Shbuyerrepledge
-                 .FirstOrDefault(b => b.RepledgeID == model.RepledgeID && b.BranchID == model.BranchID);
+         // Check if repledge already exists
+         var existingBuyer = _billingsoftware.Shbuyerrepledge
+             .FirstOrDefault(b => b.RepledgeID == model.RepledgeID && b.BranchID == model.BranchID);
 
-             if (existingBuyer != null)
-             {
-                 // Fill buyer data
-                 model.BuyerName = existingBuyer.BuyerName;
-                 model.Address = existingBuyer.Address;
-                 model.PhoneNumber = existingBuyer.PhoneNumber;
-                 model.TotalAmount = existingBuyer.TotalAmount;
-                 model.Interest = existingBuyer.Interest;
-                 model.Tenure = existingBuyer.Tenure;
+         if (existingBuyer != null)
+         {
+             // Fill buyer data
+             model.BuyerName = existingBuyer.BuyerName;
+             model.Address = existingBuyer.Address;
+             model.PhoneNumber = existingBuyer.PhoneNumber;
+             model.TotalAmount = existingBuyer.TotalAmount;
+             model.Interest = existingBuyer.Interest;
+             model.Tenure = existingBuyer.Tenure;
 
-                 // Get already repledged article IDs
-                 var alreadySelectedIDs = _billingsoftware.Shrepledgeartcile
-                     .Where(r => r.RepledgeID == model.RepledgeID && r.BranchID == model.BranchID)
-                     .Select(r => r.ArticleID)
-                     .ToList();
+             // Get already repledged article IDs
+             var alreadySelectedIDs = _billingsoftware.Shrepledgeartcile
+                 .Where(r => r.RepledgeID == model.RepledgeID && r.BranchID == model.BranchID)
+                 .Select(r => r.ArticleID)
+                 .ToList();
 
-                 model.SelectedArticleIDs = alreadySelectedIDs;
-             }
+             model.SelectedArticleIDs = alreadySelectedIDs;
+         }
 
-             model.AvailableArticles = allBillArticles;
+         model.AvailableArticles = allBillArticles;
 
-             return View("RepledgeMaster", model);
-         }*/
+         return View("RepledgeMaster", model);
+     }*/
 
-        [HttpPost]
+    [HttpPost]
     public IActionResult SaveRepledgeAjax([FromBody] RepledgeViewModel request)
     {
         var branchID = TempData["BranchID"]?.ToString();
@@ -224,7 +219,7 @@ public class RepledgeMasterController : Controller
             {
             return Json(new { message = "Cannot Save Check RepledgeID" });
             }*/
-        
+
 
         if (buyer == null)
         {
@@ -278,8 +273,8 @@ public class RepledgeMasterController : Controller
 
 
     [HttpPost]
-        public IActionResult SaveRepledge(RepledgeViewModel model)
-        {
+    public IActionResult SaveRepledge(RepledgeViewModel model)
+    {
 
         if (TempData["BranchID"] != null)
         {
@@ -356,6 +351,6 @@ public class RepledgeMasterController : Controller
         _billingsoftware.SaveChanges();
         ViewBag.Message = "Payment Saved Successfully";
         return RedirectToAction("RepledgeMaster");
-        }
     }
+}
 

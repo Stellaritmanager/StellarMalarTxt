@@ -2,10 +2,10 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using StellarBillingSystem.Context;
-using StellarBillingSystem_skj.Business;
-using StellarBillingSystem_Malar.Models;
-using System.Data;
 using StellarBillingSystem_Malar.Business;
+using StellarBillingSystem_Malar.Models;
+using StellarBillingSystem_skj.Business;
+using System.Data;
 
 namespace StellarBillingSystem_Malar.Controllers
 {
@@ -40,7 +40,7 @@ namespace StellarBillingSystem_Malar.Controllers
 
             // Step 1: Perform the query
             var entities = _billingsoftware.MTCategoryMaster
-                                  .Where(e =>  e.IsDelete == false).OrderByDescending(e => e.Lastupdateddate)
+                                  .Where(e => e.IsDelete == false).OrderByDescending(e => e.Lastupdateddate)
                                   .ToList();
 
             // Step 2: Convert to DataTable
@@ -105,7 +105,7 @@ namespace StellarBillingSystem_Malar.Controllers
 
 
 
-            
+
 
 
 
@@ -192,7 +192,7 @@ namespace StellarBillingSystem_Malar.Controllers
                         existingCategory.Lastupdateddate = DateTime.ParseExact(staffbus.GetFormattedDateTime(), "dd/MM/yyyy HH:mm:ss", null).ToString();
                         existingCategory.Lastupdateduser = User.Claims.First().Value.ToString();
                         existingCategory.Lastupdatedmachine = Request.HttpContext.Connection.RemoteIpAddress.ToString();
-                       
+
 
                         _billingsoftware.Entry(existingCategory).State = EntityState.Modified;
                     }

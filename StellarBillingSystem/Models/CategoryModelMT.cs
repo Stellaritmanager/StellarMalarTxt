@@ -1,5 +1,4 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace StellarBillingSystem_Malar.Models
 {
@@ -7,7 +6,7 @@ namespace StellarBillingSystem_Malar.Models
     {
         public CategoryModelMT() { }
 
-        public int CategoryID {  get; set; }
+        public int CategoryID { get; set; }
 
         public string CategoryName { get; set; }
 
@@ -19,11 +18,11 @@ namespace StellarBillingSystem_Malar.Models
         public string? Lastupdateddate { get; set; }
         [MaxLength(50)]
         public string? Lastupdatedmachine { get; set; }
-        
 
-        
 
-    
+
+
+
 
     }
 }

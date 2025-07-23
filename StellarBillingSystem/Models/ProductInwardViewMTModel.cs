@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc.Rendering;
-using System.Data;
 
 namespace StellarBillingSystem_Malar.Models
 {
@@ -7,6 +6,6 @@ namespace StellarBillingSystem_Malar.Models
     {
         public ProductInwardModelMT ObjMT { get; set; }
         public IEnumerable<SelectListItem> ProductList { get; set; }
-        
+
     }
 }

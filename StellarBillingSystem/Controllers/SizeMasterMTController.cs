@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using DocumentFormat.OpenXml.InkML;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -88,7 +89,7 @@ namespace StellarBillingSystem_Malar.Controllers
         // Helper method to get category list
         private IEnumerable<SelectListItem> GetCategoryList(int? selectedId)
         {
-            return _billingsoftware.MTCategoryMaster.Select(c => new SelectListItem
+            return _billingsoftware.MTCategoryMaster.Where(i=>i.IsDelete == false).Select(c => new SelectListItem
             {
                 Value = c.CategoryID.ToString(),
                 Text = c.CategoryName,
@@ -104,7 +105,7 @@ namespace StellarBillingSystem_Malar.Controllers
                                   .ToList();
 
             // Step 2: Convert to DataTable
-            return BusinessSizeMT.convertToDataTableSizeMaster(entities);
+            return BusinessSizeMT.convertToDataTableSizeMaster(entities, _billingsoftware);
 
 
         }
@@ -112,7 +113,46 @@ namespace StellarBillingSystem_Malar.Controllers
 
 
 
-       
+        //[HttpGet]
+        //public async Task<IActionResult> GetSize(SizeMasterModelMT model, string buttonType)
+        //{
+        //    BusinessSizeMT bus = new BusinessSizeMT(_billingsoftware, _configuration);
+        //    ViewData["catname"] = bus.Getcat();
+
+
+
+        //    if (buttonType == "Get")
+        //    {
+        //        var getcategory = await _billingsoftware.MTSizeMaster.FirstOrDefaultAsync(x => x.SizeID == model.SizeID && !x.IsDelete);
+        //        if (getcategory != null)
+        //        {
+        //            var model1 = new SizeMasterModelMT
+        //            {
+        //                SizeID = getcategory.SizeID,
+        //                SizeName = getcategory.SizeName,
+        //                CategoryID = getcategory.CategoryID,
+        //                // Add other properties as needed
+        //            };
+
+        //            ViewData["Sizedata"] = await AdditionalSizeMasterFun();
+        //            ViewData["catname"] = bus.Getcat();
+
+        //            return View("SizeMasterMT", model1);
+        //        }
+        //        else
+        //        {
+        //            SizeMasterModelMT par = new SizeMasterModelMT();
+        //            ViewBag.ErrorMessage = "No value for this Size ID";
+        //            var dataTable = await AdditionalSizeMasterFun();
+
+        //            // Store the DataTable in ViewData for access in the view
+        //            ViewData["Sizedata"] = dataTable;
+        //            return View("SizeMasterMT", par);
+        //        }
+        //    }
+
+        //    return View();
+        //}
         [HttpPost]
         public async Task<IActionResult> AddSize(SizeMasterViewModel viewModel, string buttonType)
         {
@@ -138,23 +178,13 @@ namespace StellarBillingSystem_Malar.Controllers
                         CategoryID = entity.CategoryID
                     };
 
-                   
+                    ViewBag.Message = "Size loaded successfully.";
                 }
                 else
                 {
-                    ViewBag.ErrorMessage = "No record found for SizeID ";
-                   
+                    ViewBag.ErrorMessage = $"No record found for SizeID = {model.SizeID}";
+                    model = new SizeMasterModelMT(); // Reset form
                 }
-
-                var result = new SizeMasterViewModel
-                {
-                    Model = model,
-                    CategoryList = GetCategoryList(model.CategoryID),
-                    SizeData = await AdditionalSizeMasterFun()
-                };
-
-                ModelState.Clear(); 
-                return View("SizeMasterMT", result);
             }
             else if (buttonType == "save")
             {
@@ -168,18 +198,35 @@ namespace StellarBillingSystem_Malar.Controllers
                         if (existing.IsDelete)
                         {
                             ViewBag.ErrorMessage = "Cannot save. Record is marked deleted.";
-                            viewModel.SizeData = await AdditionalSizeMasterFun();
-                            return View("SizeMasterMT", viewModel);
                         }
                         else
                         {
-                            existing.SizeName = model.SizeName;
-                            existing.CategoryID = model.CategoryID;
-                            existing.Lastupdateddate = DateTime.ParseExact(staffbus.GetFormattedDateTime(), "dd/MM/yyyy HH:mm:ss", null).ToString();
-                            existing.Lastupdateduser = User.Claims.First().Value;
-                            existing.Lastupdatedmachine = Request.HttpContext.Connection.RemoteIpAddress.ToString();
+                            //add and remove instead of Update
+                            var newsize = new SizeMasterModelMT
+                            {
+                                CategoryID = model.CategoryID,
+                                SizeName = model.SizeName,
+                                Lastupdateddate = DateTime.ParseExact(staffbus.GetFormattedDateTime(), "dd/MM/yyyy HH:mm:ss", null).ToString(),
+                                Lastupdatedmachine = User.Claims.First().Value,
+                                Lastupdateduser = Request.HttpContext.Connection.RemoteIpAddress.ToString()
 
-                            _billingsoftware.Entry(existing).State = EntityState.Modified;
+                            };
+
+                            _billingsoftware.MTSizeMaster.Add(newsize);
+
+                            //Update reference table
+                            var products = await _billingsoftware.MTProductMaster
+                                .Where(p => p.CategoryID == existing.CategoryID && p.SizeName == existing.SizeName)
+                                .ToListAsync();
+
+                            foreach (var product in products)
+                            {
+                                product.SizeName = model.SizeName;
+                            }
+
+
+                            _billingsoftware.MTSizeMaster.Remove(existing);
+
                             await _billingsoftware.SaveChangesAsync();
                             ViewBag.Message = "Updated successfully.";
                         }
@@ -193,13 +240,7 @@ namespace StellarBillingSystem_Malar.Controllers
                         _billingsoftware.MTSizeMaster.Add(model);
                         await _billingsoftware.SaveChangesAsync();
                         ViewBag.Message = "Saved successfully.";
-
-                        
                     }
-
-                    viewModel.SizeData = await AdditionalSizeMasterFun();
-
-                    ModelState.Clear();
                 }
                 catch (Exception ex)
                 {
@@ -222,26 +263,18 @@ namespace StellarBillingSystem_Malar.Controllers
                     ViewBag.ErrorMessage = "Size not found.";
                 }
 
-                viewModel = new SizeMasterViewModel
-                {
-                    SizeData = await AdditionalSizeMasterFun(),
-                    CategoryList = GetCategoryList(null)
-                    
-                };
-
-                ModelState.Clear();
-
+                model = new SizeMasterModelMT(); // Reset form after delete
             }
 
             // Always reload dropdown and table
             var resultVM = new SizeMasterViewModel
             {
-                Model = new SizeMasterModelMT(),
-                CategoryList = GetCategoryList(null),
+                Model = model,
+                CategoryList = GetCategoryList(model.CategoryID),
                 SizeData = await AdditionalSizeMasterFun()
             };
 
-            
+            ModelState.Clear(); // important to reflect new values
             return View("SizeMasterMT", resultVM);
         }
 
@@ -249,6 +282,6 @@ namespace StellarBillingSystem_Malar.Controllers
 
 
     }
-   
+
 }
 

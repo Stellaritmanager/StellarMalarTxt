@@ -8,9 +8,9 @@ namespace StellarBillingSystem_Malar.Models
         public StockDetailsModel() { }
 
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public int StockID {  get; set; }
+        public int StockID { get; set; }
         public string ProductID { get; set; }
-        public long NoofItem {  get; set; }
+        public long NoofItem { get; set; }
 
         public string BranchID { get; set; }
 
