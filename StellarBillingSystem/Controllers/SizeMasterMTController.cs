@@ -112,46 +112,7 @@ namespace StellarBillingSystem_Malar.Controllers
 
 
 
-        //[HttpGet]
-        //public async Task<IActionResult> GetSize(SizeMasterModelMT model, string buttonType)
-        //{
-        //    BusinessSizeMT bus = new BusinessSizeMT(_billingsoftware, _configuration);
-        //    ViewData["catname"] = bus.Getcat();
-
-
-
-        //    if (buttonType == "Get")
-        //    {
-        //        var getcategory = await _billingsoftware.MTSizeMaster.FirstOrDefaultAsync(x => x.SizeID == model.SizeID && !x.IsDelete);
-        //        if (getcategory != null)
-        //        {
-        //            var model1 = new SizeMasterModelMT
-        //            {
-        //                SizeID = getcategory.SizeID,
-        //                SizeName = getcategory.SizeName,
-        //                CategoryID = getcategory.CategoryID,
-        //                // Add other properties as needed
-        //            };
-
-        //            ViewData["Sizedata"] = await AdditionalSizeMasterFun();
-        //            ViewData["catname"] = bus.Getcat();
-
-        //            return View("SizeMasterMT", model1);
-        //        }
-        //        else
-        //        {
-        //            SizeMasterModelMT par = new SizeMasterModelMT();
-        //            ViewBag.ErrorMessage = "No value for this Size ID";
-        //            var dataTable = await AdditionalSizeMasterFun();
-
-        //            // Store the DataTable in ViewData for access in the view
-        //            ViewData["Sizedata"] = dataTable;
-        //            return View("SizeMasterMT", par);
-        //        }
-        //    }
-
-        //    return View();
-        //}
+       
         [HttpPost]
         public async Task<IActionResult> AddSize(SizeMasterViewModel viewModel, string buttonType)
         {
@@ -177,13 +138,23 @@ namespace StellarBillingSystem_Malar.Controllers
                         CategoryID = entity.CategoryID
                     };
 
-                    ViewBag.Message = "Size loaded successfully.";
+                   
                 }
                 else
                 {
-                    ViewBag.ErrorMessage = $"No record found for SizeID = {model.SizeID}";
-                    model = new SizeMasterModelMT(); // Reset form
+                    ViewBag.ErrorMessage = "No record found for SizeID ";
+                   
                 }
+
+                var result = new SizeMasterViewModel
+                {
+                    Model = model,
+                    CategoryList = GetCategoryList(model.CategoryID),
+                    SizeData = await AdditionalSizeMasterFun()
+                };
+
+                ModelState.Clear(); 
+                return View("SizeMasterMT", result);
             }
             else if (buttonType == "save")
             {
@@ -197,6 +168,8 @@ namespace StellarBillingSystem_Malar.Controllers
                         if (existing.IsDelete)
                         {
                             ViewBag.ErrorMessage = "Cannot save. Record is marked deleted.";
+                            viewModel.SizeData = await AdditionalSizeMasterFun();
+                            return View("SizeMasterMT", viewModel);
                         }
                         else
                         {
@@ -220,7 +193,13 @@ namespace StellarBillingSystem_Malar.Controllers
                         _billingsoftware.MTSizeMaster.Add(model);
                         await _billingsoftware.SaveChangesAsync();
                         ViewBag.Message = "Saved successfully.";
+
+                        
                     }
+
+                    viewModel.SizeData = await AdditionalSizeMasterFun();
+
+                    ModelState.Clear();
                 }
                 catch (Exception ex)
                 {
@@ -243,18 +222,26 @@ namespace StellarBillingSystem_Malar.Controllers
                     ViewBag.ErrorMessage = "Size not found.";
                 }
 
-                model = new SizeMasterModelMT(); // Reset form after delete
+                viewModel = new SizeMasterViewModel
+                {
+                    SizeData = await AdditionalSizeMasterFun(),
+                    CategoryList = GetCategoryList(null)
+                    
+                };
+
+                ModelState.Clear();
+
             }
 
             // Always reload dropdown and table
             var resultVM = new SizeMasterViewModel
             {
-                Model = model,
-                CategoryList = GetCategoryList(model.CategoryID),
+                Model = new SizeMasterModelMT(),
+                CategoryList = GetCategoryList(null),
                 SizeData = await AdditionalSizeMasterFun()
             };
 
-            ModelState.Clear(); // important to reflect new values
+            
             return View("SizeMasterMT", resultVM);
         }
 

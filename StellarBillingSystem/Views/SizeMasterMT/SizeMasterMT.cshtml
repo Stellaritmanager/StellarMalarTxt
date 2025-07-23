@@ -5,18 +5,63 @@
 
 
 
+<script>
+    function showPopup(message) {
+        var popup = document.getElementById("popupMessage");
+        var popupText = document.getElementById("popupMessageText");
+        var popupOKButton = document.getElementById("popupOKButton");
 
+        popupText.textContent = message; // Set the message text
+        popup.style.display = "block";
+
+        // Close popup when OK button is clicked
+        popupOKButton.addEventListener("click", function () {
+            closePopup();
+        });
+
+        // Close popup when clicking outside of the message box
+        document.addEventListener("click", function (event) {
+            if (!popup.contains(event.target) && !popupOKButton.contains(event.target)) {
+                closePopup();
+            }
+        });
+    }
+
+    function closePopup() {
+        var popup = document.getElementById("popupMessage");
+        popup.style.display = "none"; // Hide the popup
+    }
+
+    function handleMessages(message) {
+        showPopup(message);
+    }
+</script>
+
+<div id="popupMessage" style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); color:black; padding: 30px; border: 1px solid #000000; border-radius: 10px; z-index: 1000; display: none; text-align: center;">
+    <span id="popupMessageText" style="display: block; margin-bottom: 10px;"></span>
+    <button id="popupOKButton" style="padding: 10px 20px; background-color: rgba(255, 255, 255, 0.2); color: black; border: none; border-radius: 5px; cursor: pointer;">OK</button>
+</div>
+
+<style>
+    .popborder {
+        border: 10px solid #fff;
+    }
+</style>
 
 
 
 @if (ViewBag.ErrorMessage != null)
 {
-    <div class="alert alert-danger">@ViewBag.ErrorMessage</div>
+    <script>
+        handleMessages("@ViewBag.ErrorMessage");
+    </script>
 }
 
 @if (ViewBag.Message != null)
 {
-    <div class="alert alert-success">@ViewBag.Message</div>
+    <script>
+        handleMessages("@ViewBag.Message");
+    </script>
 }
 
 <form asp-action="AddSize" asp-controller="SizeMasterMT" method="post" autocomplete="off">
@@ -55,22 +100,25 @@
                         <div class="col-sm-3 col-md-3 col-lg-3">
                             <label for="SizeID" class="control-label">SizeID</label>
                             <div class="form-floating form-floating-outline mb-4">
-                                @Html.TextBoxFor(model => model.Model.SizeID, new { @class = "form-control", type = "number", placeholder = "Enter Size ID" })
-                                @Html.ValidationMessageFor(model => model.Model.SizeID, "", new { @class = "text-danger" })
+                                @Html.TextBox("Model.SizeID",
+                                         Model.Model.SizeID == 0 ? "" : Model.Model.SizeID.ToString(),
+                                         new { @class = "form-control", placeholder = "Enter SizeID", @id = "SizeID" })
+                                <span id="SizeIDError" class="text-danger"></span>
                             </div>
+
                         </div>
                         <div class="col-sm-3 col-md-3 col-lg-3">
                             <label for="CategoryID">Category</label>
                             <div class="form-floating form-floating-outline mb-4">
-                                @Html.DropDownListFor(model => model.Model.CategoryID, Model.CategoryList, "Select Category", new { @class = "form-control" })
-                                @Html.ValidationMessageFor(model => model.Model.CategoryID, "", new { @class = "text-danger" })
+                                @Html.DropDownListFor(model => model.Model.CategoryID, Model.CategoryList, "Select Category", new { @class = "form-control", @id = "CategoryName" })
+                                <span id="CategoryNameError" class="text-danger"></span>
                             </div>
                         </div>
                         <div class="col-sm-3 col-md-3 col-lg-3">
                             <label for="SizeName">Size Name</label>
                             <div class="form-floating form-floating-outline mb-4">
-                                @Html.TextBoxFor(model => model.Model.SizeName, new { @class = "form-control" })
-                                @Html.ValidationMessageFor(model => model.Model.SizeName, "", new { @class = "text-danger" })
+                                @Html.TextBoxFor(model => model.Model.SizeName, new { @class = "form-control", @id = "SizeName" })
+                                <span id="SizeNameError" class="text-danger"></span>
                             </div>
                         </div>
                       
@@ -80,15 +128,15 @@
 
                         <div class="col-sm-4 col-md-4 col-lg-4"></div>
                         <div class="col-sm-1 col-md-1 col-lg-1">
-                            <button type="submit" name="buttonType" value="Get" class="btn btn-primary">Get</button>
+                            <button type="submit" name="buttonType" value="Get" class="btn btn-primary" onclick="return validateGet()">Get</button>
 
                         </div>
                         <div class="col-sm-1 col-md-1 col-lg-1">
-                            <button type="submit" name="buttonType" value="save" class="btn btn-success">Save</button>
+                            <button type="submit" name="buttonType" value="save" class="btn btn-success" onclick="return validateSave()">Save</button>
 
                         </div>
                         <div class="col-sm-1 col-md-1 col-lg-1">
-                            <button type="submit" name="buttonType" value="Delete" class="btn btn-danger">Delete</button>
+                            <button type="submit" name="buttonType" value="Delete" class="btn btn-danger" onclick="return validateDelete()">Delete</button>
 
                         </div>
                         <div class="col-sm-5 col-md-5 col-lg-5"></div>
@@ -153,3 +201,51 @@
     </div>
 
 </form>
+
+<script>
+    function clearErrors() {
+        document.getElementById("SizeIDError").innerText = "";
+        document.getElementById("SizeNameError").innerText = "";
+        document.getElementById("CategoryNameError").innerText = "";
+    }
+
+    function validateGet() {
+        clearErrors();
+        const sizeID = document.getElementById("SizeID").value.trim();
+        if (!sizeID) {
+            document.getElementById("SizeIDError").innerText = "Size ID is required to fetch data.";
+            return false;
+        }
+        return true;
+    }
+
+    function validateSave() {
+        clearErrors();
+        const sizeName = document.getElementById("SizeName").value.trim();
+        const category = document.getElementById("CategoryName").value;
+
+        let isValid = true;
+
+        if (!sizeName) {
+            document.getElementById("SizeNameError").innerText = "Size Name cannot be empty.";
+            isValid = false;
+        }
+
+        if (!category || category === "Select Category") {
+            document.getElementById("CategoryNameError").innerText = "Please select a category.";
+            isValid = false;
+        }
+
+        return isValid;
+    }
+
+    function validateDelete() {
+        clearErrors();
+        const sizeID = document.getElementById("SizeID").value.trim();
+        if (!sizeID) {
+            document.getElementById("SizeIDError").innerText = "Size ID is required to delete.";
+            return false;
+        }
+        return true;
+    }
+</script>
