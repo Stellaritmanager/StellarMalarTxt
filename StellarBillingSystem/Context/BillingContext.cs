@@ -115,6 +115,8 @@ namespace StellarBillingSystem.Context
         public DbSet<BrandMasterModelMT> MTBrandMaster {  get; set; }
         public DbSet<ProductModelMT> MTProductMaster { get; set; }
 
+        public DbSet<ProductInwardModelMT> MTProductInward { get; set; }
+
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
