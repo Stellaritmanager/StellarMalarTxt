@@ -1,0 +1,5 @@
+﻿Insert into ShGenericReport Values
+('Lee_Mobile','Stock Details','csv','To get Latest Stock Details','
+Select BarCode,ProductName,SizeName as Size,MTC.CategoryName, NoofItem as StockBalance 
+from MTProductMaster MTP
+inner join MTCategoryMaster MTC on MTP.CategoryID=MTC.CategoryID','','',0)

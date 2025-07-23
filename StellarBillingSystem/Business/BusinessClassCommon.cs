@@ -127,7 +127,7 @@ namespace StellarBillingSystem.Business
 
             if (pbranchID !=null && pbranchID !=string.Empty)
             {
-                sqlQuery = sqlQuery + " and bh.BracnchID ='" + pbranchID + "' "; 
+                sqlQuery = sqlQuery + " and MTP.BranchID ='" + pbranchID + "' "; 
             }
           
            if(GroupBy!= string.Empty)
