@@ -1,4 +1,4 @@
-name: Deploy to Production Repo
+name: Deploy to Production Repo malar
 
 on:
   push:
