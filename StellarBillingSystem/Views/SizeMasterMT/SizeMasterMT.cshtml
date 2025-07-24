@@ -128,7 +128,7 @@
 
                         <div class="col-sm-4 col-md-4 col-lg-4"></div>
                         <div class="col-sm-1 col-md-1 col-lg-1">
-                            <button type="submit" name="buttonType" value="Get" class="btn btn-primary" onclick="return validateGet()">Get</button>
+                            <button type="submit" name="buttonType" value="Get" class="btn-primaryellow" onclick="return validateGet()">Get</button>
 
                         </div>
                         <div class="col-sm-1 col-md-1 col-lg-1">
@@ -148,9 +148,9 @@
 
     </div>
 
-
-    <div class="row" style="height:8%"></div>
-
+      @if (Model.SizeData != null && Model.SizeData.Rows.Count > 0)
+                            {
+                          
     <div class="row" style="margin-top:30px">
         <div class="col-md-12 col-lg-0"></div>
         <div class="col-12 col-sm-12 col-md-12 col-lg-12">
@@ -160,11 +160,8 @@
                         <div class="col-sm-1 col-md-1 col-lg-1"></div>
                         <div class="col-sm-10 col-md-10 col-lg-10">
 
+                                <h3 class="centered text-white" style="font-family: 'Lucida Bright'; margin-bottom: 20px; text-align: center;">Existing Sizes</h3>
 
-                            <h4>Existing Sizes</h4>
-
-                            @if (Model.SizeData != null && Model.SizeData.Rows.Count > 0)
-                            {
                                 <table class="table table-bordered">
                                     <thead>
                                         <tr>
@@ -186,19 +183,21 @@
                                         }
                                     </tbody>
                                 </table>
+
+                            </div>
+                            <div class="col-sm-1 col-md-1 col-lg-1"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
                             }
                             else
                             {
                                 <p>No data found.</p>
                             }
 
-                        </div>
-                        <div class="col-sm-1 col-md-1 col-lg-1"></div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+                      
 
 </form>
 

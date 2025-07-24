@@ -81,7 +81,6 @@
                     <div class="row gy-4">
                         <div class="col-sm-1 col-md-1 col-lg-1"></div>
                         <div class="col-sm-4 col-md-4 col-lg-4">
-
                             <div class="form-floating form-floating-outline mb-4">
                                 @Html.TextBoxFor(model => model.ObjMT.InvoiceNumber, new { @class = "form-control", placeholder = "Enter InvoiceNumber", @id = "InvoiceNumber" })
                                 <label for="InvoiceNumber">Invoice Number</label>
@@ -98,78 +97,97 @@
                                 <span id="ProductCodeError" class="text-danger"></span>
                             </div>
                         </div>
+                        <div class="col-sm-2 col-md-2 col-lg-2">
+                            <button type="submit" style="width:95px;align-items:center; height:50px;" value="Get" asp-action="GetProductInward" formmethod="get" name="buttonType" class="btn-primaryellow" onclick="return validateGet()">Get</button>
 
-                    
+                        </div>
+                        <div class="col-sm-1 col-md-1 col-lg-1"></div>
                     </div>
-
-
-
-                    <div class="col-sm-1 col-md-1 col-lg-1">
-                        <button type="submit" style="width:95px;align-items:center; height:50px;" value="Get" asp-action="GetProductInward" formmethod="get" name="buttonType" class="btn-primaryellow" onclick="return validateGet()">Get</button>
-
-                    </div>
-
-                    
-                    <div class="form-floating form-floating-outline mb-4">
-
-                        @Html.TextBoxFor(model => model.ObjMT.SupplierName, new { @class = "form-control", placeholder = "Enter SupplierName", @id = "SupplierName" })
-                        <label for="SupplierName">SupplierName</label>
-                        <span id="SupplierNameError" class="text-danger"></span>
-                    </div>
-
-                    <div class="form-floating form-floating-outline mb-4">
-
-                        @Html.TextBoxFor(model => model.ObjMT.InvoiceDate, new { @class = "form-control", placeholder = "Enter InvoiceDate", type = "Date", @id = "InvoiceDate" })
-                        <label for="InvoiceDate">InvoiceDate</label>
-                        <span id="InvoiceDateError" class="text-danger"></span>
-                    </div>
-
-                    <div class="form-floating form-floating-outline mb-4">
-                        @Html.TextBox("ObjMT.NoofItem", Model.ObjMT.NoofItem == 0 ? "" : Model.ObjMT.NoofItem.ToString(),
-                                 new { @class = "form-control", type = "number", placeholder = "Enter NoofItem" })
-                        <label for="NoofItem">NoofItem</label>
-                        <span id="NoofItemError" class="text-danger"></span>
-                    </div>
-
-                    <div class="form-floating form-floating-outline mb-4">
-                        @Html.TextBox("ObjMT.SupplierPrice", Model.ObjMT.SupplierPrice == 0 ? "" : Model.ObjMT.SupplierPrice.ToString(),
-                                 new { @class = "form-control", placeholder = "Enter SupplierPrice", @id = "Price" })
-                        <label for="SupplierPrice">SupplierPrice</label>
-                        <span id="PriceError" class="text-danger"></span>
-                    </div>
-
-                    <div class="form-floating form-floating-outline mb-4">
-                        @Html.TextBox("ObjMT.Tax", Model.ObjMT.Tax == 0 ? "" : Model.ObjMT.Tax.ToString(),
-                                 new { @class = "form-control", type = "number", placeholder = "Enter Tax", @id = "Tax" })
-                        <label for="Tax">Tax</label>
-                        <span id="TaxError" class="text-danger"></span>
-                    </div>
-
-                    <div class="form-floating form-floating-outline mb-4">
-                        @Html.TextBox("ObjMT.Amount", Model.ObjMT.Amount == 0 ? "" : Model.ObjMT.Amount.ToString(),
-                                 new { @class = "form-control", placeholder = "Enter Net Price", @id = "NetPrice" })
-                        <label for="Amount">Net Price</label>
-                        <span id="AmountError" class="text-danger"></span>
-                    </div>
-
-
                 </div>
-                <div class="row gy-4">
-                    <div class="col-sm-4 col-md-4 col-lg-4"></div>
-                    <div class="col-sm-1 col-md-1 col-lg-1">
-                        <button type="submit" asp-action="AddProductInward" value="save" name="buttonType" formmethod="post" class="btn btn-success" onclick="return validateSave()">Save</button>
-                    </div>
-                    <div class="col-sm-4 col-md-4 col-lg-4">
-                        <button type="submit" asp-action="AddProductInward" value="Delete" name="buttonType" class="btn btn-danger" onclick="return validateDelete()">Delete</button>
-                    </div>
-                    <div class="col-sm-3 col-md-3 col-lg-3"></div>
 
-                </div>
-                <br />
             </div>
         </div>
     </div>
-    <div class="col-md-12 col-lg-2"></div>
+
+    <div class="row" style="margin-top:30px">
+        <div class="col-md-12 col-lg-0"></div>
+        <div class="col-12 col-sm-12 col-md-12 col-lg-12">
+            <div class="card">
+                <div class="card-body dividerblack">
+                    <div class="row gy-4">
+
+                        <div class="col-sm-4 col-md-4 col-lg-4">
+                            <div class="form-floating form-floating-outline mb-4">
+
+                                @Html.TextBoxFor(model => model.ObjMT.SupplierName, new { @class = "form-control", placeholder = "Enter SupplierName", @id = "SupplierName" })
+                                <label for="SupplierName">SupplierName</label>
+                                <span id="SupplierNameError" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="col-sm-4 col-md-4 col-lg-4">
+                            <div class="form-floating form-floating-outline mb-4">
+
+                                @Html.TextBoxFor(model => model.ObjMT.InvoiceDate, new { @class = "form-control", placeholder = "Enter InvoiceDate", type = "Date", @id = "InvoiceDate" })
+                                <label for="InvoiceDate">InvoiceDate</label>
+                                <span id="InvoiceDateError" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="col-sm-4 col-md-4 col-lg-4">
+                            <div class="form-floating form-floating-outline mb-4">
+                                @Html.TextBox("ObjMT.NoofItem", Model.ObjMT.NoofItem == 0 ? "" : Model.ObjMT.NoofItem.ToString(),
+                                         new { @class = "form-control", type = "number", placeholder = "Enter NoofItem" })
+                                <label for="NoofItem">NoofItem</label>
+                                <span id="NoofItemError" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row gy-4">
+
+                        <div class="col-sm-4 col-md-4 col-lg-4">
+                            <div class="form-floating form-floating-outline mb-4">
+                                @Html.TextBox("ObjMT.SupplierPrice", Model.ObjMT.SupplierPrice == 0 ? "" : Model.ObjMT.SupplierPrice.ToString(),
+                                         new { @class = "form-control", placeholder = "Enter SupplierPrice", @id = "Price" })
+                                <label for="SupplierPrice">SupplierPrice</label>
+                                <span id="PriceError" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="col-sm-4 col-md-4 col-lg-4">
+                            <div class="form-floating form-floating-outline mb-4">
+                                @Html.TextBox("ObjMT.Tax", Model.ObjMT.Tax == 0 ? "" : Model.ObjMT.Tax.ToString(),
+                                         new { @class = "form-control", type = "number", placeholder = "Enter Tax", @id = "Tax" })
+                                <label for="Tax">Tax</label>
+                                <span id="TaxError" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="col-sm-4 col-md-4 col-lg-4">
+                            <div class="form-floating form-floating-outline mb-4">
+                                @Html.TextBox("ObjMT.Amount", Model.ObjMT.Amount == 0 ? "" : Model.ObjMT.Amount.ToString(),
+                                         new { @class = "form-control", placeholder = "Enter Net Price", @id = "NetPrice" })
+                                <label for="Amount">Net Price</label>
+                                <span id="AmountError" class="text-danger"></span>
+                            </div>
+                        </div>
+
+
+                    </div>
+                    <div class="row gy-4">
+                        <div class="col-sm-4 col-md-4 col-lg-4"></div>
+                        <div class="col-sm-1 col-md-1 col-lg-1">
+                            <button type="submit" asp-action="AddProductInward" value="save" name="buttonType" formmethod="post" class="btn btn-success" onclick="return validateSave()">Save</button>
+                        </div>
+                        <div class="col-sm-4 col-md-4 col-lg-4">
+                            <button type="submit" asp-action="AddProductInward" value="Delete" name="buttonType" class="btn btn-danger" onclick="return validateDelete()">Delete</button>
+                        </div>
+                        <div class="col-sm-3 col-md-3 col-lg-3"></div>
+
+                    </div>
+                    <br />
+                </div>
+
+
+            </div>
+        </div>
     </div>
 
 

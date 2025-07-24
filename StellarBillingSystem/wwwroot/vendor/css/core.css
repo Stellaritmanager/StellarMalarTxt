@@ -3848,7 +3848,7 @@ textarea.form-control-lg {
     --bs-card-cap-color:;
     --bs-card-height:;
     --bs-card-color:;
-    --bs-card-bg: #000361;
+    --bs-card-bg: #10273d;
     --bs-card-img-overlay-padding: 1.5rem;
     --bs-card-group-margin: 0.8125rem;
     position: relative;
@@ -7116,8 +7116,8 @@ a.invert-bg-dark:hover, a.invert-bg-dark:focus {
   letter-spacing: 1px;
 }
 .table:not(.table-dark) th {
-    background-color : black;
-  color: #fff;
+    background-color: #10273d;
+    color: #fff;
 }
 
 .table-border-bottom-0 tr:last-child td,
@@ -11156,8 +11156,8 @@ button.list-group-item-gray.active {
 }
 
 .text-white {
-  --bs-text-opacity: 1;
-  color: #000000 !important;
+    --bs-text-opacity: 1;
+    color: #10273d !important;
 }
 
 .text-black {

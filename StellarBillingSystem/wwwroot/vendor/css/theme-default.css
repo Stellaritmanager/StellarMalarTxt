@@ -713,7 +713,8 @@ a:hover {
 }
 
 .bg-menu-theme {
-    background-color: #000000 !important;
+    background-color: #10273d;
+    !important;
     color: #282a42;
 }
     .bg-menu-theme .menu-link,

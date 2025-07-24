@@ -92,109 +92,124 @@
                         </div>
                         <div class="col-sm-4 col-md-4 col-lg-4">
                             <div class="form-floating form-floating-outline mb-4">
-                               
+
                                 @Html.TextBoxFor(model => model.ObjMT.Barcode, new { @class = "form-control", placeholder = "Enter Barcode", @id = "Barcode" })
                                 <label for="Barcode">Barcode</label>
                                 <span id="BarcodeError" class="text-danger"></span>
                             </div>
                         </div>
+                        <div class="col-sm-1 col-md-1 col-lg-1">
+                            <button type="submit" style="width:95px;align-items:center; height:50px;" value="Get" asp-action="GetProduct" formmethod="get" name="buttonType" class="btn-primaryellow" onclick="return validateGet()">Get</button>
 
-                        <div class="form-floating form-floating-outline mb-4">
+                        </div>
+                        <div class="col-sm-2 col-md-2 col-lg-2"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
-                           
-                            @Html.DropDownListFor(model => model.ObjMT.CategoryID, Model.CatgeoryList, "Select Category", new { @class = "form-control", @id = "CategoryName" })
-                            <label for="CategoryID"></label>
-                            <span id="CategoryNameError" class="text-danger"></span>
+    <div class="row" style="margin-top:30px">
+        <div class="col-md-12 col-lg-0"></div>
+        <div class="col-12 col-sm-12 col-md-12 col-lg-12">
+            <div class="card">
+                <div class="card-body dividerblack">
+                    <div class="row gy-4">
+                        <div class="col-sm-4 col-md-4 col-lg-4">
+                            <div class="form-floating form-floating-outline mb-4">
+                                @Html.DropDownListFor(model => model.ObjMT.CategoryID, Model.CatgeoryList, "Select Category", new { @class = "form-control", @id = "CategoryName" })
+                                <label for="CategoryID"></label>
+                                <span id="CategoryNameError" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="col-sm-4 col-md-4 col-lg-4">
+                            <div class="form-floating form-floating-outline mb-4">
+
+                                @Html.DropDownListFor(model => model.ObjMT.BrandID, Model.BranchList, "Select Brand", new { @class = "form-control", @id = "BrandName" })
+                                <label for="BrandID"></label>
+                                <span id="BrandNameError" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="col-sm-4 col-md-4 col-lg-4">
+                            <div class="form-floating form-floating-outline mb-4">
+
+                                @Html.DropDownListFor(model => model.ObjMT.SizeName, Model.SizeList, "Select Size", new { @class = "form-control", @id = "SizeName" })
+                                <label for="SizeName"></label>
+                                <span id="SizeNameError" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="row gy-4">
+                        <div class="col-sm-4 col-md-4 col-lg-4">
+                            <div class="form-floating form-floating-outline mb-4">
+
+                                @Html.TextBoxFor(model => model.ObjMT.ProductName, new { @class = "form-control", placeholder = "Enter ProductName" })
+                                <label for="ProductName">ProductName</label>
+                                <span id="ProductNameError" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="col-sm-4 col-md-4 col-lg-4">
+
+                            <div class="form-floating form-floating-outline mb-4">
+                                @Html.TextBox("ObjMT.Price", Model.ObjMT.Price == 0 ? "" : Model.ObjMT.Price.ToString(),
+                                         new { @class = "form-control", placeholder = "Enter Price", @id = "Price" })
+                                <label for="Price">Price</label>
+                                <span id="PriceError" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="col-sm-4 col-md-4 col-lg-4">
+
+                            <div class="form-floating form-floating-outline mb-4">
+                                @Html.TextBox("ObjMT.NoofItem", Model.ObjMT.NoofItem == 0 ? "" : Model.ObjMT.NoofItem.ToString(),
+                                         new { @class = "form-control", type = "number", placeholder = "Enter NoofItem" })
+                                <label for="NoofItem">NoofItem</label>
+                                <span id="NoofItemError" class="text-danger"></span>
+                            </div>
                         </div>
                     </div>
 
 
-
-                    <div class="col-sm-1 col-md-1 col-lg-1">
-                        <button type="submit" style="width:95px;align-items:center; height:50px;" value="Get" asp-action="GetProduct" formmethod="get" name="buttonType" class="btn-primaryellow" onclick="return validateGet()">Get</button>
-
-                    </div>
-
-                    <div class="form-floating form-floating-outline mb-4">
-                       
-                        @Html.DropDownListFor(model => model.ObjMT.BrandID, Model.BranchList, "Select Brand", new { @class = "form-control", @id = "BrandName" })
-                        <label for="BrandID"></label>
-                        <span id="BrandNameError" class="text-danger"></span>
-                    </div>
-
-                    <div class="form-floating form-floating-outline mb-4">
-
-
-                        
-                        @Html.DropDownListFor(model => model.ObjMT.SizeName, Model.SizeList, "Select Size", new { @class = "form-control", @id = "SizeName" })
-                        <label for="SizeName"></label>
-                        <span id="SizeNameError" class="text-danger"></span>
+                    <div class="row gy-4">
+                        <div class="col-sm-4 col-md-4 col-lg-4"></div>
+                        <div class="col-sm-1 col-md-1 col-lg-1">
+                            <button type="submit" asp-action="AddProduct" value="save" name="buttonType" formmethod="post" class="btn btn-success" onclick="return validateSave()">Save</button>
+                        </div>
+                        <div class="col-sm-4 col-md-4 col-lg-4">
+                            <button type="submit" asp-action="AddProduct" value="Delete" name="buttonType" class="btn btn-danger" onclick="return validateDelete()">Delete</button>
+                        </div>
+                        <div class="col-sm-3 col-md-3 col-lg-3"></div>
 
                     </div>
-
-                    <div class="form-floating form-floating-outline mb-4">
-                       
-                        @Html.TextBoxFor(model => model.ObjMT.ProductName, new { @class = "form-control", placeholder = "Enter ProductName" })
-                        <label for="ProductName">ProductName</label>
-                        <span id="ProductNameError" class="text-danger"></span>
-                    </div>
-
-                    <div class="form-floating form-floating-outline mb-4">
-                        @Html.TextBox("ObjMT.Price", Model.ObjMT.Price == 0 ? "" : Model.ObjMT.Price.ToString(),
-                                 new { @class = "form-control", placeholder = "Enter Price", @id = "Price" })
-                        <label for="Price">Price</label>
-                        <span id="PriceError" class="text-danger"></span>
-                    </div>
-
-                    <div class="form-floating form-floating-outline mb-4">
-                        @Html.TextBox("ObjMT.NoofItem", Model.ObjMT.NoofItem == 0 ? "" : Model.ObjMT.NoofItem.ToString(),
-                                 new { @class = "form-control", type = "number", placeholder = "Enter NoofItem" })
-                        <label for="NoofItem">NoofItem</label>
-                        <span id="NoofItemError" class="text-danger"></span>
-                    </div>
-
-                     
+                    <br />
                 </div>
-                <div class="row gy-4">
-                    <div class="col-sm-4 col-md-4 col-lg-4"></div>
-                    <div class="col-sm-1 col-md-1 col-lg-1">
-                        <button type="submit" asp-action="AddProduct" value="save" name="buttonType" formmethod="post" class="btn btn-success" onclick="return validateSave()">Save</button>
-                    </div>
-                    <div class="col-sm-4 col-md-4 col-lg-4">
-                        <button type="submit" asp-action="AddProduct" value="Delete" name="buttonType" class="btn btn-danger" onclick="return validateDelete()">Delete</button>
-                    </div>
-                    <div class="col-sm-3 col-md-3 col-lg-3"></div>
-
-                </div>
-                <br />
             </div>
         </div>
-    </div>
-    <div class="col-md-12 col-lg-2"></div>
+        <div class="col-md-12 col-lg-2"></div>
     </div>
 
 
     @if (dataTable != null && dataTable.Rows.Count > 0)
     {
 
-    <div class="row" style="margin-top:30px">
-        <div class="col-md-12 col-lg-0"></div>
-        <div class="col-md-12 col-lg-12">
-            <div class="card">
-                <div class="card-body dividerblack">
-                    <h3 class="centered text-white" style="font-family: 'Lucida Bright'; margin-bottom: 20px; text-align: center;">Sizes</h3>
-                    <table class="table table-bordered" style="border: 1px solid black;">
-                        <thead style="background-color: black; color: white;">
-                            <tr>
-                                <th>Product Code</th>
-                                <th>Barcode</th>
-                                <th>Product Name</th>
-                                <th>Price</th>
-                                <th>Stock</th>
-                                
+        <div class="row" style="margin-top:30px">
+            <div class="col-md-12 col-lg-0"></div>
+            <div class="col-md-12 col-lg-12">
+                <div class="card">
+                    <div class="card-body dividerblack">
+                        <h3 class="centered text-white" style="font-family: 'Lucida Bright'; margin-bottom: 20px; text-align: center;">Sizes</h3>
+                        <table class="table table-bordered" style="border: 1px solid black;">
+                            <thead style="background-color: black; color: white;">
+                                <tr>
+                                    <th>Product Code</th>
+                                    <th>Barcode</th>
+                                    <th>Product Name</th>
+                                    <th>Price</th>
+                                    <th>Stock</th>
 
-                            </tr>
-                        </thead>
+
+                                </tr>
+                            </thead>
                             <tbody>
                                 @foreach (DataRow row in dataTable.Rows)
                                 {
@@ -208,88 +223,88 @@
                                 }
                             </tbody>
 
-                    </table><div id="pagination-controls" style="text-align: center; margin-top: 10px;">
-                        <button id="prev-btn" style="background-color: cadetblue; color: white; border: none; padding: 0px 6px; cursor: pointer; font-size: 16px; border-radius: 5px; margin: 0 5px;">Previous</button>
-                        <div id="page-numbers" style="background-color: cadetblue; color: white; border: none; padding: 0px 6px;display: inline-block; vertical-align: middle;"></div>
-                        <button id="next-btn" style="background-color: cadetblue; color: white; border: none; padding: 0px 6px; cursor: pointer; font-size: 16px; border-radius: 5px; margin: 0 5px;">Next</button>
-                    </div>
+                        </table><div id="pagination-controls" style="text-align: center; margin-top: 10px;">
+                            <button id="prev-btn" style="background-color: cadetblue; color: white; border: none; padding: 0px 6px; cursor: pointer; font-size: 16px; border-radius: 5px; margin: 0 5px;">Previous</button>
+                            <div id="page-numbers" style="background-color: cadetblue; color: white; border: none; padding: 0px 6px;display: inline-block; vertical-align: middle;"></div>
+                            <button id="next-btn" style="background-color: cadetblue; color: white; border: none; padding: 0px 6px; cursor: pointer; font-size: 16px; border-radius: 5px; margin: 0 5px;">Next</button>
+                        </div>
 
-                    <script>
-                        document.addEventListener('DOMContentLoaded', function () {
-                            const rowsPerPage = 5; // Number of rows per page
-                            const table = document.querySelector('.table tbody'); // Select the table body
-                            const rows = Array.from(table.querySelectorAll('tr')); // Get all rows
-                            const totalRows = rows.length; // Total number of rows
-                            const totalPages = Math.ceil(totalRows / rowsPerPage); // Calculate total pages
+                        <script>
+                            document.addEventListener('DOMContentLoaded', function () {
+                                const rowsPerPage = 5; // Number of rows per page
+                                const table = document.querySelector('.table tbody'); // Select the table body
+                                const rows = Array.from(table.querySelectorAll('tr')); // Get all rows
+                                const totalRows = rows.length; // Total number of rows
+                                const totalPages = Math.ceil(totalRows / rowsPerPage); // Calculate total pages
 
-                            let currentPage = 1; // Current page number
+                                let currentPage = 1; // Current page number
 
-                            // Function to display rows for a given page
-                            function showPage(page) {
-                                rows.forEach((row, index) => {
-                                    row.style.display = (Math.floor(index / rowsPerPage) + 1 === page) ? '' : 'none'; // Show or hide row
-                                });
-
-                                updatePageNumbers(); // Update the page number buttons
-                                document.getElementById('prev-btn').disabled = (page === 1); // Disable 'prev' button if on first page
-                                document.getElementById('next-btn').disabled = (page === totalPages); // Disable 'next' button if on last page
-                            }
-
-                            // Function to create and update page number buttons
-                            function updatePageNumbers() {
-                                const pageNumbersContainer = document.getElementById('page-numbers');
-                                pageNumbersContainer.innerHTML = ''; // Clear previous buttons
-
-                                // Create page number buttons
-                                for (let i = 1; i <= totalPages; i++) {
-                                    const pageButton = document.createElement('button');
-                                    pageButton.textContent = i;
-                                    pageButton.style.backgroundColor = (i === currentPage) ? 'black' : 'white'; // Highlight current page
-                                    pageButton.style.color = (i === currentPage) ? 'white' : 'black';
-                                    pageButton.style.border = 'none';
-                                    pageButton.style.padding = '5px 10px';
-                                    pageButton.style.cursor = 'pointer';
-                                    pageButton.style.fontSize = '16px';
-                                    pageButton.style.borderRadius = '5px';
-                                    pageButton.style.margin = '0 3px';
-
-                                    // Add click event listener to update current page
-                                    pageButton.addEventListener('click', () => {
-                                        currentPage = i;
-                                        showPage(currentPage);
+                                // Function to display rows for a given page
+                                function showPage(page) {
+                                    rows.forEach((row, index) => {
+                                        row.style.display = (Math.floor(index / rowsPerPage) + 1 === page) ? '' : 'none'; // Show or hide row
                                     });
 
-                                    pageNumbersContainer.appendChild(pageButton); // Add button to container
+                                    updatePageNumbers(); // Update the page number buttons
+                                    document.getElementById('prev-btn').disabled = (page === 1); // Disable 'prev' button if on first page
+                                    document.getElementById('next-btn').disabled = (page === totalPages); // Disable 'next' button if on last page
                                 }
-                            }
 
-                            // Event listener for 'prev' button
-                            document.getElementById('prev-btn').addEventListener('click', () => {
-                                if (currentPage > 1) {
-                                    currentPage--;
-                                    showPage(currentPage);
+                                // Function to create and update page number buttons
+                                function updatePageNumbers() {
+                                    const pageNumbersContainer = document.getElementById('page-numbers');
+                                    pageNumbersContainer.innerHTML = ''; // Clear previous buttons
+
+                                    // Create page number buttons
+                                    for (let i = 1; i <= totalPages; i++) {
+                                        const pageButton = document.createElement('button');
+                                        pageButton.textContent = i;
+                                        pageButton.style.backgroundColor = (i === currentPage) ? 'black' : 'white'; // Highlight current page
+                                        pageButton.style.color = (i === currentPage) ? 'white' : 'black';
+                                        pageButton.style.border = 'none';
+                                        pageButton.style.padding = '5px 10px';
+                                        pageButton.style.cursor = 'pointer';
+                                        pageButton.style.fontSize = '16px';
+                                        pageButton.style.borderRadius = '5px';
+                                        pageButton.style.margin = '0 3px';
+
+                                        // Add click event listener to update current page
+                                        pageButton.addEventListener('click', () => {
+                                            currentPage = i;
+                                            showPage(currentPage);
+                                        });
+
+                                        pageNumbersContainer.appendChild(pageButton); // Add button to container
+                                    }
                                 }
+
+                                // Event listener for 'prev' button
+                                document.getElementById('prev-btn').addEventListener('click', () => {
+                                    if (currentPage > 1) {
+                                        currentPage--;
+                                        showPage(currentPage);
+                                    }
+                                });
+
+                                // Event listener for 'next' button
+                                document.getElementById('next-btn').addEventListener('click', () => {
+                                    if (currentPage < totalPages) {
+                                        currentPage++;
+                                        showPage(currentPage);
+                                    }
+                                });
+
+                                showPage(currentPage); // Initial page display
                             });
 
-                            // Event listener for 'next' button
-                            document.getElementById('next-btn').addEventListener('click', () => {
-                                if (currentPage < totalPages) {
-                                    currentPage++;
-                                    showPage(currentPage);
-                                }
-                            });
+                        </script>
 
-                            showPage(currentPage); // Initial page display
-                        });
-
-                    </script>
-
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
 
- }
+    }
 
     @if (ViewBag.Message != null)
     {
@@ -432,5 +447,5 @@
         }
     });
 
-    
+
 </script>
