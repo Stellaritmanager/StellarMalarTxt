@@ -449,10 +449,11 @@ namespace StellarBillingSystem.Business
 
 
 
-        public List<GenericReportModel> GetReportId()
+        public List<GenericReportModel> GetReportId(String pbranchId)
         {
             var reportid = (
                     from pr in _billingContext.ShGenericReport
+                    where pr.BranchID == pbranchId
                     select new GenericReportModel
                     {
                         ReportName = pr.ReportName,

@@ -202,7 +202,7 @@ namespace StellarBillingSystem.Controllers
             }
 
             BusinessClassBilling business = new BusinessClassBilling(_billingContext, _configuration);
-            ViewData["reportid"] = business.GetReportId();
+            ViewData["reportid"] = business.GetReportId(TempData["BranchID"].ToString());
 
             var reportQuery = (from rep in _billingContext.ShGenericReport
                                where rep.IsDashboard == true

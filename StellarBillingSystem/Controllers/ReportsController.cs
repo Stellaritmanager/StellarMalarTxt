@@ -24,7 +24,7 @@ namespace StellarBillingSystem.Controllers
         public IActionResult GetReports(String inputValue, string fromDate, string toDate, string GroupBy)
         {
             BusinessClassBilling business = new BusinessClassBilling(_billingContext, _configuration);
-            ViewData["reportid"] = business.GetReportId();
+            ViewData["reportid"] = business.GetReportId(TempData["BranchID"].ToString());
 
             string branchId = string.Empty; ;
             if (TempData["BranchID"] != null)
@@ -34,7 +34,7 @@ namespace StellarBillingSystem.Controllers
             }
 
             var reportQuery = (from rep in _billingContext.ShGenericReport
-                               where (rep.ReportName == inputValue)
+                               where (rep.ReportName == inputValue && rep.BranchID == TempData["BranchID"].ToString())
                                select new GenericReportModel
                                {
                                    ReportName = rep.ReportName,
@@ -64,7 +64,7 @@ namespace StellarBillingSystem.Controllers
         public IActionResult Reports()
         {
             BusinessClassBilling business = new BusinessClassBilling(_billingContext, _configuration);
-            ViewData["reportid"] = business.GetReportId();
+            ViewData["reportid"] = business.GetReportId(TempData["BranchID"].ToString());
 
 
             return View();
