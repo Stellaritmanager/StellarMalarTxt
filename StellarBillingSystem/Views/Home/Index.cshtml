@@ -373,9 +373,40 @@
     }
 
 
-               
+    <!-- ✅ Toast markup (Top-right) -->
+    <div class="position-fixed top-0 end-0 p-3" style="z-index: 9999">
+        <div id="dashboardToast" class="toast bg-white border-0 shadow" role="alert" aria-live="assertive" aria-atomic="true" data-bs-delay="3000">
+            <div class="toast-header">
+                <i class="mdi mdi-check-circle text-primary me-2"></i>
+                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+            <div id="dashboardToastBody" class="toast-body">
+                Toast message goes here.
+            </div>
+        </div>
+    </div>
 
+    <!-- ✅ Toast show script -->
+    <script>
+        function showToast(message) {
+            const toastEl = document.getElementById('dashboardToast');
+            const toastBody = document.getElementById('dashboardToastBody');
+            toastBody.textContent = message;
+            const toast = new bootstrap.Toast(toastEl);
+            toast.show();
+        }
+    </script>
 </form>
+
+@if (ViewData["ToastMessage"] != null)
+{
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            showToast("@ViewData["ToastMessage"]");
+        });
+    </script>
+}
+
 
 
 

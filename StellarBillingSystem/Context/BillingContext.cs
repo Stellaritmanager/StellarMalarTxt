@@ -116,6 +116,8 @@ namespace StellarBillingSystem.Context
 
         public DbSet<ProductInwardModelMT> MTProductInward { get; set; }
 
+        public DbSet<QuantityCheckerMTModel> MTQuantitycheck{ get; set; }
+
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -341,6 +343,8 @@ namespace StellarBillingSystem.Context
             .HasForeignKey(i => new { i.Barcode,i.BranchID })
             .OnDelete(DeleteBehavior.Cascade);
 
+            modelBuilder.Entity<QuantityCheckerMTModel>()
+                .HasKey(c => new { c.Id});
 
 
         }
