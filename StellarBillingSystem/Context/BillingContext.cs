@@ -134,11 +134,7 @@ namespace StellarBillingSystem.Context
             modelBuilder.Entity<BillingPointsModel>().HasKey(i => new { i.BillID, i.CustomerNumber, i.BranchID });
             modelBuilder.Entity<BranchMasterModel>().HasKey(i => new { i.BracnchID, i.BranchName });
 
-            modelBuilder.Entity<BillingMasterModel>().Property(i => i.Id).UseIdentityColumn(101, 1);
-            modelBuilder.Entity<BillingMasterModel>().HasKey(i => new { i.Id, i.BillDate, i.BranchID });
-
-            modelBuilder.Entity<BillingDetailsModel>().Property(i => i.Id).UseIdentityColumn(101, 1);
-            modelBuilder.Entity<BillingDetailsModel>().HasKey(i => new { i.Id, i.ProductID, i.BranchID });
+           
 
             modelBuilder.Entity<GenericReportModel>().HasKey(i => new { i.ReportId, i.BranchID });
 
@@ -333,6 +329,20 @@ namespace StellarBillingSystem.Context
 
 
 
+            modelBuilder.Entity<BillingMasterModel>().Property(i => i.Id).UseIdentityColumn(101, 1);
+            modelBuilder.Entity<BillingMasterModel>().HasKey(i => new { i.Id, i.BranchID });
+
+            modelBuilder.Entity<BillingDetailsModel>().Property(i => i.Id).UseIdentityColumn(101, 1);
+            modelBuilder.Entity<BillingDetailsModel>().HasKey(i => new { i.Id, i.Barcode, i.BranchID });
+
+            modelBuilder.Entity<BillingDetailsModel>()
+            .HasOne<ProductModelMT>()
+            .WithMany()
+            .HasForeignKey(i => new { i.Barcode,i.BranchID })
+            .OnDelete(DeleteBehavior.Cascade);
+
+
+
         }
 
         // Override SaveChangesAsync to auto-generate the Ids for various screens with the prefix
@@ -416,7 +426,7 @@ namespace StellarBillingSystem.Context
             if (BillDet.Any() && (BillId == null || BillId == string.Empty))
             {
                 // Get the latest BillNumber from the database
-                var lastBill = await this.SHbillmaster.Where(x => x.BranchID == branchId).OrderByDescending(b => b.Id).FirstOrDefaultAsync();
+                var lastBill = await this.SHbilldetails.Where(x => x.BranchID == branchId).OrderByDescending(b => b.Id).FirstOrDefaultAsync();
                 int lastBillNumber = 101; // Starting point, e.g., Bill_100
 
                 if (lastBill != null)

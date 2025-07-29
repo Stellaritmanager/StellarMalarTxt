@@ -87,7 +87,7 @@ namespace StellarBillingSystem_skj.Business
                     dblBalance = dblBalance + Double.Parse(strpayment);
             }
 
-            decimal billamount = billing.Shbillmasterskj.Where(x => x.BillID == pBillID && x.BranchID == strBranchid).Select(x => x.TotalRepayValue).FirstOrDefault();
+            decimal billamount = billing.SHbillmaster.Where(x => x.BillID == pBillID && x.BranchID == strBranchid).Select(x => Convert.ToDecimal(x.NetPrice)).FirstOrDefault();
 
             if (billamount != null)
                 dblBalance = (double)(billamount - Convert.ToDecimal(dblBalance));

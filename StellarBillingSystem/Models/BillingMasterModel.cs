@@ -25,6 +25,9 @@ namespace StellarBillingSystem.Models
         private bool billInsertion;
         private int id;
 
+        private string closeBy;
+        private string closeDate;
+
         public string BillID { get => billID; set => billID = value; }
         public string BillDate { get => billDate; set => billDate = value; }
         [MaxLength(10)]
@@ -45,5 +48,7 @@ namespace StellarBillingSystem.Models
         public string? Billby { get => billby; set => billby = value; }
         public bool BillInsertion { get => billInsertion; set => billInsertion = value; }
         public int Id { get => id; set => id = value; }
+        public string? CloseBy { get => closeBy; set => closeBy = value; }
+        public string? CloseDate { get => closeDate; set => closeDate = value; }
     }
 }

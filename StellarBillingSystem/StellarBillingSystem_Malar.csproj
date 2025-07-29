@@ -49,6 +49,7 @@
     <Content Include="BillTemplate Branch2.docx">
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Folder Include="Views\Payment\" />
   </ItemGroup>
 
   <ItemGroup>

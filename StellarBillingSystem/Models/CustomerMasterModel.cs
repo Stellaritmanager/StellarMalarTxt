@@ -59,14 +59,14 @@ public class CustomerMasterModel
     public string BranchID { get => branchID; set => branchID = value; }
 
     [MaxLength(50)]
-    public string Fathername { get => fathername; set => fathername = value; }
+    public string? Fathername { get => fathername; set => fathername = value; }
 
     [MaxLength(30)]
-    public string State { get => state; set => state = value; }
+    public string? State { get => state; set => state = value; }
 
     [MaxLength(30)]
     public string? Country { get => country; set => country = value; }
 
     [MaxLength(10)]
-    public string Pincode { get => pincode; set => pincode = value; }
+    public string? Pincode { get => pincode; set => pincode = value; }
 }

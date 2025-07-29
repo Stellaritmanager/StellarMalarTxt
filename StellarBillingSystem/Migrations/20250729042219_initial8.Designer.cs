@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using StellarBillingSystem.Context;
 
@@ -11,9 +12,11 @@ using StellarBillingSystem.Context;
 namespace StellarBillingSystem_Malar.Migrations
 {
     [DbContext(typeof(BillingContext))]
-    partial class BillingContextModelSnapshot : ModelSnapshot
+    [Migration("20250729042219_initial8")]
+    partial class initial8
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -709,12 +712,6 @@ namespace StellarBillingSystem_Malar.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("CGSTPercentageAmt")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("CloseBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("CloseDate")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("CustomerNumber")

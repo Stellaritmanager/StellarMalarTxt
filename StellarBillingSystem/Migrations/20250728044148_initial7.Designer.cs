@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using StellarBillingSystem.Context;
 
@@ -11,9 +12,11 @@ using StellarBillingSystem.Context;
 namespace StellarBillingSystem_Malar.Migrations
 {
     [DbContext(typeof(BillingContext))]
-    partial class BillingContextModelSnapshot : ModelSnapshot
+    [Migration("20250728044148_initial7")]
+    partial class initial7
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -220,6 +223,7 @@ namespace StellarBillingSystem_Malar.Migrations
                         .HasColumnType("nvarchar(50)");
 
                     b.Property<string>("Fathername")
+                        .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
@@ -243,10 +247,12 @@ namespace StellarBillingSystem_Malar.Migrations
                         .HasColumnType("nvarchar(30)");
 
                     b.Property<string>("Pincode")
+                        .IsRequired()
                         .HasMaxLength(10)
                         .HasColumnType("nvarchar(10)");
 
                     b.Property<string>("State")
+                        .IsRequired()
                         .HasMaxLength(30)
                         .HasColumnType("nvarchar(30)");
 
@@ -709,12 +715,6 @@ namespace StellarBillingSystem_Malar.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("CGSTPercentageAmt")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("CloseBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("CloseDate")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("CustomerNumber")

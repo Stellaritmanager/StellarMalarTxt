@@ -312,11 +312,7 @@
             </ul>
         </li>
 
-         @if (rollAccessList != null)
-        {
-            @if (rollAccessList.Contains("Customer"))
-            {
-
+       
 
                 <li class='menu-item@(currentPage.EndsWith("/") || currentPage.StartsWith("/Customer") ? " active open" : "")'>
                     <a href="javascript:void(0);" class="menu-link menu-toggle">
@@ -375,8 +371,8 @@
                     </ul>
 
                 </li>
-            }
-        }
+            
+        
             
          @if (rollAccessList != null)
         {
@@ -400,7 +396,7 @@
 
 
                                 <li class='menu-item@(currentPage == "/PaymentBilling/CustomerBilling" ? " active" : "")'>
-                                    <a asp-controller="StellarBilling" asp-action="CustomerBilling" class="menu-link">
+                                    <a asp-controller="BillingMT" asp-action="CustomerBilling" class="menu-link">
 
                                         <div>Customer Billing</div>
                                     </a>
@@ -430,8 +426,8 @@
                             {
 
 
-                                <li class='menu-item@(currentPage == "/Payment/PaymentBilling" ? " active" : "")'>
-                                    <a asp-controller="Payment" asp-action="PaymentBilling" class="menu-link">
+                                <li class='menu-item@(currentPage == "/PaymentMT/PaymentBilling" ? " active" : "")'>
+                                    <a asp-controller="PaymentMT" asp-action="PaymentBilling" class="menu-link">
 
                                         <div>Payment Screen</div>
                                     </a>
