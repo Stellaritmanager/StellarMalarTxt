@@ -92,7 +92,7 @@ namespace StellarBillingSystem.Controllers
 
             if (TempData["BranchID"] != null)
             {
-                branchId = TempData["BranchID"].ToString();
+                branchId = TempData["BranchID"].ToString();   
                 TempData.Keep("BranchID");
             }
 

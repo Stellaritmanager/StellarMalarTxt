@@ -95,6 +95,8 @@ namespace StellarBillingSystem_Malar.Controllers
             return Json(new { success = true, data = result.data });
         }
 
+        
+
 
         [HttpPost]
         public IActionResult DeleteBill(string billID)
