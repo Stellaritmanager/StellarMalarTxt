@@ -68,6 +68,19 @@ namespace StellarBillingSystem.Controllers
                  return View(query);
              }*/
 
+            var minRequiredQty = _billingContext.MTQuantitycheck
+                           .Select(x => x.QunatityChecker)
+                           .FirstOrDefault();
+
+            // Get list of low stock products
+            var lowQtyProducts = _billingContext.MTProductMaster
+                                    .Where(p => p.NoofItem < minRequiredQty && p.BranchID == branchId)
+                                    .ToList();
+
+            if (lowQtyProducts.Count > 0)
+            {
+                ViewData["ToastMessage"] = $"{lowQtyProducts.Count} product(s) have low quantity. Please check the report.";
+            }
 
             return View();
         }
@@ -79,7 +92,7 @@ namespace StellarBillingSystem.Controllers
 
             if (TempData["BranchID"] != null)
             {
-                branchId = TempData["BranchID"].ToString();
+                branchId = TempData["BranchID"].ToString();   
                 TempData.Keep("BranchID");
             }
 

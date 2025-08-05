@@ -23,6 +23,7 @@ namespace StellarBillingSystem.Models
         private string lastupdatedmachine;
         private string branchID;
         private long id;
+        private string barcode;
 
 
         public string BillID { get => billID; set => billID = value; }
@@ -43,8 +44,8 @@ namespace StellarBillingSystem.Models
         public string? BillDate { get => billDate; set => billDate = value; }
         public string? CustomerNumber { get => customerNumber; set => customerNumber = value; }
 
-        [MaxLength(20)]
         public string BranchID { get => branchID; set => branchID = value; }
         public long Id { get => id; set => id = value; }
+        public string Barcode { get => barcode; set => barcode = value; }
     }
 }

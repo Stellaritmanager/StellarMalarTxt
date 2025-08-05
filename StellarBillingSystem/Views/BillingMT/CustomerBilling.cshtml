@@ -1,0 +1,1063 @@
+﻿
+@{
+    ViewData["Title"] = "CustomerBilling";
+    Layout = "~/Views/Shared/_ContentNavbarLayout.cshtml";
+}
+
+
+
+<style>
+    .popborder {
+        border: 10px solid #fff;
+    }
+</style>
+
+
+<form asp-controller="BillingMT"  autocomplete="off">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+    <div class="row">
+        <div class="col-md-12 col-lg-0"></div>
+        <div class="col-md-12 col-lg-12" style="padding: 0;">
+            <div class="card" style="height:40px;">
+                <div class="card-body dividerblack">
+                    <div style="display: flex; align-items: center; height: 100%;">
+                        <div class="container" style="text-align: left; width: 100%;">
+                            <h2 class="centered text-white" style="font-family:'Lucida Bright'; margin: 0;">
+                                Customer Billing
+                            </h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <br />
+
+    <div class="row" style="height:8%"></div>
+
+    <div class="row" style="margin-top:60px">
+
+
+        <div class="col-md-12 col-lg-12">
+            <div class="card">
+                <div class="card-body dividerblack">
+
+                    <div class="row">
+                     
+                        <div class="col-md-12 col-lg-4">
+                            <div class="form-floating form-floating-outline mb-4">
+                                <input type="BillID" class="form-control" placeholder="Bill ID" id="BillID"/>
+                                <label for="BillID" class="control-label">Bill ID</label>
+                            </div>
+                        </div>
+
+                        <button type="button" style="width:95px; height:50px;" class="btn btn-primary ms-2" onclick="getBillDetail()">Get</button>
+                       
+                        <div class="col-md-12 col-lg-3">
+                           
+
+                           
+                                <div class="input-group">
+                                    @{
+                                    var customerId = ((IEnumerable<CustomerMasterModel>)ViewData["customer"])
+                                        .Select(m => new SelectListItem
+            {
+                Value = m.CustomerID.ToString(), // Assuming ProductID is of type int
+                Text = $"{m.CustomerName}-{m.MobileNumber}"
+            });
+                                    }
+
+
+                                    <input type="text" id="customerDropdownInput" class="form-control" placeholder="Customer Number" onkeyup="filterDropdown(event, 'customerDropdownInput', 'customerDropdown')" onclick="showDropdown('customerDropdown')">
+                                    <ul id="customerDropdown" class="list-group mt-2"
+                                        style="display: none; position: absolute; top: 100%; left: 0; width: 100%; max-height: 200px; overflow-y: auto; background-color: white; border: 1px solid #ddd; border-radius: .25rem; box-shadow: 0 0 .5rem rgba(0, 0, 0, .1); z-index: 1000; padding: 0; margin: 0; list-style-type: none;">
+                                    @foreach (var item in customerId)
+                                        {
+                                            <li class="list-group-item" data-value="@item.Value" onclick="selectDropdownItem('customerDropdownInput', 'CustomerID', '@item.Text', '@item.Value')"
+                                                style="padding: .5rem 1rem; cursor: pointer; background-color: white; border: none; list-style-type: none;">
+                                                @item.Text
+                                            </li>
+                                        }
+                                    </ul>
+                                <input type="hidden" name="CustomerID" id="CustomerID" />
+
+                                <button class="btn btn-primary menu-icon tf-icons bx bxs-user-plus" type="button" id="button-addon2" data-bs-toggle="modal" data-bs-target="#customerModal"></button>
+                                </div>                               
+                          
+
+
+                        </div>
+
+                        <div class="col-md-12 col-lg-3">
+
+                            <div class="form-floating form-floating-outline mb-4 custom-date-picker">
+                                <input for="BillDate" type="date"  class="form-control" id="BillDate" max="@DateTime.Now.ToString("yyyy-MM-dd")" placeholder="BillDate"  />
+                                <label for="BillDate" class="control-label">Bill Date</label>
+                                <span for="BillDate" class="text-danger"></span>
+                            </div>
+
+                        </div>
+
+
+                    </div>
+                    <br />
+                    <div class="row">
+                      
+
+                        <div class="col-md-12 col-lg-3">
+
+                            <div class="form-floating form-floating-outline mb-4">
+                                <input type="text" class="form-control" id="Barcode" placeholder="Barcode" />
+                                <label for="BarCode" class="control-label">Barcode</label>
+
+                            </div>
+                        </div>
+                        <div class="col-md-12 col-lg-2">
+
+                            <div class="form-floating form-floating-outline mb-4">
+                                <input type="text" class="form-control" id="Quantity" placeholder="Quantity"  />
+                                <label for="Quantity" class="control-label">Quantity</label>
+                              
+
+                            </div>
+
+                        </div>
+                       
+                  
+                        <div class="col-md-12 col-lg-5">
+                            <div class="input-group">
+                                @{
+                                    var PatientID = ((IEnumerable<StellarBillingSystem_Malar.Models.ProductModelMT>)ViewData["productid"])
+                                    .Select(m => new SelectListItem
+            {
+                Value = m.ProductCode.ToString(), // Assuming ProductID is of type int
+                Text = $"{m.ProductName}"
+            });
+                                }
+
+
+                                <input type="text" id="productDropdownInput" class="form-control" placeholder="Product Name" onkeyup="filterDropdown(event, 'productDropdownInput', 'productDropdown')" onclick="showDropdown('productDropdown')">
+                                <ul id="productDropdown" class="list-group mt-2"
+                                    style="display: none; position: absolute; top: 100%; left: 0; width: 100%; max-height: 200px; overflow-y: auto; background-color: white; border: 1px solid #ddd; border-radius: .25rem; box-shadow: 0 0 .5rem rgba(0, 0, 0, .1); z-index: 1000; padding: 0; margin: 0; list-style-type: none;">
+                                    @foreach (var item in PatientID)
+                                    {
+                                        <li class="list-group-item" data-value="@item.Value" onclick="selectDropdownItem('productDropdownInput', 'productID', '@item.Text', '@item.Value')"
+                                            style="padding: .5rem 1rem; cursor: pointer; background-color: white; border: none; list-style-type: none;">
+                                            @item.Text
+                                        </li>
+                                    }
+                                </ul>
+                                <input type="hidden" name="ProductID" id="productID"  />
+
+                                
+
+                            </div>
+                           
+                              
+                           
+
+                        </div>
+                    
+                        <button type="button" style="width:145px; height:50px;" class="btn btn-primary ms-2" onclick="addProduct()" class="btn btn-primary">Add Product</button>
+
+                        
+
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="row">
+        <div class="col-md-12 col-lg-12">
+            <div class="card">
+                <div class="card-body dividerblack">
+
+
+                    <div id="productTableContainer"></div>
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+    </br>
+
+
+
+    <div class="card">
+        <div class="card-body dividerblack">
+
+            <div class="row">
+                <div class="col-md-12 col-lg-4">
+                    <div class="form-floating form-floating-outline mb-4">
+                        <input type="Totalprice" id="Totalprice" class="form-control" name="Totalprice" placeholder="Total price" value="@ViewBag.TotalPrice" readonly />
+                        <label for="Totalprice" class="control-label">Total price</label>
+
+
+                    </div>
+
+                </div>
+
+                <div class="col-md-12 col-lg-2">
+
+                    <div class="form-floating form-floating-outline mb-4">
+                        <input type="text" id="CGSTPercentage" class="form-control" name="CGSTPercentage" placeholder="CGST%" value="@ViewBag.CGSTPercentage" />
+                        <label for="CGSTPercentage" class="control-label">CGST%</label>
+                        <span for="CGSTPercentage" id="CGSTError" class="text-danger"></span>
+                    </div>
+
+                </div>
+                <div class="col-md-12 col-lg-2">
+
+                    <div class="form-floating form-floating-outline mb-4">
+                        <input type="text" id="SGSTPercentage" class="form-control" name="SGSTPercentage" placeholder="SGST%" value="@ViewBag.SGSTPercentage" />
+                        <label for="SGSTPercentage" class="control-label">SGST%</label>
+                        <span for="SGSTPercentage" id="SGSTError" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="col-md-12 col-lg-4">
+
+                    <div class="form-floating form-floating-outline mb-4">
+                        <input type="text" id="TotalDiscount" class="form-control" name="TotalDiscount" placeholder="Total Discount" value="@ViewBag.TotalDiscount" />
+                        <label for="TotalDiscount" class="control-label">Total Discount</label>
+
+
+                    </div>
+
+                </div>
+            </div>
+
+
+            <div class="row">
+
+              
+                <div class="col-md-12 col-lg-2">
+                    </div>
+                <div class="col-md-12 col-lg-4">
+                    <div class="form-floating form-floating-outline mb-4">
+                        <input type="NetPrice" id="NetPrice" class="form-control" name="NetPrice" placeholder="Net Price" value="@ViewBag.NetPrice" readonly />
+                        <label for="NetPrice" class="control-label">Net Price</label>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+
+
+    </br>
+
+    <div class="row">
+
+        <center>
+            <button type="button" value="Save" name="buttonType" onclick="saveBill()" class="btn btn-dark">Save</button>
+            <button type="button" value="Clear" name="buttontype" class="btn btn-info" onclick="clearBill()">Clear</button>
+
+            <button type="button" value="Delete Bill" name="buttonType" onclick="deleteBill()" class="btn btn-warning">Delete Bill</button>
+
+            <button type="submit" value="Download Bill" name="buttonType" class="btn btn-success">Download Bill</button>
+        </center>
+
+
+
+
+    </div>
+
+   
+
+    @if (ViewBag.Getnotfound != null)
+    {
+        <script>
+            handleMessages("@ViewBag.Getnotfound");
+        </script>
+    }
+
+    @if (ViewBag.DelMessage != null)
+    {
+        <script>
+            handleMessages("@ViewBag.DelMessage");
+        </script>
+    }
+
+    @if (ViewBag.ClearMessage != null)
+    {
+        <script>
+            handleMessages("@ViewBag.ClearMessage");
+        </script>
+    }
+
+
+
+</form>
+
+
+
+<!-- Get Customer Details Modal -->
+<div class="modal fade" id="getCustomerDetailsModal" tabindex="-1" aria-labelledby="getCustomerDetailsModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="getCustomerDetailsModalLabel">Customer Product Details</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Select</th>
+                            <th>Bill ID</th>
+                            <th>Bill Date</th>
+                            <th>Product Name</th>
+                            <th>Product ID</th>
+                        </tr>
+                    </thead>
+                    <tbody id="productTableBody">
+                    </tbody>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="loadSelectedProduct">Load Selected Product</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- Customer Details Modal -->
+<div class="modal fade" id="customerModal" tabindex="-1" role="dialog" aria-labelledby="customerModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="customerModalLabel">Enter Customer Details</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+
+                </button>
+            </div>
+            <div class="modal-body">
+
+
+                <form id="modalSearchFormcus" asp-controller="BillingMT" asp-action="AddCustomerPop" method="post">
+
+                    <div class="col mb-3">
+
+
+
+                        <label for="CustomerNumber">Mobile Number</label>
+                        <input type="text" class="form-control" id="MobileNumber" name="MobileNumber" placeholder="Mobile Number" />
+
+
+
+                    </div>
+
+                    <div class="col mb-3">
+                        <label for="searchInput">Customer Name </label>
+                        <input type="text" class="form-control" id="CustomerName" name="CustomerName" placeholder="Customer Name" />
+                    </div>
+
+
+                    <div class="col mb-3">
+                        <label for="searchInput">Customer Address </label>
+                        <input type="text" class="form-control" id="Address" name="Address" placeholder="Address" />
+                    </div>
+
+                </form>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" id="saveCustomer">Save Customer</button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+
+ <!-- Overlay -->
+    <div id="popupOverlay" style="display: none; position: fixed; top: 0; left: 0;
+     width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.3);
+     z-index: 999;" onclick="handleOutsideClick(event)">
+
+        <!-- Popup Message Box -->
+        <div id="popupMessage" style="position: fixed; top: 50%; left: 50%;
+         transform: translate(-50%, -50%); background: white;
+         padding: 30px; border: 1px solid black; border-radius: 10px;
+         z-index: 1000;" onclick="event.stopPropagation()">
+
+            <span id="popupMessageText"></span>
+            <div class="mt-3 text-center">
+                <button onclick="closePopup()" class="btn btn-outline-dark">OK</button>
+            </div>
+        </div>
+    </div>
+
+<script>
+    let suppressInputEvent = false;
+
+    function filterDropdown(event, inputId, dropdownId) {
+        if (suppressInputEvent) return; // Prevent filtering if input event is suppressed
+
+        const input = document.getElementById(inputId);
+        const dropdown = document.getElementById(dropdownId);
+        const filter = input.value.toLowerCase();
+        const items = dropdown.querySelectorAll('li');
+
+        items.forEach(item => {
+            const text = item.textContent.toLowerCase();
+            item.style.display = text.includes(filter) ? '' : 'none';
+        });
+
+        if (filter) {
+            dropdown.style.display = 'block'; // Show dropdown when filtering
+        }
+    }
+
+    function showDropdown(dropdownId) {
+        const dropdown = document.getElementById(dropdownId);
+        dropdown.style.display = 'block';
+    }
+
+    function selectDropdownItem(inputId, hiddenId, text, value) {
+        const input = document.getElementById(inputId);
+        const hidden = document.getElementById(hiddenId);
+
+        // Trim whitespace from the selected text
+        const trimmedText = text.trim();
+
+        // Set the selected value in the input and hidden input
+        input.value = trimmedText;
+        hidden.value = value;
+
+        // Hide the corresponding dropdown
+        const dropdownId = inputId === 'productDropdownInput' ? 'productDropdown' : 'customerDropdown';
+        document.getElementById(dropdownId).style.display = 'none';
+
+        // Suppress input event briefly
+        suppressInputEvent = true;
+        setTimeout(() => {
+            suppressInputEvent = false;
+        }, 200);
+    }
+
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const input = document.getElementById('productDropdownInput');
+        const dropdown = document.getElementById('productDropdown');
+        const customerInput = document.getElementById('customerDropdownInput');
+        const customerDropdown = document.getElementById('customerDropdown');
+        let customerHighlightedIndex = -1;
+
+        function getVisibleCustomerItems() {
+            return Array.from(customerDropdown.querySelectorAll('li')).filter(item => item.style.display !== 'none');
+        }
+
+        customerInput.addEventListener('input', (event) => {
+            filterDropdown(event, 'customerDropdownInput', 'customerDropdown');
+            customerHighlightedIndex = -1;
+        });
+
+        customerInput.addEventListener('keydown', (event) => {
+            const visibleItems = getVisibleCustomerItems();
+
+            switch (event.key) {
+                case 'ArrowDown':
+                    if (customerHighlightedIndex < visibleItems.length - 1) {
+                        customerHighlightedIndex++;
+                        updateCustomerHighlight(visibleItems);
+                        event.preventDefault();
+                    }
+                    break;
+                case 'ArrowUp':
+                    if (customerHighlightedIndex > 0) {
+                        customerHighlightedIndex--;
+                        updateCustomerHighlight(visibleItems);
+                        event.preventDefault();
+                    }
+                    break;
+                case 'Enter':
+                    if (customerHighlightedIndex >= 0) {
+                        const item = visibleItems[customerHighlightedIndex];
+                        selectDropdownItem('customerDropdownInput', 'CustomerID', item.textContent, item.getAttribute('data-value'));
+                        customerHighlightedIndex = -1;
+                        event.preventDefault();
+                    }
+                    break;
+                case 'Escape':
+                    customerDropdown.style.display = 'none';
+                    customerHighlightedIndex = -1;
+                    break;
+            }
+        });
+
+        function updateCustomerHighlight(visibleItems) {
+            visibleItems.forEach((item, index) => {
+                item.style.backgroundColor = (index === customerHighlightedIndex) ? '#000000' : 'white';
+                item.style.color = (index === customerHighlightedIndex) ? 'white' : 'black';
+            });
+            visibleItems[customerHighlightedIndex]?.scrollIntoView({ block: 'nearest' });
+        }
+
+        document.addEventListener('click', (event) => {
+            const target = event.target;
+            if (!customerDropdown.contains(target) && target !== customerInput) {
+                customerDropdown.style.display = 'none';
+            }
+        });
+
+        let highlightedIndex = -1;
+
+        function getVisibleItems() {
+            return Array.from(dropdown.querySelectorAll('li')).filter(item => item.style.display !== 'none');
+        }
+
+        input.addEventListener('input', (event) => {
+            filterDropdown(event, 'productDropdownInput', 'productDropdown');
+            highlightedIndex = -1; // Reset highlight when input changes
+        });
+
+        input.addEventListener('keydown', (event) => {
+            const visibleItems = getVisibleItems();
+
+            switch (event.key) {
+                case 'ArrowDown':
+                    if (highlightedIndex < visibleItems.length - 1) {
+                        highlightedIndex++;
+                        updateHighlight(visibleItems);
+                        event.preventDefault(); // Prevent default behavior
+                    }
+                    break;
+                case 'ArrowUp':
+                    if (highlightedIndex > 0) {
+                        highlightedIndex--;
+                        updateHighlight(visibleItems);
+                        event.preventDefault(); // Prevent default behavior
+                    }
+                    break;
+                case 'Enter':
+                    if (highlightedIndex >= 0) {
+                        const item = visibleItems[highlightedIndex];
+                        selectDropdownItem('productDropdownInput', 'productID', item.textContent, item.getAttribute('data-value'));
+                        highlightedIndex = -1;
+                        event.preventDefault(); // Prevent default behavior
+                    }
+                    break;
+                case 'Escape':
+                    dropdown.style.display = 'none'; // Close dropdown on escape
+                    highlightedIndex = -1;
+                    break;
+            }
+        });
+
+        function updateHighlight(visibleItems) {
+            visibleItems.forEach((item, index) => {
+                item.style.backgroundColor = (index === highlightedIndex) ? '#000000' : 'white';
+                item.style.color = (index === highlightedIndex) ? 'white' : 'black'; // Ensure text color contrasts with background
+            });
+            visibleItems[highlightedIndex]?.scrollIntoView({ block: 'nearest' });
+        }
+
+        // Click event to close dropdown when clicking outside
+        document.addEventListener('click', (event) => {
+            const target = event.target;
+            if (!dropdown.contains(target) && target !== input) {
+                dropdown.style.display = 'none';
+            }
+        });
+    });
+</script>
+
+
+
+
+
+
+<!-- Add Bootstrap JavaScript and jQuery  -->
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/5.1.3/js/bootstrap.bundle.min.js"></script>
+
+
+<!-- Add Javascript for Customer Master Pop -->
+
+<script>
+
+     function showPopup(message, reload = false) {
+            shouldReloadOnClose = reload;
+            document.getElementById("popupMessageText").textContent = message;
+            document.getElementById("popupOverlay").style.display = "block";
+        }
+
+
+
+        function closePopup() {
+            document.getElementById("popupOverlay").style.display = "none";
+            if (shouldReloadOnClose) {
+                location.reload();
+            }
+        }
+        function handleOutsideClick(event) {
+            closePopup(); // closes if user clicks on overlay (outside popup)
+        }
+
+    $(document).ready(function () {
+
+        $('#saveCustomer').click(function () {
+            var customerData = {
+                MobileNumber: $('#MobileNumber').val(),
+                CustomerName: $('#CustomerName').val(),
+                Address: $('#Address').val()
+            };
+
+            $.ajax({
+                type: 'POST',
+                url: '/BillingMT/AddCustomerPop',
+                data: customerData,
+                success: function (response) {
+                    // ✅ Close the modal
+                    $('#customerModal').modal('hide');
+
+                    // ✅ Clear fields
+                    $('#MobileNumber').val('');
+                    $('#CustomerName').val('');
+                    $('#Address').val('');
+
+                    // ✅ Show success popup (if you have a popup function)
+                    showPopup('Customer saved successfully.');
+                },
+                error: function (xhr, status, error) {
+                    showPopup('Error saving customer: ' + xhr.responseText);
+                }
+            });
+        });
+
+    });
+</script>
+
+
+
+
+
+
+
+
+<!-- Add Javascript for Tax and discount -->
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const totalPriceInput = document.getElementById('Totalprice');
+        const cgstPercentageInput = document.getElementById('CGSTPercentage');
+        const sgstPercentageInput = document.getElementById('SGSTPercentage');
+        const totalDiscountInput = document.getElementById('TotalDiscount');
+        const netPriceInput = document.getElementById('NetPrice');
+
+        function calculateNetPrice() {
+            const totalPrice = parseFloat(totalPriceInput.value) || 0;
+            const cgstPercentage = parseFloat(cgstPercentageInput.value) || 0;
+            const sgstPercentage = parseFloat(sgstPercentageInput.value) || 0;
+            const discountPercentage = parseFloat(totalDiscountInput.value) || 0;
+
+            const cgstAmount = (totalPrice * cgstPercentage) / 100;
+            const sgstAmount = (totalPrice * sgstPercentage) / 100;
+            const discountAmount = (totalPrice * discountPercentage) / 100;
+
+            const netPrice = totalPrice + cgstAmount + sgstAmount - discountAmount;
+
+            netPriceInput.value = netPrice.toFixed(2);
+        }
+
+        function setupEventListeners() {
+            cgstPercentageInput.addEventListener('blur', calculateNetPrice);
+            sgstPercentageInput.addEventListener('blur', calculateNetPrice);
+            totalDiscountInput.addEventListener('blur', calculateNetPrice);
+        }
+
+        setupEventListeners();
+    });
+</script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const phoneInput = document.getElementById('CustomerNumber');
+
+        phoneInput.addEventListener('input', function (e) {
+            // Remove non-numeric characters
+            this.value = this.value.replace(/\D/g, '');
+        });
+
+        phoneInput.addEventListener('keydown', function (e) {
+            // Allow backspace, delete, tab, escape, enter, and arrow keys
+            if ([46, 8, 9, 27, 13, 37, 38, 39, 40].indexOf(e.keyCode) !== -1) {
+                return;
+            }
+            // Prevent typing if the input already has 10 characters
+            if (this.value.length >= 10) {
+                e.preventDefault();
+            }
+        });
+    });
+</script>
+
+
+<script>
+    // Function to format number in Indian format (e.g., 1,23,456.78)
+    function formatToIndianCurrency(value) {
+        let parts = value.split('.');
+        let integerPart = parts[0];
+        let lastThree = integerPart.substring(integerPart.length - 3);
+        let otherNumbers = integerPart.substring(0, integerPart.length - 3);
+
+        if (otherNumbers !== '') {
+            lastThree = ',' + lastThree;
+        }
+
+        let formattedInteger = otherNumbers.replace(/\B(?=(\d{2})+(?!\d))/g, ',') + lastThree;
+        return parts.length > 1 ? formattedInteger + '.' + parts[1].substring(0, 2) : formattedInteger;
+    }
+
+    function validateAndFormatInput(inputElement, errorElement) {
+        inputElement.addEventListener('input', function () {
+            let value = this.value.replace(/[^0-9.]/g, '');
+            this.value = formatToIndianCurrency(value);
+            const indianMoneyFormat = /^\d{1,3}(,\d{2})*(\.\d{0,2})?$/;
+
+            if (!indianMoneyFormat.test(this.value)) {
+                errorElement.style.display = 'inline';
+            } else {
+                errorElement.style.display = 'none';
+            }
+        });
+    }
+
+    // Set up validation for all relevant inputs
+    const quantityInput = document.getElementById('Quantity');
+    const quantityError = document.getElementById('QuantityError');
+    validateAndFormatInput(quantityInput, quantityError);
+
+    const cgstInput = document.getElementById('CGSTPercentage');
+    const cgstError = document.getElementById('CGSTError');
+    validateAndFormatInput(cgstInput, cgstError);
+
+    const sgstInput = document.getElementById('SGSTPercentage');
+    const sgstError = document.getElementById('SGSTError');
+    validateAndFormatInput(sgstInput, sgstError);
+
+    const totalDiscountInput = document.getElementById('TotalDiscount');
+    const totalDiscountError = document.getElementById('TotalDiscountError');
+    validateAndFormatInput(totalDiscountInput, totalDiscountError);
+
+    // Prevent form submission if the amount is invalid
+    document.getElementById('moneyForm').addEventListener('submit', function (e) {
+        const indianMoneyFormat = /^\d{1,3}(,\d{2})*(\.\d{0,2})?$/;
+
+        if (!indianMoneyFormat.test(quantityInput.value) ||
+            !indianMoneyFormat.test(cgstInput.value) ||
+            !indianMoneyFormat.test(sgstInput.value) ||
+            !indianMoneyFormat.test(totalDiscountInput.value)) {
+            e.preventDefault();
+            quantityError.style.display = 'inline';
+            cgstError.style.display = 'inline';
+            sgstError.style.display = 'inline';
+            totalDiscountError.style.display = 'inline';
+        }
+    });
+</script>
+
+<script>
+
+     function showPopup(message, reload = false) {
+            shouldReloadOnClose = reload;
+            document.getElementById("popupMessageText").textContent = message;
+            document.getElementById("popupOverlay").style.display = "block";
+        }
+
+
+
+        function closePopup() {
+            document.getElementById("popupOverlay").style.display = "none";
+            if (shouldReloadOnClose) {
+                location.reload();
+            }
+        }
+        function handleOutsideClick(event) {
+            closePopup(); // closes if user clicks on overlay (outside popup)
+        }
+
+    let productList = [];
+
+    function getBillDetail() {
+        var billID = $("#BillID").val();
+        if (!billID) {
+            showPopup("Please enter a Bill ID", false);
+            return;
+        }
+
+        $.ajax({
+            url: '/BillingMT/GetBillDetail',
+            type: 'GET',
+            data: { billID: billID },
+            success: function (data) {
+
+                console.log("AJAX Success. Raw data:", data);
+
+                if (!data.success) {
+                    showPopup(data.message); // Show "Bill not found" message
+                    return;
+                }
+
+                let result = data.data; 
+
+                console.log("Parsed result object:", result);
+
+                if (!result) {
+                    console.warn("Result is null or undefined");
+                    return;
+                }
+
+                // Debug each field before setting
+                console.log("CustomerNumber:", result.customerNumber);
+                console.log("BillDate:", result.billDate);
+                console.log("Totalprice:", result.totalprice);
+                console.log("NetPrice:", result.netPrice);
+
+                // Populate input fields
+                $("#CustomerID").val(result.customerNumber);
+                $("#BillDate").val(result.billDate);
+                $("#Totalprice").val(result.totalPrice);
+                $("#NetPrice").val(result.netPrice);
+                $("#CGSTPercentage").val(result.cgstPer);
+                $("#SGSTPercentage").val(result.sgstPer);
+                $("#TotalDiscount").val(result.totaldis);
+
+                productList = result.products || [];
+                renderProductTable(productList);
+
+                let selectedItem = $("#customerDropdown li[data-value='" + result.customerNumber + "']");
+
+            
+                if (selectedItem.length > 0) {
+                    $("#customerDropdownInput").val(selectedItem.text());
+                } else {
+                    $("#customerDropdownInput").val("Customer not found"); // debug purpose
+                }
+            },
+            error: function () {
+                showPopup("Unable to fetch bill details.");
+            }
+        });
+    }
+
+
+    function addProduct() {
+        var billID = $("#BillID").val();
+        var quantity = parseFloat($("#Quantity").val());
+        var barcode = $("#Barcode").val();
+        var productId = $("#productID").val();
+
+        if ((!barcode && !productId) || !quantity) {
+            showPopup("Enter either Barcode or Product ID, and Quantity");
+            return;
+        }
+
+        $.ajax({
+            url: '/BillingMT/AddProductInBill',
+            type: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify({
+                BillID: billID,
+                Quantity: quantity.toString(),
+                Barcode: barcode,
+                ProductID: productId
+            }),
+            success: function (res) {
+                const addedProduct = res.newProduct;
+
+                const exists = productList.some(p => p.ProductID === addedProduct.ProductID);
+                if (exists) {
+                    showPopup("Product already added.");
+                    return;
+                }
+
+                // Push only new product
+                productList.push(addedProduct);
+
+                renderProductTable(productList);
+                recalculateTotals(productList);
+
+                clearInputs();
+            },
+            error: function (err) {
+                showPopup("Error: " + err.responseText);
+            }
+        });
+    }
+
+    function renderProductTable(products) {
+        let tableHtml = `
+                <table id="productTable" class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>Product ID</th>
+                            <th>Name</th>
+                            <th>Price</th>
+                            <th>Qty</th>
+                            <th>Net Price</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>`;
+
+        products.forEach((p, index) => {
+            tableHtml += `
+                    <tr data-index="${index}">
+                        <td>${p.ProductID}</td>
+                        <td>${p.ProductName}</td>
+                        <td>${p.Price}</td>
+                        <td>${p.Quantity}</td>
+                        <td>${p.NetPrice}</td>
+                        <td><button class="btn btn-sm btn-danger" onclick="deleteProduct(${index})">Delete</button></td>
+                    </tr>`;
+        });
+
+        tableHtml += `</tbody></table>`;
+        $('#productTableContainer').html(tableHtml);
+    }
+
+    function deleteProduct(index) {
+        productList.splice(index, 1); // remove from array
+        renderProductTable(productList); // re-render table
+        recalculateTotals(productList);
+    }
+
+    function recalculateTotals(products) {
+        let total = 0;
+        products.forEach(p => {
+            total += parseFloat(p.NetPrice || 0);
+        });
+        $("#Totalprice").val(total.toFixed(2));
+        $("#NetPrice").val(total.toFixed(2));
+    }
+
+    function clearInputs() {
+        $("#Barcode").val('');
+        $("#Quantity").val('');
+        $("#productID").val('');             // hidden field holding value
+        $("#productDropdownInput").val('');  // visible text input
+        $("#productDropdown").hide();        // hide the dropdown list if open
+    }
+
+
+    
+
+    function saveBill() {
+        var billID = $("#BillID").val().trim();
+        var customerNumber = $("#CustomerID").val().trim();
+        var billDate = $("#BillDate").val().trim();
+
+        if (!billDate) {
+            showPopup("Bill Date cannot be empty");
+            return;
+        }
+
+        if (!customerNumber) {
+            showPopup("Customer Number cannot be empty");
+            return;
+        }
+
+        if (!productList || productList.length === 0) {
+            showPopup("At least one product must be added to the bill");
+            return;
+        }
+
+        var data = {
+            BillID: billID,
+            CustomerNumber: customerNumber,
+            BillDate: billDate,
+            CGSTPercentage: $("#CGSTPercentage").val(),
+            SGSTPercentage: $("#SGSTPercentage").val(),
+            TotalDiscount: $("#TotalDiscount").val(),
+            Totalprice: $("#Totalprice").val(),
+            NetPrice: $("#NetPrice").val(),
+            Viewbillproductlist: productList // This must be a valid array of product objects
+        };
+
+        $.ajax({
+            url: '/BillingMT/SaveBill',
+            type: 'POST',
+            contentType: 'application/json', // Important!
+            data: JSON.stringify(data),       // Convert to JSON string
+            success: function (res) {
+                if (res.success) {
+                    $("#BillID").val(res.billID);
+                    showPopup("Saved successfully");
+                }
+            },
+            error: function (xhr) {
+                showPopup("Error: " + xhr.status + " - " + xhr.responseText);
+            }
+        });
+    }
+
+
+    function deleteBill() {
+        var billID = $("#BillID").val().trim();
+
+        if (!billID) {
+            showPopup("Bill ID cannot be empty",false);
+            return;
+        }
+
+        $.ajax({
+            url: '/BillingMT/DeleteBill',
+            type: 'POST',
+            data: { billID: billID },
+            success: function (res) {
+                if (!res.success) {
+                    showPopup(res.message); // Show "Bill not found" message
+                    return;
+                }
+                showPopup("Bill Deleted Successfully");
+                clearFields();
+                $("#productTable tbody").empty();
+            }
+        });
+    }
+
+    function clearFields() {
+        $("#BillID, #CustomerNumber, #Barcode, #Quantity, #productDropdownInput, #productID").val('');
+    }
+
+    function clearBill() {
+        // Clear all input fields
+        $("#BillID").val('');
+        $("#BillDate").val('');
+        $("#CustomerID").val('');
+        $("#customerDropdownInput").val('');
+        $("#Barcode").val('');
+        $("#productID").val('');
+        $("#Quantity").val('');
+        $("#Totalprice").val('');
+        $("#NetPrice").val('');
+        $("#CGSTPercentage").val('');
+        $("#SGSTPercentage").val('');
+        $("#TotalDiscount").val('');
+
+        // Clear product table
+        $("#productTable tbody").empty();
+
+        // Clear global product list array
+        productList = [];
+
+        
+    }
+
+</script>

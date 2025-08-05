@@ -57,7 +57,7 @@
 </style>
 
 
-<form asp-controller="Payment" asp-action="PaymentAction" method="post" enctype="multipart/form-data" autocomplete="off">
+<form asp-controller="PaymentMT" asp-action="PaymentAction" method="post" enctype="multipart/form-data" autocomplete="off">
     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
 
@@ -108,17 +108,19 @@
                             <div class="form-floating form-floating-outline mb-4">
                                 <input type="text" class="form-control" placeholder="Total" id="Total" name="Total" readonly value="@ViewBag.Total" />
                                 <label for="Total" class="control-label">Total</label>
+                                <span id="fieldErrorMessage" style="color: red; font-weight: bold;"></span>
                             </div>
                         </div>
                         <div class="col-sm-4 col-md-4 col-lg-4">
                             <div class="form-floating form-floating-outline mb-4">
                                 <input type="text" class="form-control" placeholder="Balance" id="Balance" name="Balance" value="@ViewBag.Balance" readonly />
                                 <label for="Balance" class="control-label">Balance</label>
+                                <span id="fieldErrorMessage" style="color: red; font-weight: bold;"></span>
                             </div>
                         </div>
 
                         <div class="col-sm-1 col-md-1 col-lg-1">
-                            <button type="submit" style="background-color: #4fdd52; color: white; padding: 10px 10px; border: none; border-radius: 4px;" name="buttonType" value="AddPayment">AddPayment</button>
+                            <button type="submit" style="background-color: #4fdd52; color: white; padding: 10px 10px; border: none; border-radius: 4px;" name="buttonType" value="AddPayment" onclick="return validateFields()">AddPayment</button>
                         </div>
                         <div class="col-sm-1 col-md-1 col-lg-1"></div>
 
@@ -127,13 +129,13 @@
                             <div class="col-sm-1 col-md-1 col-lg-1"></div>
                         <div class="col-sm-4 col-md-4 col-lg-4">
                             <div class="form-floating form-floating-outline mb-4">
-                                <input type="text" class="form-control" placeholder="CloseBy" id="CloseBy" name="CloseBy" />
+                                <input type="text" class="form-control" placeholder="CloseBy" id="CloseBy" name="CloseBy" value="@ViewBag.CloseBy" />
                                 <label for="CloseBy" class="control-label">CloseBy</label>
                             </div>
                         </div>
                         <div class="col-sm-4 col-md-4 col-lg-4">
                             <div class="form-floating form-floating-outline mb-4">
-                                <input type="date" class="form-control" placeholder="CloseDate" id="CloseDate" name="CloseDate"  />
+                                <input type="date" class="form-control" placeholder="CloseDate" id="CloseDate" name="CloseDate" value="@ViewBag.CloseDate" />
                                 <label for="CloseDate" class="control-label">CloseDate</label>
                             </div>
                         </div>
@@ -256,9 +258,9 @@
     <center>
         <div class="row mt-4">
             <div class="col-md-12">
-                <button type="submit" class="btn btn-success" name="buttonType" value="Save">SavePayment</button>
-                <button type="submit" class="btn btn-warning" name="buttonType" value="DeletePaymentDetail">DeletePaymentDetail</button>
-                <button type="submit" class="btn btn-danger" name="buttonType" value="DeletePayment">DeletePayment</button>
+                <button type="submit" class="btn btn-success" name="buttonType" value="Save" onclick="return validateFields()">SavePayment</button>
+                <button type="submit" class="btn btn-warning" name="buttonType" value="DeletePaymentDetail" onclick="return validateFields()">DeletePaymentDetail</button>
+                <button type="submit" class="btn btn-danger" name="buttonType" value="DeletePayment" onclick="return validateFields()">DeletePayment</button>
             </div>
         </div>
     </center>
@@ -288,3 +290,21 @@
 
 
 </form>
+
+<script>
+    function validateFields() {
+        const total = document.getElementById("Total").value.trim();
+        const balance = document.getElementById("Balance").value.trim();
+        const errorSpan = document.getElementById("fieldErrorMessage");
+
+        if (!total || !balance) {
+            errorSpan.textContent = "Please fill in both 'Total' and 'Balance' fields.";
+            return false;
+        }
+
+        // Clear message if valid
+        errorSpan.textContent = "";
+        return true;
+    }
+</script>
+
