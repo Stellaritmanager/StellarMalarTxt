@@ -8,6 +8,36 @@
 }
 
 <script>
+
+
+        $(document).ready(function () {
+            $('#CategoryName').change(function () {
+                var categoryId = $(this).val();
+                if (categoryId) {
+                    $.ajax({
+                        url: '@Url.Content("~/ProductMasterMT/GetSizesByCategory")',    
+                        type: 'GET',
+                        data: { categoryId: categoryId },
+                        success: function (data) {
+                            var sizeDropdown = $('#SizeName');
+                            sizeDropdown.empty();
+                            sizeDropdown.append($('<option>').text('Select Size').attr('value', ''));
+                            $.each(data, function (i, size) {
+                            sizeDropdown.append($('<option>').text(size.SizeName).attr('value', size.SizeName));
+                            });
+                        },
+                        error: function () {
+                            alert('Error retrieving sizes.');
+                        }
+                    });
+                } else {
+                    $('#SizeName').empty().append($('<option>').text('Select Size').attr('value', ''));
+                }
+            });
+        });
+
+   
+
     function showPopup(message) {
         var popup = document.getElementById("popupMessage");
         var popupText = document.getElementById("popupMessageText");

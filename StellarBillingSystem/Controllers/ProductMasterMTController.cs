@@ -122,7 +122,7 @@ namespace StellarBillingSystem_Malar.Controllers
                     {
                         ObjMT = input,
                         CatgeoryList = GetCategoryList(input.CategoryID),
-                        SizeList = GetSizeList(input.SizeName),
+                        SizeList = GetSizeList(input.SizeName,input.CategoryID),
                         BranchList = GetbrandList(input.BrandID),
                         ProductData = await AdditionalProductMasterFun(model.ObjMT.BranchID)
                     };
@@ -140,7 +140,17 @@ namespace StellarBillingSystem_Malar.Controllers
             return View();
         }
 
+        [HttpGet]
+        public IActionResult GetSizesByCategory(int categoryId)
+        {
+            // Replace this with your real DB access
+            var sizes = _billingsoftware.MTSizeMaster
+                .Where(s => s.CategoryID == categoryId)
+                .Select(s => new { s.SizeID, s.SizeName })
+                .ToList();
 
+            return Json(sizes);
+        }
 
         [HttpPost]
         public async Task<IActionResult> AddProduct(ProductViewModelMT model, string buttonType)
@@ -208,7 +218,7 @@ namespace StellarBillingSystem_Malar.Controllers
                     {
                         if (existing.IsDelete)
                         {
-                            ViewBag.ErrorMessage = "Cannot Save or Update. Size is marked as deleted.";
+                            ViewBag.ErrorMessage = "Cannot Save or Update. Product is marked as deleted.";
                             model.ProductData = await AdditionalProductMasterFun(model.ObjMT.BranchID);
                             return View("ProductMasterMT", model);
                         }
@@ -231,10 +241,24 @@ namespace StellarBillingSystem_Malar.Controllers
                     }
                     else
                     {
-                        model.ObjMT.Lastupdateddate = currentTime;
-                        model.ObjMT.Lastupdateduser = User.Claims.First().Value;
-                        model.ObjMT.Lastupdatedmachine = Request.HttpContext.Connection.RemoteIpAddress.ToString();
+                        // if id already exists msg user to give new Id
+                        var checkidext = await _billingsoftware.MTProductMaster.FirstOrDefaultAsync(x =>
+                       (x.ProductCode == model.ObjMT.ProductCode || x.Barcode == model.ObjMT.Barcode) &&
+                       x.BranchID == model.ObjMT.BranchID &&
+                       x.IsDelete == true);
 
+                        if (checkidext != null)
+                        {
+                            ViewBag.ErrorMessage = "Cannot Use Delete product code, Use new Code.";
+                           // model.ProductData = await AdditionalProductMasterFun(model.ObjMT.BranchID);
+                            return View("ProductMasterMT", model);
+                        }
+                        else
+                        {
+                            model.ObjMT.Lastupdateddate = currentTime;
+                            model.ObjMT.Lastupdateduser = User.Claims.First().Value;
+                            model.ObjMT.Lastupdatedmachine = Request.HttpContext.Connection.RemoteIpAddress.ToString();
+                        }
 
                         _billingsoftware.MTProductMaster.Add(model.ObjMT);
                     }
@@ -283,6 +307,15 @@ namespace StellarBillingSystem_Malar.Controllers
             }).ToList();
         }
 
+        private IEnumerable<SelectListItem> GetSizeList(string? selectedId,int? catid)
+        {
+            return _billingsoftware.MTSizeMaster.Where(i => i.CategoryID == catid).Select(c => new SelectListItem
+            {
+                Value = c.SizeName.ToString(),
+                Text = c.SizeName,
+                Selected = !string.IsNullOrEmpty(selectedId) && selectedId == c.SizeName
+            }).ToList();
+        }
         private IEnumerable<SelectListItem> GetSizeList(string? selectedId)
         {
             return _billingsoftware.MTSizeMaster.Select(c => new SelectListItem
