@@ -1,5 +1,4 @@
-﻿
-@{
+﻿@{
     ViewData["Title"] = "CustomerBilling";
     Layout = "~/Views/Shared/_ContentNavbarLayout.cshtml";
 }
@@ -13,18 +12,18 @@
 </style>
 
 
-<form asp-controller="BillingMT"  autocomplete="off">
+<form asp-controller="BillingMT" autocomplete="off">
     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
-    <div class="row">
+                          <div class="row" style="margin-top:10px">
         <div class="col-md-12 col-lg-0"></div>
-        <div class="col-md-12 col-lg-12" style="padding: 0;">
-            <div class="card" style="height:40px;">
+        <div class="col-12 col-sm-12 col-md-12 col-lg-12">
+            <div class="card">
                 <div class="card-body dividerblack">
-                    <div style="display: flex; align-items: center; height: 100%;">
-                        <div class="container" style="text-align: left; width: 100%;">
-                            <h2 class="centered text-white" style="font-family:'Lucida Bright'; margin: 0;">
-                                Customer Billing
+                    <div class="row gy-4">
+                        <div class="col-sm-12 col-md-12 col-lg-12">
+                            <h2 class="centered text-white" style="font-family:'Lucida Bright';text-align: center; margin: 0;">
+                              Customer Billing
                             </h2>
                         </div>
                     </div>
@@ -37,76 +36,80 @@
 
     <div class="row" style="height:8%"></div>
 
-    <div class="row" style="margin-top:60px">
-
-
-        <div class="col-md-12 col-lg-12">
+    <div class="row" style="margin-top:30px">
+        <div class="col-md-12 col-lg-0"></div>
+        <div class="col-12 col-sm-12 col-md-12 col-lg-12">
             <div class="card">
                 <div class="card-body dividerblack">
-
-                    <div class="row">
-                     
-                        <div class="col-md-12 col-lg-4">
+                    <div class="row gy-4">
+                        <div class="col-sm-3 col-md-3 col-lg-3"></div>
+                        <div class="col-sm-4 col-md-4 col-lg-4">
                             <div class="form-floating form-floating-outline mb-4">
-                                <input type="BillID" class="form-control" placeholder="Bill ID" id="BillID"/>
+                                <input type="BillID" class="form-control" placeholder="Bill ID" id="BillID" />
                                 <label for="BillID" class="control-label">Bill ID</label>
                             </div>
                         </div>
 
-                        <button type="button" style="width:95px; height:50px;" class="btn btn-primary ms-2" onclick="getBillDetail()">Get</button>
-                       
-                        <div class="col-md-12 col-lg-3">
-                           
+                        <div class="col-sm-1 col-md-1 col-lg-1">
 
-                           
-                                <div class="input-group">
-                                    @{
+                            <button type="button" style="width:95px; height:50px;" class="btn btn-primaryellow" onclick="getBillDetail()">Get</button>
+                        </div>
+                        <div class="col-sm-2 col-md-2 col-lg-2"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row" style="margin-top:30px">
+        <div class="col-md-12 col-lg-0"></div>
+        <div class="col-12 col-sm-12 col-md-12 col-lg-12">
+            <div class="card">
+                <div class="card-body dividerblack">
+                    <div class="row gy-4">
+                        <div class="col-sm-1 col-md-1 col-lg-1"></div>
+
+                        <div class="col-sm-3 col-md-3 col-lg-3">
+                            <div class="input-group">
+                                @{
                                     var customerId = ((IEnumerable<CustomerMasterModel>)ViewData["customer"])
-                                        .Select(m => new SelectListItem
+                                    .Select(m => new SelectListItem
             {
                 Value = m.CustomerID.ToString(), // Assuming ProductID is of type int
                 Text = $"{m.CustomerName}-{m.MobileNumber}"
             });
-                                    }
+                                }
 
 
-                                    <input type="text" id="customerDropdownInput" class="form-control" placeholder="Customer Number" onkeyup="filterDropdown(event, 'customerDropdownInput', 'customerDropdown')" onclick="showDropdown('customerDropdown')">
-                                    <ul id="customerDropdown" class="list-group mt-2"
-                                        style="display: none; position: absolute; top: 100%; left: 0; width: 100%; max-height: 200px; overflow-y: auto; background-color: white; border: 1px solid #ddd; border-radius: .25rem; box-shadow: 0 0 .5rem rgba(0, 0, 0, .1); z-index: 1000; padding: 0; margin: 0; list-style-type: none;">
+                                <input type="text" id="customerDropdownInput" class="form-control" placeholder="Customer Number" onkeyup="filterDropdown(event, 'customerDropdownInput', 'customerDropdown')" onclick="showDropdown('customerDropdown')">
+                                <ul id="customerDropdown" class="list-group mt-2"
+                                    style="display: none; position: absolute; top: 100%; left: 0; width: 100%; max-height: 200px; overflow-y: auto; background-color: white; border: 1px solid #ddd; border-radius: .25rem; box-shadow: 0 0 .5rem rgba(0, 0, 0, .1); z-index: 1000; padding: 0; margin: 0; list-style-type: none;">
                                     @foreach (var item in customerId)
-                                        {
-                                            <li class="list-group-item" data-value="@item.Value" onclick="selectDropdownItem('customerDropdownInput', 'CustomerID', '@item.Text', '@item.Value')"
-                                                style="padding: .5rem 1rem; cursor: pointer; background-color: white; border: none; list-style-type: none;">
-                                                @item.Text
-                                            </li>
-                                        }
-                                    </ul>
+                                    {
+                                        <li class="list-group-item" data-value="@item.Value" onclick="selectDropdownItem('customerDropdownInput', 'CustomerID', '@item.Text', '@item.Value')"
+                                            style="padding: .5rem 1rem; cursor: pointer; background-color: white; border: none; list-style-type: none;">
+                                            @item.Text
+                                        </li>
+                                    }
+                                </ul>
                                 <input type="hidden" name="CustomerID" id="CustomerID" />
 
                                 <button class="btn btn-primary menu-icon tf-icons bx bxs-user-plus" type="button" id="button-addon2" data-bs-toggle="modal" data-bs-target="#customerModal"></button>
-                                </div>                               
-                          
-
-
+                            </div>
                         </div>
 
-                        <div class="col-md-12 col-lg-3">
+
+                        <div class="col-sm-3 col-md-3 col-lg-3">
 
                             <div class="form-floating form-floating-outline mb-4 custom-date-picker">
-                                <input for="BillDate" type="date"  class="form-control" id="BillDate" max="@DateTime.Now.ToString("yyyy-MM-dd")" placeholder="BillDate"  />
+                                <input for="BillDate" type="date" class="form-control" id="BillDate" max="@DateTime.Now.ToString("yyyy-MM-dd")" placeholder="BillDate" />
                                 <label for="BillDate" class="control-label">Bill Date</label>
                                 <span for="BillDate" class="text-danger"></span>
                             </div>
 
                         </div>
 
-
-                    </div>
-                    <br />
-                    <div class="row">
-                      
-
-                        <div class="col-md-12 col-lg-3">
+                        <div class="col-sm-3 col-md-3 col-lg-3">
 
                             <div class="form-floating form-floating-outline mb-4">
                                 <input type="text" class="form-control" id="Barcode" placeholder="Barcode" />
@@ -114,19 +117,28 @@
 
                             </div>
                         </div>
-                        <div class="col-md-12 col-lg-2">
+
+                        <div class="col-sm-2 col-md-2 col-lg-2"></div>
+
+                    </div>
+
+                    <div class="row gy-4">
+                        <div class="col-sm-1 col-md-1 col-lg-1"></div>
+
+                        <div class="col-sm-3 col-md-3 col-lg-3">
 
                             <div class="form-floating form-floating-outline mb-4">
-                                <input type="text" class="form-control" id="Quantity" placeholder="Quantity"  />
+                                <input type="text" class="form-control" id="Quantity" placeholder="Quantity" />
                                 <label for="Quantity" class="control-label">Quantity</label>
-                              
+
 
                             </div>
 
                         </div>
-                       
-                  
-                        <div class="col-md-12 col-lg-5">
+
+
+                        <div class="col-sm-3 col-md-3 col-lg-3">
+
                             <div class="input-group">
                                 @{
                                     var PatientID = ((IEnumerable<StellarBillingSystem_Malar.Models.ProductModelMT>)ViewData["productid"])
@@ -149,153 +161,142 @@
                                         </li>
                                     }
                                 </ul>
-                                <input type="hidden" name="ProductID" id="productID"  />
+                                <input type="hidden" name="ProductID" id="productID" />
 
-                                
+
 
                             </div>
-                           
-                              
-                           
+
+
+
 
                         </div>
-                    
-                        <button type="button" style="width:145px; height:50px;" class="btn btn-primary ms-2" onclick="addProduct()" class="btn btn-primary">Add Product</button>
 
-                        
-
-
+                        <div class="col-sm-3 col-md-3 col-lg-3">
+                            <button type="button" style="width:145px; height:50px;" class="btn btn-primary ms-2" onclick="addProduct()" class="btn btn-primary">Add Product</button>
+                        </div>
                     </div>
+                    
                 </div>
             </div>
         </div>
     </div>
-
-
-    <div class="row">
-        <div class="col-md-12 col-lg-12">
+        <div class="row" style="margin-top:30px">
+        <div class="col-md-12 col-lg-0"></div>
+        <div class="col-12 col-sm-12 col-md-12 col-lg-12">
             <div class="card">
                 <div class="card-body dividerblack">
+                    <div class="table-responsive">
+                        <div id="productTableContainer"></div>
+                      
+                           </div>
+                </div>
+                </div>
+
+                    </div>
+         
+                   </div>    
+             
 
 
-                    <div id="productTableContainer"></div>
+    <div class="row" style="margin-top:30px">
+        <div class="col-md-12 col-lg-0"></div>
+        <div class="col-12 col-sm-12 col-md-12 col-lg-12">
+            <div class="card">
+                <div class="card-body dividerblack">
+                    <div class="row gy-4">
+                        <div class="col-sm-1 col-md-1 col-lg-1"></div>
+                        <div class="col-sm-4 col-md-4 col-lg-4">
+                            <div class="form-floating form-floating-outline mb-4">
+                                <input type="Totalprice" id="Totalprice" class="form-control" name="Totalprice" placeholder="Total price" value="@ViewBag.TotalPrice" readonly />
+                                <label for="Totalprice" class="control-label">Total price</label>
+                            </div>
+                        </div>
+                        <div class="col-sm-3 col-md-3 col-lg-3">
+                            <div class="form-floating form-floating-outline mb-4">
+                                <input type="text" id="CGSTPercentage" class="form-control" name="CGSTPercentage" placeholder="CGST%" value="@ViewBag.CGSTPercentage" />
+                                <label for="CGSTPercentage" class="control-label">CGST%</label>
+                                <span for="CGSTPercentage" id="CGSTError" class="text-danger"></span>
+                            </div>
 
+                        </div>
+                        <div class="col-sm-3 col-md-3 col-lg-3">
+
+                            <div class="form-floating form-floating-outline mb-4">
+                                <input type="text" id="SGSTPercentage" class="form-control" name="SGSTPercentage" placeholder="SGST%" value="@ViewBag.SGSTPercentage" />
+                                <label for="SGSTPercentage" class="control-label">SGST%</label>
+                                <span for="SGSTPercentage" id="SGSTError" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="col-sm-1 col-md-1 col-lg-1"></div>
+
+                    </div>
+
+                    <div class="row gy-4">
+                        <div class="col-sm-1 col-md-1 col-lg-1"></div>
+                        <div class="col-sm-5 col-md-5 col-lg-5">                           
+                        <div class="form-floating form-floating-outline mb-4">
+                            <input type="text" id="TotalDiscount" class="form-control" name="TotalDiscount" placeholder="Total Discount" value="@ViewBag.TotalDiscount" />
+                            <label for="TotalDiscount" class="control-label">Total Discount</label>
+                        </div>
+                                          </div>
+
+
+                        <div class="col-sm-5 col-md-5 col-lg-5">
+                            <div class="form-floating form-floating-outline mb-4">
+                            <input type="NetPrice" id="NetPrice" class="form-control" name="NetPrice" placeholder="Net Price" value="@ViewBag.NetPrice" readonly />
+                            <label for="NetPrice" class="control-label">Net Price</label>
+                        </div>
+
+                    </div>
 
                 </div>
+
             </div>
+        </div
+          </div>
+           
+            </div>
+        </br>
+
+        <div class="row" style="margin-top:30px">
+            <center>
+                <button type="button" value="Save" name="buttonType" onclick="saveBill()" class="btn btn-success">Save</button>
+                <button type="button" value="Clear" name="buttontype" class="btn btn-info" onclick="clearBill()">Clear</button>
+
+                <button type="button" value="Delete Bill" name="buttonType" onclick="deleteBill()" class="btn btn-dark">Delete Bill</button>
+
+                <button type="submit" value="Download Bill" name="buttonType" class="btn btn-outline-primary">Download Bill</button>
+            </center>
+
+
+
+
         </div>
-    </div>
-
-
-
-    </br>
-
-
-
-    <div class="card">
-        <div class="card-body dividerblack">
-
-            <div class="row">
-                <div class="col-md-12 col-lg-4">
-                    <div class="form-floating form-floating-outline mb-4">
-                        <input type="Totalprice" id="Totalprice" class="form-control" name="Totalprice" placeholder="Total price" value="@ViewBag.TotalPrice" readonly />
-                        <label for="Totalprice" class="control-label">Total price</label>
-
-
-                    </div>
-
-                </div>
-
-                <div class="col-md-12 col-lg-2">
-
-                    <div class="form-floating form-floating-outline mb-4">
-                        <input type="text" id="CGSTPercentage" class="form-control" name="CGSTPercentage" placeholder="CGST%" value="@ViewBag.CGSTPercentage" />
-                        <label for="CGSTPercentage" class="control-label">CGST%</label>
-                        <span for="CGSTPercentage" id="CGSTError" class="text-danger"></span>
-                    </div>
-
-                </div>
-                <div class="col-md-12 col-lg-2">
-
-                    <div class="form-floating form-floating-outline mb-4">
-                        <input type="text" id="SGSTPercentage" class="form-control" name="SGSTPercentage" placeholder="SGST%" value="@ViewBag.SGSTPercentage" />
-                        <label for="SGSTPercentage" class="control-label">SGST%</label>
-                        <span for="SGSTPercentage" id="SGSTError" class="text-danger"></span>
-                    </div>
-                </div>
-
-                <div class="col-md-12 col-lg-4">
-
-                    <div class="form-floating form-floating-outline mb-4">
-                        <input type="text" id="TotalDiscount" class="form-control" name="TotalDiscount" placeholder="Total Discount" value="@ViewBag.TotalDiscount" />
-                        <label for="TotalDiscount" class="control-label">Total Discount</label>
-
-
-                    </div>
-
-                </div>
-            </div>
-
-
-            <div class="row">
-
-              
-                <div class="col-md-12 col-lg-2">
-                    </div>
-                <div class="col-md-12 col-lg-4">
-                    <div class="form-floating form-floating-outline mb-4">
-                        <input type="NetPrice" id="NetPrice" class="form-control" name="NetPrice" placeholder="Net Price" value="@ViewBag.NetPrice" readonly />
-                        <label for="NetPrice" class="control-label">Net Price</label>
-                    </div>
-
-                </div>
-
-            </div>
-
-        </div>
-    </div>
-
-
-    </br>
-
-    <div class="row">
-
-        <center>
-            <button type="button" value="Save" name="buttonType" onclick="saveBill()" class="btn btn-dark">Save</button>
-            <button type="button" value="Clear" name="buttontype" class="btn btn-info" onclick="clearBill()">Clear</button>
-
-            <button type="button" value="Delete Bill" name="buttonType" onclick="deleteBill()" class="btn btn-warning">Delete Bill</button>
-
-            <button type="submit" value="Download Bill" name="buttonType" class="btn btn-success">Download Bill</button>
-        </center>
 
 
 
 
-    </div>
+        @if (ViewBag.Getnotfound != null)
+        {
+            <script>
+                handleMessages("@ViewBag.Getnotfound");
+            </script>
+        }
 
-   
+        @if (ViewBag.DelMessage != null)
+        {
+            <script>
+                handleMessages("@ViewBag.DelMessage");
+            </script>
+        }
 
-    @if (ViewBag.Getnotfound != null)
-    {
-        <script>
-            handleMessages("@ViewBag.Getnotfound");
-        </script>
-    }
-
-    @if (ViewBag.DelMessage != null)
-    {
-        <script>
-            handleMessages("@ViewBag.DelMessage");
-        </script>
-    }
-
-    @if (ViewBag.ClearMessage != null)
-    {
-        <script>
-            handleMessages("@ViewBag.ClearMessage");
-        </script>
-    }
+        @if (ViewBag.ClearMessage != null)
+        {
+            <script>
+                handleMessages("@ViewBag.ClearMessage");
+            </script>
+        }
 
 
 
@@ -385,23 +386,23 @@
 </div>
 
 
- <!-- Overlay -->
-    <div id="popupOverlay" style="display: none; position: fixed; top: 0; left: 0;
+<!-- Overlay -->
+<div id="popupOverlay" style="display: none; position: fixed; top: 0; left: 0;
      width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.3);
      z-index: 999;" onclick="handleOutsideClick(event)">
 
-        <!-- Popup Message Box -->
-        <div id="popupMessage" style="position: fixed; top: 50%; left: 50%;
+    <!-- Popup Message Box -->
+    <div id="popupMessage" style="position: fixed; top: 50%; left: 50%;
          transform: translate(-50%, -50%); background: white;
          padding: 30px; border: 1px solid black; border-radius: 10px;
          z-index: 1000;" onclick="event.stopPropagation()">
 
-            <span id="popupMessageText"></span>
-            <div class="mt-3 text-center">
-                <button onclick="closePopup()" class="btn btn-outline-dark">OK</button>
-            </div>
+        <span id="popupMessageText"></span>
+        <div class="mt-3 text-center">
+            <button onclick="closePopup()" class="btn btn-outline-dark">OK</button>
         </div>
     </div>
+</div>
 
 <script>
     let suppressInputEvent = false;
@@ -593,23 +594,23 @@
 
 <script>
 
-     function showPopup(message, reload = false) {
-            shouldReloadOnClose = reload;
-            document.getElementById("popupMessageText").textContent = message;
-            document.getElementById("popupOverlay").style.display = "block";
-        }
+    function showPopup(message, reload = false) {
+        shouldReloadOnClose = reload;
+        document.getElementById("popupMessageText").textContent = message;
+        document.getElementById("popupOverlay").style.display = "block";
+    }
 
 
 
-        function closePopup() {
-            document.getElementById("popupOverlay").style.display = "none";
-            if (shouldReloadOnClose) {
-                location.reload();
-            }
+    function closePopup() {
+        document.getElementById("popupOverlay").style.display = "none";
+        if (shouldReloadOnClose) {
+            location.reload();
         }
-        function handleOutsideClick(event) {
-            closePopup(); // closes if user clicks on overlay (outside popup)
-        }
+    }
+    function handleOutsideClick(event) {
+        closePopup(); // closes if user clicks on overlay (outside popup)
+    }
 
     $(document).ready(function () {
 
@@ -774,23 +775,23 @@
 
 <script>
 
-     function showPopup(message, reload = false) {
-            shouldReloadOnClose = reload;
-            document.getElementById("popupMessageText").textContent = message;
-            document.getElementById("popupOverlay").style.display = "block";
-        }
+    function showPopup(message, reload = false) {
+        shouldReloadOnClose = reload;
+        document.getElementById("popupMessageText").textContent = message;
+        document.getElementById("popupOverlay").style.display = "block";
+    }
 
 
 
-        function closePopup() {
-            document.getElementById("popupOverlay").style.display = "none";
-            if (shouldReloadOnClose) {
-                location.reload();
-            }
+    function closePopup() {
+        document.getElementById("popupOverlay").style.display = "none";
+        if (shouldReloadOnClose) {
+            location.reload();
         }
-        function handleOutsideClick(event) {
-            closePopup(); // closes if user clicks on overlay (outside popup)
-        }
+    }
+    function handleOutsideClick(event) {
+        closePopup(); // closes if user clicks on overlay (outside popup)
+    }
 
     let productList = [];
 
@@ -814,7 +815,7 @@
                     return;
                 }
 
-                let result = data.data; 
+                let result = data.data;
 
                 console.log("Parsed result object:", result);
 
@@ -843,7 +844,7 @@
 
                 let selectedItem = $("#customerDropdown li[data-value='" + result.customerNumber + "']");
 
-            
+
                 if (selectedItem.length > 0) {
                     $("#customerDropdownInput").val(selectedItem.text());
                 } else {
@@ -903,29 +904,29 @@
 
     function renderProductTable(products) {
         let tableHtml = `
-                <table id="productTable" class="table table-bordered">
-                    <thead>
-                        <tr>
-                            <th>Product ID</th>
-                            <th>Name</th>
-                            <th>Price</th>
-                            <th>Qty</th>
-                            <th>Net Price</th>
-                            <th>Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>`;
+                                            <table id="productTable" class="table table-bordered">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Product ID</th>
+                                                        <th>Name</th>
+                                                        <th>Price</th>
+                                                        <th>Qty</th>
+                                                        <th>Net Price</th>
+                                                        <th>Action</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>`;
 
         products.forEach((p, index) => {
             tableHtml += `
-                    <tr data-index="${index}">
-                        <td>${p.ProductID}</td>
-                        <td>${p.ProductName}</td>
-                        <td>${p.Price}</td>
-                        <td>${p.Quantity}</td>
-                        <td>${p.NetPrice}</td>
-                        <td><button class="btn btn-sm btn-danger" onclick="deleteProduct(${index})">Delete</button></td>
-                    </tr>`;
+                                                <tr data-index="${index}">
+                                                    <td>${p.ProductID}</td>
+                                                    <td>${p.ProductName}</td>
+                                                    <td>${p.Price}</td>
+                                                    <td>${p.Quantity}</td>
+                                                    <td>${p.NetPrice}</td>
+                                                    <td><button class="btn btn-sm btn-danger" onclick="deleteProduct(${index})">Delete</button></td>
+                                                </tr>`;
         });
 
         tableHtml += `</tbody></table>`;
@@ -956,7 +957,7 @@
     }
 
 
-    
+
 
     function saveBill() {
         var billID = $("#BillID").val().trim();
@@ -1012,7 +1013,7 @@
         var billID = $("#BillID").val().trim();
 
         if (!billID) {
-            showPopup("Bill ID cannot be empty",false);
+            showPopup("Bill ID cannot be empty", false);
             return;
         }
 
@@ -1057,7 +1058,7 @@
         // Clear global product list array
         productList = [];
 
-        
+
     }
 
 </script>
